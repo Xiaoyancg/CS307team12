@@ -1,3 +1,16 @@
-dependency
+/Demo_of_libraries/dependency/*
+!/Demo_of_libraries/dependency/include/
+!/Demo_of_libraries/dependency/lib/
+!/Demo_of_libraries/dependency/src/
+/Demo_of_libraries/dependency/include/*
+/Demo_of_libraries/dependency/lib/*
+/Demo_of_libraries/dependency/src/*
+!/Demo_of_libraries/dependency/include/imconfig.h
+
+x64/Debug
+Debug
+
+
+
 .vs
 .vscode
