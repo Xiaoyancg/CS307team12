@@ -1,5 +1,6 @@
 // this is the minimum demo for SDL and opengl and imgui
 // By Larry
+// Please read README before compile
 
 // include required libraries
 #include <imgui.h>
