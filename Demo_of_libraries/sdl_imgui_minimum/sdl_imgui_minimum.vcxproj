@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\dependency\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)..\dependency\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\dependency\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)..\..\dependency\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -148,24 +148,15 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\dependency\src\glad.c" />
-    <ClCompile Include="..\dependency\src\imgui.cpp" />
-    <ClCompile Include="..\dependency\src\imgui_demo.cpp" />
-    <ClCompile Include="..\dependency\src\imgui_draw.cpp" />
-    <ClCompile Include="..\dependency\src\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="..\dependency\src\imgui_impl_sdl.cpp" />
-    <ClCompile Include="..\dependency\src\imgui_tables.cpp" />
-    <ClCompile Include="..\dependency\src\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\dependency\src\glad.c" />
+    <ClCompile Include="..\..\dependency\src\imgui.cpp" />
+    <ClCompile Include="..\..\dependency\src\imgui_demo.cpp" />
+    <ClCompile Include="..\..\dependency\src\imgui_draw.cpp" />
+    <ClCompile Include="..\..\dependency\src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\..\dependency\src\imgui_impl_sdl.cpp" />
+    <ClCompile Include="..\..\dependency\src\imgui_tables.cpp" />
+    <ClCompile Include="..\..\dependency\src\imgui_widgets.cpp" />
     <ClCompile Include="Source.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\dependency\include\imgui.h" />
-    <ClInclude Include="..\dependency\include\imgui_impl_opengl3.h" />
-    <ClInclude Include="..\dependency\include\imgui_impl_sdl.h" />
-    <ClInclude Include="..\dependency\include\imgui_internal.h" />
-    <ClInclude Include="..\dependency\include\imstb_rectpack.h" />
-    <ClInclude Include="..\dependency\include\imstb_textedit.h" />
-    <ClInclude Include="..\dependency\include\imstb_truetype.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
