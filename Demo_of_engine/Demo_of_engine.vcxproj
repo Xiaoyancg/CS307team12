@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{c2e49af1-3d49-4c3f-b8dc-0f15342a2732}</ProjectGuid>
-    <RootNamespace>sdlimguiminimum</RootNamespace>
+    <ProjectGuid>{49bd052e-2a35-4c97-a56b-4e66cd140c48}</ProjectGuid>
+    <RootNamespace>Demoofengine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,16 +72,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(ProjectDir)..\dependency\include;$(LibraryPath)</LibraryPath>
-    <LibraryWPath>$(ProjectDir)..\dependency\lib;$(LibraryWPath)</LibraryWPath>
+    <IncludePath>D:\2021\307\307project\CS307team12\dependency\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\2021\307\307project\CS307team12\dependency\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)..\..\dependency\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)..\..\dependency\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\2021\307\307project\CS307team12\dependency\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\2021\307\307project\CS307team12\dependency\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -145,18 +145,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\dependency\src\glad.c" />
-    <ClCompile Include="..\..\dependency\src\imgui.cpp" />
-    <ClCompile Include="..\..\dependency\src\imgui_demo.cpp" />
-    <ClCompile Include="..\..\dependency\src\imgui_draw.cpp" />
-    <ClCompile Include="..\..\dependency\src\imgui_impl_opengl3.cpp" />
-    <ClCompile Include="..\..\dependency\src\imgui_impl_sdl.cpp" />
-    <ClCompile Include="..\..\dependency\src\imgui_tables.cpp" />
-    <ClCompile Include="..\..\dependency\src\imgui_widgets.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="..\dependency\src\glad.c" />
+    <ClCompile Include="..\dependency\src\imgui.cpp" />
+    <ClCompile Include="..\dependency\src\imgui_demo.cpp" />
+    <ClCompile Include="..\dependency\src\imgui_draw.cpp" />
+    <ClCompile Include="..\dependency\src\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\dependency\src\imgui_impl_sdl.cpp" />
+    <ClCompile Include="..\dependency\src\imgui_tables.cpp" />
+    <ClCompile Include="..\dependency\src\imgui_widgets.cpp" />
+    <ClCompile Include="Engine_main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
