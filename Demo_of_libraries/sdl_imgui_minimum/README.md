@@ -12,7 +12,7 @@ Here's no damage, but we may need to write some functions in there.
 it is made for developers to include functions in imgui namesapce
 ///////////////////
 
-5. copy src folder in glad to denpendency\ folder. Copy all .cpp file in imgui-master\ and imgui-master\backends to dependency\src folder.
+5. copy src folder in glad to denpendency\ folder. Copy all .cpp file in imgui-master\ and the two source file with sdl2 and opengl3 in imgui-master\backends to dependency\src folder.
 6. copy files in \SDL2-2.0.14\lib\x64 to dependency\lib folder. dll is dynamic library, we'll copy it to the executable later.
 
 Compile: 
@@ -25,7 +25,7 @@ Compile:
 7. Local Windows Debugger go. https://ibb.co/D56MQfc
 
 All locations in the project configuration are in relative type.
-( Using macro: "$(ProjectDir)\..\dependency\)" )
+( Using macro: "$(ProjectDir)\..\..\dependency\)" )
 
 5 things to notice:
   1. include all imgui*.cpp and header 
