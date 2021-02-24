@@ -24,5 +24,16 @@
     <ClCompile Include="..\..\dependency\src\glad.c">
       <Filter>Source Files\other source</Filter>
     </ClCompile>
+    <ClCompile Include="..\FileManager.cpp">
+      <Filter>Source Files\other source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="vertex.vert">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
