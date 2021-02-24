@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\2021\307\307project\CS307team12\dependency\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\2021\307\307project\CS307team12\Demo_of_engine;D:\2021\307\307project\CS307team12\dependency\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\2021\307\307project\CS307team12\dependency\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,7 +143,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\dependency\src\glad.c" />
+    <ClCompile Include="..\FileManager.cpp" />
     <ClCompile Include="Game_VM_main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment.frag" />
+    <None Include="vertex.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

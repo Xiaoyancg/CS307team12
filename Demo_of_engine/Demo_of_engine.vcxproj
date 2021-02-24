@@ -154,6 +154,10 @@
     <ClCompile Include="..\dependency\src\imgui_tables.cpp" />
     <ClCompile Include="..\dependency\src\imgui_widgets.cpp" />
     <ClCompile Include="Engine_main.cpp" />
+    <ClCompile Include="FileManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,4 @@
-// this is the minimum demo for SDL and opengl and imgui
+// this is the minimum demo of engine
 // By Larry
 // Please read README before compile
 
@@ -11,6 +11,10 @@
 
 // normal libraries
 #include <stdio.h>
+
+
+// Our libraries
+#include "FileManager.h";
 
 int main ( int argc, char **argv )
 {
