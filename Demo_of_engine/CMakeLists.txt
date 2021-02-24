@@ -48,5 +48,5 @@ add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
 add_subdirectory(core)
-add_subdirectory(gamevm)
 add_subdirectory(editor)
+add_subdirectory(gamevm)
