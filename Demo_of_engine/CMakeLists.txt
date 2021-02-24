@@ -13,7 +13,9 @@ set(SDL_DIR "${PROJECT_SOURCE_DIR}/lib/SDL")
 add_library(sdl SHARED IMPORTED)
 # dynamic library sdl
 set_property(TARGET sdl PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${SDL_DIR}/include")
+# this is what sdl is
 set_property(TARGET sdl PROPERTY IMPORTED_LOCATION "${SDL_DIR}/SDL2.dll")
+# the static library of the dynamic library
 set_property(TARGET sdl PROPERTY IMPORTED_IMPLIB "${SDL_DIR}/SDL2.lib")
 # static library sdlmain
 add_library(sdlmain STATIC IMPORTED)
