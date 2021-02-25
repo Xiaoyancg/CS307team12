@@ -171,7 +171,7 @@ int main ( int argc, char **argv )
 
   glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texcbo, 0 );
 
-  if ( glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE )
+  if ( glCheckFramebufferStatus ( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
   {
     std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complelete!" << std::endl;
   }
@@ -201,6 +201,22 @@ int main ( int argc, char **argv )
         done = true;
       }
     }
+    glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+    // Rendering
+    // render the ImGui windows
+    glViewport ( 0, 0, ( int ) io.DisplaySize.x, ( int ) io.DisplaySize.y );
+    // use the clear clor we passed to opengl before to clear the context
+    glClear ( GL_COLOR_BUFFER_BIT );
+    glDrawArrays ( GL_TRIANGLES, 0, 3 );
+
+    glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+
+    // Rendering
+    // render the ImGui windows
+    glViewport ( 0, 0, ( int ) io.DisplaySize.x, ( int ) io.DisplaySize.y );
+    // use the clear clor we passed to opengl before to clear the context
+    glClear ( GL_COLOR_BUFFER_BIT );
+    glDrawArrays ( GL_TRIANGLES, 0, 3 );
 
     // Draw ImGui windows
     // Start the dear Imgui frame
@@ -215,16 +231,15 @@ int main ( int argc, char **argv )
     {
       done = true;
     }
-    ImGui::Image(texcbo, )
+    ImVec2 pos = ImGui::GetCursorScreenPos ();
+    ImGui::GetWindowDrawList ()->AddImage (
+      ( void * ) texcbo,
+      ImVec2 ( ImGui::GetCursorScreenPos () ),
+      ImVec2 ( ImGui::GetCursorScreenPos ().x + 400,
+               ImGui::GetCursorScreenPos ().y + 300 ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
     ImGui::End ();
 
 
-    // Rendering
-    // render the ImGui windows
-    glViewport ( 0, 0, ( int ) io.DisplaySize.x, ( int ) io.DisplaySize.y );
-    // use the clear clor we passed to opengl before to clear the context
-    glClear ( GL_COLOR_BUFFER_BIT );
-    glDrawArrays ( GL_TRIANGLES, 0, 3 );
 
     // this command does not render that imgui window, we need to use opengl to render imgui
     ImGui::Render ();
