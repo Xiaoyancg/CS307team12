@@ -2,3 +2,8 @@
 .vscode
 build
 out
+
+lib
+Debug
+x64
+dependency
