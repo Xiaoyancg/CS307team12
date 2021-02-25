@@ -13,10 +13,10 @@
 #include <iostream>
 
 
+
 float vertices[] = { -0.5f, -0.5f, 0.0f,
                       0.5f, -0.5f, 0.0f, 
                       0.0f, 0.5f, 0.0f };
-
 
 
 int init ()
@@ -63,6 +63,7 @@ void mainLoop ( SDL_Window *window )
       {
         done = true;
       }
+#include <stdio.h>
     }
 
     // use the clear color to clear
@@ -157,7 +158,6 @@ int main ( int argc, char **argv )
   glCompileShader ( vs );
   int success;
   char infoLog[512];
-
   glGetShaderiv ( vs, GL_COMPILE_STATUS, &success );
   if ( !success )
   {
