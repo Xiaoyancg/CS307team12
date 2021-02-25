@@ -1,0 +1,6 @@
+[submodule "engine/lib"]
+	path = engine/lib
+	url = https://github.com/dlocasc/ParchmentDependencies.git
+[submodule "lib"]
+	path = lib
+	url = https://github.com/dlocasc/ParchmentDependencies
