@@ -12,3 +12,7 @@ Debug
 
 .vs
 .vscode
+
+engine/build
+engine/out
+engine/.vs
