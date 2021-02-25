@@ -32,6 +32,10 @@ target_include_directories(imgui
 		"${IMGUI_BACKENDS_DIR}"
 )
 
+set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
+add_library(glm INTERFACE)
+target_include_directories(glm INTERFACE ${GLM_DIR})
+
 set(GLAD_DIR "${PROJECT_SOURCE_DIR}/lib/glad")
 add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
