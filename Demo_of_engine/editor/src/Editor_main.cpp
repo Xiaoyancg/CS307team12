@@ -10,6 +10,10 @@
 #include <glad/glad.h>
 
 // normal libraries
+#include <string> 
+#include <streambuf>  
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
 
 
@@ -98,13 +102,87 @@ int main ( int argc, char **argv )
   // pass the clear color to opengl server. for further usage
   glClearColor ( clear_color.x, clear_color.y, clear_color.z, clear_color.w );
 
+  float vertices[] = { -0.5f, -0.5f, 0.0f,
+                      0.5f, -0.5f, 0.0f,
+                      0.0f, 0.5f, 0.0f };
 
-  // Main loop
-  // Every opengl program or any program IDK need a main loop to keep it running.
-  // In each loop, it redraw the context and re-evaluate the variables as needed.
-  // Here we run loop for each time interval. However, for other case, we can run loop when event happened(key stroke)
-  // As for the game loop, we call a game conditional function in each loop.
-  // the controller function shouldn't be called here as in my experience. When a key is pressed, we update the data.
+
+  unsigned int vao, vbo;
+  glGenVertexArrays ( 1, &vao );
+  glGenBuffers ( 1, &vbo );
+  glBindVertexArray ( vao );
+  glBindBuffer ( GL_ARRAY_BUFFER, vbo );
+  glBufferData ( GL_ARRAY_BUFFER, sizeof ( vertices ), vertices, GL_STATIC_DRAW );
+  glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof ( float ), ( void * ) 0 );
+  glEnableVertexAttribArray ( 0 );
+  glBindVertexArray ( vao );
+
+  const char *vscs, *fscs;
+  std::string vss, fss;
+  std::ifstream vsfs ( "vertex.vert" );
+  std::ifstream fsfs ( "fragment.frag" );
+  vss = std::string ( std::istreambuf_iterator<char> ( vsfs ),
+                      std::istreambuf_iterator<char> () );
+  fss = std::string ( std::istreambuf_iterator<char> ( fsfs ),
+                      std::istreambuf_iterator<char> () );
+  vsfs.close ();
+  fsfs.close ();
+  vscs = vss.c_str ();
+  fscs = fss.c_str ();
+
+  unsigned int vs, fs;
+  vs = glCreateShader ( GL_VERTEX_SHADER );
+  fs = glCreateShader ( GL_FRAGMENT_SHADER );
+  glShaderSource ( vs, 1, &vscs, NULL );
+  glShaderSource ( fs, 1, &fscs, NULL );
+  glCompileShader ( vs );
+
+  int success;
+  char infoLog[512];
+  glGetShaderiv ( vs, GL_COMPILE_STATUS, &success );
+  if ( !success )
+  {
+    glGetShaderInfoLog ( vs, 512, NULL, infoLog );
+
+    std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+  };
+  glCompileShader ( fs );
+  unsigned int program = glCreateProgram ();
+  glAttachShader ( program, vs );
+  glAttachShader ( program, fs );
+  glLinkProgram ( program );
+  glDeleteShader ( vs );
+  glDeleteShader ( fs );
+  glUseProgram ( program );
+
+
+
+  unsigned int fbo;
+  glGenFramebuffers ( 1, &fbo );
+  glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+
+  unsigned int texcbo; // texture color buffer obj
+  glGenTextures ( 1, &texcbo );
+  glBindTexture ( GL_TEXTURE_2D, texcbo );
+  glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+  glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glBindTexture ( GL_TEXTURE_2D, 0 );
+
+  glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texcbo, 0 );
+
+  if ( glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE )
+  {
+    std::cerr << "ERROR::FRAMEBUFFER:: Framebuffer is not complelete!" << std::endl;
+  }
+  glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+
+ // Main loop
+ // Every opengl program or any program IDK need a main loop to keep it running.
+ // In each loop, it redraw the context and re-evaluate the variables as needed.
+ // Here we run loop for each time interval. However, for other case, we can run loop when event happened(key stroke)
+ // As for the game loop, we call a game conditional function in each loop.
+ // the controller function shouldn't be called here as in my experience. When a key is pressed, we update the data.
   bool done = false;
   while ( !done )
   {
@@ -145,9 +223,12 @@ int main ( int argc, char **argv )
     glViewport ( 0, 0, ( int ) io.DisplaySize.x, ( int ) io.DisplaySize.y );
     // use the clear clor we passed to opengl before to clear the context
     glClear ( GL_COLOR_BUFFER_BIT );
+    glDrawArrays ( GL_TRIANGLES, 0, 3 );
 
     // this command does not render that imgui window, we need to use opengl to render imgui
     ImGui::Render ();
+
+
     // use opengl to render the imgui window
     ImGui_ImplOpenGL3_RenderDrawData ( ImGui::GetDrawData () );
     // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.

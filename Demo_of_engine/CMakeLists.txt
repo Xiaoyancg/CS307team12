@@ -23,6 +23,8 @@ set_property(TARGET sdlmain PROPERTY IMPORTED_LOCATION "${SDL_DIR}/SDL2main.lib"
 
 # glm
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
+add_library(glm INTERFACE)
+target_include_directories(glm INTERFACE ${GLM_DIR})
 
 
 #imgui
