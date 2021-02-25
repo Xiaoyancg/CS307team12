@@ -215,6 +215,7 @@ int main ( int argc, char **argv )
     {
       done = true;
     }
+    ImGui::Image(texcbo, )
     ImGui::End ();
 
 
