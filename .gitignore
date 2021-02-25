@@ -10,7 +10,3 @@ dependency
 
 .vs
 .vscode
-
-/Demo_of_engine/lib/
-/Demo_of_engine/.vs/
-/Demo_of_engine/out/
