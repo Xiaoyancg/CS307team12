@@ -5,5 +5,15 @@ out
 
 lib
 Debug
+<<<<<<< HEAD
 x64
 dependency
+=======
+
+.vs
+.vscode
+
+/Demo_of_engine/lib/
+/Demo_of_engine/.vs/
+/Demo_of_engine/out/
+>>>>>>> demo_engine
