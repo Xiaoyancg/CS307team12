@@ -78,10 +78,18 @@ int main(int argc, char* argv[]) {
 	// Initialize necessary SDL objects
 	init();
 
+	SDL_Event event;
+	int close_window = false;
 	///////////////
 	// Game loop //
 	///////////////
-	while (true) {
+	while (!close_window) {
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_QUIT) {
+				close_window = true;
+			}
+		}
+
 		///////////////
 		// PAGE TEST
 		// This loop will render whatever occurs in render()
