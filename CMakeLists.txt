@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.2)
-
 project(Parchment VERSION 0.1 LANGUAGES CXX)
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
@@ -7,6 +6,14 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
     FATAL_ERROR
       "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
   )
+endif()
+
+option(WITH_TESTS "Build tests" ON)
+if(WITH_TESTS)
+	enable_testing()
+	include(GoogleTest)
+	set(gtest_force_shared_crt ON)
+	add_subdirectory(lib/googletest)
 endif()
 
 set(SDL_DIR "${PROJECT_SOURCE_DIR}/lib/SDL")
