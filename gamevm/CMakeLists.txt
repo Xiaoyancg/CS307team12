@@ -17,7 +17,8 @@ add_custom_command (TARGET GameVM POST_BUILD
 )
 
 if(WITH_TESTS)
-	add_executable(TestGameVM test/test_square.cpp)
+	file(GLOB test_srcs "test/*.cpp")
+	add_executable(TestGameVM ${test_srcs})
 	target_link_libraries(TestGameVM GameVM gtest_main)
 	gtest_discover_tests(TestGameVM)
 endif(WITH_TESTS)
