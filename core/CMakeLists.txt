@@ -1,6 +1,8 @@
 file(GLOB srcs "src/*.cpp")
 
-add_executable(Core ${srcs})
+#add_library(core ${srcs})
+add_executable(core ${srcs} "include/Page.h")
+
 
 target_include_directories(Core 
 	PUBLIC
@@ -10,4 +12,10 @@ target_include_directories(Core
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(Core sdl glad imgui)
+target_link_libraries(core sdl glad sdlmain imgui)
+
+add_custom_command (TARGET core POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:sdl> $<TARGET_FILE_DIR:core>
+)
+
