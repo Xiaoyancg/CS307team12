@@ -1,11 +1,7 @@
-#include <SDL.h>
-#include <Page.h>
-#include <glad/glad.h>
-#include <stdio.h>
+#include "Game.h"
 
-SDL_Window* window;
+SDL_Window *window;
 SDL_GLContext gl_context;
-
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
 void sdl_die(const char* err_msg)
@@ -74,7 +70,8 @@ int render() {
 }
 
 
-int main(int argc, char* argv[]) {
+int core_main(int argc, char* argv[]) {
+
 	// Initialize necessary SDL objects
 	init();
 
@@ -96,9 +93,17 @@ int main(int argc, char* argv[]) {
 		// followed by a new Page and whatever is in its render()
 		// This is just a test to make sure page rendering is correctly set up
 		render();
+#ifdef __testGame
+		gameError = glGetError();
+#endif // __testGame
+
 		Page page(window);
 		page.render();
 		///////////////
+#ifdef __testGame
+		close_window = true;
+#endif // __testGame
+
 	}
 
 	// Take care of deleting SDL objects and cleanly exit 
@@ -107,4 +112,9 @@ int main(int argc, char* argv[]) {
 	SDL_Quit();
 
 	return 0;
+}
+
+int main ( int argc, char *argv[] )
+{
+	return core_main ( argc, argv );
 }
