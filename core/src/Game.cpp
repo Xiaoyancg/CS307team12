@@ -6,6 +6,20 @@
 SDL_Window* window;
 SDL_GLContext gl_context;
 
+const char* vertexShaderSource = "#version 460 core\n"
+	"layout (location = 0) in vec3 aPos;\n"
+	"void main()\n"
+	"{\n"
+	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"}\0";
+
+const char* fragmentShaderSource = "#version 460 core\n"
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"}\n\0";
+
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
 void sdl_die(const char* err_msg)
@@ -25,8 +39,8 @@ void init() {
 	// This was all from the sample code, I haven't looked into it yet
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -41,7 +55,7 @@ void init() {
 	// Create the Game opengl context
 	gl_context = SDL_GL_CreateContext(window);
 
-	// Load opengl? I can barely find information/documentation about glad
+	// Load function pointers for OpenGL
 	gladLoadGL();
 }
 
@@ -54,20 +68,15 @@ int render() {
 	//////////////////////////////
 	// Everything before the ending ///////'s is just test code and will eventually be deleted
 
-
-	// Clear the buffer with a red background
-	glClearColor(1.0, 0.0, 0.0, 1.0);
+	// Clear the buffer with a grey background
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
-	SDL_Delay(1000); // Wait 1 sec before continuing
 
-	// Clear the buffer with a dark red background
-	glClearColor(0.5, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
-	SDL_Delay(1000); // Wait 1 sec before continuing
+	// Draw a triangle
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
-
+	SDL_GL_SwapWindow(window);
+	
 	//////////////////////////////
 
 	return 0;
@@ -78,12 +87,80 @@ int main(int argc, char* argv[]) {
 	// Initialize necessary SDL objects
 	init();
 
-	SDL_Event event;
-	int close_window = false;
+	// Create and compile vertex shader
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+
+	// Check for vertex shader compilation errors
+	int success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n %s\n", infoLog);
+	}
+
+	// Create and compile fragment shader
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+	// Check for fragment shader compilation errors
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n %s\n", infoLog);
+	}
+
+	// Link shaders into a shader program
+	unsigned int shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		printf("ERROR::SHADER::PROGRAM::LINKING_FAILED\n %s\n", infoLog);
+	}
+
+	// Clean up no longer needed shader objects
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	// Vertices array for triangle
+	float vertices[] = {
+		-0.5f, -0.5f, 0.0f,
+		 0.5f, -0.5f, 0.0f,
+		 0.0f,  0.5f, 0.0f
+	};
+
+	// Create vertex array object and vertex buffer object
+	unsigned int VAO = 0, VBO = 0;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	// Set current activate VAO
+	glBindVertexArray(VAO);
+
+	// Set current active VBO and store vertices data into it
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	
+	// Specify interpretation of vertex buffer data and enable vertex's location attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// Set current activate shader program
+	glUseProgram(shaderProgram);
+
 	///////////////
 	// Game loop //
 	///////////////
+	bool close_window = false;
 	while (!close_window) {
+		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
 				close_window = true;
@@ -91,13 +168,9 @@ int main(int argc, char* argv[]) {
 		}
 
 		///////////////
-		// PAGE TEST
+		// RENDER TEST
 		// This loop will render whatever occurs in render()
-		// followed by a new Page and whatever is in its render()
-		// This is just a test to make sure page rendering is correctly set up
 		render();
-		Page page(window);
-		page.render();
 		///////////////
 	}
 
