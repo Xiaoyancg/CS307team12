@@ -6,39 +6,6 @@
 SDL_Window* window;
 SDL_GLContext gl_context;
 
-GLuint vertexShaderID;
-const GLchar* vertexShader = R"glsl(
-	#version 330 core
-	layout (location = 0) in vec4 vertex; // <vec2 position, vec2 texCoords>
-
-	out vec2 TexCoords; // Output to the fragment shader (the texture coordinates)
-
-	uniform mat4 model; // Transformation matrix
-
-	void main()
-	{
-		// Set TexCoords output to vec2 of the last 2 elements in vertex
-		TexCoords = vertex.zw;
-
-		// Transform xy vertices based on model
-		gl_Position = model * vec4(vertex.xy, 0.0, 1.0); 
-	}
-)glsl";
-
-GLuint fragmentShaderID;
-const GLchar* fragmentShader = R"glsl(
-	#version 330 core
-	in vec2 TexCoords;
-	out vec4 color;
-
-	uniform sampler2D image; # sampler2D is a built-in glsl data-type
-
-	void main()
-	{    
-		# built-in texture function to return color vectors
-		color = texture(image, TexCoords);
-	}  
-)glsl";
 
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
@@ -47,6 +14,79 @@ void sdl_die(const char* err_msg)
 	printf("%s: %s\n", err_msg, SDL_GetError());
 	SDL_Quit();
 	exit(1);
+}
+
+void setupShaders() {
+	// The GLSL Code for the vertex shader
+	const GLchar* vertexShader = R"glsl(
+		#version 330 core
+		layout (location = 0) in vec2 position; // The position attribute
+
+		out vec2 glPosition; // Output to the fragment shader (the texture coordinates)
+
+		uniform mat4 model; // Transformation matrix
+
+		void main()
+		{
+			// Set TexCoords output to vec2 of the last 2 elements in vertex
+			// TexCoords = vertex.zw;
+			// POSITION = position
+
+			// Transform xy vertices based on model
+			gl_Position = model * vec4(position, 0.0, 1.0); 
+		}
+	)glsl";
+
+	// The GLSL Code for the fragment shader
+	const GLchar* fragmentShader = R"glsl(
+		#version 330 core
+		in vec2 position;
+		out vec4 color;
+
+		uniform sampler2D image; // sampler2D is a built-in glsl data-type
+
+		void main()
+		{    
+			// built-in texture function to return color vectors
+			color = texture(image, position);
+		}  
+	)glsl";
+
+
+	// Create and compile the vertex shader
+	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShaderID, 1, &vertexShader, NULL);
+	glCompileShader(vertexShaderID);
+
+	// Create and compile the fragment shader
+	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShaderID, 1, &fragmentShader, NULL);
+	glCompileShader(fragmentShaderID);
+
+	// Connect the vertex and fragment shaders above into a program
+	GLuint shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShaderID);
+	glAttachShader(shaderProgram, fragmentShaderID);
+
+	// NOTE: The shaderProgram is current defaulting to framebuffer 0.
+	// There are no other framebuffers right now so this is okay, but
+	// may need to be changed in the future
+
+	// OpenGL stuff to actually start using the shader program
+	glLinkProgram(shaderProgram);
+	glUseProgram(shaderProgram);
+
+	// Vertex Array Object, this just stores any following vertex attributes so we don't have to respecify them
+	GLuint vao; 
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	// Get attribute ID for the position and set its attribute type
+	GLint posAttrib = glGetAttribLocation(shaderProgram, "position"); 
+	glVertexAttribPointer(posAttrib, 2, GL_DOUBLE, GL_FALSE, 0, 0); // This gets stored in the VAO
+
+	// Enable the VAO
+	glEnableVertexAttribArray(posAttrib);
 }
 
 // This takes care of initializing everything SDL needs to begin running
@@ -75,16 +115,7 @@ void init() {
 	// Create the Game opengl context
 	gl_context = SDL_GL_CreateContext(window);
 
-
-	// Create and compile the vertex shader
-    vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShaderID, 1, &vertexShader, NULL);
-    glCompileShader(vertexShaderID);
-
-    // Create and compile the fragment shader
-    fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderID, 1, &fragmentShader, NULL);
-    glCompileShader(fragmentShaderID);
+	setupShaders();
 
 	// Load opengl? I can barely find information/documentation about glad
 	gladLoadGL();
