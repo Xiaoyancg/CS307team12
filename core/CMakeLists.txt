@@ -12,7 +12,7 @@ target_include_directories(core
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(core sdl glad sdlmain imgui)
+target_link_libraries(core sdl glad sdlmain imgui glm)
 
 add_custom_command (TARGET core POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
