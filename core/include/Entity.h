@@ -7,7 +7,7 @@ class Entity {
 
 public:
 	// Constructor, just creates the context of the page
-	Entity(glm::vec2 location, double rotation, double scale, int sid);
+	Entity(glm::vec2 location, double rotation, double scale, int spriteID);
 
 	// Render the given page on the current context
 	// Returns non-zero on error
