@@ -10,6 +10,14 @@ spriteID(spriteID) {
 }
 
 int Entity::render() {
+	/*
+	* Create + bind VBO to send vertex data to graphics card
+	* Fill VBO buffer with data
+	*/
+
+
+
+
 
 	return 0;
 }
