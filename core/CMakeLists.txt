@@ -1,7 +1,7 @@
 file(GLOB srcs "src/*.cpp")
 
 #add_library(core ${srcs})
-add_executable(core ${srcs} "include/Page.h")
+add_executable(core ${srcs} "include/Page.h" "src/Entity.cpp" "include/Entity.h")
 
 
 target_include_directories(core 

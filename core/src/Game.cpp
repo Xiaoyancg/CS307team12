@@ -75,7 +75,7 @@ int render() {
 
 
 int main(int argc, char* argv[]) {
-	// Initialize necessary SDL objects
+	// Initialize OpenGL and necessary SDL objects
 	init();
 
 	SDL_Event event;
