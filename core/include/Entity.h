@@ -1,24 +1,22 @@
-#include <SDL.h>
 #include <glm/glm.hpp>
 
 // Entity class
-
 class Entity {
-
 public:
 	// Constructor, just creates the context of the page
-	Entity(glm::vec2 location, double rotation, double scale, int spriteID);
+	Entity(glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
 
-	// Render the given page on the current context
+	// Render the given entity on the current context
 	// Returns non-zero on error
+	// Assumes the shaders have already been setup
 	int render();
 
 private:
 	// Basic Entity variables
 	glm::vec2 location;
+	glm::vec2 scale;
 	double rotation;
-	double scale;
-
+	
 	// Sprite ID used to index sprites loaded into memory from the Game class
 	// This isn't used yet though, I'm just adding it for later
 	int spriteID;
