@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <stdio.h>
 
-// Constructor of the game class
+// Constructor of the Page class
 // Sets mWindow and sets/creates mPageContext
 Page::Page(SDL_Window* window)
 : mWindow(window) {
