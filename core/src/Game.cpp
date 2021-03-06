@@ -10,8 +10,8 @@ SDL_GLContext gl_context;
 
 std::vector<Entity> entities;
 
-int width = 1280;
-int height= 720;
+int width = 1280; // Width of the window, used in Entity.cpp
+int height= 720; // Height of the window, used in Entity.cpp
 
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
@@ -142,9 +142,11 @@ void init() {
 		sdl_die("Error initializing SDL video mode :(");
 	}
 
-	// This was all from the sample code, I haven't looked into it yet
+	// Most of this was from the sample code, I haven't looked into it yet
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+	// Use OpenGL 4.6
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
 
@@ -218,6 +220,8 @@ int main(int argc, char* argv[]) {
 	entities.push_back(entity3);
 	Entity entity4(glm::vec2(-0.25, -0.25), glm::vec2(64, 64), 0, 0);
 	entities.push_back(entity4);
+	Entity entity5(glm::vec2(1.025, 1.025), glm::vec2(64, 64), 0, 0);
+	entities.push_back(entity5);
 	///////////////
 
 	while (!close_window) {
