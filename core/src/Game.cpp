@@ -3,10 +3,12 @@
 #include <Entity.h>
 #include <glad/glad.h>
 #include <stdio.h>
+#include <vector>
 
 SDL_Window* window;
 SDL_GLContext gl_context;
 
+std::vector<Entity> entities;
 
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
@@ -159,6 +161,7 @@ void init() {
 	// Load opengl? I can barely find information/documentation about glad
 	gladLoadGL();
 
+	// Create the shaders
 	initShaders();
 
 }
@@ -174,8 +177,8 @@ int render() {
 	// Everything before the ending ///////'s is just test code and will eventually be deleted
 
 	// Clear the buffer with a red background
-	glClearColor(1.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(1.0, 0.0, 0.0, 1.0);
 	SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
 	SDL_Delay(1000); // Wait 1 sec before continuing
 
@@ -199,6 +202,19 @@ int main(int argc, char* argv[]) {
 	///////////////
 	// Game loop //
 	///////////////
+
+	///////////////
+	// ENTITY TEST
+	Entity entity1(glm::vec2(0.25, 0.25), glm::vec2(0, 0), 0, 0);
+	entities.push_back(entity1);
+	Entity entity2(glm::vec2(0.50, 0.50), glm::vec2(0, 0), 0, 0);
+	entities.push_back(entity2);
+	Entity entity3(glm::vec2(0.75, 0.75), glm::vec2(0, 0), 0, 0);
+	entities.push_back(entity3);
+	Entity entity4(glm::vec2(-0.25, -0.25), glm::vec2(0, 0), 0, 0);
+	entities.push_back(entity4);
+	///////////////
+
 	while (!close_window) {
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT) {
@@ -223,15 +239,11 @@ int main(int argc, char* argv[]) {
 		// This loop will render whatever occurs in render()
 		// followed by a new Entity and whatever is in its render()
 		// This is just a test to make sure entity rendering is correctly set up
-		Entity entity1(glm::vec2(0.25, 0.25), glm::vec2(0, 0), 0, 0);
-		entity1.render();
-		Entity entity2(glm::vec2(0.50, 0.50), glm::vec2(0, 0), 0, 0);
-		entity2.render();
-		Entity entity3(glm::vec2(0.75, 0.75), glm::vec2(0, 0), 0, 0);
-		entity3.render();
-		Entity entity4(glm::vec2(-0.25, -0.25), glm::vec2(0, 0), 0, 0);
-		entity4.render();
-		SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
+		for (Entity entity : entities) {
+			entity.render();
+		}
+
+		SDL_GL_SwapWindow(window); // Show the entities by bringing showing the back buffer
 		///////////////
 
 		SDL_Delay(1000); // Wait 1 sec before continuing
