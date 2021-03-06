@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <Page.h>
+#include <Entity.h>
 #include <glad/glad.h>
 #include <stdio.h>
 
@@ -16,77 +17,117 @@ void sdl_die(const char* err_msg)
 	exit(1);
 }
 
-void setupShaders() {
-	// The GLSL Code for the vertex shader
-	const GLchar* vertexShader = R"glsl(
-		#version 330 core
-		layout (location = 0) in vec2 position; // The position attribute
 
-		out vec2 glPosition; // Output to the fragment shader (the texture coordinates)
+void initShaders() {
+	// Source for the vertex shader
+	const char* vertexSource = R"glsl(
+		#version 450 core
 
-		uniform mat4 model; // Transformation matrix
+		layout (location = 0) in vec2 pos;
+
 
 		void main()
 		{
-			// Set TexCoords output to vec2 of the last 2 elements in vertex
-			// TexCoords = vertex.zw;
-			// POSITION = position
-
-			// Transform xy vertices based on model
-			gl_Position = model * vec4(position, 0.0, 1.0); 
+		  gl_Position = vec4(pos, 0.0, 1.0);
 		}
 	)glsl";
 
-	// The GLSL Code for the fragment shader
-	const GLchar* fragmentShader = R"glsl(
-		#version 330 core
-		in vec2 position;
-		out vec4 color;
+	// Source for the fragment shader
+	const char* fragmentSource = R"glsl(
+		// fragment shader
+		#version 450 core
 
-		uniform sampler2D image; // sampler2D is a built-in glsl data-type
+		out vec4 FragColor;
 
 		void main()
-		{    
-			// built-in texture function to return color vectors
-			color = texture(image, position);
-		}  
+		{
+		  FragColor = vec4(1.0,1.0,1.0,1.0);
+		}
 	)glsl";
 
+	// Create vertex and fragment shaders
+	GLuint vertexShaderID, fragmentShaderID;
+	vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
-	// Create and compile the vertex shader
-	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShaderID, 1, &vertexShader, NULL);
+	// Set the source code of the shaders
+	glShaderSource(vertexShaderID, 1, &vertexSource, NULL);
+	glShaderSource(fragmentShaderID, 1, &fragmentSource, NULL);
+
+	// Debug variables
+	int success;
+	char infoLog[512];
+
+	// Compile the vertex shader, or print an error
 	glCompileShader(vertexShaderID);
+	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
+		printf("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n>%s\n", infoLog);
+	};
 
-	// Create and compile the fragment shader
-	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShaderID, 1, &fragmentShader, NULL);
+	// Compile the fragment shader, or print an error
 	glCompileShader(fragmentShaderID);
+	glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShaderID, 512, NULL, infoLog);
+		printf("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n>%s\n", infoLog);
+	};
 
-	// Connect the vertex and fragment shaders above into a program
-	GLuint shaderProgram = glCreateProgram();
+
+	// Create new shader program
+	unsigned int shaderProgram = glCreateProgram();
+
+	// Attach shaders to the new shader program
 	glAttachShader(shaderProgram, vertexShaderID);
 	glAttachShader(shaderProgram, fragmentShaderID);
-
-	// NOTE: The shaderProgram is current defaulting to framebuffer 0.
-	// There are no other framebuffers right now so this is okay, but
-	// may need to be changed in the future
-
-	// OpenGL stuff to actually start using the shader program
+	
+	// Links the attached shaders in the program to their correct shader processors
 	glLinkProgram(shaderProgram);
+
+	// Delete the created shaders, now that they have already been linked
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+
+	// Use the newly created shader program!
 	glUseProgram(shaderProgram);
 
-	// Vertex Array Object, this just stores any following vertex attributes so we don't have to respecify them
-	GLuint vao; 
+	// Sample triangle
+	float vertices[] = {
+		-0.5f, -0.5f, // Vertex 1 (x, y)
+		 0.5f, -0.5f, // Vertex 2 (x, y)
+		 0.0f,  0.5f  // Vertex 3 (x, y)
+	};
+
+	// Create Vertex Buffer Object and Vertex Array Object
+	GLuint vbo, vao;
 	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+
+	// Bind the VAO and VBO
 	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	// Get attribute ID for the position and set its attribute type
-	GLint posAttrib = glGetAttribLocation(shaderProgram, "position"); 
-	glVertexAttribPointer(posAttrib, 2, GL_DOUBLE, GL_FALSE, 0, 0); // This gets stored in the VAO
+	// Fill the bound VBO with the data in vertices
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// Enable the VAO
-	glEnableVertexAttribArray(posAttrib);
+	// Set the format of the vertices array in opengl so it can properly read it
+	// The arguments are 
+	// 0 to denote the 'position' vertex attribute in the vertex shader
+	// 2 floats are read at a time (x, y)
+	// The the type is float (GL_FLOAT)
+	// GL_FALSE means the data should not be normalized
+	// The size to be read in bytes (2 * sizeof(float))
+	// Offset isn't used yet since there's only one attribute in 'vertices'
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+
+	// Enable the position vertex attribute
+	glEnableVertexAttribArray(0);
+
+	// Enable the Vertex Object Array
+	glBindVertexArray(vao);
 }
 
 // This takes care of initializing everything SDL needs to begin running
@@ -99,8 +140,8 @@ void init() {
 	// This was all from the sample code, I haven't looked into it yet
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -115,16 +156,13 @@ void init() {
 	// Create the Game opengl context
 	gl_context = SDL_GL_CreateContext(window);
 
-	setupShaders();
-
 	// Load opengl? I can barely find information/documentation about glad
 	gladLoadGL();
-}
 
-// Test function for rendering entities
-void renderEntity() {
+	initShaders();
 
 }
+
 
 int render() {
 	// Show the current context
@@ -134,7 +172,6 @@ int render() {
 	// RENDERING CODE GOES HERE //
 	//////////////////////////////
 	// Everything before the ending ///////'s is just test code and will eventually be deleted
-
 
 	// Clear the buffer with a red background
 	glClearColor(1.0, 0.0, 0.0, 1.0);
@@ -147,8 +184,6 @@ int render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
 	SDL_Delay(1000); // Wait 1 sec before continuing
-
-
 	//////////////////////////////
 
 	return 0;
@@ -171,15 +206,31 @@ int main(int argc, char* argv[]) {
 			}
 		}
 
+		
 		///////////////
 		// PAGE TEST
 		// This loop will render whatever occurs in render()
 		// followed by a new Page and whatever is in its render()
 		// This is just a test to make sure page rendering is correctly set up
-		render();
 		Page page(window);
 		page.render();
 		///////////////
+		
+		render(); // Render the Game render function
+
+		///////////////
+		// ENTITY TEST
+		// This loop will render whatever occurs in render()
+		// followed by a new Entity and whatever is in its render()
+		// This is just a test to make sure entity rendering is correctly set up
+		Entity entity(glm::vec2(0, 0), glm::vec2(0, 0), 0, 0);
+		entity.render();
+		SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
+		///////////////
+
+		SDL_Delay(1000); // Wait 1 sec before continuing
+
+
 	}
 
 	// Take care of deleting SDL objects and cleanly exit 

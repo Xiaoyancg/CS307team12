@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 
+
 // Entity class
 class Entity {
 public:
@@ -7,9 +8,8 @@ public:
 	Entity(glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
 
 	// Render the given entity on the current context
-	// Returns non-zero on error
 	// Assumes the shaders have already been setup
-	int render();
+	void render();
 
 private:
 	// Basic Entity variables
