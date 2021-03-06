@@ -223,8 +223,14 @@ int main(int argc, char* argv[]) {
 		// This loop will render whatever occurs in render()
 		// followed by a new Entity and whatever is in its render()
 		// This is just a test to make sure entity rendering is correctly set up
-		Entity entity(glm::vec2(0, 0), glm::vec2(0, 0), 0, 0);
-		entity.render();
+		Entity entity1(glm::vec2(0.25, 0.25), glm::vec2(0, 0), 0, 0);
+		entity1.render();
+		Entity entity2(glm::vec2(0.50, 0.50), glm::vec2(0, 0), 0, 0);
+		entity2.render();
+		Entity entity3(glm::vec2(0.75, 0.75), glm::vec2(0, 0), 0, 0);
+		entity3.render();
+		Entity entity4(glm::vec2(-0.25, -0.25), glm::vec2(0, 0), 0, 0);
+		entity4.render();
 		SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
 		///////////////
 
