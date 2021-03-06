@@ -73,9 +73,9 @@ spriteID(spriteID) {
 
 void Entity::render() {
 	// Load the data of the 'coords' buffer into the currently bound array buffer, VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_DYNAMIC_DRAW);
 
-	// Draw the bound buffer (vertices, for now)
+	// Draw the bound buffer (coords)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 }
