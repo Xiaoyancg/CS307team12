@@ -10,6 +10,9 @@ SDL_GLContext gl_context;
 
 std::vector<Entity> entities;
 
+int width = 1280;
+int height= 720;
+
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
 void sdl_die(const char* err_msg)
@@ -153,7 +156,7 @@ void init() {
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
 	// Create a new centered game window based on window_flags (1280x720 for now)
-	window = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+	window = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 
 	// Create the Game opengl context
 	gl_context = SDL_GL_CreateContext(window);
@@ -171,20 +174,22 @@ int render() {
 	// Show the current context
 	SDL_GL_MakeCurrent(window, gl_context);
 
+
 	//////////////////////////////
 	// RENDERING CODE GOES HERE //
 	//////////////////////////////
 	// Everything before the ending ///////'s is just test code and will eventually be deleted
 
 	// Clear the buffer with a red background
-	glClear(GL_COLOR_BUFFER_BIT);
 	glClearColor(1.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
 	SDL_Delay(1000); // Wait 1 sec before continuing
 
 	// Clear the buffer with a dark red background
-	glClearColor(0.5, 0.0, 0.0, 1.0);
+	glClearColor(0.5, 0.1, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+
 	SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
 	SDL_Delay(1000); // Wait 1 sec before continuing
 	//////////////////////////////
@@ -205,13 +210,13 @@ int main(int argc, char* argv[]) {
 
 	///////////////
 	// ENTITY TEST
-	Entity entity1(glm::vec2(0.25, 0.25), glm::vec2(0, 0), 0, 0);
+	Entity entity1(glm::vec2(0.25, 0.25), glm::vec2(64, 64), 0, 0);
 	entities.push_back(entity1);
-	Entity entity2(glm::vec2(0.50, 0.50), glm::vec2(0, 0), 0, 0);
+	Entity entity2(glm::vec2(0.50, 0.50), glm::vec2(64, 64), 0, 0);
 	entities.push_back(entity2);
-	Entity entity3(glm::vec2(0.75, 0.75), glm::vec2(0, 0), 0, 0);
+	Entity entity3(glm::vec2(0.75, 0.75), glm::vec2(64, 64), 0, 0);
 	entities.push_back(entity3);
-	Entity entity4(glm::vec2(-0.25, -0.25), glm::vec2(0, 0), 0, 0);
+	Entity entity4(glm::vec2(-0.25, -0.25), glm::vec2(64, 64), 0, 0);
 	entities.push_back(entity4);
 	///////////////
 
@@ -239,6 +244,8 @@ int main(int argc, char* argv[]) {
 		// This loop will render whatever occurs in render()
 		// followed by a new Entity and whatever is in its render()
 		// This is just a test to make sure entity rendering is correctly set up
+		glClearColor(0.3, 0.2, 0.1, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
 		for (Entity entity : entities) {
 			entity.render();
 		}
