@@ -4,8 +4,10 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
+#include <stdio.h>
 
 static void ShowExampleAppMainMenuBar();
+bool running = true;
 
 int main(int argc, char* argv[]) {
     // Set Up SDL2
@@ -62,7 +64,6 @@ int main(int argc, char* argv[]) {
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    bool running = true;
     while (running) {
         SDL_Event evt;
         while (SDL_PollEvent(&evt)) {
@@ -84,15 +85,6 @@ int main(int argc, char* argv[]) {
         if (!showDemoWindow) {
             // test main menu bar
             ShowExampleAppMainMenuBar();
-            
-            // show a really simple imgui window
-            ImGui::Begin("test");
-            ImGui::Text("test");
-            if (ImGui::Button("Close the program"))
-            {
-                running = false;
-            }
-            ImGui::End();
         }
 
         if (showDemoWindow) {
@@ -127,23 +119,70 @@ int main(int argc, char* argv[]) {
 
 static void ShowExampleAppMainMenuBar()
 {
+    static bool selection[2] = { false, false };
+    if (selection[0])
+    {
+        ImGui::Begin("test");
+        ImGui::Text("test");
+        if (ImGui::Button("Close the program"))
+        {
+            running = false;
+        }
+        ImGui::End();
+    }
+    if (selection[1])
+    {
+        ImGui::Begin("test2");
+        ImGui::Text("test2");
+        if (ImGui::Button("nah homie im out"))
+        {
+            running = false;
+        }
+        ImGui::End();
+    }
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
+        if (ImGui::BeginMenu("ViewV1"))
         {
-            ImGui::Text("Test!!");
+            if (ImGui::BeginMenu("Windows"))
+            {
+                ImGui::MenuItem("Window 1", "", &selection[0]);
+                ImGui::MenuItem("Window 2", "", &selection[1]);
+                ImGui::EndMenu();
+            }
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Edit"))
+        if (ImGui::BeginMenu("ViewV2"))
         {
-            if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-            if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-            ImGui::Separator();
-            if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-            if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-            if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+            ImGui::MenuItem("Window 1", "", &selection[0]);
+            ImGui::MenuItem("Window 2", "", &selection[1]);
             ImGui::EndMenu();
         }
+        //if (ImGui::BeginMenu("Edit"))
+        //{
+        //    if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+        //    if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+        //    ImGui::Separator();
+        //    if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+        //    if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+        //    if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+        //    ImGui::EndMenu();
+        //}
+        //if (ImGui::BeginMenu("Options"))
+        //{
+        //    static bool enabled = true;
+        //    ImGui::MenuItem("Enabled", "", &enabled);
+        //    ImGui::BeginChild("child", ImVec2(0, 60), true);
+        //    for (int i = 0; i < 10; i++)
+        //        ImGui::Text("Scrolling Text %d", i);
+        //    ImGui::EndChild();
+        //    static float f = 0.5f;
+        //    static int n = 0;
+        //    ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
+        //    ImGui::InputFloat("Input", &f, 0.1f);
+        //    ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
+        //    ImGui::EndMenu();
+        //}
         ImGui::EndMainMenuBar();
     }
 }
