@@ -14,8 +14,9 @@ public:
 private:
 	// Basic Entity variables
 	glm::vec2 location;
-	glm::vec2 scale;
+	glm::vec2 scale; // x width, y height
 	double rotation;
+	float coords[8];
 	
 	// Sprite ID used to index sprites loaded into memory from the Game class
 	// This isn't used yet though, I'm just adding it for later
