@@ -13,9 +13,15 @@ spriteID(spriteID) {
 
 
 void Entity::render() {
-	glClearColor(1.0, 0.0, 1.0, 1.0); // Pink color background
-	glClear(GL_COLOR_BUFFER_BIT);
+	float vertices[2] = {
+		location.x, location.y
+	};
 
-	// Draw the bound buffer (vertices)
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+
+	// Draw the bound buffer (vertices, for now)
+	glPointSize(15);
+	glDrawArrays(GL_POINTS, 0, 1);
 }
