@@ -99,13 +99,6 @@ void initShaders() {
 	// Use the newly created shader program!
 	glUseProgram(shaderProgram);
 
-	// Sample triangle
-	float vertices[] = {
-		-0.5f, -0.5f, // Vertex 1 (x, y)
-		 0.5f, -0.5f, // Vertex 2 (x, y)
-		 0.0f,  0.5f  // Vertex 3 (x, y)
-	};
-
 	// Create Vertex Buffer Object and Vertex Array Object
 	GLuint vbo, vao;
 	glGenVertexArrays(1, &vao);
@@ -114,9 +107,6 @@ void initShaders() {
 	// Bind the VAO and VBO
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-	// Fill the bound VBO with the data in vertices
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	// Set the format of the vertices array in opengl so it can properly read it
 	// The arguments are 
@@ -234,8 +224,6 @@ int main(int argc, char* argv[]) {
 		
 		///////////////
 		// PAGE TEST
-		// This loop will render whatever occurs in render()
-		// followed by a new Page and whatever is in its render()
 		// This is just a test to make sure page rendering is correctly set up
 		Page page(window);
 		page.render();
@@ -245,9 +233,7 @@ int main(int argc, char* argv[]) {
 
 		///////////////
 		// ENTITY TEST
-		// This loop will render whatever occurs in render()
-		// followed by a new Entity and whatever is in its render()
-		// This is just a test to make sure entity rendering is correctly set up
+		// This is just a test to make sure Entity rendering is correctly set up
 		glClearColor(0.3, 0.2, 0.1, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		for (Entity entity : entities) {
