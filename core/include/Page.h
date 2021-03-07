@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL.h>
-#include "testGame.h"
+#include "test_core.h"
 #include <glad/glad.h>
 #include <stdio.h>
 
