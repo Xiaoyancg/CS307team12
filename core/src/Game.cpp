@@ -181,7 +181,6 @@ int render() {
 	// Clear the buffer with a dark red background
 	glClearColor(0.5, 0.1, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	SDL_GL_SwapWindow(window); // Show the buffer by bringing it to the front
 	SDL_Delay(1000); // Wait 1 sec before continuing
 	//////////////////////////////
@@ -225,11 +224,11 @@ int main(int argc, char* argv[]) {
 		///////////////
 		// PAGE TEST
 		// This is just a test to make sure page rendering is correctly set up
-		Page page(window);
-		page.render();
+		//Page page(window);
+		//page.render();
 		///////////////
 		
-		render(); // Render the Game render function
+		//render(); // Render the Game render function
 
 		///////////////
 		// ENTITY TEST
@@ -241,9 +240,9 @@ int main(int argc, char* argv[]) {
 		}
 
 		SDL_GL_SwapWindow(window); // Show the entities by bringing showing the back buffer
-		///////////////
-
 		SDL_Delay(1000); // Wait 1 sec before continuing
+  	    ///////////////
+
 
 
 	}

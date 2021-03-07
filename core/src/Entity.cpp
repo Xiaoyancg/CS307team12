@@ -10,13 +10,19 @@ Entity::Entity(glm::vec2 location, glm::vec2 scale, double rotation, int spriteI
 mScale(scale),
 mRotation(rotation), 
 mSpriteID(spriteID) {
+	// All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
+
+	calculateCoords(location, scale);
+
+}
+
+
+void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale) {
 	/*
-	 * All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
-	 * 
-	 * In order to calculate the corner coordinates of the entity, we add and subtract distances (which are calculated from 'scale') from 'location'
+	 * In order to calculate the corner coordinates of the entity, we add and subtract distances(which are calculated from 'scale') from 'location'
 	 *
-	 * The given scale is in pixels (0 < x < width, 0 < y < height) while the location is in opengl coordinates (-1 < x < 1, -1 < y < 1)
-	 * 
+	 * The given scale is in pixels(0 < x < width, 0 < y < height) while the location is in opengl coordinates(-1 < x < 1, -1 < y < 1)
+	 *
 	 * This constructor will convert the scale from pixels to distances based on the opengl coordinate system, and calculate the Entity coordinates
 	 */
 
@@ -69,6 +75,18 @@ mSpriteID(spriteID) {
 	// Print out the corner coordinates of the entity
 	//printf("(%f, %f)(%f, %f)(%f, %f)(%f, %f)\n", coords[0], coords[1], coords[2], coords[3], coords[4], coords[5], coords[6], coords[7]);
 }
+
+
+void Entity::setLocation(glm::vec2 location) {
+	mLocation = location;
+	calculateCoords(mLocation, mScale);
+}
+
+void Entity::setScale(glm::vec2 scale) {
+	mScale = scale;
+	calculateCoords(mLocation, mScale);
+}
+
 
 void Entity::render() {
 	// Load the data of the 'coords' buffer into the currently bound array buffer, VBO
