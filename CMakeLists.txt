@@ -54,6 +54,10 @@ set(GLAD_DIR "${PROJECT_SOURCE_DIR}/lib/glad")
 add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
+set(TEST_DIR "${PROJECT_SOURCE_DIR}/test")
+add_library(testlib INTERFACE)
+target_include_directories(testlib INTERFACE "${TEST_DIR}/include")
+
 add_subdirectory(core)
 add_subdirectory(gamevm)
 add_subdirectory(editor)
