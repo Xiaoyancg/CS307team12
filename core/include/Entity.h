@@ -15,6 +15,12 @@ public:
 	// This will set 'mCoords'
 	void calculateCoords(glm::vec2 location, glm::vec2 scale);
 
+	// Set mLocation
+	void setLocation(glm::vec2 location);
+
+	// Set mScale
+	void setScale(glm::vec2 scale);
+
 	// Render the given entity on the current context
 	// Assumes the shaders have already been setup
 	void render();
