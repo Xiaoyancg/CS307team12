@@ -11,18 +11,25 @@ public:
 	// spriteID is unimplemented, but will reference a specific loaded sprite
 	Entity(glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
 
+	// Calculate the coordinates of the corners based on location and scale
+	// This will set 'mCoords'
+	void calculateCoords(glm::vec2 location, glm::vec2 scale);
+
 	// Render the given entity on the current context
 	// Assumes the shaders have already been setup
 	void render();
 
+	
+
+
 private:
 	// Basic Entity variables
-	glm::vec2 location; // Center of the entity (x, y)
-	glm::vec2 scale; // (x width, y height)
-	double rotation;
-	float coords[8]; // Stores 4 pairs of (x, y) float coordinates, one for each corner of the entity
+	glm::vec2 mLocation; // Center of the entity (x, y)
+	glm::vec2 mScale; // (x width, y height)
+	double mRotation;
+	float mCoords[8]; // Stores 4 pairs of (x, y) float coordinates (8 total), one for each corner of the entity
 	
 	// Sprite ID used to index sprites loaded into memory from the Game class
 	// This isn't used yet though, I'm just adding it for later
-	int spriteID;
+	int mSpriteID;
 };
