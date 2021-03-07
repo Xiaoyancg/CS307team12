@@ -6,10 +6,10 @@ extern int height; // Height of the window, set in Game.cpp
 
 // Constructor of the game class
 Entity::Entity(glm::vec2 location, glm::vec2 scale, double rotation, int spriteID)
-: location(location),
-scale(scale),
-rotation(rotation), 
-spriteID(spriteID) {
+: mLocation(location),
+mScale(scale),
+mRotation(rotation), 
+mSpriteID(spriteID) {
 	/*
 	 * All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
 	 * 
@@ -54,26 +54,25 @@ spriteID(spriteID) {
 
 	// Calculate P1, P2, P3, and P4 based on the calculated coordinates ^
 	// P1
-	coords[0] = lowX; // Top left x
-	coords[1] = highY; // Top left y
+	mCoords[0] = lowX; // Top left x
+	mCoords[1] = highY; // Top left y
 	// P2
-	coords[2] = lowX; // Bottom left x
-	coords[3] = lowY; // Bottom left y
+	mCoords[2] = lowX; // Bottom left x
+	mCoords[3] = lowY; // Bottom left y
 	// P3
-	coords[4] = highX; // Top right x
-	coords[5] = highY; // Top right y
+	mCoords[4] = highX; // Top right x
+	mCoords[5] = highY; // Top right y
 	// P4
-	coords[6] = highX; // Bottom right x
-	coords[7] = lowY; // Bottom right y
+	mCoords[6] = highX; // Bottom right x
+	mCoords[7] = lowY; // Bottom right y
 
 	// Print out the corner coordinates of the entity
 	//printf("(%f, %f)(%f, %f)(%f, %f)(%f, %f)\n", coords[0], coords[1], coords[2], coords[3], coords[4], coords[5], coords[6], coords[7]);
 }
 
-
 void Entity::render() {
 	// Load the data of the 'coords' buffer into the currently bound array buffer, VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
 
 	// Draw the bound buffer (coords)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
