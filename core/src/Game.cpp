@@ -4,11 +4,14 @@
 #include <glad/glad.h>
 #include <stdio.h>
 #include <vector>
+#include <memory> // For unique_ptr
 
 SDL_Window* window;
 SDL_GLContext gl_context;
 
-std::vector<Entity> entities;
+// This vector stores pointers to all of the entities
+// Vectors don't support normal pointers, like Entity *, so we use unique_ptr instead
+std::vector<std::unique_ptr<Entity>> entities;
 
 int width = 1280; // Width of the window, used in Entity.cpp
 int height= 720; // Height of the window, used in Entity.cpp
@@ -21,6 +24,7 @@ void sdl_die(const char* err_msg)
 	SDL_Quit();
 	exit(1);
 }
+
 
 
 void initShaders() {
@@ -156,6 +160,8 @@ void init() {
 	// Load opengl? I can barely find information/documentation about glad
 	gladLoadGL();
 
+	glViewport(0, 0, width, height); // Create viewport with the default w/h (same as the window size)
+
 	// Create the shaders
 	initShaders();
 
@@ -201,24 +207,66 @@ int main(int argc, char* argv[]) {
 
 	///////////////
 	// ENTITY TEST
-	Entity entity1(glm::vec2(0.25, 0.25), glm::vec2(64, 64), 0, 0);
-	entities.push_back(entity1);
-	Entity entity2(glm::vec2(0.50, 0.50), glm::vec2(64, 64), 0, 0);
-	entities.push_back(entity2);
-	Entity entity3(glm::vec2(0.75, 0.75), glm::vec2(64, 64), 0, 0);
-	entities.push_back(entity3);
-	Entity entity4(glm::vec2(-0.25, -0.25), glm::vec2(64, 64), 0, 0);
-	entities.push_back(entity4);
-	Entity entity5(glm::vec2(1.025, 1.025), glm::vec2(64, 64), 0, 0);
-	entities.push_back(entity5);
+	Entity *entityMoveable = new Entity(glm::vec2(0.25, 0.25), glm::vec2(64, 64), 0, 0);
+	entities.emplace_back(entityMoveable);
+	Entity *entityTallThin = new Entity(glm::vec2(0.50, 0.50), glm::vec2(32, 64), 0, 0);
+	entities.emplace_back(entityTallThin);
+	Entity *entityShortWide = new Entity(glm::vec2(0.75, 0.75), glm::vec2(64, 32), 0, 0);
+	entities.emplace_back(entityShortWide);
+	Entity *entityVeryShortWide = new Entity(glm::vec2(-0.25, -0.25), glm::vec2(128, 16), 0, 0);
+	entities.emplace_back(entityVeryShortWide);
 	///////////////
 
 	while (!close_window) {
+		// Input handling!
 		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT) {
+			switch (event.type) {
+				// Handle window closing
+			case SDL_QUIT:
 				close_window = true;
+				break;
+				// Handle Window events
+			case SDL_WINDOWEVENT:
+				// Handle resizing the window
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+					width = event.window.data1; // Set the width to the resized width
+					height = event.window.data2; // Set the height to the resized height
+					SDL_SetWindowSize(window, width, height); // Set the new window dimensions
+
+					 // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
+					glViewport(0, 0, width, height);
+
+					SDL_GL_SwapWindow(window); // Show the resized window
+				}
+				break;
+				// Handle Keypresses
+			case SDL_KEYDOWN:
+				glm::vec2 loc = entityMoveable->getLocation();
+
+				switch (event.key.keysym.sym) {
+					// Handle left arrow key
+				case SDLK_LEFT:
+					entityMoveable->setLocation(glm::vec2(loc.x - .01, loc.y)); // Move 
+					break;
+					// Handle right arrow key
+				case SDLK_RIGHT:
+					entityMoveable->setLocation(glm::vec2(loc.x + .01, loc.y));
+					break;
+					// Handle up arrow key
+				case SDLK_UP:
+					entityMoveable->setLocation(glm::vec2(loc.x, loc.y + .01));
+					break;
+					// Handle down arrow key
+				case SDLK_DOWN:
+					entityMoveable->setLocation(glm::vec2(loc.x, loc.y - .01));
+					break;
+				}
+
+				break;
+
 			}
 		}
+		
 
 		
 		///////////////
@@ -233,14 +281,15 @@ int main(int argc, char* argv[]) {
 		///////////////
 		// ENTITY TEST
 		// This is just a test to make sure Entity rendering is correctly set up
-		glClearColor(0.3, 0.2, 0.1, 1.0);
+		glClearColor(0.1, 0.2, 0.59, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		for (Entity entity : entities) {
-			entity.render();
+		// Iterate through the unique_ptr's in the 'entities' vector
+		for (auto& entity : entities) {
+			entity->render();
 		}
 
 		SDL_GL_SwapWindow(window); // Show the entities by bringing showing the back buffer
-		SDL_Delay(1000); // Wait 1 sec before continuing
+		//SDL_Delay(1000); // Wait 1 sec before continuing
   	    ///////////////
 
 
