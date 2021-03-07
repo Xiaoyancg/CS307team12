@@ -1,25 +1,18 @@
-<<<<<<< HEAD
 #include <SDL.h>
 #include <Page.h>
 #include <Entity.h>
 #include <glad/glad.h>
 #include <stdio.h>
 #include <vector>
-=======
-#include "Game.h"
->>>>>>> t2
 
 SDL_Window *window;
 SDL_GLContext gl_context;
-<<<<<<< HEAD
 
 std::vector<Entity> entities;
 
 int width = 1280; // Width of the window, used in Entity.cpp
 int height= 720; // Height of the window, used in Entity.cpp
 
-=======
->>>>>>> t2
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
 void sdl_die(const char* err_msg)
@@ -196,14 +189,8 @@ int render() {
 }
 
 
-<<<<<<< HEAD
 int main(int argc, char* argv[]) {
 	// Initialize OpenGL and necessary SDL objects
-=======
-int core_main(int argc, char* argv[]) {
-
-	// Initialize necessary SDL objects
->>>>>>> t2
 	init();
 
 	SDL_Event event;
@@ -237,7 +224,6 @@ int core_main(int argc, char* argv[]) {
 		///////////////
 		// PAGE TEST
 		// This is just a test to make sure page rendering is correctly set up
-<<<<<<< HEAD
 		//Page page(window);
 		//page.render();
 		///////////////
@@ -258,19 +244,6 @@ int core_main(int argc, char* argv[]) {
   	    ///////////////
 
 
-=======
-		render();
-#ifdef __testGame
-		gameError = glGetError();
-#endif // __testGame
-
-		Page page(window);
-		page.render();
-		///////////////
-#ifdef __testGame
-		close_window = true;
-#endif // __testGame
->>>>>>> t2
 
 	}
 
