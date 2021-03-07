@@ -18,8 +18,14 @@ public:
 	// Set mLocation
 	void setLocation(glm::vec2 location);
 
+	// Get mLocation
+	glm::vec2 getLocation();
+
 	// Set mScale
 	void setScale(glm::vec2 scale);
+
+	// Get mScale
+	glm::vec2 getScale();
 
 	// Render the given entity on the current context
 	// Assumes the shaders have already been setup
