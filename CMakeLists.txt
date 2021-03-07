@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 project(Parchment VERSION 0.1 LANGUAGES CXX)
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
@@ -42,6 +45,10 @@ target_include_directories(imgui
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE ${GLM_DIR})
+
+set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
+add_library(imfb INTERFACE)
+target_include_directories(imfb INTERFACE ${IMFB_DIR})
 
 set(GLAD_DIR "${PROJECT_SOURCE_DIR}/lib/glad")
 add_library(glad "${GLAD_DIR}/src/glad.cpp")

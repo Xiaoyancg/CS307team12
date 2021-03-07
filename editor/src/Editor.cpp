@@ -4,8 +4,13 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
+#include <stdio.h>
+
+static void ShowExampleAppMainMenuBar();
+bool running = true;
 
 int main(int argc, char* argv[]) {
+    // Set Up SDL2
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
@@ -13,30 +18,52 @@ int main(int argc, char* argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
+    // opengl buffer details
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
-    SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    SDL_Window* window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    // Create window with graphics context
+    // sdl windows flags (attributes)
+    SDL_WindowFlags window_flags =
+        (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI);
+    // create a window for opengl. opengl can't create a window. we use sdl to create window
+    SDL_Window* window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example",
+        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // x and y pos. here we put it centered - CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
+        1280, 720,
+        window_flags // flags of sdl windows
+    );
+    // create a gl context for further rendering in the window(should be a opengl sdl window). and make it current
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+    // set up the opengl context for rendering in to an opengl window
     SDL_GL_MakeCurrent(window, gl_context);
 
+    // init opengl loader
     gladLoadGL();
 
+    // Setup Dear Imgui context
     IMGUI_CHECKVERSION();
+    // can't find document of ImGui::CreateContext. Just use it anyway
     ImGui::CreateContext();
+    // ImGuiIO: Communicate most settings and inputs/outputs to Dear ImGui using this structure.
     ImGuiIO& io = ImGui::GetIO();
 
-    ImGui::StyleColorsDark();
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark(); // alternative: Classic
 
+    // Setup Platform/Renderer backends
+    // these two functions are from imgui_impl_*.h it's in the backend folder in imgui-master
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init();
 
-    bool showDemoWindow = true;
+    bool showDemoWindow = false;
+    // clear color, opengl use clear color to clear the context for the next drawing
+    // if we don't clear the context, when you move the imgui window, it's trace will be left on the context.
+    // Also, for the convenience, we use the vector class from ImGui. ImVec4.
+    // clear_color is a RGBA color, Red Green Blue and alpha. read more:https://en.wikipedia.org/wiki/RGBA_color_model
+    // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    bool running = true;
     while (running) {
         SDL_Event evt;
         while (SDL_PollEvent(&evt)) {
@@ -49,29 +76,113 @@ int main(int argc, char* argv[]) {
             }
         }
 
+        // Draw ImGui windows
+        // Start the dear Imgui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(window);
         ImGui::NewFrame();
+        
+        if (!showDemoWindow) {
+            // test main menu bar
+            ShowExampleAppMainMenuBar();
+        }
 
         if (showDemoWindow) {
             ImGui::ShowDemoWindow(&showDemoWindow);
         }
 
+        // this command does not render that imgui window, we need to use opengl to render imgui
         ImGui::Render();
+        // render the ImGui windows
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        // use the clear color we passed to opengl before to clear the context
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
+        // use opengl to render the imgui window
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
         SDL_GL_SwapWindow(window);
     }
 
+    // IMGUI Clean Up
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
 
+    // SDL Clean Up
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(window);
     SDL_Quit();
 
     return 0;
+}
+
+static void ShowExampleAppMainMenuBar()
+{
+    static bool selection[2] = { false, false };
+    if (selection[0])
+    {
+        ImGui::Begin("test");
+        ImGui::Text("test");
+        if (ImGui::Button("Close the program"))
+        {
+            running = false;
+        }
+        ImGui::End();
+    }
+    if (selection[1])
+    {
+        ImGui::Begin("test2");
+        ImGui::Text("test2");
+        if (ImGui::Button("nah homie im out"))
+        {
+            running = false;
+        }
+        ImGui::End();
+    }
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("ViewV1"))
+        {
+            if (ImGui::BeginMenu("Windows"))
+            {
+                ImGui::MenuItem("Window 1", "", &selection[0]);
+                ImGui::MenuItem("Window 2", "", &selection[1]);
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("ViewV2"))
+        {
+            ImGui::MenuItem("Window 1", "", &selection[0]);
+            ImGui::MenuItem("Window 2", "", &selection[1]);
+            ImGui::EndMenu();
+        }
+        //if (ImGui::BeginMenu("Edit"))
+        //{
+        //    if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+        //    if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+        //    ImGui::Separator();
+        //    if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+        //    if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+        //    if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+        //    ImGui::EndMenu();
+        //}
+        //if (ImGui::BeginMenu("Options"))
+        //{
+        //    static bool enabled = true;
+        //    ImGui::MenuItem("Enabled", "", &enabled);
+        //    ImGui::BeginChild("child", ImVec2(0, 60), true);
+        //    for (int i = 0; i < 10; i++)
+        //        ImGui::Text("Scrolling Text %d", i);
+        //    ImGui::EndChild();
+        //    static float f = 0.5f;
+        //    static int n = 0;
+        //    ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
+        //    ImGui::InputFloat("Input", &f, 0.1f);
+        //    ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
+        //    ImGui::EndMenu();
+        //}
+        ImGui::EndMainMenuBar();
+    }
 }
