@@ -4,6 +4,10 @@
 unsigned int pageError = 1;
 unsigned int gameError =1;
 
+#ifndef __testGame
+#define __testGame
+#endif // !__testGame
+
 TEST ( GAMETEST, game )
 {
   int argc = 2;

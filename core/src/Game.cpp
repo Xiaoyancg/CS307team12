@@ -189,7 +189,7 @@ int render() {
 }
 
 
-int main(int argc, char* argv[]) {
+int core_main(int argc, char* argv[]) {
 	// Initialize OpenGL and necessary SDL objects
 	init();
 
