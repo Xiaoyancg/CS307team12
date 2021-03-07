@@ -38,7 +38,7 @@ set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE ${GLM_DIR})
 
-set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filepath")
+set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
 add_library(imfb INTERFACE)
 target_include_directories(imfb INTERFACE ${IMFB_DIR})
 
