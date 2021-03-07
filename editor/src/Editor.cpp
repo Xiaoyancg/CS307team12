@@ -4,10 +4,20 @@
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
+#include <imfilebrowser.h>
 #include <stdio.h>
+#include <iostream>
 
 static void ShowExampleAppMainMenuBar();
 bool running = true;
+ImGui::FileBrowser saveDialog = ImGui::FileBrowser(
+    ImGuiFileBrowserFlags_NoTitleBar |
+    ImGuiFileBrowserFlags_SelectDirectory |
+    ImGuiFileBrowserFlags_CreateNewDir
+);
+ImGui::FileBrowser openDialog = ImGui::FileBrowser(
+    ImGuiFileBrowserFlags_NoTitleBar
+);
 
 int main(int argc, char* argv[]) {
     // Set Up SDL2
@@ -64,6 +74,8 @@ int main(int argc, char* argv[]) {
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+    openDialog.SetTypeFilters({ ".h", ".cpp" });
+
     while (running) {
         SDL_Event evt;
         while (SDL_PollEvent(&evt)) {
@@ -119,7 +131,7 @@ int main(int argc, char* argv[]) {
 
 static void ShowExampleAppMainMenuBar()
 {
-    static bool selection[2] = { false, false };
+    static bool selection[2];
     if (selection[0])
     {
         ImGui::Begin("test");
@@ -142,47 +154,42 @@ static void ShowExampleAppMainMenuBar()
     }
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("ViewV1"))
+        if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::BeginMenu("Windows"))
+            if (ImGui::MenuItem("New Project"))
             {
-                ImGui::MenuItem("Window 1", "", &selection[0]);
-                ImGui::MenuItem("Window 2", "", &selection[1]);
-                ImGui::EndMenu();
+                saveDialog.Open();
+            }
+            if (ImGui::MenuItem("Open Project"))
+            {
+                openDialog.Open();
             }
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("ViewV2"))
+        if (ImGui::BeginMenu("View"))
         {
             ImGui::MenuItem("Window 1", "", &selection[0]);
             ImGui::MenuItem("Window 2", "", &selection[1]);
             ImGui::EndMenu();
         }
-        //if (ImGui::BeginMenu("Edit"))
-        //{
-        //    if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-        //    if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-        //    ImGui::Separator();
-        //    if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-        //    if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-        //    if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-        //    ImGui::EndMenu();
-        //}
-        //if (ImGui::BeginMenu("Options"))
-        //{
-        //    static bool enabled = true;
-        //    ImGui::MenuItem("Enabled", "", &enabled);
-        //    ImGui::BeginChild("child", ImVec2(0, 60), true);
-        //    for (int i = 0; i < 10; i++)
-        //        ImGui::Text("Scrolling Text %d", i);
-        //    ImGui::EndChild();
-        //    static float f = 0.5f;
-        //    static int n = 0;
-        //    ImGui::SliderFloat("Value", &f, 0.0f, 1.0f);
-        //    ImGui::InputFloat("Input", &f, 0.1f);
-        //    ImGui::Combo("Combo", &n, "Yes\0No\0Maybe\0\0");
-        //    ImGui::EndMenu();
-        //}
         ImGui::EndMainMenuBar();
+    }
+
+    saveDialog.Display();
+
+    if (saveDialog.HasSelected())
+    {
+        printf("(printf) Selected Directory: %s\n", saveDialog.GetSelected().string().c_str());
+        std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected().string() << std::endl;
+        saveDialog.ClearSelected();
+    }
+
+    openDialog.Display();
+
+    if (openDialog.HasSelected())
+    {
+        printf("(printf) Selected File: %s\n", openDialog.GetSelected().string().c_str());
+        std::cout << "(cout) Selected File: " << openDialog.GetSelected().string() << std::endl;
+        openDialog.ClearSelected();
     }
 }
