@@ -1,4 +1,8 @@
+#pragma once
 #include <SDL.h>
+#include "testGame.h"
+#include <glad/glad.h>
+#include <stdio.h>
 
 // Page class
 // Pages can be menu, settings, HUD, map, Cutscene, ...
