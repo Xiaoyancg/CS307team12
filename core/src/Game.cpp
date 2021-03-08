@@ -7,9 +7,9 @@
 #include <memory> // For unique_ptr
 #include <Game.h>
 
-#ifdef __CORE_TEST
+#ifdef __TEST_CORE
 #include <test_core.h>
-#endif // __CORE_TEST
+#endif // __TEST_CORE
 
 SDL_Window *window;
 SDL_GLContext gl_context;
@@ -186,10 +186,12 @@ int render() {
 	// Iterate through the unique_ptrs in the 'entities' vector
 	for (auto& entity : entities) {
 		entity->render();
+
 	}
 
 	SDL_GL_SwapWindow(window); // Show the entities by bringing showing the back buffer
 	///////////////
+
 
 
 	return 0;
@@ -299,6 +301,12 @@ int coreMain ( int argc, char *argv[] )
 		///////////////
 		
 		render(); // Render the Game render function
+
+#ifdef __TEST_CORE
+		coreError = glGetError ();
+		break;
+#endif // __TEST_CORE
+
 	}
 
     // Take care of deleting SDL objects and cleanly exit 

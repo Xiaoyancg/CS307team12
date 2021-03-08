@@ -1,5 +1,9 @@
 #include "Page.h"
 
+#ifdef __TEST_CORE
+#include <test_core.h>
+#endif // __TEST_CORE
+
 
 // Constructor of the Page class
 // Sets mWindow and sets/creates mPageContext
@@ -26,6 +30,10 @@ int Page::render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	SDL_GL_SwapWindow(mWindow); // Show the buffer by bringing it to the front
 	SDL_Delay(1000); // Wait 1 sec before continuing
+
+#ifdef __TEST_CORE
+		pageError = glGetError ();
+#endif // __TEST_CORE
 
 
 	return 0;
