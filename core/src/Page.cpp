@@ -27,10 +27,6 @@ int Page::render() {
 	SDL_GL_SwapWindow(mWindow); // Show the buffer by bringing it to the front
 	SDL_Delay(1000); // Wait 1 sec before continuing
 
-#ifdef __testGame
-	pageError = glGetError();
-#endif // __testGame
-
 
 	return 0;
 }

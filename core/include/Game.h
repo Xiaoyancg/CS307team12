@@ -3,15 +3,14 @@
 #include <Page.h>
 #include <glad/glad.h>
 #include <stdio.h>
-#include "test_core.h"
-
 void sdl_die ( const char *err_msg );
+void initShaders ();
 
 void init ();
 
 int render ();
 
-int core_main ( int argc, char *argv[] );
+int coreMain ( int argc, char *argv[] );
 
 
 
