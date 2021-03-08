@@ -1,5 +1,9 @@
 #include "Entity.h"
 #include <glad/glad.h>
+#ifdef __TEST_CORE
+#include <test_core.h>
+#endif // __TEST_CORE
+
 
 extern int width; // Width of the window, set in Game.cpp
 extern int height; // Height of the window, set in Game.cpp
@@ -97,5 +101,9 @@ void Entity::render() {
 
 	// Draw the bound buffer (coords)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#ifdef __TEST_CORE
+	entityError = glGetError ();
+#endif // __TEST_CORE
+
 
 }
