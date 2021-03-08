@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <stdio.h>
 #include <vector>
+#include <memory> // For unique_ptr
 #include <Game.h>
 
 #ifdef __CORE_TEST
@@ -13,7 +14,9 @@
 SDL_Window *window;
 SDL_GLContext gl_context;
 
-std::vector<Entity> entities;
+// This vector stores pointers to all of the entities
+// Vectors don't support normal pointers, like Entity *, so we use unique_ptr instead
+std::vector<std::unique_ptr<Entity>> entities;
 
 int width = 1280; // Width of the window, used in Entity.cpp
 int height = 720; // Height of the window, used in Entity.cpp
@@ -28,10 +31,10 @@ void sdl_die ( const char *err_msg )
 }
 
 
-void initShaders ()
-{
-// Source for the vertex shader
-    const char *vertexSource = R"glsl(
+
+void initShaders() {
+	// Source for the vertex shader
+	const char* vertexSource = R"glsl(
 		#version 450 core
 
 		layout (location = 0) in vec2 pos;
@@ -132,13 +135,11 @@ void initShaders ()
 }
 
 // This takes care of initializing everything SDL needs to begin running
-void init ()
-{
-// Initialize video mode of SDL
-    if ( SDL_Init ( SDL_INIT_VIDEO ) < 0 )
-    {
-        sdl_die ( "Error initializing SDL video mode :(" );
-    }
+void init() {
+	// Initialize video mode of SDL
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		sdl_die("Error initializing SDL video mode :(");
+	}
 
     // Most of this was from the sample code, I haven't looked into it yet
     SDL_GL_SetAttribute ( SDL_GL_CONTEXT_FLAGS, 0 );
@@ -161,43 +162,37 @@ void init ()
     // Create the Game opengl context
     gl_context = SDL_GL_CreateContext ( window );
 
-    // Load opengl? I can barely find information/documentation about glad
-    gladLoadGL ();
+	// Setup function pointers for OpenGL
+	gladLoadGL();
 
-    // Create the shaders
-    initShaders ();
+	// Create viewport with the default w/h (same as the window size)
+	glViewport(0, 0, width, height); 
+
+	// Create the shaders
+	initShaders();
 
 }
 
 
-int render ()
-{
-// Show the current context
-    SDL_GL_MakeCurrent ( window, gl_context );
+int render() {
+	// Show the current context
+	SDL_GL_MakeCurrent(window, gl_context);
+
+	///////////////
+	// ENTITY TEST - Render all entities
+	// This is just a test to make sure Entity rendering is correctly set up
+	glClearColor(0.1, 0.2, 0.59, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	// Iterate through the unique_ptrs in the 'entities' vector
+	for (auto& entity : entities) {
+		entity->render();
+	}
+
+	SDL_GL_SwapWindow(window); // Show the entities by bringing showing the back buffer
+	///////////////
 
 
-    //////////////////////////////
-    // RENDERING CODE GOES HERE //
-    //////////////////////////////
-    // Everything before the ending ///////'s is just test code and will eventually be deleted
-
-    // Clear the buffer with a red background
-    glClearColor ( 1.0, 0.0, 0.0, 1.0 );
-    glClear ( GL_COLOR_BUFFER_BIT );
-    SDL_GL_SwapWindow ( window ); // Show the buffer by bringing it to the front
-    SDL_Delay ( 1000 ); // Wait 1 sec before continuing
-
-    // Clear the buffer with a dark red background
-    glClearColor ( 0.5, 0.1, 0.0, 1.0 );
-    glClear ( GL_COLOR_BUFFER_BIT );
-    SDL_GL_SwapWindow ( window ); // Show the buffer by bringing it to the front
-    SDL_Delay ( 1000 ); // Wait 1 sec before continuing
-    //////////////////////////////
-#ifdef __CORE_TEST
-    pageError = glGetError ();
-#endif // __CORE_TEST
-
-    return 0;
+	return 0;
 }
 
 
@@ -206,66 +201,105 @@ int coreMain ( int argc, char *argv[] )
     // Initialize OpenGL and necessary SDL objects
     init ();
 
-    SDL_Event event;
-    int close_window = false;
-    ///////////////
-    // Game loop //
-    ///////////////
+	SDL_Event event;
+	int close_window = false;
+	///////////////
+	// Game loop //
+	///////////////
 
-    ///////////////
-    // ENTITY TEST
-    Entity entity1 ( glm::vec2 ( 0.25, 0.25 ), glm::vec2 ( 64, 64 ), 0, 0 );
-    entities.push_back ( entity1 );
-    Entity entity2 ( glm::vec2 ( 0.50, 0.50 ), glm::vec2 ( 64, 64 ), 0, 0 );
-    entities.push_back ( entity2 );
-    Entity entity3 ( glm::vec2 ( 0.75, 0.75 ), glm::vec2 ( 64, 64 ), 0, 0 );
-    entities.push_back ( entity3 );
-    Entity entity4 ( glm::vec2 ( -0.25, -0.25 ), glm::vec2 ( 64, 64 ), 0, 0 );
-    entities.push_back ( entity4 );
-    Entity entity5 ( glm::vec2 ( 1.025, 1.025 ), glm::vec2 ( 64, 64 ), 0, 0 );
-    entities.push_back ( entity5 );
-    ///////////////
+	///////////////
+	// ENTITY TEST
+	Entity *entityInteractive = new Entity(glm::vec2(0.25, 0.25), glm::vec2(64, 64), 0, 0);
+	entities.emplace_back(entityInteractive);
+	Entity *entityTallThin = new Entity(glm::vec2(0.50, 0.50), glm::vec2(32, 64), 0, 0);
+	entities.emplace_back(entityTallThin);
+	Entity *entityShortWide = new Entity(glm::vec2(0.75, 0.75), glm::vec2(64, 32), 0, 0);
+	entities.emplace_back(entityShortWide);
+	Entity *entityVeryShortWide = new Entity(glm::vec2(-0.25, -0.25), glm::vec2(128, 16), 0, 0);
+	entities.emplace_back(entityVeryShortWide);
+	///////////////
 
-    while ( !close_window )
-    {
-        while ( SDL_PollEvent ( &event ) )
-        {
-            if ( event.type == SDL_QUIT )
-            {
-                close_window = true;
-            }
-        }
+	while (!close_window) {
+		// Input handling!
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				// Handle window closing
+			case SDL_QUIT:
+				close_window = true;
+				break;
+				// Handle Window events
+			case SDL_WINDOWEVENT:
+				// Handle resizing the window
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+					width = event.window.data1; // Set the width to the resized width
+					height = event.window.data2; // Set the height to the resized height
+					SDL_SetWindowSize(window, width, height); // Set the new window dimensions
 
+					 // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
+					glViewport(0, 0, width, height);
 
-        ///////////////
-        // PAGE TEST
-        // This is just a test to make sure page rendering is correctly set up
-        //Page page(window);
-        //page.render();
-        ///////////////
+					/*
+					 * TODO: There are issues with resizing right now. If you render the screen, make the screen smaller, and move the 
+					 * interactive entity, the previous scale (before the resize) will be used in the new coordinate calculation
+					 * so the shrunken window scale won't be applied to the moved entity anymore.
+					 * To fix this: Calculate scale of resize and apply it in the vertex shader?
+					 */
 
-        //render(); // Render the Game render function
+					SDL_GL_SwapWindow(window); // Show the resized window
+				}
+				break;
+				// Handle Keypresses
+			case SDL_KEYDOWN:
+				glm::vec2 loc = entityInteractive->getLocation();
+				glm::vec2 scale = entityInteractive->getScale();
+				float moveBy = .04;
+				int scaleBy = 3;
 
-        ///////////////
-        // ENTITY TEST
-        // This is just a test to make sure Entity rendering is correctly set up
-        glClearColor ( 0.3, 0.2, 0.1, 1.0 );
-        glClear ( GL_COLOR_BUFFER_BIT );
-        for ( Entity entity : entities )
-        {
-            entity.render ();
-        }
+				switch (event.key.keysym.sym) {
+					// Handle left arrow key
+				case SDLK_LEFT:
+					entityInteractive->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
+					break;
+					// Handle right arrow key
+				case SDLK_RIGHT:
+					entityInteractive->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
+					break;
+					// Handle up arrow key
+				case SDLK_UP:
+					entityInteractive->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
+					break;
+					// Handle down arrow key
+				case SDLK_DOWN:
+					entityInteractive->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
+					break;
 
-        SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
-        SDL_Delay ( 1000 ); // Wait 1 sec before continuing
-            ///////////////
+				case SDLK_a: // a key is Scale up, for now
+					entityInteractive->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
+					break;
+				case SDLK_z: // z key is Scale down, for now
+					// Make sure not to scale into the negatives
+					if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0) {
+						entityInteractive->setScale(glm::vec2(scale.x - scaleBy, scale.y - scaleBy));
+					}
+					break;
+				}
 
-#ifdef __CORE_TEST
-        gameError = glGetError ();
-        break;
-#endif // __CORE_TEST
+				break;
 
-    }
+			}
+		}
+		
+
+		
+		///////////////
+		// PAGE TEST
+		// This is just a test to make sure page rendering is correctly set up
+		//Page page(window);
+		//page.render();
+		///////////////
+		
+		render(); // Render the Game render function
+	}
 
     // Take care of deleting SDL objects and cleanly exit 
     SDL_GL_DeleteContext ( gl_context );

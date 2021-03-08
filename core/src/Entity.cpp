@@ -11,11 +11,8 @@ mScale(scale),
 mRotation(rotation), 
 mSpriteID(spriteID) {
 	// All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
-
 	calculateCoords(location, scale);
-
 }
-
 
 void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale) {
 	/*
@@ -73,13 +70,16 @@ void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale) {
 	mCoords[7] = lowY; // Bottom right y
 
 	// Print out the corner coordinates of the entity
-	//printf("(%f, %f)(%f, %f)(%f, %f)(%f, %f)\n", coords[0], coords[1], coords[2], coords[3], coords[4], coords[5], coords[6], coords[7]);
+	//printf("(%f, %f)(%f, %f)(%f, %f)(%f, %f)\n", mCoords[0], mCoords[1], mCoords[2], mCoords[3], mCoords[4], mCoords[5], mCoords[6], mCoords[7]);
 }
-
 
 void Entity::setLocation(glm::vec2 location) {
 	mLocation = location;
 	calculateCoords(mLocation, mScale);
+}
+
+glm::vec2 Entity::getLocation() {
+	return mLocation;
 }
 
 void Entity::setScale(glm::vec2 scale) {
@@ -87,6 +87,9 @@ void Entity::setScale(glm::vec2 scale) {
 	calculateCoords(mLocation, mScale);
 }
 
+glm::vec2 Entity::getScale() {
+	return mScale;
+}
 
 void Entity::render() {
 	// Load the data of the 'coords' buffer into the currently bound array buffer, VBO
