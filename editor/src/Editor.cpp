@@ -130,6 +130,7 @@ return 0;
 }
 
 bool openpopup_temp = false;
+bool testpopup_temp = false;
 static void ShowExampleAppMainMenuBar()
 {
     static bool selection[2];
@@ -137,6 +138,7 @@ static void ShowExampleAppMainMenuBar()
     {
         
     }
+    //game view window creation
     if (selection[1])
     {
         ImGui::Begin("Game View Window");
@@ -148,7 +150,7 @@ static void ShowExampleAppMainMenuBar()
         {
             if (ImGui::MenuItem("New Project"))
             {
-                saveDialog.Open();
+                testpopup_temp = true;
             }
             if (ImGui::MenuItem("Open Project"))
             {
@@ -156,11 +158,11 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::MenuItem("Save"))
             {
-
+                //call save function from VM team
             }
             if (ImGui::MenuItem("Save As"))
             {
-                openDialog.Open();
+                testpopup_temp = true;
             }
             if (ImGui::MenuItem("Delete Project"))
             {
@@ -207,6 +209,7 @@ static void ShowExampleAppMainMenuBar()
         openDialog.ClearSelected();
     }
 
+    //open delete project popup
     if (openpopup_temp == true) 
     {
         ImGui::OpenPopup("Delete Project");
@@ -218,6 +221,25 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Button("Yes"))
         {
             //connect to VM team delete function
+        }
+        ImGui::EndPopup();
+    }
+
+    //open new project/save as popup
+    if (testpopup_temp == true)
+    {
+        ImGui::OpenPopup("Save As");
+        testpopup_temp = false;
+    }
+    static char name[128] = "";
+    if (ImGui::BeginPopup("Save As"))
+    {
+        ImGui::Text("Enter the name of your project."); 
+        ImGui::InputText("", name, IM_ARRAYSIZE(name));
+        if (ImGui::Button("Save"))
+        {
+            saveDialog.Open();
+            //connect to VM save function
         }
         ImGui::EndPopup();
     }
