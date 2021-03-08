@@ -129,27 +129,17 @@ SDL_Quit();
 return 0;
 }
 
+bool openpopup_temp = false;
 static void ShowExampleAppMainMenuBar()
 {
     static bool selection[2];
     if (selection[0])
     {
-        if (ImGui::BeginPopup("Delete Project"))
-        {
-            ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
-            if (ImGui::Button("Yes")) 
-            {
-                //connect to VM team delete function
-            }
-            ImGui::EndPopup();
-        }
-        ImGui::OpenPopup("Delete Project");
         
     }
     if (selection[1])
     {
         ImGui::Begin("Game View Window");
-        ImGui::Text("Game View Window");
         ImGui::End();
     }
     if (ImGui::BeginMainMenuBar())
@@ -172,16 +162,16 @@ static void ShowExampleAppMainMenuBar()
             {
                 openDialog.Open();
             }
-            ImGui::MenuItem("Delete Project", "", &selection[0]);
+            if (ImGui::MenuItem("Delete Project"))
+            {
+                openpopup_temp = true;
+            }
             ImGui::EndMenu();
         }
-
         if (ImGui::BeginMenu("Add"))
         {
-            if (ImGui::MenuItem("Game View Window"))
-            {
-                ImGui::MenuItem("Game View Window", "", &selection[1]);
-            }
+            ImGui::MenuItem("Game View Window", "", &selection[1]);
+
             if (ImGui::MenuItem("Page Editor"))
             {
                 
@@ -215,5 +205,20 @@ static void ShowExampleAppMainMenuBar()
         printf("(printf) Selected File: %s\n", openDialog.GetSelected().string().c_str());
         std::cout << "(cout) Selected File: " << openDialog.GetSelected().string() << std::endl;
         openDialog.ClearSelected();
+    }
+
+    if (openpopup_temp == true) 
+    {
+        ImGui::OpenPopup("Delete Project");
+        openpopup_temp = false;
+    }
+    if (ImGui::BeginPopup("Delete Project"))
+    {
+        ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
+        if (ImGui::Button("Yes"))
+        {
+            //connect to VM team delete function
+        }
+        ImGui::EndPopup();
     }
 }
