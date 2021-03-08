@@ -3,7 +3,7 @@ file(GLOB core_srcs "${CORE_DIR}/src/*.cpp")
 file(GLOB core_headers "${CORE_DIR}/include/*.h")
 
 add_library(core_test ${core_srcs} ${core_headers})
-
+target_compile_definitions(core_test PUBLIC __CORE_TEST)
 target_include_directories(core_test
 	PUBLIC
 		$<BUILD_INTERFACE:${CORE_DIR}/include>

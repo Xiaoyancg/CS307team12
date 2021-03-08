@@ -1,6 +1,5 @@
 #pragma once
 #include <SDL.h>
-#include "test_core.h"
 #include <glad/glad.h>
 #include <stdio.h>
 
