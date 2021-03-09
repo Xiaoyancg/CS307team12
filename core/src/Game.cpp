@@ -1,11 +1,10 @@
-#include <SDL.h>
+#include <Game.h>
 #include <Page.h>
+#include <MapPage.h>
 #include <Entity.h>
-#include <glad/glad.h>
-#include <stdio.h>
+#include <Map.h>
 #include <vector>
 #include <memory> // For unique_ptr
-#include <Game.h>
 
 #ifdef __TEST_CORE
 #include <test_core.h>
@@ -211,15 +210,30 @@ int coreMain ( int argc, char *argv[] )
 
 	///////////////
 	// ENTITY TEST
-	Entity *entityInteractive = new Entity(glm::vec2(0.25, 0.25), glm::vec2(64, 64), 0, 0);
+	Entity* entityInteractive = new Entity(glm::vec2(0.25, 0.25), glm::vec2(64, 64), 0, 0);
 	entities.emplace_back(entityInteractive);
-	Entity *entityTallThin = new Entity(glm::vec2(0.50, 0.50), glm::vec2(32, 64), 0, 0);
+	Entity* entityTallThin = new Entity(glm::vec2(0.50, 0.50), glm::vec2(32, 64), 0, 0);
 	entities.emplace_back(entityTallThin);
-	Entity *entityShortWide = new Entity(glm::vec2(0.75, 0.75), glm::vec2(64, 32), 0, 0);
+	Entity* entityShortWide = new Entity(glm::vec2(0.75, 0.75), glm::vec2(64, 32), 0, 0);
 	entities.emplace_back(entityShortWide);
-	Entity *entityVeryShortWide = new Entity(glm::vec2(-0.25, -0.25), glm::vec2(128, 16), 0, 0);
+	Entity* entityVeryShortWide = new Entity(glm::vec2(-0.25, -0.25), glm::vec2(128, 16), 0, 0);
 	entities.emplace_back(entityVeryShortWide);
 	///////////////
+
+	///////////////
+	// MAP TEST
+	Map* map1 = new Map(glm::vec2(16, 16), 32);
+	Map* map2 = new Map(glm::vec2(32, 32), 64);
+
+	MapPage mapPage(window);
+	mapPage.setMap(map1);
+	mapPage.render();
+
+	mapPage.setMap(map2);
+	mapPage.render();
+	///////////////
+
+
 
 	while (!close_window) {
 		// Input handling!
