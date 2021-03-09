@@ -2,7 +2,6 @@
 #include <Page.h>
 #include <MapPage.h>
 #include <Entity.h>
-#include <Map.h>
 #include <vector>
 #include <memory> // For unique_ptr
 
@@ -222,15 +221,40 @@ int coreMain ( int argc, char *argv[] )
 
 	///////////////
 	// MAP TEST
-	Map* map1 = new Map(glm::vec2(16, 16), 32);
-	Map* map2 = new Map(glm::vec2(32, 32), 64);
+	int spriteMap1[] = {
+		  1,  2,  3,  4,
+		  5,  6,  7,  8,
+		 11, 22, 33, 44,
+		 55, 66, 77, 88
+	};
 
-	MapPage mapPage(window);
-	mapPage.setMap(map1);
-	mapPage.render();
+	int spriteMap2[] = {
+		   1,   2,   3,   4,   5,
+		   5,   6,   7,   8,   9,
+		  11,  22,  33,  44,  55,
+		  55,  66,  77,  88,  99,
+		 111, 222, 333, 444, 555
+	};
 
-	mapPage.setMap(map2);
-	mapPage.render();
+	Map* map1 = new Map(glm::vec2(4, 4), 32);
+	map1->setMapTileSpritesFromArray(spriteMap1);
+	Map* map2 = new Map(glm::vec2(5, 5), 32);
+	map2->setMapTileSpritesFromArray(spriteMap2);
+
+
+	MapPage mapPage(window, map1); // Creates a MapPage with initial map 'map1'
+	// You could also use the two commented lines below to get the same effect:
+	// MapPage mapPage(window);
+	// mapPage.setMap(map1);
+	mapPage.render(); // Render map1 on the MapPage
+
+	mapPage.setMap(map2); // MapPage only supports one map at a time, so this replaces map1 in mapPage with map2
+	mapPage.render(); // Render map2 on the MapPage
+
+
+	delete map1;
+	delete map2;
+	mapPage.setMap(NULL); // No Use-after-free!
 	///////////////
 
 

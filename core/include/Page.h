@@ -15,7 +15,7 @@ public:
 	// Render the given page on the current context
 	virtual void render();
 
-private:
+protected:
 	SDL_GLContext mPageContext; // The page context
 	SDL_Window* mWindow; // The window the page context is related to
 };

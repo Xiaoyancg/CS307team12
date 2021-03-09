@@ -8,7 +8,7 @@ Page(window) {
 }
 
 MapPage::MapPage(SDL_Window* window, Map* map) :
-	Page(window) {
+Page(window) {
 	mMap = map;
 }
 
@@ -20,5 +20,13 @@ void MapPage::setMap(Map* map) {
 }
 
 void MapPage::render() {
+	// Show the current context
+	SDL_GL_MakeCurrent(Page::mWindow, Page::mPageContext);
 
+	for (int i = 0; i < mMap->getNumTiles(); i++) {
+		printf("%d ", mMap->mTileArray[i].getSpriteID());
+		if ((((i + 1) % (int) mMap->getDimensions().x) == 0) && i != 0) {
+			printf("\n");
+		}
+	}
 }
