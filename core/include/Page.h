@@ -14,7 +14,7 @@ public:
 
 	// Render the given page on the current context
 	// Returns non-zero on error
-	int render();
+	virtual int render();
 
 private:
 	SDL_GLContext mPageContext; // The page context

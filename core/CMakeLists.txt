@@ -2,7 +2,7 @@
 file(GLOB srcs "src/*.cpp")
 file(GLOB headers "include/*.h")
 
-add_executable(core ${srcs} ${headers} )
+add_executable(core ${srcs} ${headers}  "src/Map.cpp" "include/Map.h" "include/Tile.h" "src/Tile.cpp" "src/MapPage.cpp")
 
 target_include_directories(core 
 	PUBLIC

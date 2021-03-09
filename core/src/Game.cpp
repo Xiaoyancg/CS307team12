@@ -302,6 +302,8 @@ int coreMain ( int argc, char *argv[] )
 		
 		render(); // Render the Game render function
 
+
+
 #ifdef __TEST_CORE
 		coreError = glGetError ();
 		break;

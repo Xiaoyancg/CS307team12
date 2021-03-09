@@ -4,7 +4,7 @@
 // Entity class
 class Entity {
 public:
-	// Constructor, just creates the context of the page
+	// Constructor, just sets the coordinates of the entity
 	// 'location' is the (x, y) coordinate of the Entity
 	// 'scale' is the (width, height) of the Entity in pixels
 	// 'rotation' is the rotation of the entity
