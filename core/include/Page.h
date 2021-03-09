@@ -13,8 +13,7 @@ public:
 	Page(SDL_Window* window);
 
 	// Render the given page on the current context
-	// Returns non-zero on error
-	virtual int render();
+	virtual void render();
 
 private:
 	SDL_GLContext mPageContext; // The page context

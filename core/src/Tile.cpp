@@ -1,6 +1,6 @@
 #include "Tile.h"
 
-// Sets the size of the tile and the spriteID (eventually mCurrentDepth too)
+// Sets the spriteID (eventually mCurrentDepth too)
 Tile::Tile() :
 	mSpriteID(-1) {
 	// Nothing needs to be done here

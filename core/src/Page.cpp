@@ -15,7 +15,7 @@ Page::Page(SDL_Window* window)
 	}
 }
 
-int Page::render() {
+void Page::render() {
 	// Show the current context
 	SDL_GL_MakeCurrent(mWindow, mPageContext);
 
@@ -34,7 +34,4 @@ int Page::render() {
 #ifdef __TEST_CORE
 		pageError = glGetError ();
 #endif // __TEST_CORE
-
-
-	return 0;
 }
