@@ -8,7 +8,7 @@ public:
 	Map(glm::vec2 scale, int tileSize);
 
 	// Creates a 
-	void setMapTileSpritesFromArray(int* spriteIDMap, int spriteMapWidth, int spriteMapHeight);
+	void setMapTileSpritesFromArray(int* spriteIDMap);
 
 	// Set mMapDimensions
 	void setDimensions(glm::vec2 dimensions);
@@ -23,7 +23,7 @@ public:
 	int getTileSize();
 
 private:
-	// The map is an array of tiles
+	// For now, the map is an array of tiles with no depth
 	Tile* mTileArray;
 
 	// Size of the tile in pixels (only one dimension because it's a square, x = y)

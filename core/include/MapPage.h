@@ -4,30 +4,21 @@
 // MapPage class
 class MapPage : Page {
 public:
-	// Takes a scale, the number of tiles in the x and y direction 
+	// Needs the current window to make a new opengl context, in the Page constructor 
 	MapPage(SDL_Window* window);
 
+	// Users can specify a map if it's already created
+	MapPage(SDL_Window* window, Map* map);
+
+	// Sets mMap to the map created by the user
 	void setMap(Map* map);
 
-
-	/////////////////////////////////////////////
-	// Set the dimensions of the map (in tiles)
-	void setMapDimensions(glm::vec2 dimensions);
-
-	// Get the dimensions of the map (in tiles)
-	glm::vec2 getMapDimensions();
-
-	// Set the tile size of the map (in pixels)
-	void setMapTileSize(int tileSize);
-
-	// Get the tile size of the map (in pixels)
-	int getMapTileSize();
-	/////////////////////////////////////////////
-
-
+	// Render the current map!
 	void render();
 
 private:
 	// The map! only one for now, I plan to add code to support 1 MapPage for an arbitrary amount of maps with std::vector and unique_ptrs
 	Map* mMap;
+
+	int mCurrentMap; // Unimplemented, but will be used when multiple-map MapPages get added
 };
