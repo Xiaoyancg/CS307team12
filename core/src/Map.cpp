@@ -7,6 +7,7 @@ mTileSize(tileSize) {
 	// Create map 
 	mNumTiles = mMapDimensions.x * mMapDimensions.y;
 	mTileArray = new Tile[mNumTiles];
+	setTileCoords();
 }
 
 // Set mMapDimensions to new dimensions
@@ -17,6 +18,7 @@ void Map::setDimensions(glm::vec2 dimensions) {
 	Tile* newMap = new Tile[mNumTiles];
 	mTileArray = newMap;
 	mMapDimensions = dimensions;
+	setTileCoords();
 }
 
 // Get mMapDimensions
@@ -36,6 +38,68 @@ int Map::getNumTiles() {
 	return mNumTiles;
 }
 
+// This will set the 4 corners of each tile of the map based on the dimensions and tilesize.
+// Having tile coordinates pre-set allows for quick map rendering, with minimal calculations.
+// These coordinates do not change often, only in the case of changing dimensions or tile size.
+void Map::setTileCoords() {
+	// Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
+	// Starting at the top left corner (0, height) where height (in pixels) can be found with mMapDimensions.y (tiles) * mTileSize (pixels / tile)
+	int lowX = 0;
+	int highX = mTileSize;
+	int highY = mMapDimensions.y * mTileSize;
+	int lowY = highY - mTileSize;
+
+	int border = 2;
+	int index = 0;
+
+	for (int row = mMapDimensions.y - 1; row >= 0 ; row--) {
+		for (int col = 0; col < mMapDimensions.x; col++) {
+			int coords[8];
+
+			// P1
+			coords[0] = lowX; // Top left x
+			coords[1] = highY; // Top left y
+
+			// P2
+			coords[2] = lowX; // Bottom left x
+			coords[3] = lowY; // Bottom left y
+			// P3
+			coords[4] = highX; // Top right x
+			coords[5] = highY; // Top right y
+			// P4
+			coords[6] = highX; // Bottom right x
+			coords[7] = lowY; // Bottom right y
+
+			
+			// DRAW BORDER LINES ALONG MAP
+			// P1
+			coords[0] += border;
+			coords[1] -= border;
+
+			// P2
+			coords[2] += border;
+			coords[3] += border;
+			// P3
+			coords[4] -= border;
+			coords[5] -= border;
+			// P4
+			coords[6] -= border;
+			coords[7] += border;
+			
+
+			mTileArray[index].setCoords(coords);
+
+			lowX += mTileSize;
+			highX += mTileSize;
+			index++;
+		}
+		lowX = 0;
+		highX = mTileSize;
+		highY -= mTileSize;
+		lowY -= mTileSize;
+	}
+}
+
 // Takes a pointer to an array of integers, containing the spriteID for each tile in the Map
 // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS Map::mMapDimensions
 // This will have to take a depth parameter when Tile depth gets implemented
@@ -44,6 +108,5 @@ void Map::setMapTileSpritesFromArray(int* spriteIDMap) {
 
 	for (int i = 0; i < mNumTiles; i++) {
 		mTileArray[i].setSpriteID(spriteIDMap[i]); // Copy the spriteID to the Map at tile 'i'
-		printf("> Map::setMapTileSpritesFromArray - Setting map tile %d to spriteID %d\n", i, spriteIDMap[i]);
 	}
 }

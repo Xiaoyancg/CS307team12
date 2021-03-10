@@ -26,6 +26,9 @@ public:
 	int getNumTiles();
 
 private:
+	// Set tile coordinates (so we don't have to recalculate with each update)
+	void setTileCoords();
+
 	// For now, the map is an array of tiles with no depth
 	Tile* mTileArray;
 

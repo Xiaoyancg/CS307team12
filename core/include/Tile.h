@@ -19,12 +19,21 @@ public:
 		return mSpriteID;
 	}
 
+	void setCoords(int * coords); 
+	int* getCoords();
+
+
+	void render();
 
 private:
+	int mCoords[8]; // 4 pairs of (x,y) coordinates in pixels
+
 	// Basic Tile variables
 	int mCurrentDepth; // Not implemented yet, but saving for later
 
 	// Sprite ID used to index sprites loaded into memory from the Game class
 	// This isn't used yet though, I'm just adding it for later
 	int mSpriteID = -1;
+
+	friend void setTileCoords();
 };
