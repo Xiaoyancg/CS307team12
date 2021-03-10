@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <iostream>
 
+#ifdef __TEST_EDITOR
+#include <TestEditor.h>
+#endif // __TEST_EDITOR
+
 static void ShowExampleAppMainMenuBar();
 bool running = true;
 ImGui::FileBrowser saveDialog = ImGui::FileBrowser(
@@ -19,14 +23,15 @@ ImGui::FileBrowser openDialog = ImGui::FileBrowser(
     ImGuiFileBrowserFlags_NoTitleBar
 );
 
-int main(int argc, char* argv[]) {
+
+int EditorMain(int argc, char* argv[]) {
     // Set Up SDL2
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
     // opengl buffer details
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -48,8 +53,18 @@ SDL_GLContext gl_context = SDL_GL_CreateContext(window);
 // set up the opengl context for rendering in to an opengl window
 SDL_GL_MakeCurrent(window, gl_context);
 
+#ifdef __TEST_EDITOR
+SDLInitError = std::string ( SDL_GetError () );
+#endif // __TEST_EDITOR
+
+
 // init opengl loader
 gladLoadGL();
+
+#ifdef __TEST_EDITOR
+OpenGLInitError = glGetError ();
+#endif // __TEST_EDITOR
+
 
 // Setup Dear Imgui context
 IMGUI_CHECKVERSION();
@@ -198,6 +213,7 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndMenu();
         }
+        //ImGui::IsItemVisible ();
         ImGui::EndMainMenuBar();
     }
 
@@ -241,6 +257,10 @@ static void ShowExampleAppMainMenuBar()
             saveDialog.Open();
             //connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
         }
+#ifdef __TEST_EDITOR
+        isSaveAsOpen = ImGui::IsPopupOpen ("Save As");
+#endif // __TEST_EDITOR
+
         ImGui::EndPopup();
     }
 }
