@@ -13,14 +13,14 @@ int WriteFile ( std::string fileName, std::string content )
 {
     std::ofstream newfile;
     newfile.open ( fileName );
-    if ( !newfile.is_open() )
+    if ( !newfile.is_open () )
     {
         return 1;
     }
     try
     {
 
-    newfile << content;
+        newfile << content;
     }
     catch ( const std::exception & )
     {
@@ -31,9 +31,29 @@ int WriteFile ( std::string fileName, std::string content )
 }
 
 
-Game constructGame ( std::string fileName )
+Game ConstructGame ( std::string fileName )
 {
+    std::string s ( ReadFile ( fileName ) );
+    json j = json::parse ( s );
+    Game g = Game ();
+    g.SetName ( j["Name"] );
+    return g;
+}
 
-    return Game();
+
+int ProduceDataFile ( Game *g )
+{
+    json j;
+    j["Name"] = g->GetName ().c_str ();
+    try
+    {
+
+        WriteFile ( g->GetName ().append ( ".gdata" ), j.dump () );
+    }
+    catch ( const std::exception & )
+    {
+        return 1;
+    }
+    return 0;
 }
 

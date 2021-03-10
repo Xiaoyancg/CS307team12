@@ -101,7 +101,6 @@ target_include_directories(UnitTest
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-# only need to link one library	
 target_link_libraries(UnitTest editor_test gamevm_test core_test gtest_main)
 	gtest_discover_tests(UnitTest)
 endif(WITH_TESTS)

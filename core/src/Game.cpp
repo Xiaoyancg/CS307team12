@@ -21,12 +21,12 @@ Game::Game ()
 {
 
 }
-std::string Game::getName ()
+std::string Game::GetName ()
 {
 	return std::string ( name );
 }
 
-int Game::setName ( std::string newName )
+int Game::SetName ( std::string newName )
 {
 	this->name = newName;
 	return 1;

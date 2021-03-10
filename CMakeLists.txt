@@ -12,6 +12,7 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 option(WITH_TESTS "Build tests" ON)
+
 if(WITH_TESTS)
 	enable_testing()
 	include(GoogleTest)
