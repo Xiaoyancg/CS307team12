@@ -9,7 +9,9 @@ std::string ReadFile ( std::string fileName );
 
 int WriteFile ( std::string fileName, std::string content );
 
-Game constructGame ( std::string fileName );
+Game ConstructGame ( std::string fileName );
 
 
+int ProduceDataFile ( Game *game );
 
+//int WriteJson ( std::string fileName, json j );

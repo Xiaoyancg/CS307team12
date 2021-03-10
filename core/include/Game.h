@@ -9,8 +9,8 @@ class Game
 public:
     Game ();
     
-    std::string getName ();
-    int setName (std::string newName);
+    std::string GetName ();
+    int SetName (std::string newName);
 
 private:
     std::vector<Page> pageList;

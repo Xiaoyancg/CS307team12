@@ -18,8 +18,8 @@ public:
 	// Render the given page on the current context
 	// Returns non-zero on error
 	int render();
-	int setName ( std::string name );
-	std::string getName ();
+	int SetName ( std::string name );
+	std::string GetName ();
 	std::vector<Entity> getEntityList ();
 private:
 	SDL_GLContext mPageContext; // The page context

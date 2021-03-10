@@ -1,6 +1,6 @@
+#include <TestCore.h>
 #include "gtest/gtest.h"
-#include <Game.h> 
-#include <string>
+
 unsigned int pageError = 1;
 unsigned int coreError = 1;
 unsigned int entityError = 1;
@@ -35,4 +35,13 @@ TEST ( TEST_CORE, entity )
     argv[1] = "test";
     coreMain ( argc, argv );
     EXPECT_EQ ( entityError, GL_NO_ERROR );
+}
+
+
+TEST ( TEST_GAME, Game_SetGetName )
+{
+    Game g = Game ();
+    g.SetName ( std::string("hello") );
+    std::string s ( g.GetName () );
+    EXPECT_TRUE ( !s.compare ( "hello" ) );
 }

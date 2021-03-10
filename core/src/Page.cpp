@@ -16,12 +16,12 @@ Page::Page(SDL_Window* window)
 }
 
 
-std::string Page::getName ()
+std::string Page::GetName ()
 {
 	return this->name;
 }
 
-int Page::setName ( std::string newName )
+int Page::SetName ( std::string newName )
 {
 	this->name = std::string(newName);
 	return 1;
