@@ -10,7 +10,7 @@ public:
     Game ();
     
     std::string getName ();
-    int setName ();
+    int setName (std::string newName);
 
 private:
     std::vector<Page> pageList;
