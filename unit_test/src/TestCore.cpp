@@ -1,10 +1,11 @@
 #include "gtest/gtest.h"
-#include "Game.h"
+#include <Game.h> 
 #include <string>
 unsigned int pageError = 1;
 unsigned int coreError = 1;
 unsigned int entityError = 1;
 bool enableTest = true;
+
 TEST ( TEST_CORE, game )
 {
     int argc = 2;
