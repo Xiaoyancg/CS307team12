@@ -1,0 +1,29 @@
+{
+  "meta": {
+    "name": <game name>
+  },
+  "pages": [
+    {
+      "name": <page name>,
+      "player": <entity index>,
+      "map": <map index>,
+      "entities": [
+        {
+          "name": <entity name>,
+          "location": [ <x>, <y> ],
+          "scale": [ <x>, <y> ],
+          "rotation": <rotation>,
+          "spriteID": <sprite id>
+        },
+        ...
+      ]
+    },
+    ...
+  ],
+  "maps": [
+    {
+      "name": <name>,
+      
+    }
+  ]
+}
