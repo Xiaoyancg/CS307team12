@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include <glad/glad.h>
 #ifdef __TEST_CORE
-#include <test_core.h>
+#include <TestCore.h>
 #endif // __TEST_CORE
 
 
