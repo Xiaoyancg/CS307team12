@@ -1,5 +1,8 @@
 #include "Map.h"
 
+extern int width;
+extern int height;
+
 // Takes a scale, the number of tiles in the x and y direction 
 Map::Map(glm::vec2 dimensions, int tileSize) :
 mMapDimensions(dimensions),
@@ -43,15 +46,24 @@ int Map::getNumTiles() {
 // These coordinates do not change often, only in the case of changing dimensions or tile size.
 void Map::setTileCoords() {
 	// Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
-	// Starting at the top left corner (0, height) where height (in pixels) can be found with mMapDimensions.y (tiles) * mTileSize (pixels / tile)
-	int lowX = 0;
-	int highX = mTileSize;
-	int highY = mMapDimensions.y * mTileSize;
+	// Starting at the top left corner
+	// Find the amount of tiles to the left/right and top/bottom (in tiles)
+	int halfXTiles = mMapDimensions.x / 2;
+	int halfYTiles = mMapDimensions.y / 2;
+
+	// Find the amount of pixels to the left/right and top/bottom from the center of the map to the edge
+	int halfXPixels = halfXTiles * mTileSize;
+	int halfYPixels = halfYTiles * mTileSize;
+
+	// Calculate the top-left corner of the centered map
+	int lowX = (width / 2) - halfXPixels;
+	int highX = lowX + mTileSize;
+	int highY = (height / 2) + halfYPixels;
 	int lowY = highY - mTileSize;
 
-	int border = 2;
-	int index = 0;
-
+	
+	int border = 1; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
+	int index = 0; // An easy way to access the mTileArray without having to do any calculations
 	for (int row = mMapDimensions.y - 1; row >= 0 ; row--) {
 		for (int col = 0; col < mMapDimensions.x; col++) {
 			int coords[8];
@@ -71,7 +83,7 @@ void Map::setTileCoords() {
 			coords[7] = lowY; // Bottom right y
 
 			
-			// DRAW BORDER LINES ALONG MAP
+			// DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
 			// P1
 			coords[0] += border;
 			coords[1] -= border;
@@ -93,8 +105,8 @@ void Map::setTileCoords() {
 			highX += mTileSize;
 			index++;
 		}
-		lowX = 0;
-		highX = mTileSize;
+		lowX = (width / 2) - halfXPixels;;
+		highX = lowX + mTileSize;
 		highY -= mTileSize;
 		lowY -= mTileSize;
 	}

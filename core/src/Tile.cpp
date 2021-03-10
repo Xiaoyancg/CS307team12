@@ -20,11 +20,6 @@ void Tile::setCoords(int * coords) {
 	mCoords[7] = coords[7];
 }
 
-void Tile::render() {
-	glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW); // Buffer the 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-
 int* Tile::getCoords() {
 	return mCoords;
 }
