@@ -20,18 +20,19 @@ mSpriteID(spriteID) {
 
 void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale) {
 	// Get the distances to the left/right and top/bottom of the entity from the center
-	float halfScaleWidth = scale.x / 2;
-	float halfScaleHeight = scale.y / 2;
+	int halfScaleWidth = scale.x / 2;
+	int halfScaleHeight = scale.y / 2;
 
 	// Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
-	float lowX = location.x - halfScaleWidth;
-	float highX = location.x + halfScaleWidth;
-	float lowY = location.y - halfScaleHeight;
-	float highY = location.y + halfScaleHeight;
+	int lowX = location.x - halfScaleWidth;
+	int highX = location.x + halfScaleWidth;
+	int lowY = location.y - halfScaleHeight;
+	int highY = location.y + halfScaleHeight;
 
 	// P1
 	mCoords[0] = lowX; // Top left x
 	mCoords[1] = highY; // Top left y
+
 	// P2
 	mCoords[2] = lowX; // Bottom left x
 	mCoords[3] = lowY; // Bottom left y
