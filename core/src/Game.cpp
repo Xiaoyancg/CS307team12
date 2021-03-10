@@ -12,6 +12,41 @@
 #include <TestCore.h>
 #endif // __TEST_CORE
 
+
+// by Larry
+// class place holder
+
+
+Game::Game ()
+{
+
+}
+std::string Game::getName ()
+{
+	return std::string ( name );
+}
+
+int Game::setName ( std::string newName )
+{
+	this->name = newName;
+	return 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Larry out
+
 SDL_Window *window;
 SDL_GLContext gl_context;
 
