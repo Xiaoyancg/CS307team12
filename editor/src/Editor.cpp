@@ -19,7 +19,8 @@ ImGui::FileBrowser openDialog = ImGui::FileBrowser(
     ImGuiFileBrowserFlags_NoTitleBar
 );
 
-int main(int argc, char* argv[]) {
+
+int EditorMain(int argc, char* argv[]) {
     // Set Up SDL2
     SDL_Init(SDL_INIT_VIDEO);
 
