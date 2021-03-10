@@ -54,6 +54,8 @@ set(GLAD_DIR "${PROJECT_SOURCE_DIR}/lib/glad")
 add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
+add_subdirectory(lib/json)
+
 
 add_subdirectory(core)
 add_subdirectory(gamevm)
