@@ -123,12 +123,12 @@ void initShaders() {
     // Set the format of the vertices array in opengl so it can properly read it
     // The arguments are 
     // 0 to denote the 'position' vertex attribute in the vertex shader
-    // 2 floats are read at a time (x, y)
-    // The the type is float (GL_FLOAT)
+    // 2 ints are read at a time (x, y)
+    // The the type is float (GL_INT)
     // GL_FALSE means the data should not be normalized
-    // The size to be read in bytes (2 * sizeof(float))
+    // The size to be read in bytes (2 * sizeof(int))
     // Offset isn't used yet since there's only one attribute in 'vertices'
-    glVertexAttribPointer ( 0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof ( float ), ( void * ) 0 );
+    glVertexAttribPointer ( 0, 2, GL_INT, GL_FALSE, 2 * sizeof ( int ), ( void * ) 0 );
 
     // Enable the position vertex attribute
     glEnableVertexAttribArray ( 0 );
