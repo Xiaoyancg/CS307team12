@@ -1,15 +1,19 @@
 #include "MapPage.h"
 #include "glm/glm.hpp"
+#include "Game.h" // Needed to setup shaders. New OpenGL context needs new shaders
+#include <string>
 
  
 MapPage::MapPage(SDL_Window* window) :
 Page(window) {
 	mMap = new Map(glm::vec2(0, 0), 0);
+	initShaders(); // New OpenGL context created, so we need to set up the shaders for this context
 }
 
 MapPage::MapPage(SDL_Window* window, Map* map) :
 Page(window) {
 	mMap = map;
+	initShaders(); // New OpenGL context created, so we need to set up the shaders for this context
 }
 
 
@@ -21,30 +25,18 @@ void MapPage::setMap(Map* map) {
 
 void MapPage::render() {
 	// Show the current context
-	SDL_GL_MakeCurrent(Page::mWindow, Page::mPageContext);
+	SDL_GL_MakeCurrent(mWindow, mPageContext);
+	glClearColor(0.1, 0.9, 0.59, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	// calculate starting pos and loop through map
-	// Get 'origin'/center of map (in tiles)
-	glm::vec2 mapDims = mMap->getDimensions();
-	glm::vec2 arrayOrigin(mapDims.x / 2, mapDims.y / 2);
-
-	// Calculate the top left corner of the map using the arrayOrigin (in pixels)
-	glm::vec2 topLeftCornerPx(arrayOrigin.x * -mMap->mTileSize, arrayOrigin.y * mMap->mTileSize);
-
+	// Traverse all tiles in the Map
 	for (int i = 0; i < mMap->getNumTiles(); i++) {
-		printf("%d ", mMap->mTileArray[i].getSpriteID());
-		if ((((i + 1) % (int) mMap->getDimensions().x) == 0) && i != 0) {
-			printf("\n");
-		}
+		// Render each tile of the map!
+		int* coords = mMap->mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+
+		// Buffer and draw tile
+		glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(int), coords, GL_DYNAMIC_DRAW); 
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
-
-	/*
-	// TODO: Draw tiles of the map!
-	// Load the data of the 'coords' buffer into the currently bound array buffer, VBO
-	glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
-
-	// Draw the bound buffer (coords)
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	*/
+	SDL_GL_SwapWindow(mWindow); // Show the buffer by bringing it to the front
 }

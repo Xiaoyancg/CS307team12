@@ -207,7 +207,7 @@ int render() {
 int coreMain ( int argc, char *argv[] )
 {
     // Initialize OpenGL and necessary SDL objects
-    init ();
+    init();
 
 	SDL_Event event;
 	int close_window = false;
@@ -246,26 +246,18 @@ int coreMain ( int argc, char *argv[] )
 		 111, 222, 333, 444, 555
 	};
 
-	Map* map1 = new Map(glm::vec2(4, 4), 32);
+	Map* map1 = new Map(glm::vec2(16, 16), 64);
 	map1->setMapTileSpritesFromArray(spriteMap1);
 	Map* map2 = new Map(glm::vec2(5, 5), 32);
 	map2->setMapTileSpritesFromArray(spriteMap2);
-
 
 	MapPage mapPage(window, map1); // Creates a MapPage with initial map 'map1'
 	// You could also use the two commented lines below to get the same effect:
 	// MapPage mapPage(window);
 	// mapPage.setMap(map1);
-	mapPage.render(); // Render map1 on the MapPage
 
-	mapPage.setMap(map2); // MapPage only supports one map at a time, so this replaces map1 in mapPage with map2
-	mapPage.render(); // Render map2 on the MapPage
+	//mapPage.setMap(map2); // MapPage only supports one map at a time, so this replaces map1 in mapPage with map2
 
-
-	delete map1;
-	delete map2;
-	mapPage.setMap(NULL); // No Use-after-free!
-	///////////////
 
 
 
@@ -289,7 +281,7 @@ int coreMain ( int argc, char *argv[] )
 					glViewport(0, 0, width, height);
 
 					// Preserve dimensions of objects after resize
-					// Set the scale based on the width and height
+					// Set the scale based on the width and height of the screen
 					int scaleID = glGetUniformLocation(shaderProgram, "scale");
 					glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
@@ -346,8 +338,28 @@ int coreMain ( int argc, char *argv[] )
 		//page.render();
 		///////////////
 		
-		render(); // Render the Game render function
+		//render(); // Render the Game render function
 
+		mapPage.render(); // Render map1 on the MapPage
+
+
+
+		// Error checking!
+		GLenum err(glGetError());
+		if (err != GL_NO_ERROR) {
+			std::string error;
+
+			switch (err) {
+			case GL_INVALID_OPERATION:      error = "INVALID_OPERATION";      break;
+			case GL_INVALID_ENUM:           error = "INVALID_ENUM";           break;
+			case GL_INVALID_VALUE:          error = "INVALID_VALUE";          break;
+			case GL_OUT_OF_MEMORY:          error = "OUT_OF_MEMORY";          break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION:  error = "INVALID_FRAMEBUFFER_OPERATION";  break;
+			}
+
+			printf("GL_%s\n", error.c_str());
+
+		}
 
 
 #ifdef __TEST_CORE
