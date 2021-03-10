@@ -3,7 +3,7 @@ file(GLOB header "include/*.h")
 
 add_library(editorlib ${srcs} ${header} )
 
-target_link_libraries(editorlib corelib sdlmain imfb sdl imgui)
+target_link_libraries(editorlib corelib gamevmlib sdlmain imfb sdl imgui)
 
 target_include_directories(editorlib
 	PUBLIC

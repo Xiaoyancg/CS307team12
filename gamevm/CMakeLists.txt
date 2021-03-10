@@ -1,24 +1,23 @@
 file(GLOB srcs "src/*.cpp")
+file(GLOB headers "include/*.h")
 
-add_library(GameVM ${srcs})
+add_library(gamevmlib ${srcs}${headedrs})
 
-target_include_directories(GameVM
+target_include_directories(gamevmlib
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:include>
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-target_link_libraries(GameVM glad imgui sdlmain glm)
+target_link_libraries(gamevmlib corelib editorlib glad imgui sdlmain glm)
 
-add_custom_command (TARGET GameVM POST_BUILD
+add_executable(gamevm "GameVMMain.cpp")
+
+target_link_libraries(gamevm gamevmlib)
+
+add_custom_command (TARGET gamevm POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:sdl> $<TARGET_FILE_DIR:GameVM>
+    $<TARGET_FILE:sdl> $<TARGET_FILE_DIR:gamevm>
 )
 
-if(WITH_TESTS)
-	file(GLOB test_srcs "test/*.cpp")
-	add_executable(TestGameVM ${test_srcs})
-	target_link_libraries(TestGameVM GameVM gtest_main)
-	gtest_discover_tests(TestGameVM)
-endif(WITH_TESTS)
