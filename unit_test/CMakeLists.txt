@@ -10,10 +10,13 @@ file(GLOB core_srcs "${CORE_DIR}/src/*.cpp")
 file(GLOB core_headers "${CORE_DIR}/include/*.h")
 
 
+add_library(testlib INTERFACE)
+target_include_directories(testlib INTERFACE "include")
+
 #=============================================================
 #			CORE
 add_library(core_test ${core_srcs} ${core_headers})
-
+# Add preprocessor definition for testing
 target_compile_definitions(core_test PUBLIC __TEST_CORE)
 target_include_directories(core_test
 	PUBLIC
@@ -38,7 +41,9 @@ add_custom_command (TARGET core_test POST_BUILD
 
 add_library(editor_test ${editor_srcs} ${editor_headers})
 
+# Add preprocessor definition for testing
 target_compile_definitions(editor_test PUBLIC __TEST_EDITOR)
+
 target_include_directories(editor_test
 	PUBLIC
 		$<BUILD_INTERFACE:${EDITOR_DIR}/include>
@@ -46,7 +51,7 @@ target_include_directories(editor_test
 	PRIVATE
 		${EDITOR_DIR}/src
 )
-target_link_libraries(editor_test corelib gamevmlib sdlmain imfb sdl imgui)
+target_link_libraries(editor_test corelib gamevmlib testlib sdlmain imfb sdl imgui)
 
 add_custom_command (TARGET editor_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -55,12 +60,12 @@ add_custom_command (TARGET editor_test POST_BUILD
 
 
 
-
 #============================================================
 #        GameVM
 
 add_library(gamevm_test ${vm_srcs} ${vm_headers})
 
+# Add preprocessor definition for testing
 target_compile_definitions(gamevm_test PUBLIC __TEST_VM)
 target_include_directories(gamevm_test
 	PUBLIC
@@ -69,7 +74,7 @@ target_include_directories(gamevm_test
 	PRIVATE
 		${VM_DIR}/src
 )
-target_link_libraries(gamevm_test editorlib corelib sdl glad sdlmain imgui glm testlib)
+target_link_libraries(gamevm_test editorlib corelib testlib sdl glad sdlmain imgui glm testlib)
 
 add_custom_command (TARGET gamevm_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -86,15 +91,17 @@ add_custom_command (TARGET gamevm_test POST_BUILD
 if(WITH_TESTS)
 	file(GLOB test_src "src/*.cpp")
 	file(GLOB test_header "include/*.h")
-	add_executable(unittest ${test_src} ${test_header})
 
-target_include_directories(unittest 
+	add_executable(UnitTest ${test_src} ${test_header})
+
+target_include_directories(UnitTest 
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:include>
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
-	target_link_libraries(unittest core_test gtest_main)
-	gtest_discover_tests(unittest)
+# only need to link one library	
+target_link_libraries(UnitTest core_test gtest_main)
+	gtest_discover_tests(UnitTest)
 endif(WITH_TESTS)

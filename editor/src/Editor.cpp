@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <iostream>
 
+#ifdef __TEST_EDITOR
+#include <TestEditor.h>
+#endif // __TEST_EDITOR
+
 static void ShowExampleAppMainMenuBar();
 bool running = true;
 ImGui::FileBrowser saveDialog = ImGui::FileBrowser(
@@ -49,8 +53,18 @@ SDL_GLContext gl_context = SDL_GL_CreateContext(window);
 // set up the opengl context for rendering in to an opengl window
 SDL_GL_MakeCurrent(window, gl_context);
 
+#ifdef __TEST_EDITOR
+SDLInitError = std::string ( SDL_GetError () );
+#endif // __TEST_EDITOR
+
+
 // init opengl loader
 gladLoadGL();
+
+#ifdef __TEST_EDITOR
+OpenGLInitError = glGetError ();
+#endif // __TEST_EDITOR
+
 
 // Setup Dear Imgui context
 IMGUI_CHECKVERSION();
@@ -66,6 +80,7 @@ ImGui::StyleColorsDark(); // alternative: Classic
 // these two functions are from imgui_impl_*.h it's in the backend folder in imgui-master
 ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
 ImGui_ImplOpenGL3_Init();
+
 
 bool showDemoWindow = false;
 // clear color, opengl use clear color to clear the context for the next drawing
@@ -189,6 +204,7 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndMenu();
         }
+        //ImGui::IsItemVisible ();
         ImGui::EndMainMenuBar();
     }
 
@@ -225,7 +241,7 @@ static void ShowExampleAppMainMenuBar()
         }
         ImGui::EndPopup();
     }
-
+    
     //open new project/save as popup
     if (testpopup_temp == true)
     {
@@ -242,6 +258,10 @@ static void ShowExampleAppMainMenuBar()
             saveDialog.Open();
             //connect to VM save function
         }
+#ifdef __TEST_EDITOR
+        isSaveAsOpen = ImGui::IsPopupOpen ("Save As");
+#endif // __TEST_EDITOR
+
         ImGui::EndPopup();
     }
 }
