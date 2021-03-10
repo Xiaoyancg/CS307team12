@@ -4,7 +4,7 @@
 
 extern std::string SDLInitError;
 extern unsigned int OpenGLInitError;
-extern std::string ImguiInitError;
+//extern std::string ImguiInitError;
 
 
 extern std::string menuError;
