@@ -4,6 +4,10 @@
 #include <Entity.h>
 #include <vector>
 #include <memory> // For unique_ptr
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 
 #ifdef __TEST_CORE
 #include <test_core.h>
@@ -11,6 +15,7 @@
 
 SDL_Window *window;
 SDL_GLContext gl_context;
+unsigned int shaderProgram;
 
 // This vector stores pointers to all of the entities
 // Vectors don't support normal pointers, like Entity *, so we use unique_ptr instead
@@ -36,11 +41,11 @@ void initShaders() {
 		#version 450 core
 
 		layout (location = 0) in vec2 pos;
-
+		uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
 
 		void main()
 		{
-		  gl_Position = vec4(pos, 0.0, 1.0);
+		  gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
 		}
 	)glsl";
 
@@ -90,7 +95,7 @@ void initShaders() {
 
 
     // Create new shader program
-    unsigned int shaderProgram = glCreateProgram ();
+    shaderProgram = glCreateProgram();
 
     // Attach shaders to the new shader program
     glAttachShader ( shaderProgram, vertexShaderID );
@@ -130,6 +135,10 @@ void initShaders() {
 
     // Enable the Vertex Object Array
     glBindVertexArray ( vao );
+
+	// Set the scale based on the width and height
+	int scaleID = glGetUniformLocation(shaderProgram, "scale");
+	glUniform2f(scaleID, (float) 2 / width, (float) 2 / height);
 }
 
 // This takes care of initializing everything SDL needs to begin running
@@ -168,7 +177,6 @@ void init() {
 
 	// Create the shaders
 	initShaders();
-
 }
 
 
@@ -209,14 +217,16 @@ int coreMain ( int argc, char *argv[] )
 
 	///////////////
 	// ENTITY TEST
-	Entity* entityInteractive = new Entity(glm::vec2(0.25, 0.25), glm::vec2(64, 64), 0, 0);
+	Entity* entityInteractive = new Entity(glm::vec2(50, 50), glm::vec2(64, 64), 0, 0);
 	entities.emplace_back(entityInteractive);
-	Entity* entityTallThin = new Entity(glm::vec2(0.50, 0.50), glm::vec2(32, 64), 0, 0);
+	Entity* entityTallThin = new Entity(glm::vec2(200, 200), glm::vec2(32, 64), 0, 0);
 	entities.emplace_back(entityTallThin);
-	Entity* entityShortWide = new Entity(glm::vec2(0.75, 0.75), glm::vec2(64, 32), 0, 0);
+	Entity* entityShortWide = new Entity(glm::vec2(500, 500), glm::vec2(64, 32), 0, 0);
 	entities.emplace_back(entityShortWide);
-	Entity* entityVeryShortWide = new Entity(glm::vec2(-0.25, -0.25), glm::vec2(128, 16), 0, 0);
+	Entity* entityVeryShortWide = new Entity(glm::vec2(-640, -100), glm::vec2(128, 16), 0, 0);
 	entities.emplace_back(entityVeryShortWide);
+	Entity* entityOrigin= new Entity(glm::vec2(0, 0), glm::vec2(128, 128), 0, 0);
+	entities.emplace_back(entityOrigin);
 	///////////////
 
 	///////////////
@@ -278,12 +288,10 @@ int coreMain ( int argc, char *argv[] )
 					 // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
 					glViewport(0, 0, width, height);
 
-					/*
-					 * TODO: There are issues with resizing right now. If you render the screen, make the screen smaller, and move the 
-					 * interactive entity, the previous scale (before the resize) will be used in the new coordinate calculation
-					 * so the shrunken window scale won't be applied to the moved entity anymore.
-					 * To fix this: Calculate scale of resize and apply it in the vertex shader?
-					 */
+					// Preserve dimensions of objects after resize
+					// Set the scale based on the width and height
+					int scaleID = glGetUniformLocation(shaderProgram, "scale");
+					glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
 					SDL_GL_SwapWindow(window); // Show the resized window
 				}
@@ -292,7 +300,7 @@ int coreMain ( int argc, char *argv[] )
 			case SDL_KEYDOWN:
 				glm::vec2 loc = entityInteractive->getLocation();
 				glm::vec2 scale = entityInteractive->getScale();
-				float moveBy = .04;
+				float moveBy = 5;
 				int scaleBy = 3;
 
 				switch (event.key.keysym.sym) {
