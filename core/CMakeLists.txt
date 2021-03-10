@@ -13,7 +13,7 @@ target_include_directories(corelib
 
 target_link_libraries(corelib sdl glad sdlmain imgui glm)
 
-add_executable(core "src/CoreMain.cpp" "include/Game.h" )
+add_executable(core "CoreMain.cpp" )
 
 target_include_directories(core
 	PUBLIC
