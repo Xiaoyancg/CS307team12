@@ -13,6 +13,8 @@ public:
 	// Sets mMap to the map created by the user
 	void setMap(Map* map);
 
+	void initShaders(); // Shader function for the map tiles, may be temporary
+
 	// Render the current map!
 	void render();
 
