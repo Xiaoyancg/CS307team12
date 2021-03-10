@@ -35,7 +35,7 @@ void sdl_die ( const char *err_msg )
 void initShaders() {
 	// Source for the vertex shader
 	const char* vertexSource = R"glsl(
-		#version 450 core
+		#version 330 core
 
 		layout (location = 0) in vec2 pos;
 
@@ -49,7 +49,7 @@ void initShaders() {
   // Source for the fragment shader
     const char *fragmentSource = R"glsl(
 		// fragment shader
-		#version 450 core
+		#version 330 core
 
 		out vec4 FragColor;
 
@@ -146,8 +146,8 @@ void init() {
     SDL_GL_SetAttribute ( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 
     // Use OpenGL 4.6
-    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
-    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_MINOR_VERSION, 6 );
+    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
+    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
 
     SDL_GL_SetAttribute ( SDL_GL_DOUBLEBUFFER, 1 );
     SDL_GL_SetAttribute ( SDL_GL_DEPTH_SIZE, 24 );
