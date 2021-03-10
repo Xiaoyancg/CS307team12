@@ -1,9 +1,9 @@
 #include "GameVM.h"
-
+#include "Game.h"
 
 
 int GameVMMain ( int argc, char *argv[] )
 {
-    return 0;
+    return coreMain(argc, argv);
 }
 
