@@ -66,7 +66,7 @@ ImGui::StyleColorsDark(); // alternative: Classic
 ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
 ImGui_ImplOpenGL3_Init();
 
-bool showDemoWindow = false;
+bool showDemoWindow = true;
 // clear color, opengl use clear color to clear the context for the next drawing
 // if we don't clear the context, when you move the imgui window, it's trace will be left on the context.
 // Also, for the convenience, we use the vector class from ImGui. ImVec4.
@@ -129,28 +129,40 @@ SDL_Quit();
 return 0;
 }
 
-bool openpopup_temp = false;
-bool testpopup_temp = false;
 static void ShowExampleAppMainMenuBar()
 {
-    static bool selection[2];
+    //bool array to track the selections made on main menu bar
+    static bool selection[3];
+
+    //open new project/save as popup
     if (selection[0])
     {
-        
+        ImGui::OpenPopup("Save As");
+        selection[0] = false;
     }
-    //game view window creation
+    //open delete project popup
     if (selection[1])
     {
+        ImGui::OpenPopup("Delete Project");
+        selection[1] = false;
+    }
+    //game view window creation
+    if (selection[2])
+    {
+        // possibly implement a new function here for readability purposes
         ImGui::Begin("Game View Window");
         ImGui::End();
     }
+
+    // main menu bar code
     if (ImGui::BeginMainMenuBar())
     {
+        // File menu
         if (ImGui::BeginMenu("File"))
         {
             if (ImGui::MenuItem("New Project"))
             {
-                testpopup_temp = true;
+                selection[0] = true;
             }
             if (ImGui::MenuItem("Open Project"))
             {
@@ -162,17 +174,19 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::MenuItem("Save As"))
             {
-                testpopup_temp = true;
+                selection[0] = true;
             }
             if (ImGui::MenuItem("Delete Project"))
             {
-                openpopup_temp = true;
+                selection[1] = true;
             }
             ImGui::EndMenu();
         }
+
+        // Add menu
         if (ImGui::BeginMenu("Add"))
         {
-            ImGui::MenuItem("Game View Window", "", &selection[1]);
+            ImGui::MenuItem("Game View Window", "", &selection[2]);
 
             if (ImGui::MenuItem("Page Editor"))
             {
@@ -182,17 +196,13 @@ static void ShowExampleAppMainMenuBar()
             {
 
             }
-            if (ImGui::MenuItem("Game View Window"))
-            {
-
-            }
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
     }
 
+    // save dialog selection return
     saveDialog.Display();
-
     if (saveDialog.HasSelected())
     {
         printf("(printf) Selected Directory: %s\n", saveDialog.GetSelected().string().c_str());
@@ -200,8 +210,8 @@ static void ShowExampleAppMainMenuBar()
         saveDialog.ClearSelected();
     }
 
+    // open dialog selection return
     openDialog.Display();
-
     if (openDialog.HasSelected())
     {
         printf("(printf) Selected File: %s\n", openDialog.GetSelected().string().c_str());
@@ -209,12 +219,7 @@ static void ShowExampleAppMainMenuBar()
         openDialog.ClearSelected();
     }
 
-    //open delete project popup
-    if (openpopup_temp == true) 
-    {
-        ImGui::OpenPopup("Delete Project");
-        openpopup_temp = false;
-    }
+    // delete project popup
     if (ImGui::BeginPopup("Delete Project"))
     {
         ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
@@ -225,12 +230,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::EndPopup();
     }
 
-    //open new project/save as popup
-    if (testpopup_temp == true)
-    {
-        ImGui::OpenPopup("Save As");
-        testpopup_temp = false;
-    }
+    // save project popup
     static char name[128] = "";
     if (ImGui::BeginPopup("Save As"))
     {
@@ -239,7 +239,7 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Button("Save"))
         {
             saveDialog.Open();
-            //connect to VM save function
+            //connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
         }
         ImGui::EndPopup();
     }
