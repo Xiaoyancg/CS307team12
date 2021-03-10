@@ -246,9 +246,9 @@ int coreMain ( int argc, char *argv[] )
 		 111, 222, 333, 444, 555
 	};
 
-	Map* map1 = new Map(glm::vec2(16, 16), 64);
+	Map* map1 = new Map(glm::vec2(4, 4), 64);
 	map1->setMapTileSpritesFromArray(spriteMap1);
-	Map* map2 = new Map(glm::vec2(5, 5), 32);
+	Map* map2 = new Map(glm::vec2(5, 5), 50);
 	map2->setMapTileSpritesFromArray(spriteMap2);
 
 	MapPage mapPage(window, map1); // Creates a MapPage with initial map 'map1'
@@ -256,10 +256,9 @@ int coreMain ( int argc, char *argv[] )
 	// MapPage mapPage(window);
 	// mapPage.setMap(map1);
 
-	//mapPage.setMap(map2); // MapPage only supports one map at a time, so this replaces map1 in mapPage with map2
+	// mapPage.setMap(map2); // MapPage only supports one map at a time, so this replaces map1 in mapPage with map2
 
-
-
+	Page* currentPage = &mapPage;
 
 	while (!close_window) {
 		// Input handling!
@@ -279,6 +278,8 @@ int coreMain ( int argc, char *argv[] )
 
 					 // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
 					glViewport(0, 0, width, height);
+
+					// TODO: Add map coordinate recalculations
 
 					// Preserve dimensions of objects after resize
 					// Set the scale based on the width and height of the screen
@@ -340,8 +341,8 @@ int coreMain ( int argc, char *argv[] )
 		
 		//render(); // Render the Game render function
 
-		mapPage.render(); // Render map1 on the MapPage
-
+		// Render the current page
+		currentPage->render();
 
 
 		// Error checking!
@@ -358,7 +359,6 @@ int coreMain ( int argc, char *argv[] )
 			}
 
 			printf("GL_%s\n", error.c_str());
-
 		}
 
 

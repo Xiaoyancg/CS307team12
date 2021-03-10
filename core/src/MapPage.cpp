@@ -1,7 +1,6 @@
 #include "MapPage.h"
 #include "glm/glm.hpp"
 #include "Game.h" // Needed to setup shaders. New OpenGL context needs new shaders
-#include <string>
 
  
 MapPage::MapPage(SDL_Window* window) :

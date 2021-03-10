@@ -2,7 +2,7 @@
 #include "Map.h"
 
 // MapPage class
-class MapPage : Page {
+class MapPage : public Page {
 public:
 	// Needs the current window to make a new opengl context, in the Page constructor 
 	MapPage(SDL_Window* window);
