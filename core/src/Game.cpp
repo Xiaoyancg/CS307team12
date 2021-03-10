@@ -7,8 +7,9 @@
 #include <memory> // For unique_ptr
 #include <Game.h>
 
+
 #ifdef __TEST_CORE
-#include <test_core.h>
+#include <TestCore.h>
 #endif // __TEST_CORE
 
 SDL_Window *window;
