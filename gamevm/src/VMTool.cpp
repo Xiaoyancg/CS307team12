@@ -33,6 +33,7 @@ int WriteFile ( std::string fileName, std::string content )
 
 Game constructGame ( std::string fileName )
 {
+
     return Game();
 }
 
