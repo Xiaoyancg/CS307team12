@@ -15,6 +15,19 @@ Page::Page(SDL_Window* window)
 	}
 }
 
+
+std::string Page::getName ()
+{
+	return this->name;
+}
+
+int Page::setName ( std::string newName )
+{
+	this->name = std::string(newName);
+	return 1;
+}
+
+
 int Page::render() {
 	// Show the current context
 	SDL_GL_MakeCurrent(mWindow, mPageContext);
