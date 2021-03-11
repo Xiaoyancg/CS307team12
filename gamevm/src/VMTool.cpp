@@ -8,6 +8,20 @@ std::string ReadFile ( std::string fileName )
     return s;
 }
 
+Core::Game *CreateExampleGame ()
+{
+    Core::Game *g = new Core::Game ( std::string ( "example" ) );
+    g->SetAuthor ( std::string ( "example author" ) );
+    g->SetVersion ( std::string ( "0.1.0" ) );
+    time_t rawtime;
+    struct tm *timeinfo;
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    g->SetLMTime ( std::string ( asctime ( timeinfo ) ) );
+    g->SetNote ( std::string ( "example Note" ) );
+    // TODO page
+    return g;
+}
 
 int WriteFile ( std::string fileName, std::string content )
 {
@@ -31,24 +45,31 @@ int WriteFile ( std::string fileName, std::string content )
 }
 
 
-Game ConstructGame ( std::string fileName )
+Core::Game * ConstructGame ( std::string fileName )
 {
     std::string s ( ReadFile ( fileName ) );
     json j = json::parse ( s );
-    Game g = Game ();
-    g.SetName ( j["Name"] );
+    Core::Game * g = new Core::Game (j["GameName"]);
+    g->SetAuthor(j["Author"]);
+    g->SetLMTime ( j["LastModifiedTime"] );
+    g->SetNote ( j["Note"] );
+    g->SetVersion ( j["Version"] );
     return g;
 }
 
 
-int ProduceDataFile ( Game *g )
+int ProduceDataFile ( Core::Game *g )
 {
     json j;
-    j["Name"] = g->GetName ().c_str ();
+    j["FileType"] = "Parchment Game Data";
+    j["GameName"] = g->GetGameName ().c_str ();
+    j["Author"] = g->GetAuthor ().c_str ();
+    j["LastModifiedTime"] = g->GetLMTime ().c_str ();
+    j["Note"] = g->GetNote ().c_str ();
+    j["Version"] = g->GetVersion ().c_str ();
     try
     {
-
-        WriteFile ( g->GetName ().append ( ".gdata" ), j.dump () );
+        WriteFile ( g->GetGameName ().append ( ".gdata" ), j.dump () );
     }
     catch ( const std::exception & )
     {
