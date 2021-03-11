@@ -26,22 +26,26 @@ TEST ( TEST_VM, WriteReadFile )
 
 TEST ( TEST_VM, ProduceDataFile )
 {
-    Game g = Game();
-    g.SetName ( "name" );
+    Core::Game g = Core::Game ();
+    g.SetGameName ( "name" );
     EXPECT_TRUE ( !ProduceDataFile ( &g ) );
 }
 
-TEST(TEST_VM, ConstructGame) {
-    Game g = ConstructGame ( "name.gdata" );
-    EXPECT_TRUE ( !std::string ( g.GetName () ).compare ( "name" ) );
+TEST ( TEST_VM, ConstructGame )
+{
+    Core::Game * g = ConstructGame ( "name.gdata" );
+    EXPECT_TRUE ( !std::string ( g->GetGameName () ).compare ( "name" ) );
 }
 
-TEST(TEST_VM, ProduceDataFileConstructGame) {
-    Game g = Game ();
-    g.SetName ( "huh" );
-    ProduceDataFile ( &g );
-    Game r = ConstructGame ( std::string ( "huh.gdata" ) );
-    EXPECT_TRUE ( !r.GetName ().compare ( "huh" ) );
+TEST ( TEST_VM, ProduceDataFileConstructGame )
+{
+    Core::Game * g = new Core::Game ( std::string ( "huh" ) );
+    ProduceDataFile ( g );
+    Core::Game * r = ConstructGame ( std::string ( "huh.gdata" ) );
+
+    EXPECT_STREQ ( r->GetGameName ().c_str(), "huh" );
+    delete g;
+    delete r;
 }
 
 /*
