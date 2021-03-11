@@ -15,6 +15,10 @@ ImGui::FileBrowser openDialog = ImGui::FileBrowser (
     ImGuiFileBrowserFlags_NoTitleBar
 );
 
+// bool array to track the selections made on main menu bar
+// TODO swap the dumb magic number system for an enum that is easier to read
+static bool selection[3];
+
 
 int EditorMain ( int argc, char *argv[] )
 {
@@ -84,6 +88,9 @@ int EditorMain ( int argc, char *argv[] )
 
     openDialog.SetTypeFilters ( { ".h", ".cpp" } );
 
+    // set the default game view window state to open
+    selection[2] = true;
+
     while ( running )
     {
         SDL_Event evt;
@@ -150,9 +157,6 @@ int EditorMain ( int argc, char *argv[] )
 
 static void ShowExampleAppMainMenuBar ()
 {
-    // bool array to track the selections made on main menu bar
-    static bool selection[3];
-
 #ifdef __TEST_EDITOR
     selection[0] = true;
 #endif // __TEST_EDITOR
@@ -178,6 +182,11 @@ static void ShowExampleAppMainMenuBar ()
     if ( selection[2] )
     {
         // possibly implement a new function here for readability purposes
+
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Once);
+
+        // the game view window itself
         ImGui::Begin ( "Game View Window" );
         ImGui::End ();
     }
