@@ -1,10 +1,15 @@
 #pragma once
-#include <SDL.h>
-#include <glad/glad.h>
-#include <stdio.h>
-#include <Entity.h>
+
+#include <cstdio>
 #include <string>
 #include <vector>
+
+#include <SDL.h>
+#include <glad/glad.h>
+#include <glm/core/type_mat.hpp>
+
+#include <Entity.h>
+
 
 namespace Core
 {
@@ -15,20 +20,21 @@ namespace Core
     {
 
     public:
-        // Constructor, just creates the context of the page
-        Page ( SDL_Window *window );
+        Page() {};
+        Page(std::string name) : name(name) {};
 
         // Render the given page on the current context
         // Returns non-zero on error
-        int SetName ( std::string name );
+        void SetName ( std::string name );
         std::string GetName ();
-        std::vector<Entity> getEntityList ();
+        void SetBackgroundColor(float r, float g, float b, float a);
+        glm::vec4 GetBackgroundColor();
+        std::vector<Entity*>& getEntityList ();
         virtual void render ();
 
     protected:
-        SDL_GLContext mPageContext; // The page context
-        SDL_Window *mWindow; // The window the page context is related to
         std::string name;
-        std::vector<Entity> entityList;
+        glm::vec4 backgroundColor;
+        std::vector<Entity*> entityList;
     };
 }

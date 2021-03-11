@@ -1,9 +1,11 @@
 #include <Game.h>
-#include <MapPage.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glad/glad.h>
 
+#include <MapPage.h>
 
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -11,30 +13,27 @@
 
 
 // by Larry
-// class place holder
 namespace Core
 {
-    Game::Game ()
-    { }
-    Game::Game ( std::string gameName )
-    {
-        this->gameName = std::string ( gameName );
-    }
+
+    int Game::width = 1280;
+    int Game::height = 720;
+
+
     std::string Game::GetGameName ()
     {
         return std::string ( this->gameName );
     }
 
-    int Game::SetGameName ( std::string newName )
+    void Game::SetGameName ( std::string newName )
     {
         this->gameName = newName;
-        return 0;
     }
 
-    int Game::SetAuthor ( std::string newAuthor )
+
+    void Game::SetAuthor ( std::string newAuthor )
     {
         this->author = newAuthor;
-        return 0;
     }
 
     std::string Game::GetAuthor ()
@@ -42,62 +41,74 @@ namespace Core
         return this->author;
     }
 
-    int Game::SetVersion ( std::string newVersion )
+
+    void Game::SetVersion ( std::string newVersion )
     {
         this->version = newVersion;
-        return 0;
     }
+
     std::string Game::GetVersion ()
     {
         return this->version;
     }
 
-    int Game::SetLMTime ( std::string time )
+
+    void Game::SetLMTime ( std::string time )
     {
         this->lMTime = time;
-        return 0;
     }
 
-    int Game::SetLMTime ()
+    void Game::SetLMTime ()
     {
         time_t rawtime;
         struct tm *timeinfo;
         time ( &rawtime );
         timeinfo = localtime ( &rawtime );
         this->lMTime = std::string ( asctime ( timeinfo ) );
-        return 0;
     }
+
+
     std::string Game::GetLMTime ()
     {
         return this->lMTime;
     }
-    int Game::SetNote ( std::string newNote )
+
+    void Game::SetNote ( std::string newNote )
     {
         this->note = newNote;
-        return 0;
     }
+
+
     std::string Game::GetNote ()
     {
         return this->note;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Larry out
 
-    int width = 1280; // Width of the window, used in Entity.cpp
-    int height = 720; // Height of the window, used in Entity.cpp
+    using json = nlohmann::json;
+
+    Game* Game::parse( json& root )
+    {
+        std::unique_ptr<Game> game{ new Game };
+        game->SetGameName(root.at("GameName").get<std::string>());
+        game->SetAuthor(root.at("Author").get<std::string>());
+        game->SetVersion(root.at("Version").get<std::string>());
+        game->SetLMTime(root.at("LastModifiedTime").get<std::string>());
+        game->SetNote(root.at("Note").get<std::string>());
+        for (json pageJson : root.at("PageList").get<std::vector<json>>()) {
+            std::unique_ptr<Page> page{ new Page };
+
+        }
+
+        return new Game;
+    }
+
+
+    nlohmann::json* Game::serialize()
+    {
+        return new nlohmann::json;
+    }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
     // argument err_msg can be anything, but try to keep it related to the error
@@ -262,16 +273,15 @@ namespace Core
 // Show the current context
         SDL_GL_MakeCurrent ( window, gl_context );
 
-        ///////////////
-        // ENTITY TEST - Render all entities
-        // This is just a test to make sure Entity rendering is correctly set up
         glClearColor ( 0.1, 0.2, 0.59, 1.0 );
         glClear ( GL_COLOR_BUFFER_BIT );
-        // Iterate through the unique_ptrs in the 'entities' vector
-        for ( auto &entity : entities )
-        {
-            entity->render ();
 
+        if (currentPage != nullptr) {
+            glm::vec4 pageColor = currentPage->GetBackgroundColor();
+            glClearColor(pageColor.r, pageColor.g, pageColor.b, pageColor.a);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            currentPage->render();
         }
 
         SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
@@ -290,6 +300,9 @@ namespace Core
 
         ///////////////
         // ENTITY TEST
+        Page* entityPage = new Page("entityTest");
+        entityPage->SetBackgroundColor(0.1, 0.2, 0.59, 1.0);
+        auto entities = entityPage->getEntityList();
         Entity *entityInteractive = new Entity ( glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
         entities.emplace_back ( entityInteractive );
         Entity *entityTallThin = new Entity ( glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
@@ -300,6 +313,7 @@ namespace Core
         entities.emplace_back ( entityVeryShortWide );
         Entity *entityOrigin = new Entity ( glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
         entities.emplace_back ( entityOrigin );
+        pageList.push_back(entityPage);
         ///////////////
 
         ///////////////
@@ -316,12 +330,15 @@ namespace Core
         Map *map2 = new Map ( glm::vec2 ( 16, 16 ), 32 );
 
         // Here are the 2 ways to make MapPages with set maps
-        MapPage mapPage1 ( window, map1 ); // Creates a MapPage with initial map 'map1'
-        MapPage mapPage2 ( window );
-        mapPage2.setMap ( map2 );
-        ////////////////
+        MapPage* mapPage1 = new MapPage( map1 ); // Creates a MapPage with initial map 'map1'
+        MapPage* mapPage2 = new MapPage;
+        mapPage2->setMap ( map2 );
+        pageList.push_back(mapPage1);
+        pageList.push_back(mapPage2);
 
-        Page *currentPage = NULL;
+        currentPage = pageList[0];
+
+        
 
 
 
@@ -403,28 +420,20 @@ namespace Core
 
                                 // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
                             case SDLK_1:
-                                currentPage = &mapPage1;
+                                currentPage = pageList[1];
                                 break;
                             case SDLK_2:
-                                currentPage = &mapPage2;
+                                currentPage = pageList[2];
                                 break;
                             case SDLK_3:
-                                currentPage = NULL;
+                                currentPage = pageList[0];
                                 break;
                         }
                 }
             }
 
 
-            // Render the correct page
-            if ( currentPage )
-            {
-                currentPage->render ();
-            }
-            else
-            {
-                render ();
-            }
+            render();
 
 
             // Error checking! This will only print out an error if one is detected each loop
