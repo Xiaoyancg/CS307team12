@@ -84,19 +84,46 @@ namespace Core
         return this->note;
     }
 
+    // =========================
+    // CONSTRUCTOR
+
+    // =========================
+    // ATTRIBUTES OPERATION
+
+    // =========================
+    // PROPERTY OPERATION
+
+    // =========================
+    // MEMBER OPERATION
+    Page *Game::addPage ( Page *p )
+    {
+        this->pageList.push_back ( p );
+        return p;
+    }
+    Page *Core::Game::createPage ( std::string n )
+    {
+        Page *p = new Page ( n );
+        return addPage ( p );
+    }
+    // =========================
+    // UTILITY OPERATION
+
+
+
 // Larry out
 
     using json = nlohmann::json;
 
-    Game* Game::parse( json& root )
+    Game *Game::parse ( json &root )
     {
         std::unique_ptr<Game> game{ new Game };
-        game->SetGameName(root.at("GameName").get<std::string>());
-        game->SetAuthor(root.at("Author").get<std::string>());
-        game->SetVersion(root.at("Version").get<std::string>());
-        game->SetLMTime(root.at("LastModifiedTime").get<std::string>());
-        game->SetNote(root.at("Note").get<std::string>());
-        for (json pageJson : root.at("PageList").get<std::vector<json>>()) {
+        game->SetGameName ( root.at ( "GameName" ).get<std::string> () );
+        game->SetAuthor ( root.at ( "Author" ).get<std::string> () );
+        game->SetVersion ( root.at ( "Version" ).get<std::string> () );
+        game->SetLMTime ( root.at ( "LastModifiedTime" ).get<std::string> () );
+        game->SetNote ( root.at ( "Note" ).get<std::string> () );
+        for ( json pageJson : root.at ( "PageList" ).get<std::vector<json>> () )
+        {
             std::unique_ptr<Page> page{ new Page };
 
         }
@@ -105,7 +132,7 @@ namespace Core
     }
 
 
-    nlohmann::json* Game::serialize()
+    nlohmann::json *Game::serialize ()
     {
         return new nlohmann::json;
     }
@@ -276,12 +303,13 @@ namespace Core
         glClearColor ( 0.1, 0.2, 0.59, 1.0 );
         glClear ( GL_COLOR_BUFFER_BIT );
 
-        if (currentPage != nullptr) {
-            glm::vec4 pageColor = currentPage->GetBackgroundColor();
-            glClearColor(pageColor.r, pageColor.g, pageColor.b, pageColor.a);
-            glClear(GL_COLOR_BUFFER_BIT);
+        if ( currentPage != nullptr )
+        {
+            glm::vec4 pageColor = currentPage->GetBackgroundColor ();
+            glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
+            glClear ( GL_COLOR_BUFFER_BIT );
 
-            currentPage->render();
+            currentPage->render ();
         }
 
         SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
@@ -303,20 +331,15 @@ namespace Core
         // This will be moved within an actual page once sprites are implemented.
         // For now it's separated from a page because all rendered objects are a single color and there
         // would be no way to see a difference from a Tile on the map and an Entity
-        Page* entityPage = new Page("entityTest");
-        entityPage->SetBackgroundColor(0.1, 0.2, 0.59, 1.0);
-        std::vector<Entity *>& entities = entityPage->getEntityList(); // Using auto keyword here instead of the actual type causes issues
-        Entity *entityInteractive = new Entity ( glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
-        entities.emplace_back ( entityInteractive );
-        Entity *entityTallThin = new Entity ( glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
-        entities.emplace_back ( entityTallThin );
-        Entity *entityShortWide = new Entity ( glm::vec2 ( 500, 500 ), glm::vec2 ( 64, 32 ), 0, 0 );
-        entities.emplace_back ( entityShortWide );
-        Entity *entityVeryShortWide = new Entity ( glm::vec2 ( 640, 100 ), glm::vec2 ( 128, 16 ), 0, 0 );
-        entities.emplace_back ( entityVeryShortWide );
-        Entity *entityOrigin = new Entity ( glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
-        entities.emplace_back ( entityOrigin );
-        pageList.push_back(entityPage);
+
+        Page *entityPage = this->createPage ( "entityPage" );
+        entityPage->SetBackgroundColor ( 0.1, 0.2, 0.59, 1.0 );
+
+        Entity *entityInteractive = entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
+        Entity *entityTallThin = entityPage->createEntity ( "interactive", glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
+        Entity *entityShortWide = entityPage->createEntity ( "shortWide", glm::vec2 ( 500, 500 ), glm::vec2 ( 64, 32 ), 0, 0 );
+        Entity *entityVeryShortWide = entityPage->createEntity ( "veryShortWide", glm::vec2 ( 640, 100 ), glm::vec2 ( 128, 16 ), 0, 0 );
+        Entity *entityOrigin = entityPage->createEntity ( "origin", glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
         ///////////////
 
         ///////////////
@@ -333,15 +356,15 @@ namespace Core
         Map *map2 = new Map ( glm::vec2 ( 16, 16 ), 32 );
 
         // Here are the 2 ways to make MapPages with set maps
-        MapPage* mapPage1 = new MapPage( map1 ); // Creates a MapPage with initial map 'map1'
-        MapPage* mapPage2 = new MapPage; // Creates empty map page 2
+        MapPage *mapPage1 = new MapPage ( map1 ); // Creates a MapPage with initial map 'map1'
+        MapPage *mapPage2 = new MapPage; // Creates empty map page 2
         mapPage2->setMap ( map2 ); // Sets empty map page 2's map
-        pageList.push_back(mapPage1);
-        pageList.push_back(mapPage2);
+        pageList.push_back ( mapPage1 );
+        pageList.push_back ( mapPage2 );
 
         currentPage = pageList[0];
 
-        
+
 
 
 
@@ -434,7 +457,7 @@ namespace Core
             }
 
 
-            render();
+            render ();
 
 
             // Error checking! This will only print out an error if one is detected each loop

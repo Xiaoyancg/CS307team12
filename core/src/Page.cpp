@@ -6,6 +6,37 @@
 
 namespace Core
 {
+    // =========================
+    // CONSTRUCTOR
+
+    // =========================
+    // ATTRIBUTES OPERATION
+
+    // =========================
+    // PROPERTY OPERATION
+
+    // =========================
+    // MEMBER OPERATION
+    Entity *Page::addEntity ( Entity *e )
+    {
+        this->entityList.push_back ( e );
+        return e;
+    }
+    Entity *Page::createEntity ( std::string n )
+    {
+        Entity *e = new Entity ( n );
+        return addEntity ( e );
+    }
+    Entity *Page::createEntity ( std::string n, glm::vec2 l, glm::vec2 s, double r, int sid )
+    {
+        Entity *e = createEntity ( n );
+        e->setProperty ( l, s, r, sid );
+        return e;
+    }
+    // =========================
+    // UTILITY OPERATION
+
+
     std::string Page::GetName ()
     {
         return this->name;

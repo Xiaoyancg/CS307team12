@@ -64,6 +64,25 @@ namespace Core
 
 
 
+        // =========================
+        // CONSTRUCTOR
+         
+        // =========================
+        // ATTRIBUTES OPERATION
+        
+        // =========================
+        // PROPERTY OPERATION
+        
+        // =========================
+        // MEMBER OPERATION
+        Page *addPage ( Page *p );
+        Page *createPage ( std::string n );
+
+        // =========================
+        // UTILITY OPERATION
+
+
+
 
        // from core team end
     private:
