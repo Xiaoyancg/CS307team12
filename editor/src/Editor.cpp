@@ -17,7 +17,7 @@ ImGui::FileBrowser openDialog = ImGui::FileBrowser(
 
 // bool array to track the selections made on main menu bar
 // TODO: swap the dumb magic number system for an enum that is easier to read - place it in the header
-static bool selection[3];
+static bool selection[7];
 
 
 int EditorMain(int argc, char* argv[])
@@ -187,8 +187,90 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // the game view window itself
-        ImGui::Begin("Game View Window", &selection[2]);
+        ImGui::Begin("Game View", &selection[2]);
         ImGui::End();
+    }
+    if (selection[3])
+    {
+        // possibly implement a new function here for readability purposes
+
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+
+        // entity editor
+        if (ImGui::Begin("Entity Editor", &selection[3]))
+        {
+            if (ImGui::Button("Create New Entity"))
+            {
+
+            }
+            if (ImGui::Button("Delete This Entity"))
+            {
+
+            }
+
+            if (ImGui::Button("Show Entity Information "))
+            {
+
+            }
+            ImGui::End();
+        }
+    }
+    if (selection[4])
+    {
+        // possibly implement a new function here for readability purposes
+
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+
+        // page editor
+        if (ImGui::Begin("Page Editor", &selection[4]))
+        {
+            if (ImGui::Button("Create New Page"))
+            {
+
+            }
+            if (ImGui::Button("Delete This Page"))
+            {
+
+            }
+            if (ImGui::Button("Show Page Information "))
+            {
+
+            }
+        }
+        ImGui::End();
+    }
+    if (selection[5])
+    {
+        // possibly implement a new function here for readability purposes
+
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+
+        // map editor
+        if (ImGui::Begin("Map Editor", &selection[5]))
+        {
+            if (ImGui::Button("Create New Map"))
+            {
+
+            }
+            if (ImGui::Button("Delete This Map"))
+            {
+
+            }
+            if (ImGui::Button("Show Map Information "))
+            {
+
+            }
+            ImGui::End();
+        }
+    }
+    //calls saved successfully popup on project save
+    if (selection[6])
+    {
+        ImGui::OpenPopup("Saved Successfully");
+        selection[6] = false;
     }
 
     // main menu bar code
@@ -205,17 +287,22 @@ static void ShowExampleAppMainMenuBar()
             {
                 openDialog.Open();
             }
+            if (ImGui::MenuItem("Delete Project"))
+            {
+                selection[1] = true;
+            }
+            if (ImGui::MenuItem("Export Project"))
+            {
+                // call export function from VM team
+            }
             if (ImGui::MenuItem("Save"))
             {
                 // call save function from VM team
+                selection[6] = true;
             }
             if (ImGui::MenuItem("Save As"))
             {
                 selection[0] = true;
-            }
-            if (ImGui::MenuItem("Delete Project"))
-            {
-                selection[1] = true;
             }
             ImGui::EndMenu();
         }
@@ -223,16 +310,10 @@ static void ShowExampleAppMainMenuBar()
         // Add menu
         if (ImGui::BeginMenu("Add"))
         {
-            ImGui::MenuItem("Game View Window", "", &selection[2]);
-
-            if (ImGui::MenuItem("Page Editor"))
-            {
-
-            }
-            if (ImGui::MenuItem("Entity Editor"))
-            {
-
-            }
+            ImGui::MenuItem("Game View", "", &selection[2]);
+            ImGui::MenuItem("Entity Editor", "", &selection[3]);
+            ImGui::MenuItem("Page Editor", "", &selection[4]);
+            ImGui::MenuItem("Map Editor", "", &selection[5]);
             ImGui::EndMenu();
         }
         // ImGui::IsItemVisible ();
@@ -264,11 +345,13 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Button("Yes"))
         {
             //connect to VM team delete function
+            saveDialog.Open();
         }
         ImGui::EndPopup();
     }
 
     // save project popup
+    //this can also be used/called when SAVE AS is successful
     static char name[128] = "";
     if (ImGui::BeginPopup("Save As"))
     {
@@ -282,7 +365,17 @@ static void ShowExampleAppMainMenuBar()
             // memset to clear the buffer after use
             memset(name, 0, 128);
         }
-
         ImGui::EndPopup();
     }
+    if (ImGui::BeginPopup("Saved Successfully"))
+    {
+        ImGui::Text("Project saved successfully!");
+        ImGui::EndPopup();
+    }
+    /* this can be used when project deletion is successful
+    if (ImGui::BeginPopup("Deleted Successfully"))
+    {
+        ImGui::Text("Project deleted successfully!");
+        ImGui::EndPopup();
+    } */
 }
