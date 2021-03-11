@@ -1,3 +1,4 @@
+#pragma once
 /*
  * Tile class
  * Just stores a depth and sprite ID.

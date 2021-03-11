@@ -1,3 +1,4 @@
+#pragma once
 #include "Page.h"
 #include "Map.h"
 

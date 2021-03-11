@@ -7,14 +7,45 @@
 namespace Core
 {
 // Constructor of the game class
-    Entity::Entity ( glm::vec2 location, glm::vec2 scale, double rotation, int spriteID )
-        : mLocation ( location ),
+    Entity::Entity ( std::string s, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID )
+        : entityName ( s ),
+        mLocation ( location ),
         mScale ( scale ),
         mRotation ( rotation ),
         mSpriteID ( spriteID )
     {
 // All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
         calculateCoords ( location, scale );
+    }
+
+
+        // =========================
+        // CONSTRUCTOR
+
+        // =========================
+        // ATTRIBUTES OPERATION
+
+        // =========================
+        // PROPERTY OPERATION
+    void Entity::setProperty ( glm::vec2 l, glm::vec2 s, double r, int sid)
+    {
+        this->mLocation = l;
+        this->mScale = s;
+        this->mRotation = r;
+        this->mSpriteID = sid;
+        calculateCoords ( mLocation, mScale );
+    }
+        // =========================
+        // MEMBER OPERATION
+
+        // =========================
+        // UTILITY OPERATION
+
+
+
+    Entity::Entity ( std::string s ):entityName ( s )
+    {
+
     }
 
     void Entity::calculateCoords ( glm::vec2 location, glm::vec2 scale )
