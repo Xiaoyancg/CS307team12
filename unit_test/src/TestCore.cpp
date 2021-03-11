@@ -14,7 +14,8 @@ TEST ( TEST_CORE, game )
     char *argv[2];
     argv[0] = "core";
     argv[1] = "test";
-    coreMain ( argc, argv );
+    Core::Game g;
+    g.coreMain ( argc, argv );
     EXPECT_EQ ( coreError, GL_NO_ERROR );
 }
 
@@ -24,7 +25,8 @@ TEST ( TEST_CORE, page )
     char *argv[2];
     argv[0] = "core";
     argv[1] = "test";
-    coreMain ( argc, argv );
+    Core::Game g;
+    g.coreMain ( argc, argv );
     EXPECT_EQ ( pageError, GL_NO_ERROR );
 }
 
@@ -35,7 +37,8 @@ TEST ( TEST_CORE, entity )
     char *argv[2];
     argv[0] = "core";
     argv[1] = "test";
-    coreMain ( argc, argv );
+    Core::Game g;
+    g.coreMain ( argc, argv );
     EXPECT_EQ ( entityError, GL_NO_ERROR );
 }
 

@@ -1,5 +1,6 @@
 #include <Game.h>
 
 int main ( int argc, char *argv[] ) {
-  return coreMain ( argc, argv );
+	Core::Game game;
+	return game.coreMain(argc, argv);
 }
