@@ -34,9 +34,6 @@ namespace Core
 
     void Page::render ()
     {
-// Show the current context
-        SDL_GL_MakeCurrent ( mWindow, mPageContext );
-
         // Clear the buffer with a blue background
         glClearColor ( 0.0, 0.0, 1.0, 1.0 );
         glClear ( GL_COLOR_BUFFER_BIT );

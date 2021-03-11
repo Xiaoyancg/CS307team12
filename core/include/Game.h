@@ -1,41 +1,46 @@
 #pragma once
-#include <SDL.h>
-#include <Page.h>
-#include <Entity.h>
+
+#include <cstdio>
+#include <ctime>
 #include <vector>
 #include <memory> // For unique_ptr
-#include <glad/glad.h>
-#include <stdio.h>
-#include <ctime>
 #include <string>
+
+#include <SDL.h>
+#include <nlohmann/json.hpp>
+
+#include <Page.h>
+#include <Entity.h>
+
+
 namespace Core
 {
     class Game
     {
     public:
-        Game ();
-        Game ( std::string gameName );
+        Game() {}
+        Game( std::string gameName ) : gameName(gameName) {}
 
-        std::string GetGameName ( void );
-        int SetGameName ( std::string newName );
+        std::string GetGameName ();
+        void SetGameName ( std::string newName );
 
-        std::string GetAuthor ( void );
-        int SetAuthor ( std::string newAuthor );
+        std::string GetAuthor ();
+        void SetAuthor ( std::string newAuthor );
 
-        std::string GetVersion ( void );
-        int SetVersion ( std::string newVersion );
+        std::string GetVersion ();
+        void SetVersion ( std::string newVersion );
 
-        std::string GetLMTime ( void );
-        int SetLMTime ( void );
-        int SetLMTime ( std::string time );
+        std::string GetLMTime ();
+        void SetLMTime ();
+        void SetLMTime ( std::string time );
 
-        std::string GetNote ( void );
-        int SetNote ( std::string newNote );
+        std::string GetNote ();
+        void SetNote ( std::string newNote );
         int AddNote ( std::string moreNote );
 
         // create a page in the page list
         // return the page id
-        int CreatePage ( void );
+        int CreatePage ();
         int CreatePage ( std::string pageName,
                         /*place holder change to enum class in sprint 2*/
                          std::string pageType );
@@ -47,6 +52,10 @@ namespace Core
         int addDsipalyList ( int pageID );
         std::vector<int> getDisplayListID ();
         */
+
+        // File loading and serialization
+        static std::unique_ptr<Game> parse(nlohmann::json& root);
+        std::unique_ptr<nlohmann::json> serialize();
 
         // from core team
         void init ();
