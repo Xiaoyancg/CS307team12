@@ -49,6 +49,12 @@ TEST ( TEST_VM, ProduceDataFileConstructGame )
     delete r;
 }
 
+TEST ( TEST_VM, Real_ProduceGame )
+{
+    //Core::Game *g = CreateExampleGame ();
+    //ProduceDataFile ( g );
+}
+
 /*
 
 TEST(TEST_VM, ) {

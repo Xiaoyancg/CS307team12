@@ -23,6 +23,7 @@ namespace Core
         int SetVersion ( std::string newVersion );
 
         std::string GetLMTime ( void );
+        int SetLMTime ( void );
         int SetLMTime ( std::string time );
 
         std::string GetNote ( void );
@@ -44,6 +45,14 @@ namespace Core
         std::vector<int> getDisplayListID ();
         */
 
+        // from core team
+        void init ();
+        void initShader ();
+        void sdl_die ( const char *err_msg );
+        void render ();
+        void run (); // main entry
+
+        // from core team end
     private:
         std::string gameName;
         std::string author;
@@ -58,6 +67,8 @@ namespace Core
         // std::vector<int> inDisplayList;
 
     };
+
+
 }
 
 void sdl_die ( const char *err_msg );

@@ -17,22 +17,71 @@
 // class place holder
 namespace Core
 {
-    Core::Game::Game ()
-    {
-    }
+    Game::Game ()
+    {     }
     Game::Game ( std::string gameName )
     {
-        this->gameName = std::string(gameName);
+        this->gameName = std::string ( gameName );
     }
-    std::string Core::Game::GetGameName ()
+    std::string Game::GetGameName ()
     {
         return std::string ( this->gameName );
     }
 
-    int Core::Game::SetGameName ( std::string newName )
+    int Game::SetGameName ( std::string newName )
     {
         this->gameName = newName;
-        return 1;
+        return 0;
+    }
+
+    int Game::SetAuthor ( std::string newAuthor )
+    {
+        this->author = newAuthor;
+        return 0;
+    }
+
+    std::string Game::GetAuthor ()
+    {
+        return this->author;
+    }
+
+    int Game::SetVersion ( std::string newVersion )
+    {
+        this->version = newVersion;
+        return 0;
+    }
+    std::string Game::GetVersion ()
+    {
+        return this->version;
+    }
+
+    int Game::SetLMTime ( std::string time )
+    {
+        this->lMTime = time;
+        return 0;
+    }
+
+    int Game::SetLMTime ()
+    {
+        time_t rawtime;
+        struct tm *timeinfo;
+        time ( &rawtime );
+        timeinfo = localtime ( &rawtime );
+        this->lMTime = std::string ( asctime ( timeinfo ) );
+        return 0;
+    }
+    std::string Game::GetLMTime ()
+    {
+        return this->lMTime;
+    }
+    int Game::SetNote ( std::string newNote )
+    {
+        this->note = newNote;
+        return 0;
+    }
+    std::string Game::GetNote ()
+    {
+        return this->note;
     }
 
 }

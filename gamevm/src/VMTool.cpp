@@ -8,6 +8,20 @@ std::string ReadFile ( std::string fileName )
     return s;
 }
 
+Core::Game *CreateExampleGame ()
+{
+    Core::Game *g = new Core::Game ( std::string ( "example" ) );
+    g->SetAuthor ( std::string ( "example author" ) );
+    g->SetVersion ( std::string ( "0.1.0" ) );
+    time_t rawtime;
+    struct tm *timeinfo;
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
+    g->SetLMTime ( std::string ( asctime ( timeinfo ) ) );
+    g->SetNote ( std::string ( "example Note" ) );
+    // TODO page
+    return g;
+}
 
 int WriteFile ( std::string fileName, std::string content )
 {
@@ -43,7 +57,11 @@ Core::Game * ConstructGame ( std::string fileName )
 int ProduceDataFile ( Core::Game *g )
 {
     json j;
+    j["FileType"] = "Parchment Game Data";
     j["GameName"] = g->GetGameName ().c_str ();
+    j["Author"] = g->GetAuthor ().c_str ();
+
+
     try
     {
         WriteFile ( g->GetGameName ().append ( ".gdata" ), j.dump () );
