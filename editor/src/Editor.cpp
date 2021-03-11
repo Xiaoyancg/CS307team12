@@ -150,16 +150,14 @@ int EditorMain ( int argc, char *argv[] )
 
 static void ShowExampleAppMainMenuBar ()
 {
-    //bool array to track the selections made on main menu bar
+    // bool array to track the selections made on main menu bar
     static bool selection[3];
-
-
 
 #ifdef __TEST_EDITOR
     selection[0] = true;
 #endif // __TEST_EDITOR
 
-    //open new project/save as popup
+    // open new project/save as popup
     if ( selection[0] )
     {
         ImGui::OpenPopup ( "Save As" );
@@ -168,16 +166,15 @@ static void ShowExampleAppMainMenuBar ()
         isSaveAsOpen = ImGui::IsPopupOpen ( "Save As" );
 #endif // __TEST_EDITOR
 
-
         selection[0] = false;
     }
-    //open delete project popup
+    // open delete project popup
     if ( selection[1] )
     {
         ImGui::OpenPopup ( "Delete Project" );
         selection[1] = false;
     }
-    //game view window creation
+    // game view window creation
     if ( selection[2] )
     {
         // possibly implement a new function here for readability purposes
@@ -201,7 +198,7 @@ static void ShowExampleAppMainMenuBar ()
             }
             if ( ImGui::MenuItem ( "Save" ) )
             {
-                //call save function from VM team
+                // call save function from VM team
             }
             if ( ImGui::MenuItem ( "Save As" ) )
             {
@@ -229,7 +226,7 @@ static void ShowExampleAppMainMenuBar ()
             }
             ImGui::EndMenu ();
         }
-        //ImGui::IsItemVisible ();
+        // ImGui::IsItemVisible ();
         ImGui::EndMainMenuBar ();
     }
 
@@ -271,7 +268,10 @@ static void ShowExampleAppMainMenuBar ()
         if ( ImGui::Button ( "Save" ) )
         {
             saveDialog.Open ();
-            //connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
+            // connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
+
+            // memset to clear the buffer after use
+            memset(name, 0, 128);
         }
 
         ImGui::EndPopup ();
