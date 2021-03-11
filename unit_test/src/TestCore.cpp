@@ -6,6 +6,8 @@ unsigned int coreError = 1;
 unsigned int entityError = 1;
 bool enableTest = true;
 
+
+
 TEST ( TEST_CORE, game )
 {
     int argc = 2;
@@ -40,7 +42,7 @@ TEST ( TEST_CORE, entity )
 
 TEST ( TEST_GAME, Game_SetGetName )
 {
-    Core::Game g("hello");
+    Core::Game g ( "hello" );
     std::string s ( g.GetGameName () );
     EXPECT_TRUE ( !s.compare ( "hello" ) );
 }

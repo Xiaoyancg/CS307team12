@@ -11,7 +11,8 @@ int WriteFile ( std::string fileName, std::string content );
 
 Core::Game * ConstructGame ( std::string fileName );
 
-
 int ProduceDataFile ( Core::Game *game );
+
+Core::Game *CreateExampleGame ();
 
 //int WriteJson ( std::string fileName, json j );
