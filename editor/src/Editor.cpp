@@ -40,7 +40,7 @@ int EditorMain(int argc, char* argv[])
     SDL_WindowFlags window_flags =
         (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI);
     // create a window for opengl. opengl can't create a window. we use sdl to create window
-    SDL_Window* window = SDL_CreateWindow("Dear ImGui SDL2+OpenGL3 example",
+    SDL_Window* window = SDL_CreateWindow("Parchment",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // x and y pos. here we put it centered - CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
         1280, 720,
         window_flags // flags of sdl windows
