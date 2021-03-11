@@ -1,12 +1,12 @@
 #include "MapPage.h"
 #include "glm/glm.hpp"
 
-extern int width;
-extern int height;
 
 namespace Core
 {
-// The fragment shader color is different, but everything else is the same as Game.cpp
+    extern int width;
+    extern int height;
+    // The fragment shader color is different, but everything else is the same as Game.cpp
     void MapPage::initShaders ()
     {
 // Source for the vertex shader
