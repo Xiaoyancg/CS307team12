@@ -35,6 +35,7 @@ TEST ( TEST_VM, ConstructGame )
 {
     Core::Game * g = ConstructGame ( "name.gdata" );
     EXPECT_TRUE ( !std::string ( g->GetGameName () ).compare ( "name" ) );
+    delete g;
 }
 
 TEST ( TEST_VM, ProduceDataFileConstructGame )
