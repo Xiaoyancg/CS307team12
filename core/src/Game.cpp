@@ -299,10 +299,13 @@ namespace Core
         int close_window = false;
 
         ///////////////
-        // ENTITY TEST
+        // ENTITY TEST (This is here just for demo purposes)
+        // This will be moved within an actual page once sprites are implemented.
+        // For now it's separated from a page because all rendered objects are a single color and there
+        // would be no way to see a difference from a Tile on the map and an Entity
         Page* entityPage = new Page("entityTest");
         entityPage->SetBackgroundColor(0.1, 0.2, 0.59, 1.0);
-        auto entities = entityPage->getEntityList();
+        std::vector<Entity *>& entities = entityPage->getEntityList(); // Using auto keyword here instead of the actual type causes issues
         Entity *entityInteractive = new Entity ( glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
         entities.emplace_back ( entityInteractive );
         Entity *entityTallThin = new Entity ( glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
@@ -331,8 +334,8 @@ namespace Core
 
         // Here are the 2 ways to make MapPages with set maps
         MapPage* mapPage1 = new MapPage( map1 ); // Creates a MapPage with initial map 'map1'
-        MapPage* mapPage2 = new MapPage;
-        mapPage2->setMap ( map2 );
+        MapPage* mapPage2 = new MapPage; // Creates empty map page 2
+        mapPage2->setMap ( map2 ); // Sets empty map page 2's map
         pageList.push_back(mapPage1);
         pageList.push_back(mapPage2);
 
@@ -368,8 +371,6 @@ namespace Core
 
                              // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                             glViewport ( 0, 0, width, height );
-
-                        // TODO: Add map coordinate recalculations
 
                         // Preserve dimensions of objects after resize
                         // Set the scale based on the width and height of the screen
