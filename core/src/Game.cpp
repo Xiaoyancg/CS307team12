@@ -1,9 +1,11 @@
 #include <Game.h>
-#include <MapPage.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glad/glad.h>
 
+#include <MapPage.h>
 
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -11,30 +13,22 @@
 
 
 // by Larry
-// class place holder
 namespace Core
 {
-    Game::Game ()
-    { }
-    Game::Game ( std::string gameName )
-    {
-        this->gameName = std::string ( gameName );
-    }
     std::string Game::GetGameName ()
     {
         return std::string ( this->gameName );
     }
 
-    int Game::SetGameName ( std::string newName )
+    void Game::SetGameName ( std::string newName )
     {
         this->gameName = newName;
-        return 0;
     }
 
-    int Game::SetAuthor ( std::string newAuthor )
+
+    void Game::SetAuthor ( std::string newAuthor )
     {
         this->author = newAuthor;
-        return 0;
     }
 
     std::string Game::GetAuthor ()
@@ -42,59 +36,76 @@ namespace Core
         return this->author;
     }
 
-    int Game::SetVersion ( std::string newVersion )
+
+    void Game::SetVersion ( std::string newVersion )
     {
         this->version = newVersion;
-        return 0;
     }
+
     std::string Game::GetVersion ()
     {
         return this->version;
     }
 
-    int Game::SetLMTime ( std::string time )
+
+    void Game::SetLMTime ( std::string time )
     {
         this->lMTime = time;
-        return 0;
     }
 
-    int Game::SetLMTime ()
+    void Game::SetLMTime ()
     {
         time_t rawtime;
         struct tm *timeinfo;
         time ( &rawtime );
         timeinfo = localtime ( &rawtime );
         this->lMTime = std::string ( asctime ( timeinfo ) );
-        return 0;
     }
+
+
     std::string Game::GetLMTime ()
     {
         return this->lMTime;
     }
-    int Game::SetNote ( std::string newNote )
+
+    void Game::SetNote ( std::string newNote )
     {
         this->note = newNote;
-        return 0;
     }
+
+
     std::string Game::GetNote ()
     {
         return this->note;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Larry out
+
+    using json = nlohmann::json;
+
+    std::unique_ptr<Game> Game::parse( json& root )
+    {
+        std::unique_ptr<Game> game{ new Game };
+        game->SetGameName(root.at("GameName").get<std::string>());
+        game->SetAuthor(root.at("Author").get<std::string>());
+        game->SetVersion(root.at("Version").get<std::string>());
+        game->SetLMTime(root.at("LastModifiedTime").get<std::string>());
+        game->SetNote(root.at("Note").get<std::string>());
+        for (json pageJson : root.at("PageList").get<std::vector<json>>()) {
+            std::unique_ptr<Page> page{ new Page };
+
+        }
+
+
+    }
+
+
+    std::unique_ptr<nlohmann::json> Game::serialize()
+    {
+        
+    }
+
+
 
     int width = 1280; // Width of the window, used in Entity.cpp
     int height = 720; // Height of the window, used in Entity.cpp
