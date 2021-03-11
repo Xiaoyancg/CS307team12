@@ -1,0 +1,23 @@
+{
+  "FileType": "Parchment Game Data",
+  "GameName": "example name",
+  "Author": "example author",
+  "Version": "exmaple version",
+  "LastModifiedTime": "exmple Date Time",
+  "Note": "exmaple Note",
+
+  "PageList": [
+    {
+      "Name": "exmaple Page",
+      "EntityList": [
+        {
+          "Name": "example Entity Name",
+          "Entity ID": 1,
+          "location": [ 0.5, 0.5 ],
+          "scale": [ 1.0, 2.0 ],
+          "rotation": 1.0,
+        }
+      ]
+    }
+  ]
+}
