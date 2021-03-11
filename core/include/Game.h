@@ -1,10 +1,13 @@
 #pragma once
 #include <SDL.h>
 #include <Page.h>
+#include <Entity.h>
+#include <vector>
+#include <memory> // For unique_ptr
 #include <glad/glad.h>
 #include <stdio.h>
 #include <ctime>
-
+#include <string>
 namespace Core
 {
     class Game
@@ -52,7 +55,13 @@ namespace Core
         void render ();
         void run (); // main entry
 
-        // from core team end
+        int coreMain ( int argc, char *argv[] );
+
+
+
+
+
+       // from core team end
     private:
         std::string gameName;
         std::string author;
@@ -66,19 +75,13 @@ namespace Core
         // next sprint
         // std::vector<int> inDisplayList;
 
+        SDL_Window *window; // Window of this Game
+        SDL_GLContext gl_context; // The context of this Game
+        unsigned int shaderProgram; // The shaders, set by initShaders before entering the game loop
+
+        // This vector stores pointers to all of the entities
+        // Vectors don't support normal pointers, like Entity *, so we use unique_ptr instead
+        std::vector<std::unique_ptr<Entity>> entities;
     };
-
-
 }
-
-void sdl_die ( const char *err_msg );
-void initShaders ();
-
-void init ();
-
-int render ();
-
-int coreMain ( int argc, char *argv[] );
-
-
 
