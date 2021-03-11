@@ -250,6 +250,12 @@ int main ( int argc, char **argv )
     // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
     SDL_GL_SwapWindow ( window );
 
+#ifdef __TEST_EDITOR
+    done = true;
+    
+    break;
+#endif // __TEST_EDITOR
+
   }
 
   // Cleanup
