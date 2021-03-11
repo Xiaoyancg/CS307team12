@@ -6,48 +6,36 @@
 
 namespace Core
 {
-
-// Constructor of the Page class
-// Sets mWindow and sets/creates mPageContext
-    Page::Page ( SDL_Window *window )
-        : mWindow ( window )
-    {
-        mPageContext = SDL_GL_CreateContext ( mWindow );
-        if ( !mPageContext )
-        {
-            perror ( "Error creating context\n" );
-        }
-    }
-
-
     std::string Page::GetName ()
     {
         return this->name;
     }
 
-    int Page::SetName ( std::string newName )
+    void Page::SetName ( std::string newName )
     {
         this->name = std::string ( newName );
-        return 1;
+    }
+
+    void Page::SetBackgroundColor(float r, float g, float b, float a)
+    {
+        this->backgroundColor = glm::vec4(r, g, b, a);
+    }
+
+    glm::vec4 Page::GetBackgroundColor()
+    {
+        return this->backgroundColor;
+    }
+
+    std::vector<Entity*>& Page::getEntityList() {
+        return this->entityList;
     }
 
 
     void Page::render ()
     {
-// Show the current context
-        SDL_GL_MakeCurrent ( mWindow, mPageContext );
-
-        // Clear the buffer with a blue background
-        glClearColor ( 0.0, 0.0, 1.0, 1.0 );
-        glClear ( GL_COLOR_BUFFER_BIT );
-        SDL_GL_SwapWindow ( mWindow ); // Show the buffer by bringing it to the front
-        SDL_Delay ( 1000 ); // Wait 1 sec before continuing
-
-        // Clear the buffer with a dark blue background
-        glClearColor ( 0.0, 0.0, 0.5, 1.0 );
-        glClear ( GL_COLOR_BUFFER_BIT );
-        SDL_GL_SwapWindow ( mWindow ); // Show the buffer by bringing it to the front
-        SDL_Delay ( 1000 ); // Wait 1 sec before continuing
+        for (Entity* e : this->getEntityList()) {
+            e->render();
+        }
 
 #ifdef __TEST_CORE
         pageError = glGetError ();
