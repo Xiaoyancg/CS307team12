@@ -1,9 +1,5 @@
 #include <Game.h>
-#include <Page.h>
 #include <MapPage.h>
-#include <Entity.h>
-#include <vector>
-#include <memory> // For unique_ptr
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -13,20 +9,12 @@
 #include <test_core.h>
 #endif // __TEST_CORE
 
-SDL_Window* window;
-SDL_GLContext gl_context;
-unsigned int shaderProgram;
-
-// This vector stores pointers to all of the entities
-// Vectors don't support normal pointers, like Entity *, so we use unique_ptr instead
-std::vector<std::unique_ptr<Entity>> entities;
-
 int width = 1280; // Width of the window, used in Entity.cpp
 int height = 720; // Height of the window, used in Entity.cpp
 
 // Use sdl_die when an SDL error occurs to print out the error and exit
 // argument err_msg can be anything, but try to keep it related to the error
-void sdl_die(const char* err_msg)
+void Game::sdl_die(const char* err_msg)
 {
 	printf("%s: %s\n", err_msg, SDL_GetError());
 	SDL_Quit();
@@ -34,7 +22,7 @@ void sdl_die(const char* err_msg)
 }
 
 
-void initShaders() {
+void Game::initShaders() {
 	// Source for the vertex shader
 	const char* vertexSource = R"glsl(
 		#version 450 core
@@ -141,7 +129,7 @@ void initShaders() {
 }
 
 // This takes care of initializing everything SDL needs to begin running
-void init() {
+void Game::init() {
 	// Initialize video mode of SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		sdl_die("Error initializing SDL video mode :(");
@@ -179,7 +167,7 @@ void init() {
 }
 
 
-int render() {
+int Game::render() {
 	// Show the current context
 	SDL_GL_MakeCurrent(window, gl_context);
 
@@ -203,7 +191,7 @@ int render() {
 }
 
 
-int coreMain(int argc, char* argv[])
+int Game::coreMain(int argc, char* argv[])
 {
 	// Initialize OpenGL and necessary SDL objects
 	init();
@@ -373,5 +361,6 @@ int coreMain(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-	return coreMain(argc, argv);
+	Game game;
+	return game.coreMain(argc, argv);
 }

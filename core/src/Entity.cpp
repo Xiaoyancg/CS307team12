@@ -5,9 +5,6 @@
 #endif // __TEST_CORE
 
 
-extern int width; // Width of the window, set in Game.cpp
-extern int height; // Height of the window, set in Game.cpp
-
 // Constructor of the game class
 Entity::Entity(glm::vec2 location, glm::vec2 scale, double rotation, int spriteID)
 : mLocation(location),
