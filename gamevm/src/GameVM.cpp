@@ -4,6 +4,7 @@
 
 int GameVMMain ( int argc, char *argv[] )
 {
-    return coreMain(argc, argv);
+    Core::Game g;
+    return g.coreMain(argc, argv);
 }
 
