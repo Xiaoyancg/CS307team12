@@ -50,6 +50,10 @@ Core::Game * ConstructGame ( std::string fileName )
     std::string s ( ReadFile ( fileName ) );
     json j = json::parse ( s );
     Core::Game * g = new Core::Game (j["GameName"]);
+    g->SetAuthor(j["Author"]);
+    g->SetLMTime ( j["LastModifiedTime"] );
+    g->SetNote ( j["Note"] );
+    g->SetVersion ( j["Version"] );
     return g;
 }
 
@@ -60,8 +64,9 @@ int ProduceDataFile ( Core::Game *g )
     j["FileType"] = "Parchment Game Data";
     j["GameName"] = g->GetGameName ().c_str ();
     j["Author"] = g->GetAuthor ().c_str ();
-
-
+    j["LastModifiedTime"] = g->GetLMTime ().c_str ();
+    j["Note"] = g->GetNote ().c_str ();
+    j["Version"] = g->GetVersion ().c_str ();
     try
     {
         WriteFile ( g->GetGameName ().append ( ".gdata" ), j.dump () );

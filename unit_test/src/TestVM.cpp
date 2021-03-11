@@ -49,10 +49,12 @@ TEST ( TEST_VM, ProduceDataFileConstructGame )
     delete r;
 }
 
-TEST ( TEST_VM, Real_ProduceGame )
+TEST ( TEST_VM, RealDataFileTest)
 {
-    //Core::Game *g = CreateExampleGame ();
-    //ProduceDataFile ( g );
+    Core::Game *g = CreateExampleGame ();
+    ProduceDataFile ( g );
+    Core::Game *r = ConstructGame ( std::string("example.gdata") );
+    EXPECT_STREQ ( r->GetGameName ().c_str (), "example" );
 }
 
 /*
