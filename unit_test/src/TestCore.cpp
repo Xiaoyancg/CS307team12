@@ -40,8 +40,7 @@ TEST ( TEST_CORE, entity )
 
 TEST ( TEST_GAME, Game_SetGetName )
 {
-    Game g = Game ();
-    g.SetName ( std::string("hello") );
-    std::string s ( g.GetName () );
+    Core::Game g("hello");
+    std::string s ( g.GetGameName () );
     EXPECT_TRUE ( !s.compare ( "hello" ) );
 }

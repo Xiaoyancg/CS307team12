@@ -31,24 +31,22 @@ int WriteFile ( std::string fileName, std::string content )
 }
 
 
-Game ConstructGame ( std::string fileName )
+Core::Game * ConstructGame ( std::string fileName )
 {
     std::string s ( ReadFile ( fileName ) );
     json j = json::parse ( s );
-    Game g = Game ();
-    g.SetName ( j["Name"] );
+    Core::Game * g = new Core::Game (j["GameName"]);
     return g;
 }
 
 
-int ProduceDataFile ( Game *g )
+int ProduceDataFile ( Core::Game *g )
 {
     json j;
-    j["Name"] = g->GetName ().c_str ();
+    j["GameName"] = g->GetGameName ().c_str ();
     try
     {
-
-        WriteFile ( g->GetName ().append ( ".gdata" ), j.dump () );
+        WriteFile ( g->GetGameName ().append ( ".gdata" ), j.dump () );
     }
     catch ( const std::exception & )
     {
