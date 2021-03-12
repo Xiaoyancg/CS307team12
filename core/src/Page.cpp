@@ -85,25 +85,27 @@ namespace Core
         this->name = std::string ( newName );
     }
 
-    void Page::SetBackgroundColor(float r, float g, float b, float a)
+    void Page::SetBackgroundColor ( float r, float g, float b, float a )
     {
-        this->backgroundColor = glm::vec4(r, g, b, a);
+        this->backgroundColor = glm::vec4 ( r, g, b, a );
     }
 
-    glm::vec4 Page::GetBackgroundColor()
+    glm::vec4 Page::GetBackgroundColor ()
     {
         return this->backgroundColor;
     }
 
-    std::vector<Entity*>& Page::getEntityList() {
+    std::vector<Entity *> &Page::getEntityList ()
+    {
         return this->entityList;
     }
 
 
     void Page::render ()
     {
-        for (Entity* e : this->getEntityList()) {
-            e->render();
+        for ( Entity *e : this->getEntityList () )
+        {
+            e->render ();
         }
 
 #ifdef __TEST_CORE
@@ -114,18 +116,21 @@ namespace Core
 
     using json = nlohmann::json;
 
-    Page* Page::parse(json& root) {
-        Page* page = new Page;
-        page->SetName(root.at("Name").get<std::string>());
-        std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
-        page->SetBackgroundColor(
-            colorVec[0].get<float>(),
-            colorVec[1].get<float>(),
-            colorVec[2].get<float>(),
-            colorVec[3].get<float>()
-        );
-        for (json entityJson : root.at("EntityList").get<std::vector<json>>()) {
-            page->entityList.push_back(Entity::parse(entityJson));
+    Page *Page::parse ( json &root )
+    {
+        Page *page = new Page;
+        page->SetName ( root.at ( "PageName" ).get<std::string> () );
+        //std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
+        //page->SetBackgroundColor(
+        //    colorVec[0].get<float>(),
+        //    colorVec[1].get<float>(),
+        //    colorVec[2].get<float>(),
+        //    colorVec[3].get<float>()
+        //);
+        auto entityVec = root.at ( "EntityList" ).get<std::vector<json>> ();
+        for ( json entityJson : entityVec )
+        {
+            page->entityList.push_back ( Entity::parse ( entityJson ) );
         }
 
         return page;
