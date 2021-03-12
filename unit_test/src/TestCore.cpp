@@ -72,7 +72,20 @@ TEST(TEST_CORE, Parse) {
             "Version": "example version",
             "LastModifiedTime": "example Date Time",
             "Note": "example Note",
-            "PageList": []
+            "PageList": [
+                {
+                    "Name": "example Page",
+                    "EntityList": [
+                        {
+                            "Name": "example Entity Name",
+                            "Entity ID": 1,
+                            "location": [ 0.5, 0.5 ],
+                            "scale": [ 1.0, 2.0 ],
+                            "rotation": 1.0,
+                        }
+                    ]
+                }
+            ]
         }
     )"_json;
 
@@ -83,4 +96,16 @@ TEST(TEST_CORE, Parse) {
     EXPECT_EQ(game->GetVersion(), "example version");
     EXPECT_EQ(game->GetLMTime(), "example Date Time");
     EXPECT_EQ(game->GetNote(), "example Note");
+
+    auto pages = game->getPageList();
+    EXPECT_EQ(pages->size(), 1);
+    EXPECT_EQ((*pages)[0]->GetName(), "example Page");
+
+    auto entities = (*pages)[0]->getEntityList();
+    EXPECT_EQ(entities.size(), 1);
+    EXPECT_EQ(entities[0]->getName(), "example Entity Name");
+    EXPECT_EQ(entities[0]->getSpriteID(), 1);
+    EXPECT_EQ(entities[0]->getLocation(), glm::vec2(0.5, 0.5));
+    EXPECT_EQ(entities[0]->getScale(), glm::vec2(1.0, 2.0));
+    EXPECT_EQ(entities[0]->getRotation(), 1.0);
 }
