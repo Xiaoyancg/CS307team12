@@ -294,15 +294,19 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::Text("Page Name:");
             ImGui::SameLine();
             ImGui::Text(game->currentPage->GetName().c_str());
-            std::vector <Core::Entity*> elist = game->currentPage->getEntityList();
-            ImGui::Text("Entity Names: ");
-            for (Core::Entity* e : elist)
+            std::vector <Core::Page*> plist = *game->getPageList();
+            ImGui::Text("Page Names: ");
+            for (Core::Page* p : plist)
             {
-                ImGui::Text(e->getName().c_str());
+                ImGui::Text(p->GetName().c_str());
             }
             ImGui::EndPopup();
         }
     }
+
+    //map editor
+    static char map_name[128] = "";
+    bool map_info = false;
     if ( selection[5] )
     {
         // possibly implement a new function here for readability purposes
@@ -311,11 +315,13 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
 
         // map editor
+        ImGui::InputText("", map_name, IM_ARRAYSIZE(map_name));
+        ImGui::SameLine();
         if ( ImGui::Begin ( "Map Editor", &selection[5] ) )
         {
             if ( ImGui::Button ( "Create New Map" ) )
             {
-
+                game->createMapPage(map_name);
             }
             if ( ImGui::Button ( "Delete This Map" ) )
             {
@@ -323,9 +329,30 @@ static void ShowExampleAppMainMenuBar ()
             }
             if ( ImGui::Button ( "Show Map Information " ) )
             {
-                
+                map_info = true;
+                ImGui::OpenPopup("Map Information");
             }
             ImGui::End ();
+        }
+
+        if (map_info)
+        {
+            ImGui::OpenPopup("Map Information");
+            map_info = false;
+        }
+
+        if (ImGui::BeginPopup("Map Information"))
+        {
+            ImGui::Text("Map Name:");
+            ImGui::SameLine();
+            ImGui::Text(game->currentPage->GetName().c_str());
+            std::vector <Core::Entity*> elist = game->currentPage->getEntityList();
+            ImGui::Text("Entity Names: ");
+            for (Core::Entity* e : elist)
+            {
+                ImGui::Text(e->getName().c_str());
+            }
+            ImGui::EndPopup();
         }
     }
     //calls saved successfully popup on project save

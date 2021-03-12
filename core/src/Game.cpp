@@ -135,6 +135,45 @@ namespace Core
         MapPage *mp = new MapPage ( n, m );
         return ( MapPage * ) addPage ( mp );
     }
+    std::vector<Page *> *Game::getPageList ()
+    {
+        return &pageList;
+    }
+
+    void Game::deletePage ( Page *dp )
+    {
+        for ( std::vector<Page *>::iterator ptr = pageList.begin ();
+              ptr != pageList.end ();
+              ptr++ )
+        {
+            if ( *ptr == dp )
+            {
+                pageList.erase ( ptr );
+                delete( dp );
+                dp = nullptr;
+                break;
+            }
+        }
+    }
+
+    void Game::deletePage ( std::string s )
+    {
+        for (std::vector<Page*>::iterator ptr = pageList.begin();
+              ptr != pageList.end();
+              ptr++)
+        {
+            if ( !(*ptr)->GetName().compare(s) )
+            {
+                Page *p = *ptr;
+                pageList.erase ( ptr );
+                delete( p );
+                p = nullptr;
+                break;
+            }
+        }
+    }
+
+
     // =========================
     // UTILITY OPERATION
 
@@ -177,6 +216,18 @@ namespace Core
                 j["PageList"][p->GetName ()]
                     ["EntityList"][e->getName ()]
                     ["EntityName"] = e->getName ();
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["location"] = { e->getLocation ().x, e->getLocation ().y };
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["scale"] = { e->getScale ().x, e->getScale ().y };
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["rotation"] = e->getRotation ();
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["spritID"] = e->getSpriteID ();
             }
         }
         return j;
@@ -359,52 +410,55 @@ namespace Core
     }
 
 
-    void Game::handleInput(SDL_Event event) {
-        glm::vec2 loc = entityInteractive->getLocation();
-        glm::vec2 scale = entityInteractive->getScale();
+    void Game::handleInput ( SDL_Event event )
+    {
+        glm::vec2 loc = entityInteractive->getLocation ();
+        glm::vec2 scale = entityInteractive->getScale ();
         float moveBy = 5;
         int scaleBy = 3;
 
-        switch (event.key.keysym.sym) {
-            // Control Entity movement in the interactive demo
-            // Handle left arrow key
-        case SDLK_LEFT:
-            entityInteractive->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
-            break;
-            // Handle right arrow key
-        case SDLK_RIGHT:
-            entityInteractive->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
-            break;
-            // Handle up arrow key
-        case SDLK_UP:
-            entityInteractive->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
-            break;
-            // Handle down arrow key
-        case SDLK_DOWN:
-            entityInteractive->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
-            break;
+        switch ( event.key.keysym.sym )
+        {
+// Control Entity movement in the interactive demo
+// Handle left arrow key
+            case SDLK_LEFT:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x - moveBy, loc.y ) ); // Move left
+                break;
+                // Handle right arrow key
+            case SDLK_RIGHT:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x + moveBy, loc.y ) ); // Move right
+                break;
+                // Handle up arrow key
+            case SDLK_UP:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y + moveBy ) ); // Move up
+                break;
+                // Handle down arrow key
+            case SDLK_DOWN:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y - moveBy ) ); // Move down
+                break;
 
-            // Control Entity scaling in the interactive demo
-        case SDLK_a: // a key is Scale up, for now
-            entityInteractive->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
-            break;
-        case SDLK_z: // z key is Scale down, for now
-            // Make sure not to scale into the negatives
-            if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0) {
-                entityInteractive->setScale(glm::vec2(scale.x - scaleBy, scale.y - scaleBy));
-            }
-            break;
+                // Control Entity scaling in the interactive demo
+            case SDLK_a: // a key is Scale up, for now
+                entityInteractive->setScale ( glm::vec2 ( scale.x + scaleBy, scale.y + scaleBy ) );
+                break;
+            case SDLK_z: // z key is Scale down, for now
+                // Make sure not to scale into the negatives
+                if ( scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0 )
+                {
+                    entityInteractive->setScale ( glm::vec2 ( scale.x - scaleBy, scale.y - scaleBy ) );
+                }
+                break;
 
-            // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
-        case SDLK_1:
-            currentPage = mapPage1;
-            break;
-        case SDLK_2:
-            currentPage = mapPage2;
-            break;
-        case SDLK_3:
-            currentPage = entityPage;
-            break;
+                // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
+            case SDLK_1:
+                currentPage = mapPage1;
+                break;
+            case SDLK_2:
+                currentPage = mapPage2;
+                break;
+            case SDLK_3:
+                currentPage = entityPage;
+                break;
         }
     }
 
@@ -427,7 +481,7 @@ namespace Core
             currentPage->render ();
         }
 
-            glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+        glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 
     }
     void Game::run ()
@@ -545,22 +599,22 @@ namespace Core
                         break;
                         // Handle Keypresses
                     case SDL_KEYDOWN:
-                        handleInput(event);
+                        handleInput ( event );
                 }
             }
 
         // Show the current context
-        SDL_GL_MakeCurrent ( window, gl_context );
+            SDL_GL_MakeCurrent ( window, gl_context );
 
 
-        render ();
+            render ();
 
-        SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
-        ///////////////
+            SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
+            ///////////////
 
 
 
-            // Error checking! This will only print out an error if one is detected each loop
+                // Error checking! This will only print out an error if one is detected each loop
             GLenum err ( glGetError () );
             if ( err != GL_NO_ERROR )
             {
