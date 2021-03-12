@@ -23,24 +23,6 @@ namespace Core
         // This will set 'mCoords'
         void calculateCoords ( glm::vec2 location, glm::vec2 scale );
 
-
-		// Get mLocation
-		glm::vec2 getLocation ();
-
-		// Set mScale
-		void setScale ( glm::vec2 scale );
-
-		// Get mScale
-		glm::vec2 getScale ();
-
-		void setRotation(double rotation);
-
-		double getRotation();
-
-		void setSpriteID(int spriteID);
-
-		int getSpriteID();
-
 		// Render the given entity on the current context
 		// Assumes the shaders have already been setup
 		void render ();
