@@ -124,7 +124,8 @@ namespace Core
             colorVec[2].get<float>(),
             colorVec[3].get<float>()
         );
-        for (json entityJson : root.at("EntityList").get<std::vector<json>>()) {
+        auto entityVec = root.at("EntityList").get<std::vector<json>>();
+        for (json entityJson : entityVec) {
             page->entityList.push_back(Entity::parse(entityJson));
         }
 
