@@ -87,12 +87,18 @@ namespace Core
     // =========================
     // CONSTRUCTOR
 
+    Game::Game ( unsigned int *o )
+    {
+        texcbo = o;
+        useFramebuffer = true;
+        this->gameName = "editortestname";
+    }
     Game::Game ():Game ( "empty" )
     { }
 
     Game::Game ( std::string gameName ) : gameName ( gameName )
     {
-
+        useFramebuffer = false;
     }
 
     Game::Game ( nlohmann::json &json )
@@ -170,7 +176,7 @@ namespace Core
             for ( Entity *e : p->getEntityList () )
             {
                 j["PageList"][p->GetName ()]
-                    ["EntityList"][e->getName()]
+                    ["EntityList"][e->getName ()]
                     ["EntityName"] = e->getName ();
             }
         }
@@ -292,6 +298,27 @@ namespace Core
         // Set the scale based on the width and height
         int scaleID = glGetUniformLocation ( shaderProgram, "scale" );
         glUniform2f ( scaleID, ( float ) 2 / width, ( float ) 2 / height );
+
+
+        // Larry framebuffer
+        if ( useFramebuffer )
+        {
+            glGenFramebuffers ( 1, &fbo );
+            glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+
+            // texbuffer is done in editor
+            // unsigned int texcbo; // texture color buffer obj
+            // glGenTextures ( 1, &texcbo );
+            glBindTexture ( GL_TEXTURE_2D, *texcbo );
+            glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+            glBindTexture ( GL_TEXTURE_2D, 0 );
+
+            glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texcbo, 0 );
+
+            glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+        }
     }
 
     // This takes care of initializing everything SDL needs to begin running
