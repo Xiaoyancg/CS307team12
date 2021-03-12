@@ -32,6 +32,24 @@ namespace Core
         std::vector<Entity*>& getEntityList ();
         virtual void render ();
 
+        // =========================
+        // CONSTRUCTOR
+
+        // =========================
+        // ATTRIBUTES OPERATION
+
+        // =========================
+        // PROPERTY OPERATION
+
+        // =========================
+        // MEMBER OPERATION
+        Entity *addEntity ( Entity * );
+        Entity *createEntity ( std::string );
+        Entity *createEntity ( std::string, glm::vec2, glm::vec2, double, int );
+        // =========================
+        // UTILITY OPERATION
+
+
     protected:
         std::string name;
         glm::vec4 backgroundColor;
