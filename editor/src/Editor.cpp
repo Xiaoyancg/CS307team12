@@ -386,6 +386,7 @@ static void ShowExampleAppMainMenuBar ()
         {
             if ( ImGui::MenuItem ( "New Project" ) )
             {
+                game = new Core::Game;
                 selection[0] = true;
             }
             if ( ImGui::MenuItem ( "Open Project" ) )
