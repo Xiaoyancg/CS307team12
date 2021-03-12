@@ -119,22 +119,6 @@ namespace Core
         return mScale;
     }
 
-    void Entity::setRotation(double rotation) {
-        mRotation = rotation;
-    }
-
-    double Entity::getRotation() {
-        return mRotation;
-    }
-
-    void Entity::setSpriteID(int spriteID) {
-        mSpriteID = spriteID;
-    }
-
-    int Entity::getSpriteID() {
-        return mSpriteID;
-    }
-
     void Entity::render ()
     {
 // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
