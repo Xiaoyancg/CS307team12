@@ -22,6 +22,7 @@ static bool selection[7];
 
 GLuint *texcbo;
 Core::Game *game;
+
 std::string dir;
 int EditorMain ( int argc, char *argv[] )
 {
@@ -97,9 +98,10 @@ int EditorMain ( int argc, char *argv[] )
     texcbo = new GLuint ();
     glGenTextures ( 1, texcbo );
     game = new Core::Game ( texcbo );
+
     game->initShader ();
 
-    //game->s1test ();
+    game->s1test ();
     while ( running )
     {
         SDL_Event evt;
