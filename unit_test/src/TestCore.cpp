@@ -50,7 +50,16 @@ TEST ( TEST_GAME, Game_SetGetName )
     std::string s ( g.GetGameName () );
     EXPECT_TRUE ( !s.compare ( "hello" ) );
 }
+TEST ( TEMPTEST, supertemp )
+{
+    Core::Game g ( "wulala" );
+    g.init ();
+    g.initShader ();
+    g.s1test ();
+    json * j = g.serialize ();
 
+    WriteFile ( "wulala.gdata", j->dump ( 2 ) );
+}
 TEST ( TEST_CORE, Serialize )
 {
     Core::Game g ( "test_gameName" );

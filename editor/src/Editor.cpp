@@ -416,7 +416,7 @@ static void ShowExampleAppMainMenuBar ()
         //std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
         dir = std::string ( saveDialog.GetSelected ().string () ).append("//").append ( dir );
         nlohmann::json *content = game->serialize ();
-        WriteFile ( dir, ( content->dump () ) );
+        WriteFile ( dir, ( content->dump (0) ) );
         saveDialog.ClearSelected ();
     }
 
@@ -431,7 +431,7 @@ static void ShowExampleAppMainMenuBar ()
         glGenTextures ( 1, texcbo );
         game = new Core::Game ( texcbo );
         game->initShader ();
-        game->parse ( *j );
+        game = Core::Game::parse ( *j );
         selection[2] = true;
 
         openDialog.ClearSelected ();
