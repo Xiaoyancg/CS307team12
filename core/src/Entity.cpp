@@ -101,6 +101,22 @@ namespace Core
         return mScale;
     }
 
+    void Entity::setRotation(double rotation) {
+        mRotation = rotation;
+    }
+
+    double Entity::getRotation() {
+        return mRotation;
+    }
+
+    void Entity::setSpriteID(int spriteID) {
+        mSpriteID = spriteID;
+    }
+
+    int Entity::getSpriteID() {
+        return mSpriteID;
+    }
+
     void Entity::render ()
     {
 // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
@@ -112,6 +128,29 @@ namespace Core
 #endif // __TEST_CORE
 
 
+    }
+
+
+    using json = nlohmann::json;
+
+    Entity* Entity::parse(json& root) {
+        Entity* entity = new Entity(root.at("Name").get<std::string>());
+
+        std::vector<json> locVec = root.at("location").get<std::vector<json>>();
+        entity->setLocation(glm::vec2(
+            locVec[0].get<float>(),
+            locVec[1].get<float>()
+        ));
+        std::vector<json> scaleVec = root.at("scale").get<std::vector<json>>();
+        entity->setScale(glm::vec2(
+            scaleVec[0].get<float>(),
+            scaleVec[1].get<float>()
+        ));
+
+        entity->setRotation(root.at("rotation").get<double>());
+        entity->setSpriteID(root.at("Entity ID").get<int>());
+
+        return entity;
     }
 
 }

@@ -1,6 +1,9 @@
 #pragma once
-#include <glm/glm.hpp>
+
 #include <string>
+
+#include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 
 namespace Core
 {
@@ -32,9 +35,20 @@ namespace Core
 		// Get mScale
 		glm::vec2 getScale ();
 
+		void setRotation(double rotation);
+
+		double getRotation();
+
+		void setSpriteID(int spriteID);
+
+		int getSpriteID();
+
 		// Render the given entity on the current context
 		// Assumes the shaders have already been setup
 		void render ();
+
+		static Entity* parse(nlohmann::json& root);
+		nlohmann::json serialize();
 
 
 		// =========================

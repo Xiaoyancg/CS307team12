@@ -72,4 +72,24 @@ namespace Core
         pageError = glGetError ();
 #endif // __TEST_CORE
     }
+
+
+    using json = nlohmann::json;
+
+    Page* Page::parse(json& root) {
+        Page* page = new Page;
+        page->SetName(root.at("Name").get<std::string>());
+        std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
+        page->SetBackgroundColor(
+            colorVec[0].get<float>(),
+            colorVec[1].get<float>(),
+            colorVec[2].get<float>(),
+            colorVec[3].get<float>()
+        );
+        for (json entityJson : root.at("EntityList").get<std::vector<json>>()) {
+            page->entityList.push_back(Entity::parse(entityJson));
+        }
+
+        return page;
+    }
 }

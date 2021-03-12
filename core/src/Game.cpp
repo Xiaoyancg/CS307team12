@@ -146,23 +146,21 @@ namespace Core
 
     Game *Game::parse ( json &root )
     {
-        std::unique_ptr<Game> game{ new Game };
+        Game* game = new Game;
         game->SetGameName ( root.at ( "GameName" ).get<std::string> () );
         game->SetAuthor ( root.at ( "Author" ).get<std::string> () );
         game->SetVersion ( root.at ( "Version" ).get<std::string> () );
         game->SetLMTime ( root.at ( "LastModifiedTime" ).get<std::string> () );
         game->SetNote ( root.at ( "Note" ).get<std::string> () );
-        for ( json pageJson : root.at ( "PageList" ).get<std::vector<json>> () )
-        {
-            std::unique_ptr<Page> page{ new Page };
-
+        for ( json pageJson : root.at ( "PageList" ).get<std::vector<json>> () ) {
+            game->pageList.push_back(Page::parse(pageJson));
         }
 
-        return new Game;
+        return game;
     }
 
 
-    nlohmann::json *Game::serialize ()
+    nlohmann::json Game::serialize ()
     {
         json j;
         j["FileType"] = "Parchment Game Data";
@@ -181,7 +179,7 @@ namespace Core
                     ["EntityName"] = e->getName ();
             }
         }
-        return new json ( j );
+        return j;
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit

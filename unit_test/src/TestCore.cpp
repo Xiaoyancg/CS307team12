@@ -59,6 +59,28 @@ TEST ( TEST_CORE, Serialize )
     argv[0] = "core";
     argv[1] = "test";
     g.coreMain ( argc, argv );
-    nlohmann::json *a = g.serialize ();
-    WriteFile ( "testSinGame.gdata", a->dump () );
+    nlohmann::json a = g.serialize ();
+    WriteFile ( "testSinGame.gdata", a.dump () );
+}
+
+
+TEST(TEST_CORE, Parse) {
+    nlohmann::json gamefile = R"(
+        {
+            "GameName": "example name",
+            "Author": "example author",
+            "Version": "example version",
+            "LastModifiedTime": "example Date Time",
+            "Note": "example Note",
+            "PageList": []
+        }
+    )"_json;
+
+    Core::Game* game = Core::Game::parse(gamefile);
+
+    EXPECT_EQ(game->GetGameName(), "example name");
+    EXPECT_EQ(game->GetAuthor(), "example author");
+    EXPECT_EQ(game->GetVersion(), "example version");
+    EXPECT_EQ(game->GetLMTime(), "example Date Time");
+    EXPECT_EQ(game->GetNote(), "example Note");
 }
