@@ -1,5 +1,5 @@
 #include <Editor.h>
-
+#include "Game.h"
 #ifdef __TEST_EDITOR
 #include <TestEditor.h>
 #endif // __TEST_EDITOR
@@ -19,7 +19,8 @@ ImGui::FileBrowser openDialog = ImGui::FileBrowser(
 // TODO: swap the dumb magic number system for an enum that is easier to read - place it in the header
 static bool selection[7];
 
-
+GLuint *texcbo;
+Core::Game *game;
 int EditorMain(int argc, char* argv[])
 {
     // Set Up SDL2
@@ -91,10 +92,11 @@ int EditorMain(int argc, char* argv[])
     // set the default game view window state to open
     selection[2] = true;
 
-    GLuint *texcbo;
+    texcbo = new GLuint();
     glGenTextures ( 1, texcbo );
-
-
+    game = new Core::Game ( texcbo );
+    game->initShader ();
+    game->s1test ();
     while (running)
     {
         SDL_Event evt;
@@ -138,7 +140,7 @@ int EditorMain(int argc, char* argv[])
         // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
         SDL_GL_SwapWindow(window);
 
-
+    
 
 #ifdef __TEST_EDITOR
         if (dobreak)  running = false;
@@ -192,7 +194,11 @@ static void ShowExampleAppMainMenuBar()
 
         // the game view window itself
         ImGui::Begin("Game View", &selection[2]);
-
+        GLuint t = *texcbo;
+        game->render ();
+        ImGui::Image((void*)t, ImVec2 ( ImGui::GetCursorScreenPos () ),
+                      ImVec2 ( ImGui::GetCursorScreenPos ().x + 400,
+                               ImGui::GetCursorScreenPos ().y + 300 ) );
         ImGui::End();
     }
     if (selection[3])
