@@ -384,8 +384,8 @@ static void ShowExampleAppMainMenuBar()
                 same name & directory as before. right now if they click SAVE the project saves
                 with a placeholder name/directory.
                 */
-                nlohmann::json content = game->serialize();
-                WriteFile("New Game Project", (content.dump()));
+                nlohmann::json* content = game->serialize();
+                WriteFile("New Game Project", (content->dump()));
                 selection[6] = true;
             }
             if (ImGui::MenuItem("Save As"))
@@ -451,9 +451,9 @@ static void ShowExampleAppMainMenuBar()
         if ( ImGui::Button ( "Save" ) )
         {
             // connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
-            nlohmann::json content = game->serialize();
+            nlohmann::json* content = game->serialize();
             std::cout << name;
-            WriteFile(name, (content.dump()));
+            WriteFile(name, (content->dump()));
             selection[6] = true;
             // memset to clear the buffer after use
             memset(name, 0, 128);

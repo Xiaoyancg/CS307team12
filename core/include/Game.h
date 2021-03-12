@@ -51,7 +51,7 @@ namespace Core
 
         // File loading and serialization
         static Game *parse ( nlohmann::json &root );
-        nlohmann::json serialize ();
+        nlohmann::json *serialize ();
 
         // from core team
         void init ();
