@@ -53,14 +53,56 @@ TEST ( TEST_GAME, Game_SetGetName )
 
 TEST ( TEST_CORE, Serialize )
 {
-    Core::Game g ( "hello" );
-    int argc = 2;
-    char *argv[2];
-    argv[0] = "core";
-    argv[1] = "test";
-    g.coreMain ( argc, argv );
-    nlohmann::json* a = g.serialize ();
-    WriteFile ( "testSinGame.gdata", a->dump () );
+    Core::Game g ( "test_gameName" );
+    g.SetAuthor("test_author");
+    g.SetLMTime("test_lmtime");
+    g.SetNote("test_note");
+    g.SetVersion("test_version");
+
+    Core::Page* page = new Core::Page;
+    page->SetName("test_pageName");
+    page->SetBackgroundColor(0.1, 0.2, 0.3, 0.4);
+    
+    Core::Entity* entity = new Core::Entity("test_entityName");
+    entity->setLocation(glm::vec2(0.1, 0.2));
+    entity->setScale(glm::vec2(0.3, 0.4));
+    entity->setRotation(360);
+    entity->setSpriteID(999);
+
+    page->addEntity(entity);
+
+    g.getPageList()->push_back(page);
+
+    nlohmann::json* actual = g.serialize ();
+    nlohmann::json expected = R"(
+        {
+            "FileType": "Parchment Game Data",
+            "GameName": "test_gameName",
+            "Author": "test_author",
+            "Version": "test_version",
+            "LastModifiedTime": "test_lmtime",
+            "Note": "test_note",
+            "PageList": [
+                {
+                    "Name": "test_pageName",
+                    "EntityList": [
+                        {
+                            "Name": "test_entityName",
+                            "Entity ID": 999,
+                            "location": [ 0.1, 0.2 ],
+                            "scale": [ 0.3, 0.4 ],
+                            "rotation": 360.0
+                        }
+                    ]
+                }
+            ]
+        }
+    )"_json;
+
+    std::cout << *actual << std::endl;
+    std::cout << expected << std::endl;
+
+    EXPECT_EQ(*actual, expected);
 }
 
 
