@@ -165,53 +165,53 @@ int EditorMain ( int argc, char *argv[] )
     return 0;
 }
 
-static void ShowExampleAppMainMenuBar ()
+static void ShowExampleAppMainMenuBar()
 {
 #ifdef __TEST_EDITOR
     selection[0] = true;
 #endif // __TEST_EDITOR
 
     // open new project/save as popup
-    if ( selection[0] )
+    if (selection[0])
     {
-        ImGui::OpenPopup ( "Save As" );
+        ImGui::OpenPopup("Save As");
 
 #ifdef __TEST_EDITOR
-        isSaveAsOpen = ImGui::IsPopupOpen ( "Save As" );
+        isSaveAsOpen = ImGui::IsPopupOpen("Save As");
 #endif // __TEST_EDITOR
 
         selection[0] = false;
     }
     // open delete project popup
-    if ( selection[1] )
+    if (selection[1])
     {
-        ImGui::OpenPopup ( "Delete Project" );
+        ImGui::OpenPopup("Delete Project");
         selection[1] = false;
     }
     // game view window creation
-    if ( selection[2] )
+    if (selection[2])
     {
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // the game view window itself
-        ImGui::Begin ( "Game View", &selection[2] );
+        ImGui::Begin("Game View", &selection[2]);
         GLuint t = *texcbo;
         ImVec2 dims = ImGui::GetWindowSize();
         glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
-        game->render (); // Render Game with new viewport size
+        game->render(); // Render Game with new viewport size
         glViewport(0, 0, dims.x, dims.y); // Reset viewport size
-        ImGui::Image((void*)t, ImVec2 (dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image((void*)t, ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
     }
-    if ( selection[3] )
+    if (selection[3])
     {
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // entity editor
         static char entity_name[128] = "";
@@ -224,16 +224,16 @@ static void ShowExampleAppMainMenuBar ()
             {
                 game->currentPage->createEntity(entity_name);
             }
-            if ( ImGui::Button ( "Delete This Entity" ) )
+            if (ImGui::Button("Delete This Entity"))
             {
 
             }
-            if ( ImGui::Button ( "Show Entity Information " ) )
+            if (ImGui::Button("Show Entity Information "))
             {
                 entity_info = true;
                 ImGui::OpenPopup("Entity Information");
             }
-            ImGui::End ();
+            ImGui::End();
         }
 
         if (entity_info)
@@ -253,29 +253,29 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::EndPopup();
         }
     }
-    if ( selection[4] )
+    if (selection[4])
     {
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // page editor
         static char page_name[128] = "";
         bool page_info = false;
-        if ( ImGui::Begin ( "Page Editor", &selection[4] ) )
+        if (ImGui::Begin("Page Editor", &selection[4]))
         {
             ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
             ImGui::SameLine();
-            if ( ImGui::Button ( "Create New Page" ) )
+            if (ImGui::Button("Create New Page"))
             {
                 game->createPage(page_name);
             }
-            if ( ImGui::Button ( "Delete This Page" ) )
+            if (ImGui::Button("Delete This Page"))
             {
 
             }
-            if ( ImGui::Button ( "Show Page Information " ) )
+            if (ImGui::Button("Show Page Information "))
             {
                 page_info = true;
                 ImGui::OpenPopup("Page Information");
@@ -307,32 +307,32 @@ static void ShowExampleAppMainMenuBar ()
     //map editor
     static char map_name[128] = "";
     bool map_info = false;
-    if ( selection[5] )
+    if (selection[5])
     {
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // map editor
         ImGui::InputText("", map_name, IM_ARRAYSIZE(map_name));
         ImGui::SameLine();
-        if ( ImGui::Begin ( "Map Editor", &selection[5] ) )
+        if (ImGui::Begin("Map Editor", &selection[5]))
         {
-            if ( ImGui::Button ( "Create New Map" ) )
+            if (ImGui::Button("Create New Map"))
             {
                 game->createMapPage(map_name);
             }
-            if ( ImGui::Button ( "Delete This Map" ) )
+            if (ImGui::Button("Delete This Map"))
             {
 
             }
-            if ( ImGui::Button ( "Show Map Information " ) )
+            if (ImGui::Button("Show Map Information "))
             {
                 map_info = true;
                 ImGui::OpenPopup("Map Information");
             }
-            ImGui::End ();
+            ImGui::End();
         }
 
         if (map_info)
@@ -343,53 +343,45 @@ static void ShowExampleAppMainMenuBar ()
 
         if (ImGui::BeginPopup("Map Information"))
         {
-            ImGui::Text("Map Name:");
-            ImGui::SameLine();
-            ImGui::Text(game->currentPage->GetName().c_str());
-            std::vector <Core::Entity*> elist = game->currentPage->getEntityList();
-            ImGui::Text("Entity Names: ");
-            for (Core::Entity* e : elist)
-            {
-                ImGui::Text(e->getName().c_str());
-            }
+
             ImGui::EndPopup();
         }
     }
     //calls saved successfully popup on project save
-    if ( selection[6] )
+    if (selection[6])
     {
-        ImGui::OpenPopup ( "Saved Successfully" );
+        ImGui::OpenPopup("Saved Successfully");
         selection[6] = false;
     }
 
     // main menu bar code
-    if ( ImGui::BeginMainMenuBar () )
+    if (ImGui::BeginMainMenuBar())
     {
         // File menu
-        if ( ImGui::BeginMenu ( "File" ) )
+        if (ImGui::BeginMenu("File"))
         {
-            if ( ImGui::MenuItem ( "New Project" ) )
+            if (ImGui::MenuItem("New Project"))
             {
                 selection[0] = true;
             }
-            if ( ImGui::MenuItem ( "Open Project" ) )
+            if (ImGui::MenuItem("Open Project"))
             {
-                openDialog.Open ();
+                openDialog.Open();
             }
-            if ( ImGui::MenuItem ( "Delete Project" ) )
+            if (ImGui::MenuItem("Delete Project"))
             {
                 selection[1] = true;
             }
-            if ( ImGui::MenuItem ( "Export Project" ) )
+            if (ImGui::MenuItem("Export Project"))
             {
                 // call export function from VM team
             }
-            if ( ImGui::MenuItem ( "Save" ) )
+            if (ImGui::MenuItem("Save"))
             {
-                /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally 
+                /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
                 if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
-                before (to specify a name and directory). otherwise, if they click SAVE and have 
-                previously specified a desired name/directory, the file should be saved with the 
+                before (to specify a name and directory). otherwise, if they click SAVE and have
+                previously specified a desired name/directory, the file should be saved with the
                 same name & directory as before. right now if they click SAVE the project saves
                 with a placeholder name/directory.
                 */
@@ -397,24 +389,24 @@ static void ShowExampleAppMainMenuBar ()
                 WriteFile("New Game Project", (content->dump()));
                 selection[6] = true;
             }
-            if ( ImGui::MenuItem ( "Save As" ) )
+            if (ImGui::MenuItem("Save As"))
             {
                 selection[0] = true;
             }
-            ImGui::EndMenu ();
+            ImGui::EndMenu();
         }
 
         // Add menu
-        if ( ImGui::BeginMenu ( "Add" ) )
+        if (ImGui::BeginMenu("Add"))
         {
-            ImGui::MenuItem ( "Game View", "", &selection[2] );
-            ImGui::MenuItem ( "Entity Editor", "", &selection[3] );
-            ImGui::MenuItem ( "Page Editor", "", &selection[4] );
-            ImGui::MenuItem ( "Map Editor", "", &selection[5] );
-            ImGui::EndMenu ();
+            ImGui::MenuItem("Game View", "", &selection[2]);
+            ImGui::MenuItem("Entity Editor", "", &selection[3]);
+            ImGui::MenuItem("Page Editor", "", &selection[4]);
+            ImGui::MenuItem("Map Editor", "", &selection[5]);
+            ImGui::EndMenu();
         }
         // ImGui::IsItemVisible ();
-        ImGui::EndMainMenuBar ();
+        ImGui::EndMainMenuBar();
     }
 
     // save dialog selection return
