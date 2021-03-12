@@ -97,7 +97,8 @@ int EditorMain ( int argc, char *argv[] )
     glGenTextures ( 1, texcbo );
     game = new Core::Game ( texcbo );
     game->initShader ();
-    game->s1test ();
+
+    //game->s1test ();
     while ( running )
     {
         SDL_Event evt;

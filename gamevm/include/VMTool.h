@@ -11,6 +11,7 @@ int WriteFile ( std::string fileName, std::string content );
 
 Core::Game *ConstructGame ( std::string fileName );
 
+json *readGameDataFile ( std::string f );
 int ProduceDataFile ( Core::Game *game );
 
 void removeGame (std::string );
