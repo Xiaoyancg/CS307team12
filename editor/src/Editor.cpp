@@ -24,7 +24,7 @@ ImGui::FileBrowser delDialog = ImGui::FileBrowser (
 static bool selection[8];
 
 GLuint *texcbo;
-Core::Game *game;
+Core::Game *game = nullptr;
 
 std::string dir;
 int EditorMain ( int argc, char *argv[] )
@@ -96,15 +96,9 @@ int EditorMain ( int argc, char *argv[] )
     openDialog.SetTypeFilters ( { ".gdata" } );
 
     // set the default game view window state to open
-    selection[2] = true;
+//    selection[2] = true;
 
-    texcbo = new GLuint ();
-    glGenTextures ( 1, texcbo );
-    game = new Core::Game ( texcbo );
 
-    game->initShader ();
-
-    game->s1test ();
     while ( running )
     {
         SDL_Event evt;
@@ -121,7 +115,7 @@ int EditorMain ( int argc, char *argv[] )
             }
             if ( evt.type == SDL_KEYDOWN )
             {
-                game->handleInput ( evt );
+                //game->handleInput ( evt );w
             }
         }
         // Draw ImGui windows
@@ -203,9 +197,12 @@ static void ShowExampleAppMainMenuBar ()
 
         // the game view window itself
         ImGui::Begin ( "Game View", &selection[2] );
+
         GLuint t = *texcbo;
         ImVec2 dims = ImGui::GetWindowSize ();
+
         glViewport ( 0, 0, game->width, game->height ); // Set viewport to the Game dimensions
+
         game->render (); // Render Game with new viewport size
         glViewport ( 0, 0, dims.x, dims.y ); // Reset viewport size
         ImGui::Image ( ( void * ) t, ImVec2 ( dims.x, dims.y ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
@@ -283,8 +280,15 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::SameLine ();
             if ( ImGui::Button ( "Delete This Page" ) )
             {
-                game->deletePage ( page_name );
-                delete_success = true;
+                if ( !std::string ( page_name ).compare ( game->currentPage->GetName () ) )
+                {
+                    delete_success = false;
+                }
+                else
+                {
+                    game->deletePage ( page_name );
+                    delete_success = true;
+                }
             }
             if ( ImGui::Button ( "Show Page Information" ) )
             {
@@ -430,10 +434,11 @@ static void ShowExampleAppMainMenuBar ()
     saveDialog.Display ();
     if ( saveDialog.HasSelected () )
     {
-        //save a file by passing the directory chosen to the VM's functions
-        dir = std::string ( saveDialog.GetSelected ().string () ).append("//").append ( dir );
+        //printf ( "(printf) Selected Directory: %s\n", saveDialog.GetSelected ().string ().c_str () );
+        //std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
+        dir = std::string ( saveDialog.GetSelected ().string () ).append ( "//" ).append ( dir );
         nlohmann::json *content = game->serialize ();
-        WriteFile ( dir, ( content->dump () ) );
+        WriteFile ( dir, ( content->dump ( 2 ) ) );
         saveDialog.ClearSelected ();
         selection[6] = true;
     }
@@ -444,6 +449,14 @@ static void ShowExampleAppMainMenuBar ()
     {
         printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
+        nlohmann::json *j = readGameDataFile ( openDialog.GetSelected ().string () );
+        texcbo = new GLuint ();
+        glGenTextures ( 1, texcbo );
+        game = new Core::Game ( texcbo );
+        game->initShader ();
+        game->parse ( *j );
+        selection[2] = true;
+
         openDialog.ClearSelected ();
     }
 
@@ -490,6 +503,7 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::Text ( "Project saved successfully!" );
         ImGui::EndPopup ();
     }
+    /* this can be used when project deletion is successful
     if (ImGui::BeginPopup("Deleted Successfully"))
     {
         ImGui::Text("Project deleted successfully!");

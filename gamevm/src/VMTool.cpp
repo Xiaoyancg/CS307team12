@@ -17,7 +17,7 @@ json *readGameDataFile ( std::string f )
 {
     json *s = new json ();
     std::string ctt ( ReadFile ( f ) );
-    s->parse ( ctt );
+    *s = json::parse ( ctt );
     return s;
 }
 
