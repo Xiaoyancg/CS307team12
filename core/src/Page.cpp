@@ -33,6 +33,44 @@ namespace Core
         e->setProperty ( l, s, r, sid );
         return e;
     }
+    void Page::deleteEntity ( Entity *dp )
+    {
+        for ( std::vector<Entity *>::iterator ptr = entityList.begin ();
+              ptr != entityList.end ();
+              ptr++ )
+        {
+            if ( *ptr == dp )
+            {
+                entityList.erase ( ptr );
+                delete( dp );
+                dp = nullptr;
+                break;
+            }
+        }
+    }
+
+    void Page::deleteEntity ( std::string s )
+    {
+        for ( std::vector<Entity *>::iterator ptr = entityList.begin ();
+              ptr != entityList.end ();
+              ptr++ )
+        {
+            if ( !( *ptr )->getName ().compare ( s ) )
+            {
+                Entity *p = *ptr;
+                entityList.erase ( ptr );
+                delete( p );
+                p = nullptr;
+                break;
+            }
+        }
+    }
+
+
+
+
+
+
     // =========================
     // UTILITY OPERATION
 

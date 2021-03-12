@@ -50,6 +50,8 @@ namespace Core
         Entity *addEntity ( Entity * );
         Entity *createEntity ( std::string );
         Entity *createEntity ( std::string, glm::vec2, glm::vec2, double, int );
+        void deleteEntity (std::string);
+        void deleteEntity (Entity*);
         // =========================
         // UTILITY OPERATION
 
