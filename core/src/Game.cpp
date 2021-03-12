@@ -23,7 +23,7 @@ namespace Core
 
     std::string Game::GetGameName ()
     {
-        return std::string ( this->gameName );
+        return this->gameName;
     }
 
     void Game::SetGameName ( std::string newName )
