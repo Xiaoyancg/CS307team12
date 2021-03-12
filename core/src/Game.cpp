@@ -191,7 +191,8 @@ namespace Core
         game->SetVersion ( root.at ( "Version" ).get<std::string> () );
         game->SetLMTime ( root.at ( "LastModifiedTime" ).get<std::string> () );
         game->SetNote ( root.at ( "Note" ).get<std::string> () );
-        for ( json pageJson : root.at ( "PageList" ).get<std::vector<json>> () ) {
+        auto pageVec = root.at("PageList").get<std::vector<json>>();
+        for ( json pageJson : pageVec ) {
             game->pageList.push_back(Page::parse(pageJson));
         }
 
