@@ -199,8 +199,10 @@ static void ShowExampleAppMainMenuBar ()
         // the game view window itself
         ImGui::Begin ( "Game View", &selection[2] );
         GLuint t = *texcbo;
-        game->render ();
         ImVec2 dims = ImGui::GetWindowSize();
+        glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
+        game->render (); // Render Game with new viewport size
+        glViewport(0, 0, dims.x, dims.y); // Reset viewport size
         ImGui::Image((void*)t, ImVec2 (dims.x, dims.y));
         ImGui::End();
     }
@@ -216,7 +218,7 @@ static void ShowExampleAppMainMenuBar ()
         {
             if ( ImGui::Button ( "Create New Entity" ) )
             {
-
+                
             }
             if ( ImGui::Button ( "Delete This Entity" ) )
             {
@@ -374,7 +376,7 @@ static void ShowExampleAppMainMenuBar ()
 
     // save project popup
     //this can also be used/called when SAVE AS is successful
-    char name[128] = "";
+    static char name[128] = "";
     if (ImGui::BeginPopup("Save As"))
     {
         ImGui::Text ( "Enter the name of your project." );
@@ -383,11 +385,11 @@ static void ShowExampleAppMainMenuBar ()
         {
             // connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
             nlohmann::json* content = game->serialize();
-            //TODO: retrieve user selected directory and prepend it to name.
+            std::cout << name;
             WriteFile(name, (content->dump()));
+            selection[6] = true;
             // memset to clear the buffer after use
             memset(name, 0, 128);
-            selection[6] = true;
         }
         ImGui::EndPopup ();
     }
