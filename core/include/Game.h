@@ -81,12 +81,14 @@ namespace Core
         Page *createPage ( std::string n );
         MapPage *createMapPage ( std::string, Map * );
         MapPage *createMapPage ( std::string );
+        void deletePage ( Page * );
+        void deletePage ( std::string );
         // =========================
         // UTILITY OPERATION
         void destroy ();
         void mainLoop ();
         void s1test ();
-
+        std::vector <Page *> *getPageList ();
         Page *currentPage = nullptr;
        // from core team end
     private:
