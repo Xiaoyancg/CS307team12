@@ -1,6 +1,9 @@
 #pragma once
-#include <glm/glm.hpp>
+
 #include <string>
+
+#include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 
 namespace Core
 {
@@ -20,10 +23,12 @@ namespace Core
         // This will set 'mCoords'
         void calculateCoords ( glm::vec2 location, glm::vec2 scale );
 
+		// Render the given entity on the current context
+		// Assumes the shaders have already been setup
+		void render ();
 
-        // Render the given entity on the current context
-        // Assumes the shaders have already been setup
-        void render ();
+		static Entity* parse(nlohmann::json& root);
+		nlohmann::json serialize();
 
 
         // =========================

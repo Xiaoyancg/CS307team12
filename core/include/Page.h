@@ -7,6 +7,7 @@
 #include <SDL.h>
 #include <glad/glad.h>
 #include <glm/core/type_mat.hpp>
+#include <nlohmann/json.hpp>
 
 #include <Entity.h>
 
@@ -31,6 +32,10 @@ namespace Core
         glm::vec4 GetBackgroundColor();
         std::vector<Entity*>& getEntityList ();
         virtual void render ();
+
+        static Page* parse(nlohmann::json& root);
+        nlohmann::json serialize();
+
         // =========================
         // CONSTRUCTOR
 
@@ -45,6 +50,8 @@ namespace Core
         Entity *addEntity ( Entity * );
         Entity *createEntity ( std::string );
         Entity *createEntity ( std::string, glm::vec2, glm::vec2, double, int );
+        void deleteEntity (std::string);
+        void deleteEntity (Entity*);
         // =========================
         // UTILITY OPERATION
 

@@ -33,6 +33,44 @@ namespace Core
         e->setProperty ( l, s, r, sid );
         return e;
     }
+    void Page::deleteEntity ( Entity *dp )
+    {
+        for ( std::vector<Entity *>::iterator ptr = entityList.begin ();
+              ptr != entityList.end ();
+              ptr++ )
+        {
+            if ( *ptr == dp )
+            {
+                entityList.erase ( ptr );
+                delete( dp );
+                dp = nullptr;
+                break;
+            }
+        }
+    }
+
+    void Page::deleteEntity ( std::string s )
+    {
+        for ( std::vector<Entity *>::iterator ptr = entityList.begin ();
+              ptr != entityList.end ();
+              ptr++ )
+        {
+            if ( !( *ptr )->getName ().compare ( s ) )
+            {
+                Entity *p = *ptr;
+                entityList.erase ( ptr );
+                delete( p );
+                p = nullptr;
+                break;
+            }
+        }
+    }
+
+
+
+
+
+
     // =========================
     // UTILITY OPERATION
 
@@ -71,5 +109,25 @@ namespace Core
 #ifdef __TEST_CORE
         pageError = glGetError ();
 #endif // __TEST_CORE
+    }
+
+
+    using json = nlohmann::json;
+
+    Page* Page::parse(json& root) {
+        Page* page = new Page;
+        page->SetName(root.at("Name").get<std::string>());
+        std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
+        page->SetBackgroundColor(
+            colorVec[0].get<float>(),
+            colorVec[1].get<float>(),
+            colorVec[2].get<float>(),
+            colorVec[3].get<float>()
+        );
+        for (json entityJson : root.at("EntityList").get<std::vector<json>>()) {
+            page->entityList.push_back(Entity::parse(entityJson));
+        }
+
+        return page;
     }
 }
