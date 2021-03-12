@@ -1,4 +1,5 @@
 #include <TestCore.h>
+#include "VMTool.h"
 #include "gtest/gtest.h"
 
 unsigned int pageError = 1;
@@ -48,4 +49,16 @@ TEST ( TEST_GAME, Game_SetGetName )
     Core::Game g ( "hello" );
     std::string s ( g.GetGameName () );
     EXPECT_TRUE ( !s.compare ( "hello" ) );
+}
+
+TEST ( TEST_CORE, Serialize )
+{
+    Core::Game g ( "hello" );
+    int argc = 2;
+    char *argv[2];
+    argv[0] = "core";
+    argv[1] = "test";
+    g.coreMain ( argc, argv );
+    nlohmann::json *a = g.serialize ();
+    WriteFile ( "testSinGame.gdata", a->dump () );
 }
