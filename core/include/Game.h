@@ -57,6 +57,7 @@ namespace Core
         void init ();
         void initShader ();
         void sdl_die ( const char *err_msg );
+        void handleInput(SDL_Event event);
         void render ();
         void run (); // main entry
 
@@ -88,6 +89,14 @@ namespace Core
 
        // from core team end
     private:
+        Entity* entityInteractive;
+        Entity* entityTallThin;
+        Entity* entityShortWide;
+        Entity* entityVeryShortWide;
+        Entity* entityOrigin;
+        Page* entityPage;
+        MapPage* mapPage1;
+        MapPage* mapPage2;
 
         std::string gameName;
         std::string author;
