@@ -185,18 +185,18 @@ namespace Core
 
     Game *Game::parse ( json &root )
     {
-        Game *game = new Game;
-        game->SetGameName ( root.at ( "GameName" ).get<std::string> () );
-        game->SetAuthor ( root.at ( "Author" ).get<std::string> () );
-        game->SetVersion ( root.at ( "Version" ).get<std::string> () );
-        game->SetLMTime ( root.at ( "LastModifiedTime" ).get<std::string> () );
-        game->SetNote ( root.at ( "Note" ).get<std::string> () );
+        
+        this->SetGameName ( root.at ( "GameName" ).get<std::string> () );
+        this->SetAuthor ( root.at ( "Author" ).get<std::string> () );
+        this->SetVersion ( root.at ( "Version" ).get<std::string> () );
+        this->SetLMTime ( root.at ( "LastModifiedTime" ).get<std::string> () );
+        this->SetNote ( root.at ( "Note" ).get<std::string> () );
         try
         {
             auto pageVec = root.at ( "PageList" ).get<std::vector<json>> ();
             for ( json pageJson : pageVec )
             {
-                game->pageList.push_back ( Page::parse ( pageJson ) );
+                this->pageList.push_back ( Page::parse ( pageJson ) );
             }
 
         }
@@ -204,7 +204,8 @@ namespace Core
         {
             std::cerr << "error: " << e.what () << std::endl;
         }
-        return game;
+        currentPage = this->pageList.at ( 0 );
+        return this;
     }
 
 
@@ -481,8 +482,8 @@ namespace Core
 
         if ( currentPage != nullptr )
         {
-            glm::vec4 pageColor = currentPage->GetBackgroundColor ();
-            glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
+            //glm::vec4 pageColor = currentPage->GetBackgroundColor ();
+            //glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
             glClear ( GL_COLOR_BUFFER_BIT );
 
             currentPage->render ();
