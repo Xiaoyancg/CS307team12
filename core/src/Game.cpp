@@ -360,6 +360,56 @@ namespace Core
     }
 
 
+    void Game::handleInput(SDL_Event event) {
+        glm::vec2 loc = entityInteractive->getLocation();
+        glm::vec2 scale = entityInteractive->getScale();
+        float moveBy = 5;
+        int scaleBy = 3;
+
+        switch (event.key.keysym.sym) {
+            // Control Entity movement in the interactive demo
+            // Handle left arrow key
+        case SDLK_LEFT:
+            entityInteractive->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
+            break;
+            // Handle right arrow key
+        case SDLK_RIGHT:
+            entityInteractive->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
+            break;
+            // Handle up arrow key
+        case SDLK_UP:
+            entityInteractive->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
+            break;
+            // Handle down arrow key
+        case SDLK_DOWN:
+            entityInteractive->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
+            break;
+
+            // Control Entity scaling in the interactive demo
+        case SDLK_a: // a key is Scale up, for now
+            entityInteractive->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
+            break;
+        case SDLK_z: // z key is Scale down, for now
+            // Make sure not to scale into the negatives
+            if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0) {
+                entityInteractive->setScale(glm::vec2(scale.x - scaleBy, scale.y - scaleBy));
+            }
+            break;
+
+            // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
+        case SDLK_1:
+            currentPage = mapPage1;
+            break;
+        case SDLK_2:
+            currentPage = mapPage2;
+            break;
+        case SDLK_3:
+            currentPage = entityPage;
+            break;
+        }
+    }
+
+
     void Game::render ()
     {
         if ( useFramebuffer )
@@ -386,15 +436,6 @@ namespace Core
 
     }
 
-
-    Entity *entityInteractive;
-    Entity *entityTallThin;
-    Entity *entityShortWide;
-    Entity *entityVeryShortWide;
-    Entity *entityOrigin;
-    Page *entityPage;
-    MapPage *mapPage1;
-    MapPage *mapPage2;
 
 
     void Game::s1test ()
@@ -505,54 +546,7 @@ namespace Core
                         break;
                         // Handle Keypresses
                     case SDL_KEYDOWN:
-                        glm::vec2 loc = entityInteractive->getLocation ();
-                        glm::vec2 scale = entityInteractive->getScale ();
-                        float moveBy = 5;
-                        int scaleBy = 3;
-
-                        switch ( event.key.keysym.sym )
-                        {
-// Control Entity movement in the interactive demo
-// Handle left arrow key
-                            case SDLK_LEFT:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x - moveBy, loc.y ) ); // Move left
-                                break;
-                                // Handle right arrow key
-                            case SDLK_RIGHT:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x + moveBy, loc.y ) ); // Move right
-                                break;
-                                // Handle up arrow key
-                            case SDLK_UP:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y + moveBy ) ); // Move up
-                                break;
-                                // Handle down arrow key
-                            case SDLK_DOWN:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y - moveBy ) ); // Move down
-                                break;
-
-                                // Control Entity scaling in the interactive demo
-                            case SDLK_a: // a key is Scale up, for now
-                                entityInteractive->setScale ( glm::vec2 ( scale.x + scaleBy, scale.y + scaleBy ) );
-                                break;
-                            case SDLK_z: // z key is Scale down, for now
-                                // Make sure not to scale into the negatives
-                                if ( scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0 )
-                                {
-                                    entityInteractive->setScale ( glm::vec2 ( scale.x - scaleBy, scale.y - scaleBy ) );
-                                }
-                                break;
-
-                                // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
-                            case SDLK_1:
-                                currentPage = mapPage1;
-                                break;
-                            case SDLK_2:
-                                currentPage = mapPage2;
-                                break;
-                            case SDLK_3:
-                                currentPage = entityPage;
-                                break;
-                        }
+                        handleInput(event);
                 }
             }
 
