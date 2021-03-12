@@ -197,9 +197,8 @@ static void ShowExampleAppMainMenuBar()
         ImGui::Begin("Game View", &selection[2]);
         GLuint t = *texcbo;
         game->render ();
-        ImGui::Image((void*)t, ImVec2 ( ImGui::GetCursorScreenPos () ),
-                      ImVec2 ( ImGui::GetCursorScreenPos ().x + 400,
-                               ImGui::GetCursorScreenPos ().y + 300 ) );
+        ImVec2 dims = ImGui::GetWindowSize();
+        ImGui::Image((void*)t, ImVec2 (dims.x, dims.y));
         ImGui::End();
     }
     if (selection[3])

@@ -313,7 +313,7 @@ namespace Core
             // unsigned int texcbo; // texture color buffer obj
             // glGenTextures ( 1, &texcbo );
             glBindTexture ( GL_TEXTURE_2D, *texcbo );
-            glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB, 800, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+            glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
             glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
             glBindTexture ( GL_TEXTURE_2D, 0 );
