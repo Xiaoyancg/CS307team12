@@ -459,18 +459,11 @@ static void ShowExampleAppMainMenuBar ()
             saveDialog.Open ();
             if ( !saveDialog.IsOpened () )
             {
-                selection[6] = true;
                 dir.append ( name ).append ( ".gdata" );
                 // memset to clear the buffer after use
                 memset ( name, 0, 128 );
             }
-            /*
-            // connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
-            nlohmann::json* content = game->serialize();
-            WriteFile(name, (content->dump()));
-            selection[6] = true;
-            // memset to clear the buffer after use
-            memset(name, 0, 128); */
+            ImGui::OpenPopup("Saved Successfully");
         }
         ImGui::EndPopup ();
     }
