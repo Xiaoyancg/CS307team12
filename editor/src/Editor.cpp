@@ -206,6 +206,8 @@ static void ShowExampleAppMainMenuBar()
         ImGui::Image((void*)t, ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
     }
+    //deletion flag if an entity, map, or page is deleted
+    bool delete_success = false;
     if (selection[3])
     {
         // possibly implement a new function here for readability purposes
@@ -219,16 +221,16 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Entity Editor", &selection[3]))
         {
             ImGui::InputText("", entity_name, IM_ARRAYSIZE(entity_name));
-            ImGui::SameLine();
             if (ImGui::Button("Create New Entity"))
             {
                 game->currentPage->createEntity(entity_name);
             }
+            ImGui::SameLine();
             if (ImGui::Button("Delete This Entity"))
             {
-
+                delete_success = true;
             }
-            if (ImGui::Button("Show Entity Information "))
+            if (ImGui::Button("Show Entity Information"))
             {
                 entity_info = true;
                 ImGui::OpenPopup("Entity Information");
@@ -266,21 +268,34 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Page Editor", &selection[4]))
         {
             ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
-            ImGui::SameLine();
-            if (ImGui::Button("Create New Page"))
+            if (ImGui::Button("Create This Page"))
             {
                 game->createPage(page_name);
             }
+            ImGui::SameLine();
             if (ImGui::Button("Delete This Page"))
             {
-
+                game->deletePage(page_name);
+                delete_success = true;
             }
-            if (ImGui::Button("Show Page Information "))
+            if (ImGui::Button("Show Page Information"))
             {
                 page_info = true;
                 ImGui::OpenPopup("Page Information");
             }
             ImGui::End();
+        }
+
+        if (delete_success)
+        {
+            ImGui::OpenPopup("Delete Successful");
+            delete_success = false;
+        }
+
+        if (ImGui::BeginPopup("Delete Successful"))
+        {
+            ImGui::Text("Deletion successful!");
+            ImGui::EndPopup();
         }
 
         if (page_info)
@@ -315,8 +330,6 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // map editor
-        ImGui::InputText("", map_name, IM_ARRAYSIZE(map_name));
-        ImGui::SameLine();
         if (ImGui::Begin("Map Editor", &selection[5]))
         {
             if (ImGui::Button("Create New Map"))
@@ -329,22 +342,8 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::Button("Show Map Information "))
             {
-                map_info = true;
-                ImGui::OpenPopup("Map Information");
             }
             ImGui::End();
-        }
-
-        if (map_info)
-        {
-            ImGui::OpenPopup("Map Information");
-            map_info = false;
-        }
-
-        if (ImGui::BeginPopup("Map Information"))
-        {
-
-            ImGui::EndPopup();
         }
     }
     //calls saved successfully popup on project save
@@ -410,11 +409,13 @@ static void ShowExampleAppMainMenuBar()
     }
 
     // save dialog selection return
+    std::string dir = "";
     saveDialog.Display ();
     if ( saveDialog.HasSelected () )
     {
         printf ( "(printf) Selected Directory: %s\n", saveDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
+        dir = saveDialog.GetSelected().string();
         saveDialog.ClearSelected ();
     }
 
@@ -424,6 +425,7 @@ static void ShowExampleAppMainMenuBar()
     {
         printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
+        dir = openDialog.GetSelected().string();
         openDialog.ClearSelected ();
     }
 
