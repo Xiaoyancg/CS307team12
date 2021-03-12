@@ -203,7 +203,7 @@ static void ShowExampleAppMainMenuBar ()
         glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
         game->render (); // Render Game with new viewport size
         glViewport(0, 0, dims.x, dims.y); // Reset viewport size
-        ImGui::Image((void*)t, ImVec2 (dims.x, dims.y));
+        ImGui::Image((void*)t, ImVec2 (dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
     }
     if ( selection[3] )
