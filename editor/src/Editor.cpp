@@ -228,7 +228,7 @@ static void ShowExampleAppMainMenuBar()
             ImGui::SameLine();
             if (ImGui::Button("Delete This Entity"))
             {
-                //game->currentPage->deleteEntity(entity_name);
+                game->currentPage->deleteEntity(entity_name);
                 delete_success = true;
             }
             if (ImGui::Button("Show Entity Information"))
@@ -287,18 +287,6 @@ static void ShowExampleAppMainMenuBar()
             ImGui::End();
         }
 
-        if (delete_success)
-        {
-            ImGui::OpenPopup("Delete Successful");
-            delete_success = false;
-        }
-
-        if (ImGui::BeginPopup("Delete Successful"))
-        {
-            ImGui::Text("Deletion successful!");
-            ImGui::EndPopup();
-        }
-
         if (page_info)
         {
             ImGui::OpenPopup("Page Information");
@@ -318,6 +306,18 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndPopup();
         }
+    }
+
+    if (delete_success)
+    {
+        ImGui::OpenPopup("Delete Successful");
+        delete_success = false;
+    }
+
+    if (ImGui::BeginPopup("Delete Successful"))
+    {
+        ImGui::Text("Deletion successful!");
+        ImGui::EndPopup();
     }
 
     //map editor
