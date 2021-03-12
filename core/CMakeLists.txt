@@ -11,7 +11,7 @@ target_include_directories(corelib
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(corelib editorlib gamevmlib sdl glad sdlmain imgui glm)
+target_link_libraries(corelib editorlib gamevmlib sdl glad sdlmain imgui glm nlohmann_json::nlohmann_json)
 
 add_executable(core "CoreMain.cpp" )
 

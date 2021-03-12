@@ -6,18 +6,73 @@
 
 namespace Core
 {
+    // =========================
+    // CONSTRUCTOR
 
-// Constructor of the Page class
-// Sets mWindow and sets/creates mPageContext
-    Page::Page ( SDL_Window *window )
-        : mWindow ( window )
+    // =========================
+    // ATTRIBUTES OPERATION
+
+    // =========================
+    // PROPERTY OPERATION
+
+    // =========================
+    // MEMBER OPERATION
+    Entity *Page::addEntity ( Entity *e )
     {
-        mPageContext = SDL_GL_CreateContext ( mWindow );
-        if ( !mPageContext )
+        this->entityList.push_back ( e );
+        return e;
+    }
+    Entity *Page::createEntity ( std::string n )
+    {
+        Entity *e = new Entity ( n );
+        return addEntity ( e );
+    }
+    Entity *Page::createEntity ( std::string n, glm::vec2 l, glm::vec2 s, double r, int sid )
+    {
+        Entity *e = createEntity ( n );
+        e->setProperty ( l, s, r, sid );
+        return e;
+    }
+    void Page::deleteEntity ( Entity *dp )
+    {
+        for ( std::vector<Entity *>::iterator ptr = entityList.begin ();
+              ptr != entityList.end ();
+              ptr++ )
         {
-            perror ( "Error creating context\n" );
+            if ( *ptr == dp )
+            {
+                entityList.erase ( ptr );
+                delete( dp );
+                dp = nullptr;
+                break;
+            }
         }
     }
+
+    void Page::deleteEntity ( std::string s )
+    {
+        for ( std::vector<Entity *>::iterator ptr = entityList.begin ();
+              ptr != entityList.end ();
+              ptr++ )
+        {
+            if ( !( *ptr )->getName ().compare ( s ) )
+            {
+                Entity *p = *ptr;
+                entityList.erase ( ptr );
+                delete( p );
+                p = nullptr;
+                break;
+            }
+        }
+    }
+
+
+
+
+
+
+    // =========================
+    // UTILITY OPERATION
 
 
     std::string Page::GetName ()
@@ -25,32 +80,59 @@ namespace Core
         return this->name;
     }
 
-    int Page::SetName ( std::string newName )
+    void Page::SetName ( std::string newName )
     {
         this->name = std::string ( newName );
-        return 1;
+    }
+
+    void Page::SetBackgroundColor ( float r, float g, float b, float a )
+    {
+        this->backgroundColor = glm::vec4 ( r, g, b, a );
+    }
+
+    glm::vec4 Page::GetBackgroundColor ()
+    {
+        return this->backgroundColor;
+    }
+
+    std::vector<Entity *> &Page::getEntityList ()
+    {
+        return this->entityList;
     }
 
 
     void Page::render ()
     {
-// Show the current context
-        SDL_GL_MakeCurrent ( mWindow, mPageContext );
-
-        // Clear the buffer with a blue background
-        glClearColor ( 0.0, 0.0, 1.0, 1.0 );
-        glClear ( GL_COLOR_BUFFER_BIT );
-        SDL_GL_SwapWindow ( mWindow ); // Show the buffer by bringing it to the front
-        SDL_Delay ( 1000 ); // Wait 1 sec before continuing
-
-        // Clear the buffer with a dark blue background
-        glClearColor ( 0.0, 0.0, 0.5, 1.0 );
-        glClear ( GL_COLOR_BUFFER_BIT );
-        SDL_GL_SwapWindow ( mWindow ); // Show the buffer by bringing it to the front
-        SDL_Delay ( 1000 ); // Wait 1 sec before continuing
+        for ( Entity *e : this->getEntityList () )
+        {
+            e->render ();
+        }
 
 #ifdef __TEST_CORE
         pageError = glGetError ();
 #endif // __TEST_CORE
+    }
+
+
+    using json = nlohmann::json;
+
+    Page *Page::parse ( json &root )
+    {
+        Page *page = new Page;
+        page->SetName ( root.at ( "PageName" ).get<std::string> () );
+        //std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
+        //page->SetBackgroundColor(
+        //    colorVec[0].get<float>(),
+        //    colorVec[1].get<float>(),
+        //    colorVec[2].get<float>(),
+        //    colorVec[3].get<float>()
+        //);
+        auto entityVec = root.at ( "EntityList" ).get<std::vector<json>> ();
+        for ( json entityJson : entityVec )
+        {
+            page->entityList.push_back ( Entity::parse ( entityJson ) );
+        }
+
+        return page;
     }
 }

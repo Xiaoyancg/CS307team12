@@ -1,10 +1,9 @@
 #include "Map.h"
 
+#include "Game.h"
+
 namespace Core
 {
-    extern int width;
-    extern int height;
-
     // Takes a scale, the number of tiles in the x and y direction 
     Map::Map ( glm::vec2 dimensions, int tileSize ):
         mMapDimensions ( dimensions ),
@@ -65,9 +64,9 @@ namespace Core
         int halfYPixels = halfYTiles * mTileSize;
 
         // Calculate the top-left corner of the centered map
-        int lowX = ( width / 2 ) - halfXPixels;
+        int lowX = ( Game::width / 2 ) - halfXPixels;
         int highX = lowX + mTileSize;
-        int highY = ( height / 2 ) + halfYPixels;
+        int highY = ( Game::height / 2 ) + halfYPixels;
         int lowY = highY - mTileSize;
 
 
@@ -116,7 +115,7 @@ namespace Core
                 highX += mTileSize;
                 index++;
             }
-            lowX = ( width / 2 ) - halfXPixels;;
+            lowX = ( Game::width / 2 ) - halfXPixels;;
             highX = lowX + mTileSize;
             highY -= mTileSize;
             lowY -= mTileSize;
