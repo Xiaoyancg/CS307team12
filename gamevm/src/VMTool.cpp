@@ -8,6 +8,20 @@ std::string ReadFile ( std::string fileName )
     return s;
 }
 
+void removeGame ( std::string n )
+{
+    remove ( n.c_str () );
+}
+
+json *readGameDataFile ( std::string f )
+{
+    json *s = new json ();
+    std::string ctt ( ReadFile ( f ) );
+    *s = json::parse ( ctt );
+    return s;
+}
+
+
 Core::Game *CreateExampleGame ()
 {
     Core::Game *g = new Core::Game ( std::string ( "example" ) );
@@ -45,12 +59,12 @@ int WriteFile ( std::string fileName, std::string content )
 }
 
 
-Core::Game * ConstructGame ( std::string fileName )
+Core::Game *ConstructGame ( std::string fileName )
 {
     std::string s ( ReadFile ( fileName ) );
     json j = json::parse ( s );
-    Core::Game * g = new Core::Game (j["GameName"]);
-    g->SetAuthor(j["Author"]);
+    Core::Game *g = new Core::Game ( j["GameName"] );
+    g->SetAuthor ( j["Author"] );
     g->SetLMTime ( j["LastModifiedTime"] );
     g->SetNote ( j["Note"] );
     g->SetVersion ( j["Version"] );
@@ -62,11 +76,11 @@ int ProduceDataFile ( Core::Game *g )
 {
     json j;
     j["FileType"] = "Parchment Game Data";
-    j["GameName"] = g->GetGameName ().c_str ();
-    j["Author"] = g->GetAuthor ().c_str ();
-    j["LastModifiedTime"] = g->GetLMTime ().c_str ();
-    j["Note"] = g->GetNote ().c_str ();
-    j["Version"] = g->GetVersion ().c_str ();
+    j["GameName"] = g->GetGameName ();
+    j["Author"] = g->GetAuthor ();
+    j["LastModifiedTime"] = g->GetLMTime ();
+    j["Note"] = g->GetNote ();
+    j["Version"] = g->GetVersion ();
     try
     {
         WriteFile ( g->GetGameName ().append ( ".gdata" ), j.dump () );

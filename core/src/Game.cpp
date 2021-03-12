@@ -1,9 +1,11 @@
 #include <Game.h>
-#include <MapPage.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
-
+#include <glad/glad.h>
+#include <iostream>
+#include <MapPage.h>
 
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -11,30 +13,28 @@
 
 
 // by Larry
-// class place holder
 namespace Core
 {
-    Game::Game ()
-    { }
-    Game::Game ( std::string gameName )
-    {
-        this->gameName = std::string ( gameName );
-    }
+
+
+    int Game::width = 1280;
+    int Game::height = 720;
+
+
     std::string Game::GetGameName ()
     {
-        return std::string ( this->gameName );
+        return this->gameName;
     }
 
-    int Game::SetGameName ( std::string newName )
+    void Game::SetGameName ( std::string newName )
     {
         this->gameName = newName;
-        return 0;
     }
 
-    int Game::SetAuthor ( std::string newAuthor )
+
+    void Game::SetAuthor ( std::string newAuthor )
     {
         this->author = newAuthor;
-        return 0;
     }
 
     std::string Game::GetAuthor ()
@@ -42,62 +42,204 @@ namespace Core
         return this->author;
     }
 
-    int Game::SetVersion ( std::string newVersion )
+
+    void Game::SetVersion ( std::string newVersion )
     {
         this->version = newVersion;
-        return 0;
     }
+
     std::string Game::GetVersion ()
     {
         return this->version;
     }
 
-    int Game::SetLMTime ( std::string time )
+
+    void Game::SetLMTime ( std::string time )
     {
         this->lMTime = time;
-        return 0;
     }
 
-    int Game::SetLMTime ()
+    void Game::SetLMTime ()
     {
         time_t rawtime;
         struct tm *timeinfo;
         time ( &rawtime );
         timeinfo = localtime ( &rawtime );
         this->lMTime = std::string ( asctime ( timeinfo ) );
-        return 0;
     }
+
+
     std::string Game::GetLMTime ()
     {
         return this->lMTime;
     }
-    int Game::SetNote ( std::string newNote )
+
+    void Game::SetNote ( std::string newNote )
     {
         this->note = newNote;
-        return 0;
     }
+
+
     std::string Game::GetNote ()
     {
         return this->note;
     }
 
+    // =========================
+    // CONSTRUCTOR
+
+    Game::Game ( GLuint *o )
+    {
+        texcbo = o;
+        useFramebuffer = true;
+        this->gameName = "editortestname";
+    }
+    Game::Game ():Game ( "empty" )
+    { }
+
+    Game::Game ( std::string gameName ) : gameName ( gameName )
+    {
+        useFramebuffer = false;
+    }
+
+    Game::Game ( nlohmann::json &json )
+    {
+
+    }
+    // =========================
+    // ATTRIBUTES OPERATION
+
+    // =========================
+    // PROPERTY OPERATION
+
+    // =========================
+    // MEMBER OPERATION
+    Page *Game::addPage ( Page *p )
+    {
+        this->pageList.push_back ( p );
+        return p;
+    }
+    Page *Core::Game::createPage ( std::string n )
+    {
+        Page *p = new Page ( n );
+        return addPage ( p );
+    }
+
+    MapPage *Game::createMapPage ( std::string n )
+    {
+        MapPage *mp = new MapPage ( n );
+        return ( MapPage * ) addPage ( mp );
+    }
+    MapPage *Game::createMapPage ( std::string n, Map *m )
+    {
+        MapPage *mp = new MapPage ( n, m );
+        return ( MapPage * ) addPage ( mp );
+    }
+    std::vector<Page *> *Game::getPageList ()
+    {
+        return &pageList;
+    }
+
+    void Game::deletePage ( Page *dp )
+    {
+        for ( std::vector<Page *>::iterator ptr = pageList.begin ();
+              ptr != pageList.end ();
+              ptr++ )
+        {
+            if ( *ptr == dp )
+            {
+                pageList.erase ( ptr );
+                delete( dp );
+                dp = nullptr;
+                break;
+            }
+        }
+    }
+
+    void Game::deletePage ( std::string s )
+    {
+        for ( std::vector<Page *>::iterator ptr = pageList.begin ();
+              ptr != pageList.end ();
+              ptr++ )
+        {
+            if ( !( *ptr )->GetName ().compare ( s ) )
+            {
+                Page *p = *ptr;
+                pageList.erase ( ptr );
+                delete( p );
+                p = nullptr;
+                break;
+            }
+        }
+    }
 
 
-
-
-
-
-
-
-
-
+    // =========================
+    // UTILITY OPERATION
 
 
 
 // Larry out
 
-    int width = 1280; // Width of the window, used in Entity.cpp
-    int height = 720; // Height of the window, used in Entity.cpp
+    using json = nlohmann::json;
+
+    Game *Game::parse ( json &root )
+    {
+        
+        this->SetGameName ( root.at ( "GameName" ).get<std::string> () );
+        this->SetAuthor ( root.at ( "Author" ).get<std::string> () );
+        this->SetVersion ( root.at ( "Version" ).get<std::string> () );
+        this->SetLMTime ( root.at ( "LastModifiedTime" ).get<std::string> () );
+        this->SetNote ( root.at ( "Note" ).get<std::string> () );
+        try
+        {
+            auto pageVec = root.at ( "PageList" ).get<std::vector<json>> ();
+            for ( json pageJson : pageVec )
+            {
+                this->pageList.push_back ( Page::parse ( pageJson ) );
+            }
+
+        }
+        catch ( const std::exception &e )
+        {
+            std::cerr << "error: " << e.what () << std::endl;
+        }
+        currentPage = this->pageList.at ( 0 );
+        return this;
+    }
+
+
+    nlohmann::json *Game::serialize ()
+    {
+        json j;
+        j["FileType"] = "Parchment Game Data";
+        j["GameName"] = GetGameName ();
+        j["Author"] = GetAuthor ();
+        j["Version"] = GetVersion ();
+        j["LastModifiedTime"] = GetLMTime ();
+        j["Note"] = GetNote ();
+        std::vector<json> pageVector;
+        for ( Page *p : this->pageList )
+        {
+            json pj;
+            pj["PageName"] = p->GetName ();
+            std::vector<json> entityVector;
+            for ( Entity *e : p->getEntityList () )
+            {
+                json ej;
+                ej["EntityName"] = e->getName ();
+                ej["location"] = { e->getLocation ().x, e->getLocation ().y };
+                ej["scale"] = { e->getScale ().x, e->getScale ().y };
+                ej["rotation"] = e->getRotation ();
+                ej["spriteID"] = e->getSpriteID ();
+                entityVector.push_back ( ej );
+            }
+            pj["EntityList"] =  entityVector ;
+            pageVector.push_back ( pj );
+        }
+        j["PageList"] = pageVector;
+        return new json ( j );
+    }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
     // argument err_msg can be anything, but try to keep it related to the error
@@ -111,9 +253,12 @@ namespace Core
 
     void Game::initShader ()
     {
+        // Create viewport with the default w/h (same as the window size)
+        glViewport ( 0, 0, width, height );
+
 // Source for the vertex shader
         const char *vertexSource = R"glsl(
-		#version 450 core
+		#version 330 core
 
 		layout (location = 0) in vec2 pos;
 		uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
@@ -214,6 +359,27 @@ namespace Core
         // Set the scale based on the width and height
         int scaleID = glGetUniformLocation ( shaderProgram, "scale" );
         glUniform2f ( scaleID, ( float ) 2 / width, ( float ) 2 / height );
+
+
+        // Larry framebuffer
+        if ( useFramebuffer )
+        {
+            glGenFramebuffers ( 1, &fbo );
+            glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+
+            // texbuffer is done in editor
+            // unsigned int texcbo; // texture color buffer obj
+            // glGenTextures ( 1, &texcbo );
+            glBindTexture ( GL_TEXTURE_2D, *texcbo );
+            glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+            glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+            glBindTexture ( GL_TEXTURE_2D, 0 );
+
+            glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texcbo, 0 );
+
+            glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+        }
     }
 
     // This takes care of initializing everything SDL needs to begin running
@@ -249,57 +415,107 @@ namespace Core
         // Setup function pointers for OpenGL
         gladLoadGL ();
 
-        // Create viewport with the default w/h (same as the window size)
-        glViewport ( 0, 0, width, height );
+    }
 
-        // Create the shaders
-        initShader ();
+
+    void Game::handleInput ( SDL_Event event )
+    {
+       glm::vec2 loc = entityInteractive->getLocation ();
+        glm::vec2 scale = entityInteractive->getScale ();
+        float moveBy = 5;
+        int scaleBy = 3;
+
+        switch ( event.key.keysym.sym )
+        {
+// Control Entity movement in the interactive demo
+// Handle left arrow key
+            case SDLK_LEFT:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x - moveBy, loc.y ) ); // Move left
+                break;
+                // Handle right arrow key
+            case SDLK_RIGHT:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x + moveBy, loc.y ) ); // Move right
+                break;
+                // Handle up arrow key
+            case SDLK_UP:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y + moveBy ) ); // Move up
+                break;
+                // Handle down arrow key
+            case SDLK_DOWN:
+                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y - moveBy ) ); // Move down
+                break;
+
+                // Control Entity scaling in the interactive demo
+            case SDLK_a: // a key is Scale up, for now
+                entityInteractive->setScale ( glm::vec2 ( scale.x + scaleBy, scale.y + scaleBy ) );
+                break;
+            case SDLK_z: // z key is Scale down, for now
+                // Make sure not to scale into the negatives
+                if ( scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0 )
+                {
+                    entityInteractive->setScale ( glm::vec2 ( scale.x - scaleBy, scale.y - scaleBy ) );
+                }
+                break;
+
+                // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
+            case SDLK_1:
+                currentPage = mapPage1;
+                break;
+            case SDLK_2:
+                currentPage = mapPage2;
+                break;
+            case SDLK_3:
+                currentPage = entityPage;
+                break;
+        }
     }
 
 
     void Game::render ()
     {
-// Show the current context
-        SDL_GL_MakeCurrent ( window, gl_context );
-
-        ///////////////
-        // ENTITY TEST - Render all entities
-        // This is just a test to make sure Entity rendering is correctly set up
+        if ( useFramebuffer )
+        {
+            glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+        }
         glClearColor ( 0.1, 0.2, 0.59, 1.0 );
         glClear ( GL_COLOR_BUFFER_BIT );
-        // Iterate through the unique_ptrs in the 'entities' vector
-        for ( auto &entity : entities )
-        {
-            entity->render ();
 
+        if ( currentPage != nullptr )
+        {
+            //glm::vec4 pageColor = currentPage->GetBackgroundColor ();
+            //glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
+            glClear ( GL_COLOR_BUFFER_BIT );
+
+            currentPage->render ();
         }
 
-        SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
-        ///////////////
+        glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
+
+    }
+    void Game::run ()
+    {
 
     }
 
 
-    int Game::coreMain ( int argc, char *argv[] )
-    {
-        // Initialize OpenGL and necessary SDL objects
-        init ();
 
-        SDL_Event event;
-        int close_window = false;
+    void Game::s1test ()
+    {
 
         ///////////////
-        // ENTITY TEST
-        Entity *entityInteractive = new Entity ( glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
-        entities.emplace_back ( entityInteractive );
-        Entity *entityTallThin = new Entity ( glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
-        entities.emplace_back ( entityTallThin );
-        Entity *entityShortWide = new Entity ( glm::vec2 ( 500, 500 ), glm::vec2 ( 64, 32 ), 0, 0 );
-        entities.emplace_back ( entityShortWide );
-        Entity *entityVeryShortWide = new Entity ( glm::vec2 ( 640, 100 ), glm::vec2 ( 128, 16 ), 0, 0 );
-        entities.emplace_back ( entityVeryShortWide );
-        Entity *entityOrigin = new Entity ( glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
-        entities.emplace_back ( entityOrigin );
+        // ENTITY TEST (This is here just for demo purposes)
+        // This will be moved within an actual page once sprites are implemented.
+        // For now it's separated from a page because all rendered objects are a single color and there
+        // would be no way to see a difference from a Tile on the map and an Entity
+
+        entityPage = this->createPage ( "entityPage" );
+        entityPage->SetBackgroundColor ( 0.1, 0.2, 0.59, 1.0 );
+
+        entityInteractive = entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
+        entityTallThin = entityPage->createEntity ( "interactive", glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
+        entityShortWide = entityPage->createEntity ( "shortWide", glm::vec2 ( 500, 500 ), glm::vec2 ( 64, 32 ), 0, 0 );
+        entityVeryShortWide = entityPage->createEntity ( "veryShortWide", glm::vec2 ( 640, 100 ), glm::vec2 ( 128, 16 ), 0, 0 );
+        entityOrigin = entityPage->createEntity ( "origin", glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
         ///////////////
 
         ///////////////
@@ -316,19 +532,49 @@ namespace Core
         Map *map2 = new Map ( glm::vec2 ( 16, 16 ), 32 );
 
         // Here are the 2 ways to make MapPages with set maps
-        MapPage mapPage1 ( window, map1 ); // Creates a MapPage with initial map 'map1'
-        MapPage mapPage2 ( window );
-        mapPage2.setMap ( map2 );
-        ////////////////
+        mapPage1 = this->createMapPage ( "1", map1 );
+        mapPage2 = this->createMapPage ( "2" );
+        mapPage2->setMap ( map2 ); // Sets empty map page 2's map
 
-        Page *currentPage = NULL;
+        // very important
+        currentPage = entityPage;
+    }
 
 
 
-        ///////////////
-        // Game loop //
-        ///////////////
+    void Game::destroy ()
+    {
+        // Take care of deleting SDL objects and cleanly exit 
+        SDL_GL_DeleteContext ( gl_context );
+        SDL_DestroyWindow ( window );
+        SDL_Quit ();
+    }
 
+    int Game::coreMain ( int argc, char *argv[] )
+    {
+
+        // Initdialize OpenGL and necessary SDL objects
+        init ();
+        // Create the shaders
+        initShader ();
+
+        s1test ();
+        //serialize ();
+
+        mainLoop ();
+
+        destroy ();
+        return 0;
+    }
+
+    ///////////////
+    // Game loop //
+    ///////////////
+    void Game::mainLoop ()
+    {
+
+        SDL_Event event;
+        int close_window = false;
         while ( !close_window )
         {
     // Input handling!
@@ -352,8 +598,6 @@ namespace Core
                              // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                             glViewport ( 0, 0, width, height );
 
-                        // TODO: Add map coordinate recalculations
-
                         // Preserve dimensions of objects after resize
                         // Set the scale based on the width and height of the screen
                             int scaleID = glGetUniformLocation ( shaderProgram, "scale" );
@@ -364,70 +608,22 @@ namespace Core
                         break;
                         // Handle Keypresses
                     case SDL_KEYDOWN:
-                        glm::vec2 loc = entityInteractive->getLocation ();
-                        glm::vec2 scale = entityInteractive->getScale ();
-                        float moveBy = 5;
-                        int scaleBy = 3;
-
-                        switch ( event.key.keysym.sym )
-                        {
-// Control Entity movement in the interactive demo
-// Handle left arrow key
-                            case SDLK_LEFT:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x - moveBy, loc.y ) ); // Move left
-                                break;
-                                // Handle right arrow key
-                            case SDLK_RIGHT:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x + moveBy, loc.y ) ); // Move right
-                                break;
-                                // Handle up arrow key
-                            case SDLK_UP:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y + moveBy ) ); // Move up
-                                break;
-                                // Handle down arrow key
-                            case SDLK_DOWN:
-                                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y - moveBy ) ); // Move down
-                                break;
-
-                                // Control Entity scaling in the interactive demo
-                            case SDLK_a: // a key is Scale up, for now
-                                entityInteractive->setScale ( glm::vec2 ( scale.x + scaleBy, scale.y + scaleBy ) );
-                                break;
-                            case SDLK_z: // z key is Scale down, for now
-                                // Make sure not to scale into the negatives
-                                if ( scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0 )
-                                {
-                                    entityInteractive->setScale ( glm::vec2 ( scale.x - scaleBy, scale.y - scaleBy ) );
-                                }
-                                break;
-
-                                // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
-                            case SDLK_1:
-                                currentPage = &mapPage1;
-                                break;
-                            case SDLK_2:
-                                currentPage = &mapPage2;
-                                break;
-                            case SDLK_3:
-                                currentPage = NULL;
-                                break;
-                        }
+                        handleInput ( event );
                 }
             }
 
-
-            // Render the correct page
-            if ( currentPage )
-            {
-                currentPage->render ();
-            }
-            else
-            {
-                render ();
-            }
+        // Show the current context
+            SDL_GL_MakeCurrent ( window, gl_context );
 
 
-            // Error checking! This will only print out an error if one is detected each loop
+            render ();
+
+            SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
+            ///////////////
+
+
+
+                // Error checking! This will only print out an error if one is detected each loop
             GLenum err ( glGetError () );
             if ( err != GL_NO_ERROR )
             {
@@ -450,12 +646,6 @@ namespace Core
 #endif // __TEST_CORE
         }
 
-        // Take care of deleting SDL objects and cleanly exit 
-        SDL_GL_DeleteContext ( gl_context );
-        SDL_DestroyWindow ( window );
-        SDL_Quit ();
 
-        return 0;
     }
-
 }
