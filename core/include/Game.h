@@ -86,7 +86,7 @@ namespace Core
         void destroy ();
         void mainLoop ();
         void s1test ();
-
+        std::vector <Page *> *getPageList ();
         Page *currentPage = nullptr;
        // from core team end
     private:

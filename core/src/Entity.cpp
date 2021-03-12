@@ -44,6 +44,24 @@ namespace Core
         // =========================
         // UTILITY OPERATION
 
+    double Entity::getRotation ()
+    {
+        return this->mRotation;
+    }
+    void Entity::setRotation ( double d )
+    {
+        this->mRotation = d;
+    }
+    void Entity::setSpriteID ( int i )
+    {
+        this->mSpriteID = i;
+    }
+    int Entity::getSpriteID ()
+    {
+        return this->mSpriteID;
+    }
+
+
 
 
     Entity::Entity ( std::string s ):entityName ( s )

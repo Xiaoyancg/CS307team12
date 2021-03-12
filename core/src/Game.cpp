@@ -135,6 +135,10 @@ namespace Core
         MapPage *mp = new MapPage ( n, m );
         return ( MapPage * ) addPage ( mp );
     }
+    std::vector<Page *> *Game::getPageList ()
+    {
+        return &pageList;
+    }
     // =========================
     // UTILITY OPERATION
 
@@ -179,6 +183,18 @@ namespace Core
                 j["PageList"][p->GetName ()]
                     ["EntityList"][e->getName ()]
                     ["EntityName"] = e->getName ();
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["location"] = { e->getLocation ().x, e->getLocation ().y };
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["scale"] = { e->getScale ().x, e->getScale ().y };
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["rotation"] = e->getRotation ();
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName ()]
+                    ["spritID"] = e->getSpriteID ();
             }
         }
         return new json ( j );
