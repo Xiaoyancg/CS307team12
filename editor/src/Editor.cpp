@@ -22,6 +22,7 @@ static bool selection[7];
 
 GLuint *texcbo;
 Core::Game *game;
+std::string dir;
 int EditorMain ( int argc, char *argv[] )
 {
     // Set Up SDL2
@@ -411,13 +412,12 @@ static void ShowExampleAppMainMenuBar()
     }
 
     // save dialog selection return
-    std::string dir = "";
     saveDialog.Display ();
     if ( saveDialog.HasSelected () )
     {
         printf ( "(printf) Selected Directory: %s\n", saveDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
-        dir = saveDialog.GetSelected().string();
+        dir = std::string (saveDialog.GetSelected().string());
         saveDialog.ClearSelected ();
     }
 
@@ -427,8 +427,6 @@ static void ShowExampleAppMainMenuBar()
     {
         printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
-        dir = openDialog.GetSelected().string();
-        std::cout << dir;
         openDialog.ClearSelected ();
     }
 
@@ -453,13 +451,23 @@ static void ShowExampleAppMainMenuBar()
         ImGui::InputText ( "", name, IM_ARRAYSIZE ( name ) );
         if ( ImGui::Button ( "Save" ) )
         {
+            saveDialog.Open();
+            if (!saveDialog.IsOpened())
+            {
+                std::cout << dir;
+                nlohmann::json* content = game->serialize();
+                WriteFile(name, (content->dump()));
+                selection[6] = true;
+                // memset to clear the buffer after use
+                memset(name, 0, 128);
+            }
+            /*
             // connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
             nlohmann::json* content = game->serialize();
-            std::cout << name;
             WriteFile(name, (content->dump()));
             selection[6] = true;
             // memset to clear the buffer after use
-            memset(name, 0, 128);
+            memset(name, 0, 128); */
         }
         ImGui::EndPopup ();
     }
