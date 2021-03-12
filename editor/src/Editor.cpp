@@ -426,7 +426,6 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::MenuItem ( "Map Editor", "", &selection[5] );
             ImGui::EndMenu ();
         }
-        // ImGui::IsItemVisible ();
         ImGui::EndMainMenuBar ();
     }
 
@@ -503,7 +502,7 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::Text ( "Project saved successfully!" );
         ImGui::EndPopup ();
     }
-    /* this can be used when project deletion is successful
+
     if (ImGui::BeginPopup("Deleted Successfully"))
     {
         ImGui::Text("Project deleted successfully!");
