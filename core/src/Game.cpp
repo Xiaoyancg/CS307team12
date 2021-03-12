@@ -87,12 +87,24 @@ namespace Core
     // =========================
     // CONSTRUCTOR
 
+    Game::Game ():Game ( "empty" )
+    { }
+
+    Game::Game ( std::string gameName ): gameName ( gameName )
+    {
+
+    }
+    
+    Game::Game ( nlohmann::json &json )
+    {
+
+    }
     // =========================
     // ATTRIBUTES OPERATION
-
+    
     // =========================
     // PROPERTY OPERATION
-
+    
     // =========================
     // MEMBER OPERATION
     Page *Game::addPage ( Page *p )
@@ -104,6 +116,17 @@ namespace Core
     {
         Page *p = new Page ( n );
         return addPage ( p );
+    }
+
+    MapPage *Game::createMapPage ( std::string n )
+    {
+        MapPage *mp = new MapPage ( n );
+        return ( MapPage * ) addPage ( mp );
+    }
+    MapPage *Game::createMapPage ( std::string n, Map *m )
+    {
+        MapPage *mp = new MapPage ( n, m );
+        return ( MapPage * ) addPage ( mp );
     }
     // =========================
     // UTILITY OPERATION
@@ -297,7 +320,7 @@ namespace Core
 
     void Game::render ()
     {
-// Show the current context
+        // Show the current context
         SDL_GL_MakeCurrent ( window, gl_context );
 
         glClearColor ( 0.1, 0.2, 0.59, 1.0 );
@@ -316,30 +339,41 @@ namespace Core
         ///////////////
 
     }
+    void Game::run ()
+    {
+
+    }
+
+
+    Entity *entityInteractive;
+    Entity *entityTallThin;
+    Entity *entityShortWide;
+    Entity *entityVeryShortWide;
+    Entity *entityOrigin;
+    Page *entityPage;
+    MapPage *mapPage1;
+    MapPage *mapPage2;
 
 
     int Game::coreMain ( int argc, char *argv[] )
     {
-        // Initialize OpenGL and necessary SDL objects
+
+        // Initdialize OpenGL and necessary SDL objects
         init ();
-
-        SDL_Event event;
-        int close_window = false;
-
         ///////////////
         // ENTITY TEST (This is here just for demo purposes)
         // This will be moved within an actual page once sprites are implemented.
         // For now it's separated from a page because all rendered objects are a single color and there
         // would be no way to see a difference from a Tile on the map and an Entity
 
-        Page *entityPage = this->createPage ( "entityPage" );
+        entityPage = this->createPage ( "entityPage" );
         entityPage->SetBackgroundColor ( 0.1, 0.2, 0.59, 1.0 );
 
-        Entity *entityInteractive = entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
-        Entity *entityTallThin = entityPage->createEntity ( "interactive", glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
-        Entity *entityShortWide = entityPage->createEntity ( "shortWide", glm::vec2 ( 500, 500 ), glm::vec2 ( 64, 32 ), 0, 0 );
-        Entity *entityVeryShortWide = entityPage->createEntity ( "veryShortWide", glm::vec2 ( 640, 100 ), glm::vec2 ( 128, 16 ), 0, 0 );
-        Entity *entityOrigin = entityPage->createEntity ( "origin", glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
+        entityInteractive = entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
+        entityTallThin = entityPage->createEntity ( "interactive", glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
+        entityShortWide = entityPage->createEntity ( "shortWide", glm::vec2 ( 500, 500 ), glm::vec2 ( 64, 32 ), 0, 0 );
+        entityVeryShortWide = entityPage->createEntity ( "veryShortWide", glm::vec2 ( 640, 100 ), glm::vec2 ( 128, 16 ), 0, 0 );
+        entityOrigin = entityPage->createEntity ( "origin", glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
         ///////////////
 
         ///////////////
@@ -356,22 +390,33 @@ namespace Core
         Map *map2 = new Map ( glm::vec2 ( 16, 16 ), 32 );
 
         // Here are the 2 ways to make MapPages with set maps
-        MapPage *mapPage1 = new MapPage ( map1 ); // Creates a MapPage with initial map 'map1'
-        MapPage *mapPage2 = new MapPage; // Creates empty map page 2
+        mapPage1 = this->createMapPage ( "1", map1 );
+        mapPage2 = this->createMapPage ( "2" );
         mapPage2->setMap ( map2 ); // Sets empty map page 2's map
-        pageList.push_back ( mapPage1 );
-        pageList.push_back ( mapPage2 );
-
-        currentPage = pageList[0];
-
+        
+        // very important
+        currentPage = entityPage;
 
 
 
+        mainLoop ();
 
-        ///////////////
-        // Game loop //
-        ///////////////
+        // Take care of deleting SDL objects and cleanly exit 
+        SDL_GL_DeleteContext ( gl_context );
+        SDL_DestroyWindow ( window );
+        SDL_Quit ();
 
+        return 0;
+    }
+
+    ///////////////
+    // Game loop //
+    ///////////////
+    void Game::mainLoop ()
+    {
+
+        SDL_Event event;
+        int close_window = false;
         while ( !close_window )
         {
     // Input handling!
@@ -444,13 +489,13 @@ namespace Core
 
                                 // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
                             case SDLK_1:
-                                currentPage = pageList[1];
+                                currentPage = mapPage1;
                                 break;
                             case SDLK_2:
-                                currentPage = pageList[2];
+                                currentPage = mapPage2;
                                 break;
                             case SDLK_3:
-                                currentPage = pageList[0];
+                                currentPage = entityPage;
                                 break;
                         }
                 }
@@ -483,12 +528,6 @@ namespace Core
 #endif // __TEST_CORE
         }
 
-        // Take care of deleting SDL objects and cleanly exit 
-        SDL_GL_DeleteContext ( gl_context );
-        SDL_DestroyWindow ( window );
-        SDL_Quit ();
 
-        return 0;
     }
-
 }
