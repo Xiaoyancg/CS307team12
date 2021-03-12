@@ -112,6 +112,9 @@ int EditorMain(int argc, char* argv[])
             {
                 running = false;
             }
+            if (evt.type == SDL_KEYDOWN) {
+                game->handleInput(evt);
+            }
         }
         // Draw ImGui windows
         // Start the dear Imgui frame
@@ -196,8 +199,10 @@ static void ShowExampleAppMainMenuBar()
         // the game view window itself
         ImGui::Begin("Game View", &selection[2]);
         GLuint t = *texcbo;
-        game->render ();
         ImVec2 dims = ImGui::GetWindowSize();
+        glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
+        game->render (); // Render Game with new viewport size
+        glViewport(0, 0, dims.x, dims.y); // Reset viewport size
         ImGui::Image((void*)t, ImVec2 (dims.x, dims.y));
         ImGui::End();
     }
