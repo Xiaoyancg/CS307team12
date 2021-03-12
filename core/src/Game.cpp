@@ -199,7 +199,7 @@ namespace Core
     }
 
 
-    nlohmann::json * Game::serialize ()
+    nlohmann::json* Game::serialize ()
     {
         json j;
         j["FileType"] = "Parchment Game Data";
@@ -230,7 +230,7 @@ namespace Core
                     ["spritID"] = e->getSpriteID ();
             }
         }
-        return new nlohmann::json(j);
+        return new json(j);
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
