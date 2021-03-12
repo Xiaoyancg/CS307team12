@@ -16,6 +16,7 @@
 namespace Core
 {
 
+
     int Game::width = 1280;
     int Game::height = 720;
 
@@ -476,8 +477,11 @@ namespace Core
         mapPage2->setMap ( map2 ); // Sets empty map page 2's map
 
         // very important
-        currentPage = mapPage1;
+        currentPage = entityPage;
     }
+
+
+
     void Game::destroy ()
     {
         // Take care of deleting SDL objects and cleanly exit 
@@ -551,8 +555,7 @@ namespace Core
         SDL_GL_MakeCurrent ( window, gl_context );
 
 
-
-            render ();
+        render ();
 
         SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
         ///////////////

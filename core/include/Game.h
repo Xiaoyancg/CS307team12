@@ -57,7 +57,7 @@ namespace Core
         void init ();
         void initShader ();
         void sdl_die ( const char *err_msg );
-        void handleInput(SDL_Event event);
+        void handleInput ( SDL_Event event );
         void render ();
         void run (); // main entry
 
@@ -87,16 +87,17 @@ namespace Core
         void mainLoop ();
         void s1test ();
 
+        Page *currentPage = nullptr;
        // from core team end
     private:
-        Entity* entityInteractive;
-        Entity* entityTallThin;
-        Entity* entityShortWide;
-        Entity* entityVeryShortWide;
-        Entity* entityOrigin;
-        Page* entityPage;
-        MapPage* mapPage1;
-        MapPage* mapPage2;
+        Entity *entityInteractive;
+        Entity *entityTallThin;
+        Entity *entityShortWide;
+        Entity *entityVeryShortWide;
+        Entity *entityOrigin;
+        Page *entityPage;
+        MapPage *mapPage1;
+        MapPage *mapPage2;
 
         std::string gameName;
         std::string author;
@@ -108,7 +109,6 @@ namespace Core
         GLuint fbo;
         std::vector<Page *> pageList;
         // for current stage, remove in sprint 2
-        Page *currentPage = nullptr;
         // next sprint
         // std::vector<int> inDisplayList;
 
