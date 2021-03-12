@@ -386,7 +386,10 @@ static void ShowExampleAppMainMenuBar ()
         {
             if ( ImGui::MenuItem ( "New Project" ) )
             {
-                game = new Core::Game;
+                texcbo = new GLuint();
+                glGenTextures(1, texcbo);
+                game = new Core::Game(texcbo);
+                game->initShader();
                 selection[0] = true;
             }
             if ( ImGui::MenuItem ( "Open Project" ) )
