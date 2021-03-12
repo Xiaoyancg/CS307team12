@@ -112,6 +112,9 @@ int EditorMain ( int argc, char *argv[] )
             {
                 running = false;
             }
+            if (evt.type == SDL_KEYDOWN) {
+                game->handleInput(evt);
+            }
         }
         // Draw ImGui windows
         // Start the dear Imgui frame
