@@ -87,7 +87,7 @@ namespace Core
     // =========================
     // CONSTRUCTOR
 
-    Game::Game ( unsigned int *o )
+    Game::Game ( GLuint *o )
     {
         texcbo = o;
         useFramebuffer = true;
@@ -195,6 +195,9 @@ namespace Core
 
     void Game::initShader ()
     {
+        // Create viewport with the default w/h (same as the window size)
+        glViewport ( 0, 0, width, height );
+
 // Source for the vertex shader
         const char *vertexSource = R"glsl(
 		#version 450 core
@@ -317,7 +320,7 @@ namespace Core
 
             glFramebufferTexture2D ( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texcbo, 0 );
 
-            glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+            glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
         }
     }
 
@@ -354,19 +357,15 @@ namespace Core
         // Setup function pointers for OpenGL
         gladLoadGL ();
 
-        // Create viewport with the default w/h (same as the window size)
-        glViewport ( 0, 0, width, height );
-
-        // Create the shaders
-        initShader ();
     }
 
 
     void Game::render ()
     {
-        // Show the current context
-        SDL_GL_MakeCurrent ( window, gl_context );
-
+        if ( useFramebuffer )
+        {
+            glBindFramebuffer ( GL_FRAMEBUFFER, fbo );
+        }
         glClearColor ( 0.1, 0.2, 0.59, 1.0 );
         glClear ( GL_COLOR_BUFFER_BIT );
 
@@ -379,8 +378,7 @@ namespace Core
             currentPage->render ();
         }
 
-        SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
-        ///////////////
+            glBindFramebuffer ( GL_FRAMEBUFFER, 0 );
 
     }
     void Game::run ()
@@ -399,11 +397,9 @@ namespace Core
     MapPage *mapPage2;
 
 
-    int Game::coreMain ( int argc, char *argv[] )
+    void Game::s1test ()
     {
 
-        // Initdialize OpenGL and necessary SDL objects
-        init ();
         ///////////////
         // ENTITY TEST (This is here just for demo purposes)
         // This will be moved within an actual page once sprites are implemented.
@@ -439,17 +435,29 @@ namespace Core
         mapPage2->setMap ( map2 ); // Sets empty map page 2's map
 
         // very important
-        currentPage = entityPage;
-
-        serialize ();
-
-        mainLoop ();
-
+        currentPage = mapPage1;
+    }
+    void Game::destroy ()
+    {
         // Take care of deleting SDL objects and cleanly exit 
         SDL_GL_DeleteContext ( gl_context );
         SDL_DestroyWindow ( window );
         SDL_Quit ();
+    }
+    int Game::coreMain ( int argc, char *argv[] )
+    {
 
+        // Initdialize OpenGL and necessary SDL objects
+        init ();
+        // Create the shaders
+        initShader ();
+
+        s1test ();
+        //serialize ();
+
+        mainLoop ();
+
+        destroy ();
         return 0;
     }
 
@@ -545,8 +553,16 @@ namespace Core
                 }
             }
 
+        // Show the current context
+        SDL_GL_MakeCurrent ( window, gl_context );
+
+
 
             render ();
+
+        SDL_GL_SwapWindow ( window ); // Show the entities by bringing showing the back buffer
+        ///////////////
+
 
 
             // Error checking! This will only print out an error if one is detected each loop

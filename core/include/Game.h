@@ -82,9 +82,9 @@ namespace Core
         MapPage *createMapPage ( std::string );
         // =========================
         // UTILITY OPERATION
-
+        void destroy ();
         void mainLoop ();
-
+        void s1test ();
 
        // from core team end
     private:
