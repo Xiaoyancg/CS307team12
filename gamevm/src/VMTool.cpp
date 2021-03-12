@@ -62,11 +62,11 @@ int ProduceDataFile ( Core::Game *g )
 {
     json j;
     j["FileType"] = "Parchment Game Data";
-    j["GameName"] = g->GetGameName ().c_str ();
-    j["Author"] = g->GetAuthor ().c_str ();
-    j["LastModifiedTime"] = g->GetLMTime ().c_str ();
-    j["Note"] = g->GetNote ().c_str ();
-    j["Version"] = g->GetVersion ().c_str ();
+    j["GameName"] = g->GetGameName ();
+    j["Author"] = g->GetAuthor ();
+    j["LastModifiedTime"] = g->GetLMTime ();
+    j["Note"] = g->GetNote ();
+    j["Version"] = g->GetVersion ();
     try
     {
         WriteFile ( g->GetGameName ().append ( ".gdata" ), j.dump () );

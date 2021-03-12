@@ -90,21 +90,21 @@ namespace Core
     Game::Game ():Game ( "empty" )
     { }
 
-    Game::Game ( std::string gameName ): gameName ( gameName )
+    Game::Game ( std::string gameName ) : gameName ( gameName )
     {
 
     }
-    
+
     Game::Game ( nlohmann::json &json )
     {
 
     }
     // =========================
     // ATTRIBUTES OPERATION
-    
+
     // =========================
     // PROPERTY OPERATION
-    
+
     // =========================
     // MEMBER OPERATION
     Page *Game::addPage ( Page *p )
@@ -157,7 +157,24 @@ namespace Core
 
     nlohmann::json *Game::serialize ()
     {
-        return new nlohmann::json;
+        json j;
+        j["FileType"] = "Parchment Game Data";
+        j["GameName"] = GetGameName ();
+        j["Author"] = GetAuthor ();
+        j["Version"] = GetVersion ();
+        j["LastModifiedTime"] = GetLMTime ();
+        j["Note"] = GetNote ();
+        for ( Page *p : this->pageList )
+        {
+            j["PageList"][p->GetName ()]["PageName"] = p->GetName ();
+            for ( Entity *e : p->getEntityList () )
+            {
+                j["PageList"][p->GetName ()]
+                    ["EntityList"][e->getName()]
+                    ["EntityName"] = e->getName ();
+            }
+        }
+        return new json ( j );
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
@@ -393,11 +410,11 @@ namespace Core
         mapPage1 = this->createMapPage ( "1", map1 );
         mapPage2 = this->createMapPage ( "2" );
         mapPage2->setMap ( map2 ); // Sets empty map page 2's map
-        
+
         // very important
         currentPage = entityPage;
 
-
+        serialize ();
 
         mainLoop ();
 

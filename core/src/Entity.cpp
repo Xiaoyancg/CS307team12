@@ -24,7 +24,10 @@ namespace Core
 
         // =========================
         // ATTRIBUTES OPERATION
-
+    std::string &Entity::getName ()
+    {
+        return this->entityName;
+    }
         // =========================
         // PROPERTY OPERATION
     void Entity::setProperty ( glm::vec2 l, glm::vec2 s, double r, int sid)

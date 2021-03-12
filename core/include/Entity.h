@@ -42,7 +42,7 @@ namespace Core
 
 		// =========================
 		// ATTRIBUTES OPERATION
-
+		std::string &getName ();
 		// =========================
 		// PROPERTY OPERATION
 		void setProperty ( glm::vec2, glm::vec2, double, int );
