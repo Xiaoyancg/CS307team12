@@ -214,11 +214,14 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // entity editor
+        static char entity_name[128] = "";
         if (ImGui::Begin("Entity Editor", &selection[3]))
         {
+            ImGui::InputText("", entity_name, IM_ARRAYSIZE(entity_name));
+            ImGui::SameLine();
             if (ImGui::Button("Create New Entity"))
             {
-                
+
             }
             if (ImGui::Button("Delete This Entity"))
             {
