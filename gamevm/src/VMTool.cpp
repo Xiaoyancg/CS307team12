@@ -13,6 +13,15 @@ void removeGame ( std::string n )
     remove ( n.c_str () );
 }
 
+json *readGameDataFile ( std::string f )
+{
+    json *s = new json ();
+    std::string ctt ( ReadFile ( f ) );
+    s->parse ( ctt );
+    return s;
+}
+
+
 Core::Game *CreateExampleGame ()
 {
     Core::Game *g = new Core::Game ( std::string ( "example" ) );
@@ -50,12 +59,12 @@ int WriteFile ( std::string fileName, std::string content )
 }
 
 
-Core::Game * ConstructGame ( std::string fileName )
+Core::Game *ConstructGame ( std::string fileName )
 {
     std::string s ( ReadFile ( fileName ) );
     json j = json::parse ( s );
-    Core::Game * g = new Core::Game (j["GameName"]);
-    g->SetAuthor(j["Author"]);
+    Core::Game *g = new Core::Game ( j["GameName"] );
+    g->SetAuthor ( j["Author"] );
     g->SetLMTime ( j["LastModifiedTime"] );
     g->SetNote ( j["Note"] );
     g->SetVersion ( j["Version"] );
