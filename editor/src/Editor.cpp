@@ -1,4 +1,5 @@
 #include <Editor.h>
+#include <VMTool.h>
 #include "Game.h"
 #ifdef __TEST_EDITOR
 #include <TestEditor.h>
@@ -372,7 +373,8 @@ static void ShowExampleAppMainMenuBar()
         {
             saveDialog.Open();
             // connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
-
+            nlohmann::json* content = game->serialize();
+            WriteFile(name, (content->dump()));
             // memset to clear the buffer after use
             memset(name, 0, 128);
         }
