@@ -420,7 +420,7 @@ namespace Core
 
     void Game::handleInput ( SDL_Event event )
     {
-        glm::vec2 loc = entityInteractive->getLocation ();
+       glm::vec2 loc = entityInteractive->getLocation ();
         glm::vec2 scale = entityInteractive->getScale ();
         float moveBy = 5;
         int scaleBy = 3;

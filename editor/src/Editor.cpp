@@ -115,7 +115,7 @@ int EditorMain ( int argc, char *argv[] )
             }
             if ( evt.type == SDL_KEYDOWN )
             {
-                //game->handleInput ( evt );w
+                //game->handleInput ( evt );
             }
         }
         // Draw ImGui windows
@@ -191,22 +191,26 @@ static void ShowExampleAppMainMenuBar ()
     if ( selection[2] )
     {
         // possibly implement a new function here for readability purposes
+        if ( game != nullptr )
+        {
+
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+            ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
 
-        // the game view window itself
-        ImGui::Begin ( "Game View", &selection[2] );
+            // the game view window itself
+            ImGui::Begin ( "Game View", &selection[2] );
 
-        GLuint t = *texcbo;
-        ImVec2 dims = ImGui::GetWindowSize ();
+            GLuint t = *texcbo;
+            ImVec2 dims = ImGui::GetWindowSize ();
 
-        glViewport ( 0, 0, game->width, game->height ); // Set viewport to the Game dimensions
+            glViewport ( 0, 0, game->width, game->height ); // Set viewport to the Game dimensions
 
-        game->render (); // Render Game with new viewport size
-        glViewport ( 0, 0, dims.x, dims.y ); // Reset viewport size
-        ImGui::Image ( ( void * ) t, ImVec2 ( dims.x, dims.y ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
-        ImGui::End ();
+            game->render (); // Render Game with new viewport size
+            glViewport ( 0, 0, dims.x, dims.y ); // Reset viewport size
+            ImGui::Image ( ( void * ) t, ImVec2 ( dims.x, dims.y ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
+            ImGui::End ();
+        }
     }
     //deletion flag if an entity, map, or page is deleted
     bool delete_success = false;
