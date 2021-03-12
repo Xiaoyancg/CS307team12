@@ -90,7 +90,7 @@ int EditorMain ( int argc, char *argv[] )
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4 ( 0.45f, 0.55f, 0.60f, 1.00f );
 
-    openDialog.SetTypeFilters ( { ".h", ".cpp" } );
+    openDialog.SetTypeFilters ( { ".gdata" } );
 
     // set the default game view window state to open
     selection[2] = true;
