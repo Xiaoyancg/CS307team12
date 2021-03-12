@@ -21,7 +21,7 @@ ImGui::FileBrowser openDialog = ImGui::FileBrowser (
 static bool selection[7];
 
 GLuint *texcbo;
-Core::Game *game;
+Core::Game *game = nullptr;
 
 std::string dir;
 int EditorMain ( int argc, char *argv[] )
@@ -93,15 +93,9 @@ int EditorMain ( int argc, char *argv[] )
     openDialog.SetTypeFilters ( { ".gdata" } );
 
     // set the default game view window state to open
-    selection[2] = true;
+//    selection[2] = true;
 
-    texcbo = new GLuint ();
-    glGenTextures ( 1, texcbo );
-    game = new Core::Game ( texcbo );
 
-    game->initShader ();
-
-    game->s1test ();
     while ( running )
     {
         SDL_Event evt;
@@ -118,7 +112,7 @@ int EditorMain ( int argc, char *argv[] )
             }
             if ( evt.type == SDL_KEYDOWN )
             {
-                game->handleInput ( evt );
+                //game->handleInput ( evt );w
             }
         }
         // Draw ImGui windows
@@ -432,6 +426,14 @@ static void ShowExampleAppMainMenuBar ()
     {
         printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
+        nlohmann::json *j = readGameDataFile ( openDialog.GetSelected ().string () );
+        texcbo = new GLuint ();
+        glGenTextures ( 1, texcbo );
+        game = new Core::Game ( texcbo );
+        game->initShader ();
+        game->parse ( *j );
+        selection[2] = true;
+
         openDialog.ClearSelected ();
     }
 
