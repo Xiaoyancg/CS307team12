@@ -136,7 +136,7 @@ namespace Core
     using json = nlohmann::json;
 
     Entity* Entity::parse(json& root) {
-        Entity* entity = new Entity(root.at("Name").get<std::string>());
+        Entity* entity = new Entity(root.at("EntityName").get<std::string>());
 
         std::vector<json> locVec = root.at("location").get<std::vector<json>>();
         entity->setLocation(glm::vec2(
@@ -150,7 +150,7 @@ namespace Core
         ));
 
         entity->setRotation(root.at("rotation").get<double>());
-        entity->setSpriteID(root.at("Entity ID").get<int>());
+        entity->setSpriteID(root.at("spriteID").get<int>());
 
         return entity;
     }

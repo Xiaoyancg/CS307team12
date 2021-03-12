@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glad/glad.h>
-
+#include <iostream>
 #include <MapPage.h>
 
 #ifdef __TEST_CORE
@@ -158,11 +158,11 @@ namespace Core
 
     void Game::deletePage ( std::string s )
     {
-        for (std::vector<Page*>::iterator ptr = pageList.begin();
-              ptr != pageList.end();
-              ptr++)
+        for ( std::vector<Page *>::iterator ptr = pageList.begin ();
+              ptr != pageList.end ();
+              ptr++ )
         {
-            if ( !(*ptr)->GetName().compare(s) )
+            if ( !( *ptr )->GetName ().compare ( s ) )
             {
                 Page *p = *ptr;
                 pageList.erase ( ptr );
@@ -185,22 +185,30 @@ namespace Core
 
     Game *Game::parse ( json &root )
     {
-        Game* game = new Game;
+        Game *game = new Game;
         game->SetGameName ( root.at ( "GameName" ).get<std::string> () );
         game->SetAuthor ( root.at ( "Author" ).get<std::string> () );
         game->SetVersion ( root.at ( "Version" ).get<std::string> () );
         game->SetLMTime ( root.at ( "LastModifiedTime" ).get<std::string> () );
         game->SetNote ( root.at ( "Note" ).get<std::string> () );
-        auto pageVec = root.at("PageList").get<std::vector<json>>();
-        for ( json pageJson : pageVec ) {
-            game->pageList.push_back(Page::parse(pageJson));
-        }
+        try
+        {
+            auto pageVec = root.at ( "PageList" ).get<std::vector<json>> ();
+            for ( json pageJson : pageVec )
+            {
+                game->pageList.push_back ( Page::parse ( pageJson ) );
+            }
 
+        }
+        catch ( const std::exception &e )
+        {
+            std::cerr << "error: " << e.what () << std::endl;
+        }
         return game;
     }
 
 
-    nlohmann::json* Game::serialize ()
+    nlohmann::json *Game::serialize ()
     {
         json j;
         j["FileType"] = "Parchment Game Data";
@@ -209,29 +217,27 @@ namespace Core
         j["Version"] = GetVersion ();
         j["LastModifiedTime"] = GetLMTime ();
         j["Note"] = GetNote ();
+        std::vector<json> pageVector;
         for ( Page *p : this->pageList )
         {
-            j["PageList"][p->GetName ()]["PageName"] = p->GetName ();
+            json pj;
+            pj["PageName"] = p->GetName ();
+            std::vector<json> entityVector;
             for ( Entity *e : p->getEntityList () )
             {
-                j["PageList"][p->GetName ()]
-                    ["EntityList"][e->getName ()]
-                    ["EntityName"] = e->getName ();
-                j["PageList"][p->GetName ()]
-                    ["EntityList"][e->getName ()]
-                    ["location"] = { e->getLocation ().x, e->getLocation ().y };
-                j["PageList"][p->GetName ()]
-                    ["EntityList"][e->getName ()]
-                    ["scale"] = { e->getScale ().x, e->getScale ().y };
-                j["PageList"][p->GetName ()]
-                    ["EntityList"][e->getName ()]
-                    ["rotation"] = e->getRotation ();
-                j["PageList"][p->GetName ()]
-                    ["EntityList"][e->getName ()]
-                    ["spritID"] = e->getSpriteID ();
+                json ej;
+                ej["EntityName"] = e->getName ();
+                ej["location"] = { e->getLocation ().x, e->getLocation ().y };
+                ej["scale"] = { e->getScale ().x, e->getScale ().y };
+                ej["rotation"] = e->getRotation ();
+                ej["spriteID"] = e->getSpriteID ();
+                entityVector.push_back ( ej );
             }
+            pj["EntityList"] =  entityVector ;
+            pageVector.push_back ( pj );
         }
-        return new json(j);
+        j["PageList"] = pageVector;
+        return new json ( j );
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
