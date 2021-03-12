@@ -307,7 +307,15 @@ static void ShowExampleAppMainMenuBar ()
             }
             if ( ImGui::MenuItem ( "Save" ) )
             {
-                // call save function from VM team
+                /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally 
+                if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
+                before (to specify a name and directory). otherwise, if they click SAVE and have 
+                previously specified a desired name/directory, the file should be saved with the 
+                same name & directory as before. right now if they click SAVE the project saves
+                with a placeholder name/directory.
+                */
+                nlohmann::json* content = game->serialize();
+                WriteFile("New Game Project", (content->dump()));
                 selection[6] = true;
             }
             if ( ImGui::MenuItem ( "Save As" ) )
@@ -362,19 +370,20 @@ static void ShowExampleAppMainMenuBar ()
 
     // save project popup
     //this can also be used/called when SAVE AS is successful
-    static char name[128] = "";
-    if ( ImGui::BeginPopup ( "Save As" ) )
+    char name[128] = "";
+    if (ImGui::BeginPopup("Save As"))
     {
         ImGui::Text ( "Enter the name of your project." );
         ImGui::InputText ( "", name, IM_ARRAYSIZE ( name ) );
         if ( ImGui::Button ( "Save" ) )
         {
-            saveDialog.Open ();
             // connect to VM save function utilizing saveDialog selected LOCATION and buffered NAME
-            nlohmann::json *content = game->serialize ();
-            WriteFile ( name, ( content->dump () ) );
+            nlohmann::json* content = game->serialize();
+            //TODO: retrieve user selected directory and prepend it to name.
+            WriteFile(name, (content->dump()));
             // memset to clear the buffer after use
-            memset ( name, 0, 128 );
+            memset(name, 0, 128);
+            selection[6] = true;
         }
         ImGui::EndPopup ();
     }
