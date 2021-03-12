@@ -228,6 +228,7 @@ static void ShowExampleAppMainMenuBar()
             ImGui::SameLine();
             if (ImGui::Button("Delete This Entity"))
             {
+                //game->currentPage->deleteEntity(entity_name);
                 delete_success = true;
             }
             if (ImGui::Button("Show Entity Information"))
@@ -426,6 +427,7 @@ static void ShowExampleAppMainMenuBar()
         printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
         dir = openDialog.GetSelected().string();
+        std::cout << dir;
         openDialog.ClearSelected ();
     }
 
