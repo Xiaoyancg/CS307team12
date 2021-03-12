@@ -8,6 +8,11 @@ std::string ReadFile ( std::string fileName )
     return s;
 }
 
+void removeGame ( std::string n )
+{
+    remove ( n.c_str () );
+}
+
 Core::Game *CreateExampleGame ()
 {
     Core::Game *g = new Core::Game ( std::string ( "example" ) );

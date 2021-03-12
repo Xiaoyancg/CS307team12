@@ -13,6 +13,8 @@ Core::Game *ConstructGame ( std::string fileName );
 
 int ProduceDataFile ( Core::Game *game );
 
+void removeGame (std::string );
+
 Core::Game *CreateExampleGame ();
 
 //int WriteJson ( std::string fileName, json j );
