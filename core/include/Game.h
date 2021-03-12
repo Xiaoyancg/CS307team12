@@ -11,7 +11,7 @@
 
 #include <Page.h>
 #include <Entity.h>
-
+#include "MapPage.h"
 
 namespace Core
 {
@@ -22,8 +22,9 @@ namespace Core
         static int height;
 
 
-        Game() {}
-        Game( std::string gameName ) : gameName(gameName) {}
+        Game ();
+        Game ( std::string gameName );
+        Game ( nlohmann::json &json );
 
         std::string GetGameName ();
         void SetGameName ( std::string newName );
@@ -49,8 +50,8 @@ namespace Core
         */
 
         // File loading and serialization
-        static Game* parse(nlohmann::json& root);
-        nlohmann::json* serialize();
+        static Game *parse ( nlohmann::json &root );
+        nlohmann::json *serialize ();
 
         // from core team
         void init ();
@@ -66,22 +67,23 @@ namespace Core
 
         // =========================
         // CONSTRUCTOR
-         
+
         // =========================
         // ATTRIBUTES OPERATION
-        
+
         // =========================
         // PROPERTY OPERATION
-        
+
         // =========================
         // MEMBER OPERATION
         Page *addPage ( Page *p );
         Page *createPage ( std::string n );
-
+        MapPage *createMapPage ( std::string, Map * );
+        MapPage *createMapPage ( std::string );
         // =========================
         // UTILITY OPERATION
 
-
+        void mainLoop ();
 
 
        // from core team end
@@ -93,9 +95,9 @@ namespace Core
         std::string lMTime; // last modified time
         std::string note;
 
-        std::vector<Page*> pageList;
+        std::vector<Page *> pageList;
         // for current stage, remove in sprint 2
-        Page* currentPage = nullptr;
+        Page *currentPage = nullptr;
         // next sprint
         // std::vector<int> inDisplayList;
 
