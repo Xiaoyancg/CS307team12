@@ -21,7 +21,7 @@ namespace Core
         static int width;
         static int height;
 
-
+        Game ( GLuint *o );
         Game ();
         Game ( std::string gameName );
         Game ( nlohmann::json &json );
@@ -94,7 +94,9 @@ namespace Core
         std::string version;
         std::string lMTime; // last modified time
         std::string note;
-
+        GLuint *texcbo;
+        bool useFramebuffer;
+        GLuint fbo;
         std::vector<Page *> pageList;
         // for current stage, remove in sprint 2
         Page *currentPage = nullptr;

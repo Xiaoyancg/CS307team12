@@ -91,6 +91,10 @@ int EditorMain(int argc, char* argv[])
     // set the default game view window state to open
     selection[2] = true;
 
+    GLuint *texcbo;
+    glGenTextures ( 1, texcbo );
+
+
     while (running)
     {
         SDL_Event evt;
@@ -188,6 +192,7 @@ static void ShowExampleAppMainMenuBar()
 
         // the game view window itself
         ImGui::Begin("Game View", &selection[2]);
+
         ImGui::End();
     }
     if (selection[3])
