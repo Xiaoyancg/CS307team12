@@ -201,7 +201,7 @@ static void ShowExampleAppMainMenuBar()
         GLuint t = *texcbo;
         game->render ();
         ImVec2 dims = ImGui::GetWindowSize();
-        ImGui::Image((void*)t, ImVec2 (dims.x, dims.y));
+        ImGui::Image((void*)t, ImVec2 (dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
         ImGui::End();
     }
     if (selection[3])
