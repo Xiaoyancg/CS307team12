@@ -294,11 +294,11 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::Text("Page Name:");
             ImGui::SameLine();
             ImGui::Text(game->currentPage->GetName().c_str());
-            std::vector <Core::Entity*> elist = game->currentPage->getEntityList();
-            ImGui::Text("Entity Names: ");
-            for (Core::Entity* e : elist)
+            std::vector <Core::Page*> plist = *game->getPageList();
+            ImGui::Text("Page Names: ");
+            for (Core::Page* p : plist)
             {
-                ImGui::Text(e->getName().c_str());
+                ImGui::Text(p->GetName().c_str());
             }
             ImGui::EndPopup();
         }
