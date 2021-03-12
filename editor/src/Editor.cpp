@@ -402,22 +402,24 @@ static void ShowExampleAppMainMenuBar ()
                 // call export function from VM team
                 // not yet implemented as of sprint 1 
             }*/
-            if ( ImGui::MenuItem ( "Save" ) )
-            {
-                /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
-                if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
-                before (to specify a name and directory). otherwise, if they click SAVE and have
-                previously specified a desired name/directory, the file should be saved with the
-                same name & directory as before. right now if they click SAVE the project saves
-                with a placeholder name/directory.
-                */
-                nlohmann::json *content = game->serialize ();
-                WriteFile ( "New Game Project", ( content->dump () ) );
-                selection[6] = true;
-            }
-            if ( ImGui::MenuItem ( "Save As" ) )
-            {
-                selection[0] = true;
+
+            if (game != nullptr) {
+                if ( ImGui::MenuItem ( "Save" ) )
+                {   
+                    /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
+                    if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
+                    before (to specify a name and directory). otherwise, if they click SAVE and have
+                    previously specified a desired name/directory, the file should be saved with the
+                    same name & directory as before. right now if they click SAVE the project saves
+                    with a placeholder name/directory.
+                    */
+                    nlohmann::json *content = game->serialize ();
+                    WriteFile ( "New Game Project", ( content->dump () ) );
+                    selection[6] = true;
+                }
+                if (ImGui::MenuItem("Save As")) {
+                    selection[0] = true;
+                }
             }
             ImGui::EndMenu ();
         }
