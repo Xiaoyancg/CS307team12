@@ -152,8 +152,6 @@ int EditorMain ( int argc, char *argv[] )
         // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
         SDL_GL_SwapWindow ( window );
 
-
-
 #ifdef __TEST_EDITOR
         if ( dobreak )  running = false;
 #endif // __TEST_EDITOR
@@ -172,7 +170,6 @@ int EditorMain ( int argc, char *argv[] )
 
     return 0;
 }
-
 static void ShowExampleAppMainMenuBar ()
 {
 #ifdef __TEST_EDITOR
@@ -196,7 +193,7 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::OpenPopup ( "Delete Project" );
         selection[1] = false;
     }
-    // game view window creation
+    // game view window creation and subsequent rendering
     if ( selection[2] )
     {
         // possibly implement a new function here for readability purposes
@@ -216,6 +213,7 @@ static void ShowExampleAppMainMenuBar ()
     }
     //deletion flag if an entity, map, or page is deleted
     bool delete_success = false;
+    //entity editor
     if ( selection[3] )
     {
         // possibly implement a new function here for readability purposes
@@ -264,6 +262,7 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::EndPopup ();
         }
     }
+    //page editor
     if ( selection[4] )
     {
         // possibly implement a new function here for readability purposes
@@ -316,12 +315,15 @@ static void ShowExampleAppMainMenuBar ()
         }
     }
 
+    //if an entity, page, or map is deleted, open the successful deletion popup
+    //for whatever reason, i cant use this for project deletion so theres a separate
+    //popup for that
     if ( delete_success )
     {
         ImGui::OpenPopup ( "Delete Successful" );
         delete_success = false;
     }
-
+    //build the successful deletion popup
     if ( ImGui::BeginPopup ( "Delete Successful" ) )
     {
         ImGui::Text ( "Deletion successful!" );
@@ -361,7 +363,7 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::OpenPopup ( "Saved Successfully" );
         selection[6] = false;
     }
-    //calls delete successfully popup on successful deletion
+    //calls delete successfully popup on successful project deletion
     if (selection[7])
     {
         ImGui::OpenPopup("Deleted Successfully");
@@ -386,10 +388,11 @@ static void ShowExampleAppMainMenuBar ()
             {
                 selection[1] = true;
             }
-            if ( ImGui::MenuItem ( "Export Project" ) )
+            /*if ( ImGui::MenuItem ( "Export Project" ) )
             {
                 // call export function from VM team
-            }
+                // not yet implemented as of sprint 1 
+            }*/
             if ( ImGui::MenuItem ( "Save" ) )
             {
                 /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
@@ -427,8 +430,7 @@ static void ShowExampleAppMainMenuBar ()
     saveDialog.Display ();
     if ( saveDialog.HasSelected () )
     {
-        //printf ( "(printf) Selected Directory: %s\n", saveDialog.GetSelected ().string ().c_str () );
-        //std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
+        //save a file by passing the directory chosen to the VM's functions
         dir = std::string ( saveDialog.GetSelected ().string () ).append("//").append ( dir );
         nlohmann::json *content = game->serialize ();
         WriteFile ( dir, ( content->dump () ) );
@@ -445,11 +447,12 @@ static void ShowExampleAppMainMenuBar ()
         openDialog.ClearSelected ();
     }
 
-    //directory for file deletion
+    //delete a file selected by the user
     delDialog.Display();
     if (delDialog.HasSelected())
     {
         DeleteFile(delDialog.GetSelected().string().c_str());
+        delDialog.ClearSelected();
         selection[7] = true;
     }
 
@@ -487,10 +490,9 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::Text ( "Project saved successfully!" );
         ImGui::EndPopup ();
     }
-
     if (ImGui::BeginPopup("Deleted Successfully"))
     {
         ImGui::Text("Project deleted successfully!");
         ImGui::EndPopup();
-    } 
+    }
 }
