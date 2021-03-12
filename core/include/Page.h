@@ -31,7 +31,6 @@ namespace Core
         glm::vec4 GetBackgroundColor();
         std::vector<Entity*>& getEntityList ();
         virtual void render ();
-
         // =========================
         // CONSTRUCTOR
 
