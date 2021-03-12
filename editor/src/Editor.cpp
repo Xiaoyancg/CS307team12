@@ -15,10 +15,13 @@ ImGui::FileBrowser saveDialog = ImGui::FileBrowser (
 ImGui::FileBrowser openDialog = ImGui::FileBrowser (
     ImGuiFileBrowserFlags_NoTitleBar
 );
+ImGui::FileBrowser delDialog = ImGui::FileBrowser (
+    ImGuiFileBrowserFlags_NoTitleBar
+);
 
 // bool array to track the selections made on main menu bar
 // TODO: swap the dumb magic number system for an enum that is easier to read - place it in the header
-static bool selection[7];
+static bool selection[8];
 
 GLuint *texcbo;
 Core::Game *game;
@@ -358,6 +361,12 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::OpenPopup ( "Saved Successfully" );
         selection[6] = false;
     }
+    //calls delete successfully popup on successful deletion
+    if (selection[7])
+    {
+        ImGui::OpenPopup("Deleted Successfully");
+        selection[7] = false;
+    }
 
     // main menu bar code
     if ( ImGui::BeginMainMenuBar () )
@@ -424,6 +433,7 @@ static void ShowExampleAppMainMenuBar ()
         nlohmann::json *content = game->serialize ();
         WriteFile ( dir, ( content->dump () ) );
         saveDialog.ClearSelected ();
+        selection[6] = true;
     }
 
     // open dialog selection return
@@ -435,20 +445,26 @@ static void ShowExampleAppMainMenuBar ()
         openDialog.ClearSelected ();
     }
 
+    //directory for file deletion
+    delDialog.Display();
+    if (delDialog.HasSelected())
+    {
+        DeleteFile(delDialog.GetSelected().string().c_str());
+        selection[7] = true;
+    }
+
     // delete project popup
     if ( ImGui::BeginPopup ( "Delete Project" ) )
     {
         ImGui::Text ( "Are you sure you want to delete a project? Click outside of this popup to cancel." );
         if ( ImGui::Button ( "Yes" ) )
         {
-            //connect to VM team delete function
-            saveDialog.Open ();
+            delDialog.Open();
         }
         ImGui::EndPopup ();
     }
 
     // save project popup
-    //this can also be used/called when SAVE AS is successful
     static char name[128] = "";
     if ( ImGui::BeginPopup ( "Save As" ) )
     {
@@ -463,7 +479,6 @@ static void ShowExampleAppMainMenuBar ()
                 // memset to clear the buffer after use
                 memset ( name, 0, 128 );
             }
-            ImGui::OpenPopup("Saved Successfully");
         }
         ImGui::EndPopup ();
     }
@@ -472,12 +487,10 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::Text ( "Project saved successfully!" );
         ImGui::EndPopup ();
     }
-    /* this can be used when project deletion is successful
+
     if (ImGui::BeginPopup("Deleted Successfully"))
     {
         ImGui::Text("Project deleted successfully!");
         ImGui::EndPopup();
-    } */
+    } 
 }
-
-
