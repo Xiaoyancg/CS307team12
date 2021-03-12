@@ -250,7 +250,7 @@ namespace Core
 
 // Source for the vertex shader
         const char *vertexSource = R"glsl(
-		#version 450 core
+		#version 330 core
 
 		layout (location = 0) in vec2 pos;
 		uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
@@ -541,6 +541,7 @@ namespace Core
         SDL_DestroyWindow ( window );
         SDL_Quit ();
     }
+
     int Game::coreMain ( int argc, char *argv[] )
     {
 
