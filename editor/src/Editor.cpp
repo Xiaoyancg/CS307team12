@@ -197,9 +197,12 @@ static void ShowExampleAppMainMenuBar ()
 
         // the game view window itself
         ImGui::Begin ( "Game View", &selection[2] );
+
         GLuint t = *texcbo;
         ImVec2 dims = ImGui::GetWindowSize ();
+
         glViewport ( 0, 0, game->width, game->height ); // Set viewport to the Game dimensions
+
         game->render (); // Render Game with new viewport size
         glViewport ( 0, 0, dims.x, dims.y ); // Reset viewport size
         ImGui::Image ( ( void * ) t, ImVec2 ( dims.x, dims.y ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
@@ -275,8 +278,15 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::SameLine ();
             if ( ImGui::Button ( "Delete This Page" ) )
             {
-                game->deletePage ( page_name );
-                delete_success = true;
+                if ( !std::string ( page_name ).compare ( game->currentPage->GetName () ) )
+                {
+                    delete_success = false;
+                }
+                else
+                {
+                    game->deletePage ( page_name );
+                    delete_success = true;
+                }
             }
             if ( ImGui::Button ( "Show Page Information" ) )
             {
@@ -414,9 +424,9 @@ static void ShowExampleAppMainMenuBar ()
     {
         //printf ( "(printf) Selected Directory: %s\n", saveDialog.GetSelected ().string ().c_str () );
         //std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
-        dir = std::string ( saveDialog.GetSelected ().string () ).append("//").append ( dir );
+        dir = std::string ( saveDialog.GetSelected ().string () ).append ( "//" ).append ( dir );
         nlohmann::json *content = game->serialize ();
-        WriteFile ( dir, ( content->dump (0) ) );
+        WriteFile ( dir, ( content->dump ( 2 ) ) );
         saveDialog.ClearSelected ();
     }
 
@@ -431,7 +441,7 @@ static void ShowExampleAppMainMenuBar ()
         glGenTextures ( 1, texcbo );
         game = new Core::Game ( texcbo );
         game->initShader ();
-        game = Core::Game::parse ( *j );
+        game->parse ( *j );
         selection[2] = true;
 
         openDialog.ClearSelected ();
@@ -465,7 +475,7 @@ static void ShowExampleAppMainMenuBar ()
                 // memset to clear the buffer after use
                 memset ( name, 0, 128 );
             }
-            ImGui::OpenPopup("Saved Successfully");
+            ImGui::OpenPopup ( "Saved Successfully" );
         }
         ImGui::EndPopup ();
     }
