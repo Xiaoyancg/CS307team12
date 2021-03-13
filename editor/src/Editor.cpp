@@ -115,7 +115,10 @@ int EditorMain ( int argc, char *argv[] )
             }
             if ( evt.type == SDL_KEYDOWN )
             {
-                //game->handleInput ( evt );
+                if ( game != nullptr )
+                {
+                    game->handleInput ( evt );
+                }
             }
         }
         // Draw ImGui windows
@@ -164,6 +167,8 @@ int EditorMain ( int argc, char *argv[] )
 
     return 0;
 }
+
+
 static void ShowExampleAppMainMenuBar ()
 {
 #ifdef __TEST_EDITOR
@@ -263,6 +268,7 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::EndPopup ();
         }
     }
+
     //page editor
     if ( selection[4] )
     {
@@ -341,6 +347,7 @@ static void ShowExampleAppMainMenuBar ()
     //map editor
     static char map_name[128] = "";
     bool map_info = false;
+    // map editor
     if ( selection[5] )
     {
         // possibly implement a new function here for readability purposes
@@ -365,12 +372,14 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::End ();
         }
     }
+
     //calls saved successfully popup on project save
     if ( selection[6] )
     {
         ImGui::OpenPopup ( "Saved Successfully" );
         selection[6] = false;
     }
+
     //calls delete successfully popup on successful project deletion
     if (selection[7])
     {
@@ -390,7 +399,10 @@ static void ShowExampleAppMainMenuBar ()
                 glGenTextures(1, texcbo);
                 game = new Core::Game(texcbo);
                 game->initShader();
-                selection[0] = true;
+                selection[2] = true;
+                // When user new project, it won't save
+                // User should call save manually
+                // selection[0] = true;
             }
             if ( ImGui::MenuItem ( "Open Project" ) )
             {
@@ -461,9 +473,8 @@ static void ShowExampleAppMainMenuBar ()
         nlohmann::json *j = readGameDataFile ( openDialog.GetSelected ().string () );
         texcbo = new GLuint ();
         glGenTextures ( 1, texcbo );
-        game = new Core::Game ( texcbo );
+        game = new Core::Game ( *j, texcbo );
         game->initShader ();
-        game->parse ( *j );
         selection[2] = true;
 
         openDialog.ClearSelected ();
@@ -493,7 +504,7 @@ static void ShowExampleAppMainMenuBar ()
     static char name[128] = "";
     if ( ImGui::BeginPopup ( "Save As" ) )
     {
-        ImGui::Text ( "Enter the name of your project." );
+        ImGui::Text ( "Enter theFFFF name of your project." );
         ImGui::InputText ( "", name, IM_ARRAYSIZE ( name ) );
         if ( ImGui::Button ( "Save" ) )
         {

@@ -5,14 +5,16 @@
 #include <vector>
 #include <memory> // For unique_ptr
 #include <string>
-
+#include <iterator>
 #include <SDL.h>
 #include <nlohmann/json.hpp>
 
 #include <Page.h>
 #include <Entity.h>
 #include "MapPage.h"
-
+// page list iterator
+#define __plitr std::vector<Page*>::iterator
+#define __pl std::vector<Page*>
 namespace Core
 {
     class Game
@@ -24,7 +26,7 @@ namespace Core
         Game ( GLuint *o );
         Game ();
         Game ( std::string gameName );
-        Game ( nlohmann::json &json );
+        Game ( nlohmann::json &json, GLuint *o );
 
         std::string GetGameName ();
         void SetGameName ( std::string newName );
@@ -83,24 +85,41 @@ namespace Core
         MapPage *createMapPage ( std::string );
         void deletePage ( Page * );
         void deletePage ( std::string );
+        std::vector <Page *> *getPageList ();
+        int getNumPage ();
+
+        // =========================
+        // STATE OPERATION
+        void setCurrentPage ( Page *p );
+        Page *getCurrPage ();
+        Entity *setCurrCtrlEntity ( Entity * );
+        Entity *getCurrCtrlEntity ();
+        // Move current page pointer and iterator 
+        // to the target iterator in the pageList
+        // write this for new sdlk 1,2
+        // maybe useful in later
+        // because we need to render different page
+        // yeah should be useful in editor
+        // can be fail ( begin(), end() out of range)
+        // return non 0 if fail
+        int moveCurrentPage (std::vector<Page*>::iterator);
+
         // =========================
         // UTILITY OPERATION
         void destroy ();
         void mainLoop ();
         void s1test ();
-        std::vector <Page *> *getPageList ();
+
+
+
         Page *currentPage = nullptr;
        // from core team end
     private:
-        Entity *entityInteractive;
-        Entity *entityTallThin;
-        Entity *entityShortWide;
-        Entity *entityVeryShortWide;
-        Entity *entityOrigin;
-        Page *entityPage;
-        MapPage *mapPage1;
-        MapPage *mapPage2;
 
+        // check the iterator not begin
+        bool _isBegin (__plitr i);
+        bool _isBeforeEnd ( __plitr i );
+        Entity *currCtrlEntity;
         std::string gameName;
         std::string author;
         std::string version;
@@ -113,7 +132,7 @@ namespace Core
         // for current stage, remove in sprint 2
         // next sprint
         // std::vector<int> inDisplayList;
-
+        __plitr _currPitr;
         SDL_Window *window; // Window of this Game
         SDL_GLContext gl_context; // The context of this Game
         unsigned int shaderProgram; // The shaders, set by initShaders before entering the game loop
