@@ -20,6 +20,41 @@ namespace Core
     int Game::width = 1280;
     int Game::height = 720;
 
+    // =========================
+    // CONSTRUCTOR
+
+    Game::Game ():Game ( "empty" )
+    {     }
+
+    Game::Game ( std::string gameName ) : gameName ( gameName )
+    {
+        useFramebuffer = false;
+    }
+
+    // editor open
+    Game::Game ( nlohmann::json &json, GLuint *o )
+    {
+        this->parse ( json );
+        texcbo = o;
+        useFramebuffer = true;
+
+    }
+
+    // editor new
+    Game::Game ( GLuint *o )
+    {
+        texcbo = o;
+        useFramebuffer = true;
+        this->gameName = "editortestname";
+        this->setCurrentPage ( this->createPage ( "emptyPage" ));
+
+
+    }
+
+
+
+    // =========================
+    // ATTRIBUTES OPERATION
 
     std::string Game::GetGameName ()
     {
@@ -85,32 +120,6 @@ namespace Core
         return this->note;
     }
 
-    // =========================
-    // CONSTRUCTOR
-
-    Game::Game ( GLuint *o )
-    {
-        texcbo = o;
-        useFramebuffer = true;
-        this->gameName = "editortestname";
-    }
-    Game::Game ():Game ( "empty" )
-    { }
-
-    Game::Game ( std::string gameName ) : gameName ( gameName )
-    {
-        useFramebuffer = false;
-    }
-
-    Game::Game ( nlohmann::json &json, GLuint *o )
-    {
-        this->parse ( json );
-        texcbo = o;
-        useFramebuffer = true;
-
-    }
-    // =========================
-    // ATTRIBUTES OPERATION
 
     // =========================
     // PROPERTY OPERATION
@@ -461,6 +470,7 @@ namespace Core
             float moveBy = 5;
             int scaleBy = 3;
 
+            // Control entity movement and reshape
             switch ( event.key.keysym.sym )
             {
                 // Control Entity movement in the interactive demo
@@ -495,7 +505,7 @@ namespace Core
                     break;
             }
         }
-            // Control demo pages. 
+            // Control pages switch. 
         switch ( event.key.keysym.sym )
         {
             // Press '1' to see map1, 
@@ -519,6 +529,8 @@ namespace Core
                 break;
         }
     }
+
+
     bool Game::_isBegin ( __plitr i )
     {
         return !( i > pageList.begin () );
