@@ -1,14 +1,19 @@
 #include <TestCore.h>
 #include "VMTool.h"
+#include "Game.h"
+#include "Sprint1.h"
 #include "gtest/gtest.h"
-
 unsigned int pageError = 1;
 unsigned int coreError = 1;
 unsigned int entityError = 1;
 bool enableTest = true;
 
 
-
+TEST ( PRODUCE_GDATA, s1 )
+{
+    Core::Game *game = Core::s1Game ();
+    WriteFile ( "s1game.gdata", game->serialize ()->dump ( 2 ) );
+}
 TEST ( TEST_CORE, game )
 {
     int argc = 2;
@@ -16,7 +21,7 @@ TEST ( TEST_CORE, game )
     argv[0] = "core";
     argv[1] = "test";
     Core::Game g;
-    g.coreMain ( argc, argv );
+    //g.coreMain ( argc, argv );
     EXPECT_EQ ( coreError, GL_NO_ERROR );
 }
 
@@ -27,7 +32,7 @@ TEST ( TEST_CORE, page )
     argv[0] = "core";
     argv[1] = "test";
     Core::Game g;
-    g.coreMain ( argc, argv );
+    //g.coreMain ( argc, argv );
     EXPECT_EQ ( pageError, GL_NO_ERROR );
 }
 
@@ -39,7 +44,7 @@ TEST ( TEST_CORE, entity )
     argv[0] = "core";
     argv[1] = "test";
     Core::Game g;
-    g.coreMain ( argc, argv );
+    //g.coreMain ( argc, argv );
     EXPECT_EQ ( entityError, GL_NO_ERROR );
 }
 
@@ -55,7 +60,7 @@ TEST ( TEMPTEST, supertemp )
     Core::Game g ( "wulala" );
     g.init ();
     g.initShader ();
-    g.s1test ();
+    //g.s1test ();
     json * j = g.serialize ();
 
     WriteFile ( "wulala.gdata", j->dump ( 2 ) );

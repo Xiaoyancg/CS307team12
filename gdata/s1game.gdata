@@ -1,0 +1,88 @@
+{
+  "Author": "",
+  "FileType": "Parchment Game Data",
+  "GameName": "empty",
+  "LastModifiedTime": "",
+  "Note": "",
+  "PageList": [
+    {
+      "EntityList": [
+        {
+          "EntityName": "interactive",
+          "location": [
+            50.0,
+            50.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            64.0
+          ],
+          "spriteID": 0
+        },
+        {
+          "EntityName": "interactive",
+          "location": [
+            200.0,
+            200.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            32.0,
+            64.0
+          ],
+          "spriteID": 0
+        },
+        {
+          "EntityName": "shortWide",
+          "location": [
+            500.0,
+            500.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            32.0
+          ],
+          "spriteID": 0
+        },
+        {
+          "EntityName": "veryShortWide",
+          "location": [
+            640.0,
+            100.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            16.0
+          ],
+          "spriteID": 0
+        },
+        {
+          "EntityName": "origin",
+          "location": [
+            1000.0,
+            300.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            128.0
+          ],
+          "spriteID": 0
+        }
+      ],
+      "PageName": "entityPage"
+    },
+    {
+      "EntityList": [],
+      "PageName": "1"
+    },
+    {
+      "EntityList": [],
+      "PageName": "2"
+    }
+  ],
+  "Version": ""
+}
