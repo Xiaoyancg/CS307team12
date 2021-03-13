@@ -20,28 +20,36 @@ namespace Core
     class Game
     {
     public:
+        // =========================
+        // PUBLIC VARIABLE
         static int width;
         static int height;
+
+        // =========================
+        // CONSTRUCTOR
 
         Game ( GLuint *o );
         Game ();
         Game ( std::string gameName );
         Game ( nlohmann::json &json, GLuint *o );
 
-        std::string GetGameName ();
+        // =========================
+        // ATTRIBUTES OPERATION
+
+        std::string getGameName ();
         void SetGameName ( std::string newName );
 
-        std::string GetAuthor ();
+        std::string getAuthor ();
         void SetAuthor ( std::string newAuthor );
 
-        std::string GetVersion ();
+        std::string getVersion ();
         void SetVersion ( std::string newVersion );
 
-        std::string GetLMTime ();
+        std::string getLMTime ();
         void SetLMTime ();
         void SetLMTime ( std::string time );
 
-        std::string GetNote ();
+        std::string getNote ();
         void SetNote ( std::string newNote );
         int AddNote ( std::string moreNote );
 
@@ -56,23 +64,6 @@ namespace Core
         nlohmann::json *serialize ();
 
         // from core team
-        void init ();
-        void initShader ();
-        void sdl_die ( const char *err_msg );
-        void handleInput ( SDL_Event event );
-        void render ();
-        void run (); // main entry
-
-        int coreMain ( int argc, char *argv[] );
-
-
-
-
-        // =========================
-        // CONSTRUCTOR
-
-        // =========================
-        // ATTRIBUTES OPERATION
 
         // =========================
         // PROPERTY OPERATION
@@ -106,36 +97,61 @@ namespace Core
 
         // =========================
         // UTILITY OPERATION
+        void init ();
+        void initShader ();
+        void sdl_die ( const char *err_msg );
+        void handleInput ( SDL_Event event );
+        void render ();
+        void run (); // main entry
+
         void destroy ();
         void mainLoop ();
         void s1test ();
 
+        int coreMain ( int argc, char *argv[] );
 
 
         Page *currentPage = nullptr;
        // from core team end
+
     private:
+
+        // =========================
+        // UTILITY OPERATION
 
         // check the iterator not begin
         bool _isBegin (__plitr i);
         bool _isBeforeEnd ( __plitr i );
-        Entity *currCtrlEntity;
+
+        // ==========================
+        // ATTRIBUTES VARIABLE
+
         std::string gameName;
         std::string author;
         std::string version;
-        std::string lMTime; // last modified time
+        // last modified time
+        std::string lMTime;
         std::string note;
-        GLuint *texcbo;
+
+        // ===========================
+        // STATE VARIABLES
+        Entity *currCtrlEntity;
         bool useFramebuffer;
+        // page list iterator: current page iterator
+        __plitr _currPitr;
+
+        // ===========================
+        // MEMBER VARIABLES
+        GLuint *texcbo;
         GLuint fbo;
         std::vector<Page *> pageList;
-        // for current stage, remove in sprint 2
-        // next sprint
-        // std::vector<int> inDisplayList;
-        __plitr _currPitr;
+
+        std::vector<int> inDisplayList;
+
         SDL_Window *window; // Window of this Game
         SDL_GLContext gl_context; // The context of this Game
         unsigned int shaderProgram; // The shaders, set by initShaders before entering the game loop
+
     };
 }
 

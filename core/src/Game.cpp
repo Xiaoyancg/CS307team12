@@ -56,7 +56,7 @@ namespace Core
     // =========================
     // ATTRIBUTES OPERATION
 
-    std::string Game::GetGameName ()
+    std::string Game::getGameName ()
     {
         return this->gameName;
     }
@@ -72,7 +72,7 @@ namespace Core
         this->author = newAuthor;
     }
 
-    std::string Game::GetAuthor ()
+    std::string Game::getAuthor ()
     {
         return this->author;
     }
@@ -83,7 +83,7 @@ namespace Core
         this->version = newVersion;
     }
 
-    std::string Game::GetVersion ()
+    std::string Game::getVersion ()
     {
         return this->version;
     }
@@ -104,7 +104,7 @@ namespace Core
     }
 
 
-    std::string Game::GetLMTime ()
+    std::string Game::getLMTime ()
     {
         return this->lMTime;
     }
@@ -115,7 +115,7 @@ namespace Core
     }
 
 
-    std::string Game::GetNote ()
+    std::string Game::getNote ()
     {
         return this->note;
     }
@@ -174,7 +174,7 @@ namespace Core
               ptr != pageList.end ();
               ptr++ )
         {
-            if ( !( *ptr )->GetName ().compare ( s ) )
+            if ( !( *ptr )->getName ().compare ( s ) )
             {
                 Page *p = *ptr;
                 pageList.erase ( ptr );
@@ -230,16 +230,16 @@ namespace Core
     {
         json j;
         j["FileType"] = "Parchment Game Data";
-        j["GameName"] = GetGameName ();
-        j["Author"] = GetAuthor ();
-        j["Version"] = GetVersion ();
-        j["LastModifiedTime"] = GetLMTime ();
-        j["Note"] = GetNote ();
+        j["GameName"] = getGameName ();
+        j["Author"] = getAuthor ();
+        j["Version"] = getVersion ();
+        j["LastModifiedTime"] = getLMTime ();
+        j["Note"] = getNote ();
         std::vector<json> pageVector;
         for ( Page *p : this->pageList )
         {
             json pj;
-            pj["PageName"] = p->GetName ();
+            pj["PageName"] = p->getName ();
             std::vector<json> entityVector;
             for ( Entity *e : p->getEntityList () )
             {

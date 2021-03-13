@@ -97,12 +97,12 @@ namespace Core
 // UTILITY OPERATION
 
 
-    std::string Page::GetName ()
+    std::string Page::getName ()
     {
         return this->name;
     }
 
-    void Page::SetName ( std::string newName )
+    void Page::setName ( std::string newName )
     {
         this->name = std::string ( newName );
     }
@@ -141,7 +141,7 @@ namespace Core
     Page *Page::parse ( json &root )
     {
         Page *page = new Page;
-        page->SetName ( root.at ( "PageName" ).get<std::string> () );
+        page->setName ( root.at ( "PageName" ).get<std::string> () );
         //std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
         //page->SetBackgroundColor(
         //    colorVec[0].get<float>(),
