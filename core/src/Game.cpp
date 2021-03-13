@@ -20,6 +20,41 @@ namespace Core
     int Game::width = 1280;
     int Game::height = 720;
 
+    // =========================
+    // CONSTRUCTOR
+
+    Game::Game ():Game ( "empty" )
+    {     }
+
+    Game::Game ( std::string gameName ) : gameName ( gameName )
+    {
+        useFramebuffer = false;
+    }
+
+    // editor open
+    Game::Game ( nlohmann::json &json, GLuint *o )
+    {
+        this->parse ( json );
+        texcbo = o;
+        useFramebuffer = true;
+
+    }
+
+    // editor new
+    Game::Game ( GLuint *o )
+    {
+        texcbo = o;
+        useFramebuffer = true;
+        this->gameName = "editortestname";
+        this->setCurrentPage ( this->createPage ( "emptyPage" ));
+
+
+    }
+
+
+
+    // =========================
+    // ATTRIBUTES OPERATION
 
     std::string Game::GetGameName ()
     {
@@ -85,29 +120,6 @@ namespace Core
         return this->note;
     }
 
-    // =========================
-    // CONSTRUCTOR
-
-    Game::Game ( GLuint *o )
-    {
-        texcbo = o;
-        useFramebuffer = true;
-        this->gameName = "editortestname";
-    }
-    Game::Game ():Game ( "empty" )
-    { }
-
-    Game::Game ( std::string gameName ) : gameName ( gameName )
-    {
-        useFramebuffer = false;
-    }
-
-    Game::Game ( nlohmann::json &json )
-    {
-
-    }
-    // =========================
-    // ATTRIBUTES OPERATION
 
     // =========================
     // PROPERTY OPERATION
@@ -185,7 +197,7 @@ namespace Core
 
     Game *Game::parse ( json &root )
     {
-        
+
         this->SetGameName ( root.at ( "GameName" ).get<std::string> () );
         this->SetAuthor ( root.at ( "Author" ).get<std::string> () );
         this->SetVersion ( root.at ( "Version" ).get<std::string> () );
@@ -204,7 +216,12 @@ namespace Core
         {
             std::cerr << "error: " << e.what () << std::endl;
         }
-        currentPage = this->pageList.at ( 0 );
+        // parse should set current
+        // but the info of current in json is not implemented yet
+        setCurrentPage ( this->pageList.at ( 0 ) );
+        // lack info of ctrlENtity
+        // TODO:
+        currentPage->setCtrlEntity ( currentPage->getEntityList ().at ( 0 ) );
         return this;
     }
 
@@ -234,7 +251,7 @@ namespace Core
                 ej["spriteID"] = e->getSpriteID ();
                 entityVector.push_back ( ej );
             }
-            pj["EntityList"] =  entityVector ;
+            pj["EntityList"] = entityVector;
             pageVector.push_back ( pj );
         }
         j["PageList"] = pageVector;
@@ -417,59 +434,125 @@ namespace Core
 
     }
 
+    int Game::moveCurrentPage ( std::vector<Page *>::iterator i )
+    {
+        if ( i >= pageList.begin () && i < pageList.end () )
+        {
+            setCurrentPage ( *i );
+            _currPitr = i;
+            return 0;
+        }
+        return 1;
+    }
 
+    Page *Game::getCurrPage ()
+    {
+        return this->currentPage;
+    }
+
+    Entity *Game::setCurrCtrlEntity ( Entity *e )
+    {
+        this->currCtrlEntity = e;
+        return e;
+    }
+    Entity *Game::getCurrCtrlEntity ()
+    {
+        return this->currCtrlEntity;
+    }
     void Game::handleInput ( SDL_Event event )
     {
-       glm::vec2 loc = entityInteractive->getLocation ();
-        glm::vec2 scale = entityInteractive->getScale ();
-        float moveBy = 5;
-        int scaleBy = 3;
+        glm::vec2 loc;
+        glm::vec2 scale;
+        if ( setCurrCtrlEntity ( currentPage->getCtrlEntity () ) != nullptr )
+        {
+            loc = currCtrlEntity->getLocation ();
+            scale = currCtrlEntity->getScale ();
+            float moveBy = 5;
+            int scaleBy = 3;
 
+            // Control entity movement and reshape
+            switch ( event.key.keysym.sym )
+            {
+                // Control Entity movement in the interactive demo
+                // Handle left arrow key
+                case SDLK_LEFT:
+                    currCtrlEntity->setLocation ( glm::vec2 ( loc.x - moveBy, loc.y ) ); // Move left
+                    break;
+                    // Handle right arrow key
+                case SDLK_RIGHT:
+                    currCtrlEntity->setLocation ( glm::vec2 ( loc.x + moveBy, loc.y ) ); // Move right
+                    break;
+                    // Handle up arrow key
+                case SDLK_UP:
+                    currCtrlEntity->setLocation ( glm::vec2 ( loc.x, loc.y + moveBy ) ); // Move up
+                    break;
+                    // Handle down arrow key
+                case SDLK_DOWN:
+                    currCtrlEntity->setLocation ( glm::vec2 ( loc.x, loc.y - moveBy ) ); // Move down
+                    break;
+
+                    // Control Entity scaling in the interactive demo
+                case SDLK_a: // a key is Scale up, for now
+                    currCtrlEntity->setScale ( glm::vec2 ( scale.x + scaleBy, scale.y + scaleBy ) );
+                    break;
+
+                case SDLK_z: // z key is Scale down, for now
+                    // Make sure not to scale into the negatives
+                    if ( scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0 )
+                    {
+                        currCtrlEntity->setScale ( glm::vec2 ( scale.x - scaleBy, scale.y - scaleBy ) );
+                    }
+                    break;
+            }
+        }
+            // Control pages switch. 
         switch ( event.key.keysym.sym )
         {
-// Control Entity movement in the interactive demo
-// Handle left arrow key
-            case SDLK_LEFT:
-                entityInteractive->setLocation ( glm::vec2 ( loc.x - moveBy, loc.y ) ); // Move left
-                break;
-                // Handle right arrow key
-            case SDLK_RIGHT:
-                entityInteractive->setLocation ( glm::vec2 ( loc.x + moveBy, loc.y ) ); // Move right
-                break;
-                // Handle up arrow key
-            case SDLK_UP:
-                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y + moveBy ) ); // Move up
-                break;
-                // Handle down arrow key
-            case SDLK_DOWN:
-                entityInteractive->setLocation ( glm::vec2 ( loc.x, loc.y - moveBy ) ); // Move down
-                break;
+            // Press '1' to see map1, 
+            // '2', to see map2, and 
+            // '3' to see the initial interactive demo
 
-                // Control Entity scaling in the interactive demo
-            case SDLK_a: // a key is Scale up, for now
-                entityInteractive->setScale ( glm::vec2 ( scale.x + scaleBy, scale.y + scaleBy ) );
-                break;
-            case SDLK_z: // z key is Scale down, for now
-                // Make sure not to scale into the negatives
-                if ( scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0 )
+            // use 1 to look the previous page 
+            case SDLK_1:
+                // have to check begin and end here
+                if ( !_isBegin ( _currPitr ) )
                 {
-                    entityInteractive->setScale ( glm::vec2 ( scale.x - scaleBy, scale.y - scaleBy ) );
+                    moveCurrentPage ( _currPitr - 1 );
                 }
                 break;
-
-                // Control demo pages. Press '1' to see map1, '2', to see map2, and '3' to see the initial interactive demo
-            case SDLK_1:
-                currentPage = mapPage1;
-                break;
+            // use 2 to look the next page
             case SDLK_2:
-                currentPage = mapPage2;
-                break;
-            case SDLK_3:
-                currentPage = entityPage;
+                if ( _isBeforeEnd ( _currPitr ) )
+                {
+                    moveCurrentPage ( _currPitr + 1 );
+                }
                 break;
         }
     }
 
+
+    bool Game::_isBegin ( __plitr i )
+    {
+        return !( i > pageList.begin () );
+    }
+    bool Game::_isBeforeEnd ( __plitr i )
+    {
+        return ( i < pageList.end () - 1 );
+
+    }
+
+    void Game::setCurrentPage ( Page *p )
+    {
+        this->currentPage = p;
+        for ( std::vector<Page *>::iterator itr = pageList.begin (); itr < pageList.end (); itr++ )
+        {
+            if ( *itr == p )
+            {
+                this->_currPitr = itr;
+                return;
+            }
+        }
+    }
 
     void Game::render ()
     {
@@ -494,52 +577,17 @@ namespace Core
     }
     void Game::run ()
     {
+        // Initdialize OpenGL and necessary SDL objects
+        init ();
+        // Create the shaders
+        initShader ();
 
+        //serialize ();
+
+        mainLoop ();
+
+        destroy ();
     }
-
-
-
-    void Game::s1test ()
-    {
-
-        ///////////////
-        // ENTITY TEST (This is here just for demo purposes)
-        // This will be moved within an actual page once sprites are implemented.
-        // For now it's separated from a page because all rendered objects are a single color and there
-        // would be no way to see a difference from a Tile on the map and an Entity
-
-        entityPage = this->createPage ( "entityPage" );
-        entityPage->SetBackgroundColor ( 0.1, 0.2, 0.59, 1.0 );
-
-        entityInteractive = entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ), glm::vec2 ( 64, 64 ), 0, 0 );
-        entityTallThin = entityPage->createEntity ( "interactive", glm::vec2 ( 200, 200 ), glm::vec2 ( 32, 64 ), 0, 0 );
-        entityShortWide = entityPage->createEntity ( "shortWide", glm::vec2 ( 500, 500 ), glm::vec2 ( 64, 32 ), 0, 0 );
-        entityVeryShortWide = entityPage->createEntity ( "veryShortWide", glm::vec2 ( 640, 100 ), glm::vec2 ( 128, 16 ), 0, 0 );
-        entityOrigin = entityPage->createEntity ( "origin", glm::vec2 ( 1000, 300 ), glm::vec2 ( 128, 128 ), 0, 0 );
-        ///////////////
-
-        ///////////////
-        // MAP TEST
-        int spriteMap[] = {
-              1,  2,  3,  4,
-              5,  6,  7,  8,
-             11, 22, 33, 44,
-             55, 66, 77, 88
-        };
-
-        Map *map1 = new Map ( glm::vec2 ( 4, 4 ), 64 );
-        map1->setMapTileSpritesFromArray ( spriteMap );
-        Map *map2 = new Map ( glm::vec2 ( 16, 16 ), 32 );
-
-        // Here are the 2 ways to make MapPages with set maps
-        mapPage1 = this->createMapPage ( "1", map1 );
-        mapPage2 = this->createMapPage ( "2" );
-        mapPage2->setMap ( map2 ); // Sets empty map page 2's map
-
-        // very important
-        currentPage = entityPage;
-    }
-
 
 
     void Game::destroy ()
@@ -550,23 +598,11 @@ namespace Core
         SDL_Quit ();
     }
 
-    int Game::coreMain ( int argc, char *argv[] )
-    {
-
-        // Initdialize OpenGL and necessary SDL objects
-        init ();
-        // Create the shaders
-        initShader ();
-
-        s1test ();
-        //serialize ();
-
-        mainLoop ();
-
-        destroy ();
-        return 0;
-    }
-
+//    int Game::coreMain ( int argc, char *argv[] )
+//    {
+//
+//    }
+//
     ///////////////
     // Game loop //
     ///////////////
@@ -648,4 +684,5 @@ namespace Core
 
 
     }
+
 }

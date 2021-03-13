@@ -8,15 +8,23 @@ namespace Core
 {
     // =========================
     // CONSTRUCTOR
+    Page::Page ():Page ( "empty" )
+    {
+    }
+    Page::Page ( std::string name ) : name ( name )
+    {
+        ctrlEntity = nullptr;
+    }
 
-    // =========================
-    // ATTRIBUTES OPERATION
 
-    // =========================
-    // PROPERTY OPERATION
+// =========================
+// ATTRIBUTES OPERATION
 
-    // =========================
-    // MEMBER OPERATION
+// =========================
+// PROPERTY OPERATION
+
+// =========================
+// MEMBER OPERATION
     Entity *Page::addEntity ( Entity *e )
     {
         this->entityList.push_back ( e );
@@ -66,13 +74,27 @@ namespace Core
         }
     }
 
+        // =========================
+        // STATE OPERATION
+    // Idea is that only game has the curr(current keywoard)
+    Entity *Page::getCtrlEntity ()
+    {
+        return this->ctrlEntity;
+    }
+
+    // TODO: should have error checking
+    void Page::setCtrlEntity ( Entity *e )
+    {
+        this->ctrlEntity = e;
+    }
 
 
 
 
 
-    // =========================
-    // UTILITY OPERATION
+
+// =========================
+// UTILITY OPERATION
 
 
     std::string Page::GetName ()

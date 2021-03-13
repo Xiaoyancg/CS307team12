@@ -10,14 +10,17 @@ namespace Core
     {
     public:
         // Needs the current window to make a new opengl context, in the Page constructor 
-        MapPage::MapPage () : MapPage ( "", new Map ( glm::vec2 ( 0, 0 ), 0 ) )
+        MapPage::MapPage () : 
+            MapPage ( "empty", new Map ( glm::vec2 ( 0, 0 ), 0 ) )
         { }
 
-        MapPage::MapPage (std::string s): MapPage (s, new Map ( glm::vec2 ( 0, 0 ), 0 ) )
+        MapPage::MapPage (std::string s): 
+            MapPage (s, new Map ( glm::vec2 ( 0, 0 ), 0 ) )
         { }
 
         // Users can specify a map if it's already created
-        MapPage::MapPage ( std::string s, Map *map ) : Page (s), mMap ( map )
+        MapPage::MapPage ( std::string s, Map *map ) : 
+            Page (s), mMap ( map )
         {
             SetBackgroundColor ( 0.1, 0.9, 0.59, 1.0 );
         }
