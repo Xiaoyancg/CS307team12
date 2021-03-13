@@ -1,14 +1,19 @@
 #include <TestCore.h>
 #include "VMTool.h"
+#include "Game.h"
+#include "Sprint1.h"
 #include "gtest/gtest.h"
-
 unsigned int pageError = 1;
 unsigned int coreError = 1;
 unsigned int entityError = 1;
 bool enableTest = true;
 
 
-
+TEST ( PRODUCE_GDATA, s1 )
+{
+    Core::Game *game = Core::s1Game ();
+    WriteFile ( "s1game.gdata", game->serialize ()->dump ( 2 ) );
+}
 TEST ( TEST_CORE, game )
 {
     int argc = 2;
