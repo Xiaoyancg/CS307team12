@@ -23,16 +23,21 @@ namespace Core
         entityPage = game->createPage ( "entityPage" );
         entityPage->SetBackgroundColor ( 0.1, 0.2, 0.59, 1.0 );
 
-        entityInteractive = entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ),
+        entityInteractive = 
+            entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ),
                                                        glm::vec2 ( 64, 64 ), 0, 0 );
         entityPage->setCtrlEntity ( entityInteractive );
-        entityTallThin = entityPage->createEntity ( "interactive", glm::vec2 ( 200, 200 ),
+        entityTallThin = 
+            entityPage->createEntity ( "interactive", glm::vec2 ( 200, 200 ),
                                                     glm::vec2 ( 32, 64 ), 0, 0 );
-        entityShortWide = entityPage->createEntity ( "shortWide", glm::vec2 ( 500, 500 ),
+        entityShortWide = 
+            entityPage->createEntity ( "shortWide", glm::vec2 ( 500, 500 ),
                                                      glm::vec2 ( 64, 32 ), 0, 0 );
-        entityVeryShortWide = entityPage->createEntity ( "veryShortWide", glm::vec2 ( 640, 100 ),
+        entityVeryShortWide = 
+            entityPage->createEntity ( "veryShortWide", glm::vec2 ( 640, 100 ),
                                                          glm::vec2 ( 128, 16 ), 0, 0 );
-        entityOrigin = entityPage->createEntity ( "origin", glm::vec2 ( 1000, 300 ),
+        entityOrigin = 
+            entityPage->createEntity ( "origin", glm::vec2 ( 1000, 300 ),
                                                   glm::vec2 ( 128, 128 ), 0, 0 );
         ///////////////
 

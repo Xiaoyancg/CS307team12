@@ -102,8 +102,11 @@ namespace Core
         useFramebuffer = false;
     }
 
-    Game::Game ( nlohmann::json &json )
+    Game::Game ( nlohmann::json &json, GLuint *o )
     {
+        this->parse ( json );
+        texcbo = o;
+        useFramebuffer = true;
 
     }
     // =========================
@@ -204,7 +207,12 @@ namespace Core
         {
             std::cerr << "error: " << e.what () << std::endl;
         }
-        currentPage = this->pageList.at ( 0 );
+        // parse should set current
+        // but the info of current in json is not implemented yet
+        setCurrentPage ( this->pageList.at ( 0 ) );
+        // lack info of ctrlENtity
+        // TODO:
+        currentPage->setCtrlEntity ( currentPage->getEntityList ().at ( 0 ) );
         return this;
     }
 
