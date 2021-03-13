@@ -58,12 +58,12 @@ namespace Core
         void setSpriteID (int);
         int getSpriteID ();
 
+
         // =========================
         // MEMBER OPERATION
 
         // =========================
         // UTILITY OPERATION
-
 
 
 

@@ -8,7 +8,7 @@
 #include <glad/glad.h>
 #include <glm/core/type_mat.hpp>
 #include <nlohmann/json.hpp>
-
+#include <iterator>
 #include <Entity.h>
 
 
@@ -21,8 +21,8 @@ namespace Core
     {
 
     public:
-        Page() {};
-        Page(std::string name) : name(name) {};
+        Page();
+        Page(std::string name);
 
         // Render the given page on the current context
         // Returns non-zero on error
@@ -53,10 +53,19 @@ namespace Core
         void deleteEntity (std::string);
         void deleteEntity (Entity*);
         // =========================
+        // STATE OPERATION
+        Entity *getCtrlEntity ();
+
+        // TODO: should have error checking
+        void setCtrlEntity ( Entity * );
+
+        // =========================
         // UTILITY OPERATION
 
 
     protected:
+        // the eneity that bind to keys of current page
+        Entity *ctrlEntity;
         std::string name;
         glm::vec4 backgroundColor;
         std::vector<Entity*> entityList;
