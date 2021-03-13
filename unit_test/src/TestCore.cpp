@@ -16,7 +16,7 @@ TEST ( TEST_CORE, game )
     argv[0] = "core";
     argv[1] = "test";
     Core::Game g;
-    g.coreMain ( argc, argv );
+    //g.coreMain ( argc, argv );
     EXPECT_EQ ( coreError, GL_NO_ERROR );
 }
 
@@ -27,7 +27,7 @@ TEST ( TEST_CORE, page )
     argv[0] = "core";
     argv[1] = "test";
     Core::Game g;
-    g.coreMain ( argc, argv );
+    //g.coreMain ( argc, argv );
     EXPECT_EQ ( pageError, GL_NO_ERROR );
 }
 
@@ -39,7 +39,7 @@ TEST ( TEST_CORE, entity )
     argv[0] = "core";
     argv[1] = "test";
     Core::Game g;
-    g.coreMain ( argc, argv );
+    //g.coreMain ( argc, argv );
     EXPECT_EQ ( entityError, GL_NO_ERROR );
 }
 
@@ -55,7 +55,7 @@ TEST ( TEMPTEST, supertemp )
     Core::Game g ( "wulala" );
     g.init ();
     g.initShader ();
-    g.s1test ();
+    //g.s1test ();
     json * j = g.serialize ();
 
     WriteFile ( "wulala.gdata", j->dump ( 2 ) );
