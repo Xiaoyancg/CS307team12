@@ -11,3 +11,17 @@
 
 int EditorMain ( int argc, char *argv[] );
 
+enum SelectionEnum
+{
+	SAVEAS,
+	DELETEPROJECT,
+	GAMEVIEW,
+	ENTITYEDITOR,
+	PAGEEDITOR,
+	MAPEDITOR,
+	SAVEPOPUP,
+	DELETEPOPUP,
+	
+	// LEAVE THIS AT THE END OF THE LIST OR ELSE THIS IS A THREAT
+	COUNT,
+};
