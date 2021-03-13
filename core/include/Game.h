@@ -81,19 +81,20 @@ namespace Core
 
         // =========================
         // STATE OPERATION
+
         void setCurrentPage ( Page *p );
         Page *getCurrPage ();
         Entity *setCurrCtrlEntity ( Entity * );
         Entity *getCurrCtrlEntity ();
-        // Move current page pointer and iterator 
-        // to the target iterator in the pageList
-        // write this for new sdlk 1,2
-        // maybe useful in later
-        // because we need to render different page
-        // yeah should be useful in editor
-        // can be fail ( begin(), end() out of range)
-        // return non 0 if fail
-        int moveCurrentPage (std::vector<Page*>::iterator);
+
+        /// <summary>
+        /// Move current page pointer and iterator 
+        /// to the target iterator in the pageList.
+        /// <para>Can be fail ( begin(), end() out of range)</para>
+        /// </summary>
+        /// <param name="target">the target pagelist iterator</param>
+        /// <returns>0 if fail</returns>
+        int moveCurrentPage (std::vector<Page*>::iterator target);
 
         // =========================
         // UTILITY OPERATION
