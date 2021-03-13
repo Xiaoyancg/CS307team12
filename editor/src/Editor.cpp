@@ -115,7 +115,10 @@ int EditorMain ( int argc, char *argv[] )
             }
             if ( evt.type == SDL_KEYDOWN )
             {
-                //game->handleInput ( evt );
+                if ( game != nullptr )
+                {
+                    game->handleInput ( evt );
+                }
             }
         }
         // Draw ImGui windows
@@ -461,9 +464,8 @@ static void ShowExampleAppMainMenuBar ()
         nlohmann::json *j = readGameDataFile ( openDialog.GetSelected ().string () );
         texcbo = new GLuint ();
         glGenTextures ( 1, texcbo );
-        game = new Core::Game ( texcbo );
+        game = new Core::Game ( *j, texcbo );
         game->initShader ();
-        game->parse ( *j );
         selection[2] = true;
 
         openDialog.ClearSelected ();

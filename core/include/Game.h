@@ -26,7 +26,7 @@ namespace Core
         Game ( GLuint *o );
         Game ();
         Game ( std::string gameName );
-        Game ( nlohmann::json &json );
+        Game ( nlohmann::json &json, GLuint *o );
 
         std::string GetGameName ();
         void SetGameName ( std::string newName );
