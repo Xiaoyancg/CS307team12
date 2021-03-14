@@ -26,8 +26,8 @@ namespace Core
 
         // Render the given page on the current context
         // Returns non-zero on error
-        void SetName ( std::string name );
-        std::string GetName ();
+        void setName ( std::string name );
+        std::string getName ();
         void SetBackgroundColor(float r, float g, float b, float a);
         glm::vec4 GetBackgroundColor();
         std::vector<Entity*>& getEntityList ();

@@ -17,7 +17,7 @@ static bool selection[COUNT];
 
 GLuint *texcbo;
 Core::Game *game = nullptr;
-
+Core::Page *currPage;
 std::string dir;
 int EditorMain ( int argc, char *argv[] )
 {
@@ -39,7 +39,7 @@ int EditorMain ( int argc, char *argv[] )
     SDL_WindowFlags window_flags =
         ( SDL_WindowFlags ) ( SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI );
     // create a window for opengl. opengl can't create a window. we use sdl to create window
-    SDL_Window *window = SDL_CreateWindow ( 
+    SDL_Window *window = SDL_CreateWindow (
         "Parchment",                                    // Main Window Title
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
         1280, 720,                                      // CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
@@ -69,6 +69,8 @@ int EditorMain ( int argc, char *argv[] )
     ImGui::CreateContext ();
     // ImGuiIO: Communicate most settings and inputs/outputs to Dear ImGui using this structure.
     ImGuiIO &io = ImGui::GetIO ();
+    io.WantCaptureMouse = true;
+    io.WantCaptureKeyboard = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark (); // alternative: Classic
@@ -228,20 +230,20 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::InputText ( "", entity_name, IM_ARRAYSIZE ( entity_name ) );
             if ( ImGui::Button ( "Create New Entity" ) )
             {
-                game->currentPage->createEntity ( entity_name );
+                currPage->createEntity ( entity_name );
                 // memset to clear the buffer after use
-                memset( entity_name, 0, 128 );
+                memset ( entity_name, 0, 128 );
             }
             ImGui::SameLine ();
             if ( ImGui::Button ( "Delete This Entity" ) )
             {
-                int original = game->currentPage->getEntityList().size();
-                game->currentPage->deleteEntity(entity_name);
-                if ( game->currentPage->getEntityList().size() < original )
+                int original = game->getCurrPage()->getEntityList ().size ();
+                currPage->deleteEntity ( entity_name );
+                if ( currPage->getEntityList ().size () < original )
                 {
                     delete_success = true;
                     // memset to clear the buffer after use
-                    memset( entity_name, 0, 128 );
+                    memset ( entity_name, 0, 128 );
                 }
             }
             if ( ImGui::Button ( "Show Entity Information" ) )
@@ -280,13 +282,13 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::SameLine ();
             if ( ImGui::Button ( "Delete This Page" ) )
             {
-                int original = game->getPageList()->size();
-                game->deletePage(page_name);
-                if (game->getPageList()->size() < original)
+                int original = game->getPageList ()->size ();
+                game->deletePage ( page_name );
+                if ( game->getPageList ()->size () < original )
                 {
                     delete_success = true;
                     // memset to clear the buffer after use
-                    memset( page_name, 0, 128 );
+                    memset ( page_name, 0, 128 );
                 }
             }
             if ( ImGui::Button ( "Show Page Information" ) )
@@ -307,12 +309,12 @@ static void ShowExampleAppMainMenuBar ()
         {
             ImGui::Text ( "Page Name:" );
             ImGui::SameLine ();
-            ImGui::Text ( game->currentPage->GetName ().c_str () );
+            ImGui::Text ( currPage->getName ().c_str () );
             std::vector <Core::Page *> plist = *game->getPageList ();
             ImGui::Text ( "Page Names: " );
             for ( Core::Page *p : plist )
             {
-                ImGui::Text ( p->GetName ().c_str () );
+                ImGui::Text ( p->getName ().c_str () );
             }
             ImGui::EndPopup ();
         }
@@ -335,7 +337,7 @@ static void ShowExampleAppMainMenuBar ()
             {
                 game->createMapPage ( map_name );
                 // memset to clear the buffer after use
-                memset( map_name, 0, 128 );
+                memset ( map_name, 0, 128 );
             }
             if ( ImGui::Button ( "Delete This Map" ) )
             {
@@ -357,9 +359,9 @@ static void ShowExampleAppMainMenuBar ()
     }
 
     // Calls delete successfully popup on successful project deletion
-    if (selection[DELETEPOPUP])
+    if ( selection[DELETEPOPUP] )
     {
-        ImGui::OpenPopup("Deleted Successfully");
+        ImGui::OpenPopup ( "Deleted Successfully" );
         selection[DELETEPOPUP] = false;
     }
 
@@ -372,17 +374,17 @@ static void ShowExampleAppMainMenuBar ()
 
 
     // Open delete project popup
-    if (selection[DELETEPROJECT])
+    if ( selection[DELETEPROJECT] )
     {
-        ImGui::OpenPopup("Delete Successful");
-        ImGui::OpenPopup("Delete Project");
+        ImGui::OpenPopup ( "Delete Successful" );
+        ImGui::OpenPopup ( "Delete Project" );
         selection[DELETEPROJECT] = false;
     }
 
     // Open delete element popup
-    if (delete_success)
+    if ( delete_success )
     {
-        ImGui::OpenPopup("Delete Successful");
+        ImGui::OpenPopup ( "Delete Successful" );
         delete_success = false;
     }
 
@@ -402,10 +404,11 @@ static void ShowExampleAppMainMenuBar ()
         {
             if ( ImGui::MenuItem ( "New Project" ) )
             {
-                texcbo = new GLuint();
-                glGenTextures(1, texcbo);
-                game = new Core::Game(texcbo);
-                game->initShader();
+                texcbo = new GLuint ();
+                glGenTextures ( 1, texcbo );
+                game = new Core::Game ( texcbo );
+                currPage = game->getCurrPage ();
+                game->initShader ();
                 selection[GAMEVIEW] = true;
                 // When user new project, it won't save
                 // User should call save manually
@@ -426,12 +429,13 @@ static void ShowExampleAppMainMenuBar ()
             /*if ( ImGui::MenuItem ( "Export Project" ) )
             {
                 // call export function from VM team
-                // not yet implemented as of sprint 1 
+                // not yet implemented as of sprint 1
             }*/
 
-            if (game != nullptr) {
+            if ( game != nullptr )
+            {
                 if ( ImGui::MenuItem ( "Save" ) )
-                {   
+                {
                     /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
                     if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
                     before (to specify a name and directory). otherwise, if they click SAVE and have
@@ -443,7 +447,8 @@ static void ShowExampleAppMainMenuBar ()
                     WriteFile ( "New Game Project", ( content->dump () ) );
                     selection[SAVEPOPUP] = true;
                 }
-                if (ImGui::MenuItem("Save As")) {
+                if ( ImGui::MenuItem ( "Save As" ) )
+                {
                     selection[SAVEAS] = true;
                 }
             }
@@ -493,6 +498,7 @@ static void ShowExampleAppMainMenuBar ()
         texcbo = new GLuint ();
         glGenTextures ( 1, texcbo );
         game = new Core::Game ( *j, texcbo );
+        currPage = game->getCurrPage ();
         game->initShader ();
         selection[GAMEVIEW] = true;
 
@@ -500,11 +506,11 @@ static void ShowExampleAppMainMenuBar ()
     }
 
     // Delete dialog selection return
-    delDialog.Display();
-    if (delDialog.HasSelected())
+    delDialog.Display ();
+    if ( delDialog.HasSelected () )
     {
-        DeleteFile(delDialog.GetSelected().string().c_str());
-        delDialog.ClearSelected();
+        DeleteFile ( delDialog.GetSelected ().string ().c_str () );
+        delDialog.ClearSelected ();
         selection[DELETEPOPUP] = true;
     }
 
@@ -562,28 +568,28 @@ static void ShowExampleAppMainMenuBar ()
     }
 
     // Successful Project deletion popup
-    if (ImGui::BeginPopup("Deleted Successfully"))
+    if ( ImGui::BeginPopup ( "Deleted Successfully" ) )
     {
-        ImGui::Text("Project deleted successfully!");
-        ImGui::EndPopup();
+        ImGui::Text ( "Project deleted successfully!" );
+        ImGui::EndPopup ();
     }
 
     // Entity information popup
-    if (ImGui::BeginPopup("Entity Information"))
+    if ( ImGui::BeginPopup ( "Entity Information" ) )
     {
-        std::vector <Core::Entity*> elist = game->currentPage->getEntityList();
-        ImGui::Text("Entity Names: ");
-        for (Core::Entity* e : elist)
+        std::vector <Core::Entity *> elist = currPage->getEntityList ();
+        ImGui::Text ( "Entity Names: " );
+        for ( Core::Entity *e : elist )
         {
-            ImGui::Text(e->getName().c_str());
+            ImGui::Text ( e->getName ().c_str () );
         }
-        ImGui::EndPopup();
+        ImGui::EndPopup ();
     }
 
     // Successful deletion popup
-    if (ImGui::BeginPopup("Delete Successful"))
+    if ( ImGui::BeginPopup ( "Delete Successful" ) )
     {
-        ImGui::Text("Deletion successful!");
-        ImGui::EndPopup();
+        ImGui::Text ( "Deletion successful!" );
+        ImGui::EndPopup ();
     }
 }
