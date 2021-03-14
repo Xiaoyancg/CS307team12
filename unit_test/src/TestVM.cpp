@@ -34,7 +34,7 @@ TEST ( TEST_VM, ProduceDataFile )
 TEST ( TEST_VM, ConstructGame )
 {
     Core::Game * g = ConstructGame ( "name.gdata" );
-    EXPECT_TRUE ( !std::string ( g->GetGameName () ).compare ( "name" ) );
+    EXPECT_TRUE ( !std::string ( g->getGameName () ).compare ( "name" ) );
     delete g;
 }
 
@@ -44,7 +44,7 @@ TEST ( TEST_VM, ProduceDataFileConstructGame )
     ProduceDataFile ( g );
     Core::Game * r = ConstructGame ( std::string ( "huh.gdata" ) );
 
-    EXPECT_STREQ ( r->GetGameName ().c_str(), "huh" );
+    EXPECT_STREQ ( r->getGameName ().c_str(), "huh" );
     delete g;
     delete r;
 }
@@ -54,7 +54,7 @@ TEST ( TEST_VM, RealDataFileTest)
     Core::Game *g = CreateExampleGame ();
     ProduceDataFile ( g );
     Core::Game *r = ConstructGame ( std::string("example.gdata") );
-    EXPECT_STREQ ( r->GetGameName ().c_str (), "example" );
+    EXPECT_STREQ ( r->getGameName ().c_str (), "example" );
 }
 
 /*

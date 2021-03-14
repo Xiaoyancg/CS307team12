@@ -76,14 +76,14 @@ int ProduceDataFile ( Core::Game *g )
 {
     json j;
     j["FileType"] = "Parchment Game Data";
-    j["GameName"] = g->GetGameName ();
-    j["Author"] = g->GetAuthor ();
-    j["LastModifiedTime"] = g->GetLMTime ();
-    j["Note"] = g->GetNote ();
-    j["Version"] = g->GetVersion ();
+    j["GameName"] = g->getGameName ();
+    j["Author"] = g->getAuthor ();
+    j["LastModifiedTime"] = g->getLMTime ();
+    j["Note"] = g->getNote ();
+    j["Version"] = g->getVersion ();
     try
     {
-        WriteFile ( g->GetGameName ().append ( ".gdata" ), j.dump () );
+        WriteFile ( g->getGameName ().append ( ".gdata" ), j.dump () );
     }
     catch ( const std::exception & )
     {

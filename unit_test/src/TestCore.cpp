@@ -49,10 +49,10 @@ TEST ( TEST_CORE, entity )
 }
 
 
-TEST ( TEST_GAME, Game_SetGetName )
+TEST ( TEST_GAME, Game_SetgetName )
 {
     Core::Game g ( "hello" );
-    std::string s ( g.GetGameName () );
+    std::string s ( g.getGameName () );
     EXPECT_TRUE ( !s.compare ( "hello" ) );
 }
 TEST ( TEMPTEST, supertemp )
@@ -74,7 +74,7 @@ TEST ( TEMPTEST, supertemp )
 //    g.SetVersion("test_version");
 //
 //    Core::Page* page = new Core::Page;
-//    page->SetName("test_pageName");
+//    page->setName("test_pageName");
 //    page->SetBackgroundColor(0.1, 0.2, 0.3, 0.4);
 //    
 //    Core::Entity* entity = new Core::Entity("test_entityName");
@@ -147,15 +147,15 @@ TEST ( TEMPTEST, supertemp )
 //
 //    Core::Game* game = Core::Game::parse(gamefile);
 //
-//    EXPECT_EQ(game->GetGameName(), "example name");
-//    EXPECT_EQ(game->GetAuthor(), "example author");
-//    EXPECT_EQ(game->GetVersion(), "example version");
-//    EXPECT_EQ(game->GetLMTime(), "example Date Time");
-//    EXPECT_EQ(game->GetNote(), "example Note");
+//    EXPECT_EQ(game->getGameName(), "example name");
+//    EXPECT_EQ(game->getAuthor(), "example author");
+//    EXPECT_EQ(game->getVersion(), "example version");
+//    EXPECT_EQ(game->getLMTime(), "example Date Time");
+//    EXPECT_EQ(game->getNote(), "example Note");
 //
 //    auto pages = game->getPageList();
 //    EXPECT_EQ(pages->size(), 1);
-//    EXPECT_EQ((*pages)[0]->GetName(), "example Page");
+//    EXPECT_EQ((*pages)[0]->getName(), "example Page");
 //
 //    auto entities = (*pages)[0]->getEntityList();
 //    EXPECT_EQ(entities.size(), 1);
