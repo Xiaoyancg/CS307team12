@@ -151,6 +151,7 @@ int EditorMain ( int argc, char *argv[] )
         ImGui_ImplOpenGL3_RenderDrawData ( ImGui::GetDrawData () );
         // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
         SDL_GL_SwapWindow ( window );
+        io.ConfigWindowsResizeFromEdges = true;
 
 #ifdef __TEST_EDITOR
         if ( dobreak )  running = false;
