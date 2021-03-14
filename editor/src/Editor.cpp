@@ -25,7 +25,7 @@ static bool selection[COUNT];
 
 GLuint *texcbo;
 Core::Game *game = nullptr;
-
+Core::Page *currPage;
 std::string dir;
 int EditorMain ( int argc, char *argv[] )
 {
@@ -237,16 +237,16 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::InputText ( "", entity_name, IM_ARRAYSIZE ( entity_name ) );
             if ( ImGui::Button ( "Create New Entity" ) )
             {
-                game->currentPage->createEntity ( entity_name );
+                currPage->createEntity ( entity_name );
                 // memset to clear the buffer after use
                 memset ( entity_name, 0, 128 );
             }
             ImGui::SameLine ();
             if ( ImGui::Button ( "Delete This Entity" ) )
             {
-                int original = game->currentPage->getEntityList ().size ();
-                game->currentPage->deleteEntity ( entity_name );
-                if ( game->currentPage->getEntityList ().size () < original )
+                int original = game->getCurrPage()->getEntityList ().size ();
+                currPage->deleteEntity ( entity_name );
+                if ( currPage->getEntityList ().size () < original )
                 {
                     delete_success = true;
                     // memset to clear the buffer after use
@@ -316,7 +316,7 @@ static void ShowExampleAppMainMenuBar ()
         {
             ImGui::Text ( "Page Name:" );
             ImGui::SameLine ();
-            ImGui::Text ( game->currentPage->getName ().c_str () );
+            ImGui::Text ( currPage->getName ().c_str () );
             std::vector <Core::Page *> plist = *game->getPageList ();
             ImGui::Text ( "Page Names: " );
             for ( Core::Page *p : plist )
@@ -570,7 +570,7 @@ static void ShowExampleAppMainMenuBar ()
     // Entity information popup
     if ( ImGui::BeginPopup ( "Entity Information" ) )
     {
-        std::vector <Core::Entity *> elist = game->currentPage->getEntityList ();
+        std::vector <Core::Entity *> elist = currPage->getEntityList ();
         ImGui::Text ( "Entity Names: " );
         for ( Core::Entity *e : elist )
         {

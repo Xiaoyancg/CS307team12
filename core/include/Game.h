@@ -105,7 +105,7 @@ namespace Core
         void sdl_die ( const char *err_msg );
         void handleInput ( SDL_Event event );
         void render ();
-        // main entry
+        // main entry for vm
         void run (); 
         void destroy ();
         void mainLoop ();
