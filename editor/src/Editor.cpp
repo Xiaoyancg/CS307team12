@@ -12,7 +12,6 @@ ImGui::FileBrowser openDialog;
 ImGui::FileBrowser delDialog;
 
 // bool array to track the selections made on main menu bar
-// TODO: swap the dumb magic number system for an enum that is easier to read - place it in the header
 static bool selection[COUNT];
 
 GLuint *texcbo;
