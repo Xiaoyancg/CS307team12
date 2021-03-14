@@ -98,13 +98,15 @@ namespace Core
 
         // =========================
         // UTILITY OPERATION
+
+        // init SDL
         void init ();
         void initShader ();
         void sdl_die ( const char *err_msg );
         void handleInput ( SDL_Event event );
         void render ();
-        void run (); // main entry
-
+        // main entry
+        void run (); 
         void destroy ();
         void mainLoop ();
         void s1test ();
