@@ -598,11 +598,6 @@ namespace Core
         SDL_Quit ();
     }
 
-//    int Game::coreMain ( int argc, char *argv[] )
-//    {
-//
-//    }
-//
     ///////////////
     // Game loop //
     ///////////////

@@ -109,13 +109,7 @@ namespace Core
         void run (); 
         void destroy ();
         void mainLoop ();
-        void s1test ();
 
-        int coreMain ( int argc, char *argv[] );
-
-
-        Page *currentPage = nullptr;
-       // from core team end
 
     private:
 
@@ -145,6 +139,8 @@ namespace Core
 
         // ===========================
         // MEMBER VARIABLES
+
+        Page *currentPage = nullptr;
         GLuint *texcbo;
         GLuint fbo;
         std::vector<Page *> pageList;
