@@ -451,7 +451,7 @@ static void ShowExampleAppMainMenuBar ()
         }
 
         // Add menu
-        if ( ImGui::BeginMenu ( "Add" ) )
+        if ( ImGui::BeginMenu ( "View" ) )
         {
             ImGui::MenuItem ( "Game View", "", &selection[GAMEVIEW] );
             ImGui::MenuItem ( "Entity Editor", "", &selection[ENTITYEDITOR] );
