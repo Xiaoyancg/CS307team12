@@ -16,7 +16,6 @@
 namespace Core
 {
 
-
     int Game::width = 1280;
     int Game::height = 720;
 
