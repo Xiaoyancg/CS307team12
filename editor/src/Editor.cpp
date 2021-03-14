@@ -7,17 +7,9 @@
 
 static void ShowExampleAppMainMenuBar ();
 bool running = true;
-ImGui::FileBrowser saveDialog = ImGui::FileBrowser (
-    ImGuiFileBrowserFlags_NoTitleBar |
-    ImGuiFileBrowserFlags_SelectDirectory |
-    ImGuiFileBrowserFlags_CreateNewDir
-);
-ImGui::FileBrowser openDialog = ImGui::FileBrowser (
-    ImGuiFileBrowserFlags_NoTitleBar
-);
-ImGui::FileBrowser delDialog = ImGui::FileBrowser (
-    ImGuiFileBrowserFlags_NoTitleBar
-);
+ImGui::FileBrowser saveDialog;
+ImGui::FileBrowser openDialog;
+ImGui::FileBrowser delDialog;
 
 // bool array to track the selections made on main menu bar
 // TODO: swap the dumb magic number system for an enum that is easier to read - place it in the header
@@ -96,7 +88,7 @@ int EditorMain ( int argc, char *argv[] )
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4 ( 0.45f, 0.55f, 0.60f, 1.00f );
 
-    openDialog.SetTypeFilters ( { ".gdata" } );
+    
 
     // set the default game view window state to open
 //    selection[GAMEVIEW] = true;
@@ -424,6 +416,10 @@ static void ShowExampleAppMainMenuBar ()
             }
             if ( ImGui::MenuItem ( "Open Project" ) )
             {
+                openDialog = ImGui::FileBrowser(
+                    ImGuiFileBrowserFlags_NoTitleBar
+                );
+                openDialog.SetTypeFilters({ ".gdata" });
                 openDialog.Open ();
             }
             if ( ImGui::MenuItem ( "Delete Project" ) )
@@ -532,7 +528,10 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::Text ( "Are you sure you want to delete a project? Click outside of this popup to cancel." );
         if ( ImGui::Button ( "Yes" ) )
         {
-            delDialog.Open ();
+            delDialog = ImGui::FileBrowser(
+                ImGuiFileBrowserFlags_NoTitleBar
+            );
+            delDialog.Open();
         }
         ImGui::EndPopup ();
     }
@@ -545,6 +544,11 @@ static void ShowExampleAppMainMenuBar ()
         ImGui::InputText ( "", name, IM_ARRAYSIZE ( name ) );
         if ( ImGui::Button ( "Save" ) )
         {
+            saveDialog = ImGui::FileBrowser(
+                ImGuiFileBrowserFlags_NoTitleBar |
+                ImGuiFileBrowserFlags_SelectDirectory |
+                ImGuiFileBrowserFlags_CreateNewDir
+            );
             saveDialog.Open ();
             if ( !saveDialog.IsOpened () )
             {
