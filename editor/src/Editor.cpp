@@ -415,6 +415,7 @@ static void ShowExampleAppMainMenuBar ()
                 texcbo = new GLuint ();
                 glGenTextures ( 1, texcbo );
                 game = new Core::Game ( texcbo );
+                currPage = game->getCurrPage ();
                 game->initShader ();
                 selection[GAMEVIEW] = true;
                 // When user new project, it won't save
@@ -501,6 +502,7 @@ static void ShowExampleAppMainMenuBar ()
         texcbo = new GLuint ();
         glGenTextures ( 1, texcbo );
         game = new Core::Game ( *j, texcbo );
+        currPage = game->getCurrPage ();
         game->initShader ();
         selection[GAMEVIEW] = true;
 
