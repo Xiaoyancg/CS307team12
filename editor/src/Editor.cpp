@@ -70,6 +70,8 @@ int EditorMain ( int argc, char *argv[] )
     ImGuiIO &io = ImGui::GetIO ();
     io.WantCaptureMouse = true;
     io.WantCaptureKeyboard = true;
+    io.ConfigWindowsResizeFromEdges = true;
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark (); // alternative: Classic
@@ -126,6 +128,7 @@ int EditorMain ( int argc, char *argv[] )
             ShowExampleAppMainMenuBar ();
         }
 
+
         if ( showDemoWindow )
         {
             ImGui::ShowDemoWindow ( &showDemoWindow );
@@ -140,9 +143,18 @@ int EditorMain ( int argc, char *argv[] )
         glClear ( GL_COLOR_BUFFER_BIT );
         // use opengl to render the imgui window
         ImGui_ImplOpenGL3_RenderDrawData ( ImGui::GetDrawData () );
+
+        // Update and Render additional Platform Windows
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+            SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+        }
         // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
         SDL_GL_SwapWindow ( window );
-        io.ConfigWindowsResizeFromEdges = true;
 
 #ifdef __TEST_EDITOR
         if ( dobreak )  running = false;
