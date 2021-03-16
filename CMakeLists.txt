@@ -62,3 +62,7 @@ add_subdirectory(core)
 add_subdirectory(gamevm)
 add_subdirectory(editor)
 add_subdirectory(unit_test)
+
+# practice
+add_subdirectory(practice/Demo_of_ImGui)
+add_subdirectory(practice/Demo_of_ImGui_Docking)
