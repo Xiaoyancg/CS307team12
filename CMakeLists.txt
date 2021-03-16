@@ -56,7 +56,7 @@ target_include_directories(imgui
 
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
-#target_compile_options(glm INTERFACE "/w")
+target_compile_options(glm INTERFACE "/w")
 #set_source_files_properties("${GLM_DIR}" PROPERTIES COMPILE_FLAGS "/w")
 #set_source_files_properties(${GLM_DIR} PROPERTIES COMPILE_FLAGS "/IGNORE:warning")
 target_include_directories(glm INTERFACE ${GLM_DIR})

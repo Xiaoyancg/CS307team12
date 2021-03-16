@@ -576,7 +576,7 @@ namespace Core
     }
     void Game::run ()
     {
-        // Initdialize OpenGL and necessary SDL objects
+        // Initialize OpenGL and necessary SDL objects
         init ();
         // Create the shaders
         initShader ();
