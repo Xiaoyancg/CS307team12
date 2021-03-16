@@ -17,6 +17,8 @@
 #define __pl std::vector<Page*>
 namespace Core
 {
+    typedef std::vector<Page*>::iterator PLitr;
+    typedef std::vector<Page*> PL;
     class Game
     {
     public:
@@ -117,8 +119,8 @@ namespace Core
         // UTILITY OPERATION
 
         // check the iterator not begin
-        bool _isBegin (__plitr i);
-        bool _isBeforeEnd ( __plitr i );
+        bool _isBegin (PLitr i);
+        bool _isBeforeEnd ( PLitr i );
 
         // ==========================
         // ATTRIBUTES VARIABLE
@@ -135,7 +137,7 @@ namespace Core
         Entity *currCtrlEntity;
         bool useFramebuffer;
         // page list iterator: current page iterator
-        __plitr _currPitr;
+        PLitr _currPitr;
 
         // ===========================
         // MEMBER VARIABLES

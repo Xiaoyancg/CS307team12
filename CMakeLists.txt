@@ -11,14 +11,15 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   )
 endif()
 
-option(WITH_TESTS "Build tests" ON)
 
+option(WITH_TESTS "Build tests" ON)
 if(WITH_TESTS)
 	enable_testing()
 	include(GoogleTest)
 	set(gtest_force_shared_crt ON)
 	add_subdirectory(lib/googletest)
 endif()
+
 
 set(SDL_DIR "${PROJECT_SOURCE_DIR}/lib/SDL")
 add_library(sdl SHARED IMPORTED)
@@ -56,7 +57,6 @@ add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
 add_subdirectory(lib/json)
-
 
 add_subdirectory(core)
 add_subdirectory(gamevm)

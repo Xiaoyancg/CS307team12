@@ -9,7 +9,6 @@ file(GLOB vm_headers "${VM_DIR}/include/*.h")
 file(GLOB core_srcs "${CORE_DIR}/src/*.cpp")
 file(GLOB core_headers "${CORE_DIR}/include/*.h")
 
-
 add_library(testlib INTERFACE)
 target_include_directories(testlib INTERFACE "include")
 
