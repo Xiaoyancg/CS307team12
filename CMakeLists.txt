@@ -4,6 +4,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(Parchment VERSION 0.1 LANGUAGES CXX)
 
+#set(CMAKE_CXX_FLAGS_T "${CMAKE_CXX_FLAGS}")
+#if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+#	string(REGEX REPLACE "/W[0-4]" "/w" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")	
+#else()
+#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
+#endif(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+	
+
+message("${CMAKE_CXX_FLAGS}")
+
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(
     FATAL_ERROR
@@ -46,7 +56,11 @@ target_include_directories(imgui
 
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
+#target_compile_options(glm INTERFACE "/w")
+#set_source_files_properties("${GLM_DIR}" PROPERTIES COMPILE_FLAGS "/w")
+#set_source_files_properties(${GLM_DIR} PROPERTIES COMPILE_FLAGS "/IGNORE:warning")
 target_include_directories(glm INTERFACE ${GLM_DIR})
+install(TARGETS glm PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/glm)
 
 set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
 add_library(imfb INTERFACE)
@@ -57,6 +71,9 @@ add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
 add_subdirectory(lib/json)
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_T}")
+#message("${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(core)
 add_subdirectory(gamevm)

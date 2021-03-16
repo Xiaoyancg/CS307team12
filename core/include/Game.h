@@ -57,7 +57,7 @@ namespace Core
 
         /*
          * next sprint: multi pages
-        int addDsipalyList ( int pageID );
+        int addDisplayList ( int pageID );
         std::vector<int> getDisplayListID ();
         */
 

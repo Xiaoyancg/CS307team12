@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 - typedef Core::PLitr, Core::PL
 
 ### Fixed
-
+- typo
 ### Changed
 - typedef name change
 
