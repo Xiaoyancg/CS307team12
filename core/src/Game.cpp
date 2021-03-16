@@ -530,11 +530,11 @@ namespace Core
     }
 
 
-    bool Game::_isBegin ( __plitr i )
+    bool Game::_isBegin ( PLitr i )
     {
         return !( i > pageList.begin () );
     }
-    bool Game::_isBeforeEnd ( __plitr i )
+    bool Game::_isBeforeEnd ( PLitr i )
     {
         return ( i < pageList.end () - 1 );
 
