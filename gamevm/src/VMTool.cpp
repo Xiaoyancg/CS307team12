@@ -28,10 +28,12 @@ Core::Game *CreateExampleGame ()
     g->SetAuthor ( std::string ( "example author" ) );
     g->SetVersion ( std::string ( "0.1.0" ) );
     time_t rawtime;
-    struct tm *timeinfo;
+    struct tm *timeinfo = new struct tm();
     time ( &rawtime );
-    timeinfo = localtime ( &rawtime );
-    g->SetLMTime ( std::string ( asctime ( timeinfo ) ) );
+    localtime_s (timeinfo, &rawtime );
+    char c[256];
+    asctime_s(c,256, timeinfo);
+    g->SetLMTime ( std::string ( c ));
     g->SetNote ( std::string ( "example Note" ) );
     // TODO page
     return g;

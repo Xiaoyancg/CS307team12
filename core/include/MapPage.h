@@ -22,7 +22,7 @@ namespace Core
         MapPage::MapPage ( std::string s, Map *map ) : 
             Page (s), mMap ( map )
         {
-            SetBackgroundColor ( 0.1, 0.9, 0.59, 1.0 );
+            SetBackgroundColor ( 0.1f, 0.9f, 0.59f, 1.0f );
         }
 
         // Sets mMap to the map created by the user

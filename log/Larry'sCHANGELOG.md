@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - typo
+- multiple warnings besides the type conversion and void *
 ### Changed
 - typedef name change
 - make glm a library instead of interface to get rid of warnings

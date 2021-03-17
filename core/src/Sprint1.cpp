@@ -21,7 +21,7 @@ namespace Core
         // would be no way to see a difference from a Tile on the map and an Entity
 
         entityPage = game->createPage ( "entityPage" );
-        entityPage->SetBackgroundColor ( 0.1, 0.2, 0.59, 1.0 );
+        entityPage->SetBackgroundColor ( 0.1f, 0.2f, 0.59f, 1.0f );
 
         entityInteractive = 
             entityPage->createEntity ( "interactive", glm::vec2 ( 50, 50 ),

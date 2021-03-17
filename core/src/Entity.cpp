@@ -71,6 +71,7 @@ namespace Core
 
     void Entity::calculateCoords ( glm::vec2 location, glm::vec2 scale )
     {
+        // FIXME: why use int here?
 // Get the distances to the left/right and top/bottom of the entity from the center
         int halfScaleWidth = scale.x / 2;
         int halfScaleHeight = scale.y / 2;
