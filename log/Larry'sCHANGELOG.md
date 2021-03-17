@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - new mockup ui
 - typedef Core::PLitr, Core::PL
 - empty glm.cpp in core/src for glm library
+- Core::RenderTarget class
+- bool Game::editorMode;
 
 ### Fixed
 - typo
@@ -22,9 +24,11 @@ All notable changes to this project will be documented in this file.
 - make glm a library instead of interface to get rid of warnings
 - add comment in CMakeList
 - change the target include rules
+- rename Game::currPage
 
 
 ### Removed
 - __plitr and __pl define in Game.h
+- Core::Game();
 
 
