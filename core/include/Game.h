@@ -33,8 +33,8 @@ namespace Core
         // =========================
         // CONSTRUCTOR
 
-        Game(GLuint *o);
         // Game ();
+        Game(GLuint *o);
         Game(std::string gameName);
         Game(nlohmann::json &json, GLuint *o);
 
@@ -104,9 +104,14 @@ namespace Core
         void sdl_die(const char *err_msg);
         void handleInput(SDL_Event event);
         void render();
+
         // main entry for vm
         void run();
+
+        // clean context after loop end
         void destroy();
+
+        // main game loop
         void mainLoop();
 
     private:
