@@ -18,6 +18,7 @@ namespace Core
     // Set mMapDimensions to new dimensions
     void Map::setDimensions ( glm::vec2 dimensions )
     {
+        // FIXME: type convension
 // setDimensions should copy the map to the new map! right now it just discards the old one
         delete mTileArray;
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
@@ -53,9 +54,10 @@ namespace Core
     // These coordinates do not change often, only in the case of changing dimensions or tile size.
     void Map::setTileCoords ()
     {
-// Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
-// Starting at the top left corner
-// Find the amount of tiles to the left/right and top/bottom (in tiles)
+        // FIXME: type convension
+        // Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
+        // Starting at the top left corner
+        // Find the amount of tiles to the left/right and top/bottom (in tiles)
         int halfXTiles = mMapDimensions.x / 2;
         int halfYTiles = mMapDimensions.y / 2;
 
@@ -127,6 +129,7 @@ namespace Core
 // This will have to take a depth parameter when Tile depth gets implemented
     void Map::setMapTileSpritesFromArray ( int *spriteIDMap )
     {
+        // FIXME: type convension
         mNumTiles = mMapDimensions.x * mMapDimensions.y; // Get the number of tiles in the map
 
         for ( int i = 0; i < mNumTiles; i++ )

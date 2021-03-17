@@ -96,10 +96,12 @@ namespace Core
     void Game::SetLMTime ()
     {
         time_t rawtime;
-        struct tm *timeinfo;
+        struct tm *timeinfo = new struct tm();
         time ( &rawtime );
-        timeinfo = localtime ( &rawtime );
-        this->lMTime = std::string ( asctime ( timeinfo ) );
+        localtime_s ( timeinfo,&rawtime );
+        char c[256];
+        asctime_s(c,256,timeinfo);
+        this->lMTime = std::string ( c ) ;
     }
 
 
@@ -564,6 +566,7 @@ namespace Core
 
         if ( currentPage != nullptr )
         {
+            // TODO: enable bg color
             //glm::vec4 pageColor = currentPage->GetBackgroundColor ();
             //glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
             glClear ( GL_COLOR_BUFFER_BIT );

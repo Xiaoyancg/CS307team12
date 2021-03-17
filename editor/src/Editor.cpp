@@ -214,14 +214,13 @@ static void ShowExampleAppMainMenuBar ()
             // the game view window itself
             ImGui::Begin ( "Game View", &selection[GAMEVIEW] );
 
-            GLuint t = *texcbo;
             ImVec2 dims = ImGui::GetWindowSize ();
 
             glViewport ( 0, 0, game->width, game->height ); // Set viewport to the Game dimensions
 
             game->render (); // Render Game with new viewport size
-            glViewport ( 0, 0, dims.x, dims.y ); // Reset viewport size
-            ImGui::Image ( ( void * ) t, ImVec2 ( dims.x, dims.y ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
+            glViewport ( 0, 0, (int)dims.x, (int)dims.y ); // Reset viewport size
+            ImGui::Image (  (void*)(*texcbo), ImVec2 ( dims.x, dims.y ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
             ImGui::End ();
         }
     }
@@ -248,7 +247,7 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::SameLine ();
             if ( ImGui::Button ( "Delete This Entity" ) )
             {
-                int original = game->getCurrPage()->getEntityList ().size ();
+                size_t original = game->getCurrPage()->getEntityList ().size ();
                 currPage->deleteEntity ( entity_name );
                 if ( currPage->getEntityList ().size () < original )
                 {
@@ -293,7 +292,7 @@ static void ShowExampleAppMainMenuBar ()
             ImGui::SameLine ();
             if ( ImGui::Button ( "Delete This Page" ) )
             {
-                int original = game->getPageList ()->size ();
+                size_t original = game->getPageList ()->size ();
                 game->deletePage ( page_name );
                 if ( game->getPageList ()->size () < original )
                 {
