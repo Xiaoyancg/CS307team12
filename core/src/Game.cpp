@@ -22,10 +22,6 @@ namespace Core
     // =========================
     // CONSTRUCTOR
 
-    Game::Game() : Game("empty")
-    {
-    }
-
     Game::Game(std::string gameName) : gameName(gameName)
     {
         useFramebuffer = false;
@@ -204,7 +200,7 @@ namespace Core
         setCurrentPage(this->pageList.at(0));
         // lack info of ctrlENtity
         // TODO:
-        currentPage->setCtrlEntity(currentPage->getEntityList().at(0));
+        currPage->setCtrlEntity(currPage->getEntityList().at(0));
         return this;
     }
 
@@ -426,7 +422,7 @@ namespace Core
 
     Page *Game::getCurrPage()
     {
-        return this->currentPage;
+        return this->currPage;
     }
 
     Entity *Game::setCurrCtrlEntity(Entity *e)
@@ -442,7 +438,7 @@ namespace Core
     {
         glm::vec2 loc;
         glm::vec2 scale;
-        if (setCurrCtrlEntity(currentPage->getCtrlEntity()) != nullptr)
+        if (setCurrCtrlEntity(currPage->getCtrlEntity()) != nullptr)
         {
             loc = currCtrlEntity->getLocation();
             scale = currCtrlEntity->getScale();
@@ -520,7 +516,7 @@ namespace Core
 
     void Game::setCurrentPage(Page *p)
     {
-        this->currentPage = p;
+        this->currPage = p;
         for (std::vector<Page *>::iterator itr = pageList.begin(); itr < pageList.end(); itr++)
         {
             if (*itr == p)
@@ -540,14 +536,14 @@ namespace Core
         glClearColor(0.1, 0.2, 0.59, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (currentPage != nullptr)
+        if (currPage != nullptr)
         {
             // TODO: enable bg color
-            //glm::vec4 pageColor = currentPage->GetBackgroundColor ();
+            //glm::vec4 pageColor = currPage->GetBackgroundColor ();
             //glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
             glClear(GL_COLOR_BUFFER_BIT);
 
-            currentPage->render();
+            currPage->render();
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
