@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable: 5033)
 #include <glm/glm.hpp>
 #include <Tile.h>
 

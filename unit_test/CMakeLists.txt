@@ -17,6 +17,7 @@ target_include_directories(testlib INTERFACE "include")
 add_library(core_test ${core_srcs} ${core_headers})
 # Add preprocessor definition for testing
 target_compile_definitions(core_test PUBLIC __TEST_CORE)
+target_compile_options(core_test PRIVATE /w)
 target_include_directories(core_test
 	PUBLIC
 		$<BUILD_INTERFACE:${CORE_DIR}/include>
@@ -42,6 +43,7 @@ add_library(editor_test ${editor_srcs} ${editor_headers})
 
 # Add preprocessor definition for testing
 target_compile_definitions(editor_test PUBLIC __TEST_EDITOR)
+target_compile_options(editor_test PRIVATE /w)
 
 target_include_directories(editor_test
 	PUBLIC
@@ -63,7 +65,7 @@ add_custom_command (TARGET editor_test POST_BUILD
 #        GameVM
 
 add_library(gamevm_test ${vm_srcs} ${vm_headers})
-
+target_compile_options(gamevm_test PRIVATE /w)
 # Add preprocessor definition for testing
 target_compile_definitions(gamevm_test PUBLIC __TEST_VM)
 target_include_directories(gamevm_test
@@ -92,7 +94,7 @@ if(WITH_TESTS)
 	file(GLOB test_header "include/*.h")
 
 	add_executable(UnitTest ${test_src} ${test_header})
-
+	target_compile_options(UnitTest PRIVATE /w)
 target_include_directories(UnitTest 
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
