@@ -1,5 +1,7 @@
 # Larry's Changelog
 All notable changes to this project will be documented in this file.
+# TODO:
+- pointer deletion
 # Note:
 - use typedef
 - private class member has prefix m instead of _
@@ -17,12 +19,13 @@ All notable changes to this project will be documented in this file.
 - bool Game::editorMode;
 - string gameName in Editor.cpp 
 - bool isSaved in Editor.cpp
-
+- set isSaved after open/ save
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
 - Editor.cpp save menu item
 - Editor.cpp save as popup
+- Editor openDialog
 ### Changed
 - typedef name change
 - make glm a library instead of interface to get rid of warnings

@@ -464,6 +464,8 @@ static void ShowExampleAppMainMenuBar()
                     {
                         nlohmann::json *content = game->serialize();
                         WriteFile(dir, (content->dump()));
+                        // pointer deletion
+                        delete (content);
                         selection[SAVEPOPUP] = true;
                     }
                     else
@@ -506,6 +508,8 @@ static void ShowExampleAppMainMenuBar()
         dir = std::string(saveDialog.GetSelected().string()).append("//").append(gameName).append(".gdata");
         nlohmann::json *content = game->serialize();
         WriteFile(dir, (content->dump(2)));
+        // pointer deletion
+        delete (content);
         isSaved = true;
         saveDialog.ClearSelected();
         selection[SAVEPOPUP] = true;
@@ -518,12 +522,17 @@ static void ShowExampleAppMainMenuBar()
         //printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
         //std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
         nlohmann::json *j = readGameDataFile(openDialog.GetSelected().string());
+        dir = openDialog.GetSelected().string();
         texcbo = new GLuint();
         glGenTextures(1, texcbo);
         game = new Core::Game(*j, texcbo);
+        // pointer deletion
+        delete (j);
+        gameName = game->getGameName();
         currPage = game->getCurrPage();
         game->initShader();
         selection[GAMEVIEW] = true;
+        isSaved = true;
 
         openDialog.ClearSelected();
     }
