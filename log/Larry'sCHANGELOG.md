@@ -9,11 +9,13 @@ All notable changes to this project will be documented in this file.
 - new class design
 - new mockup ui
 - typedef Core::PLitr, Core::PL
+- empty glm.cpp in core/src for glm library
 
 ### Fixed
 - typo
 ### Changed
 - typedef name change
+- make glm a library instead of interface to get rid of warnings
 
 
 ### Removed

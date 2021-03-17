@@ -7,6 +7,7 @@
 #include <SDL.h>
 #include <glad/glad.h>
 #include <glm/core/type_mat.hpp>
+
 #include <nlohmann/json.hpp>
 #include <iterator>
 #include <Entity.h>
