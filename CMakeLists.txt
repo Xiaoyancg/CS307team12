@@ -1,3 +1,4 @@
+# Root CMAKELIST
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -5,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 project(Parchment VERSION 0.1 LANGUAGES CXX)
 
 #set(CMAKE_CXX_FLAGS_T "${CMAKE_CXX_FLAGS}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /IGNORE:4005")
+
 #if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
 #	string(REGEX REPLACE "/W[0-4]" "/w" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")	
 #else()
@@ -55,14 +58,15 @@ target_include_directories(imgui
 )
 
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
-#add_library(glmitr INTERFACE)
-#target_include_directories(glmitr INTERFACE ${GLM_DIR})
+add_library(glm INTERFACE)
+target_include_directories(glm INTERFACE ${GLM_DIR})
 
-file(GLOB glm_srcs "${GLM_DIR}/glm/*.hpp" "${GLM_DIR}/glm/core/*.hpp" "${GLM_DIR}/glm/core/*.inl")
-file(GLOB glm_srcs_empty "${PROJECT_SOURCE_DIR}/core/src/glm.cpp")
-add_library(glm ${glm_srcs} ${glm_srcs_empty})
-set_target_properties(glm PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(glm PUBLIC ${GLM_DIR})
+#file(GLOB glm_srcs "${GLM_DIR}/glm/*.hpp" "${GLM_DIR}/glm/core/*.hpp" "${GLM_DIR}/glm/core/*.inl")
+#file(GLOB glm_srcs_empty "${PROJECT_SOURCE_DIR}/core/src/glm.cpp")
+#add_library(glm ${glm_srcs} ${glm_srcs_empty})
+#target_compile_options(glm PRIVATE /w)
+#set_target_properties(glm PROPERTIES LINKER_LANGUAGE CXX)
+#target_include_directories(glm SYSTEM PUBLIC ${GLM_DIR})
 
 
 set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
