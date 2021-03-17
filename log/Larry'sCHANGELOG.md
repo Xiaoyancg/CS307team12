@@ -13,12 +13,16 @@ All notable changes to this project will be documented in this file.
 - new mockup ui
 - typedef Core::PLitr, Core::PL
 - empty glm.cpp in core/src for glm library
-- Core::RenderTarget class
+- Core::RenderTarget class not in use rn
 - bool Game::editorMode;
+- string gameName in Editor.cpp 
+- bool isSaved in Editor.cpp
 
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
+- Editor.cpp save menu item
+- Editor.cpp save as popup
 ### Changed
 - typedef name change
 - make glm a library instead of interface to get rid of warnings
