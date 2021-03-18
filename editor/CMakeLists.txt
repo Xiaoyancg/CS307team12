@@ -1,20 +1,14 @@
+# editor
 file(GLOB srcs "src/*.cpp")
-file(GLOB header "include/*.h")
+file(GLOB headers "include/*.h")
 
-add_library(editorlib ${srcs} ${header} )
-
-target_link_libraries(editorlib corelib gamevmlib sdlmain imfb sdl imgui)
-
-target_include_directories(editorlib
-	PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-		$<INSTALL_INTERFACE:include>
-	PRIVATE
-		${CMAKE_CURRENT_SOURCE_DIR}/src
-)
+add_library(editorlib ${srcs} ${headers} )
+#target_compile_options(editorlib PRIVATE /w)
+target_include_directories(editorlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(editorlib corelib gamevmlib sdlmain imfb sdl imgui glm)
 
 add_executable(editor "EditorMain.cpp")
-
+#target_compile_options( editor PRIVATE /w )
 target_link_libraries(editor editorlib)
 
 add_custom_command (TARGET editor POST_BUILD

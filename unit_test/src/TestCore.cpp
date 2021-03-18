@@ -8,62 +8,59 @@ unsigned int coreError = 1;
 unsigned int entityError = 1;
 bool enableTest = true;
 
-
-TEST ( PRODUCE_GDATA, s1 )
+TEST(PRODUCE_GDATA, s1)
 {
-    Core::Game *game = Core::s1Game ();
-    WriteFile ( "s1game.gdata", game->serialize ()->dump ( 2 ) );
+    Core::Game *game = Core::s1Game();
+    WriteFile("s1game.gdata", game->serialize()->dump(2));
 }
-TEST ( TEST_CORE, game )
+TEST(TEST_CORE, game)
 {
     int argc = 2;
     char *argv[2];
     argv[0] = "core";
     argv[1] = "test";
-    Core::Game g;
+    Core::Game g("test");
     //g.coreMain ( argc, argv );
-    EXPECT_EQ ( coreError, GL_NO_ERROR );
+    EXPECT_EQ(coreError, GL_NO_ERROR);
 }
 
-TEST ( TEST_CORE, page )
+TEST(TEST_CORE, page)
 {
     int argc = 2;
     char *argv[2];
     argv[0] = "core";
     argv[1] = "test";
-    Core::Game g;
+    Core::Game g("test");
     //g.coreMain ( argc, argv );
-    EXPECT_EQ ( pageError, GL_NO_ERROR );
+    EXPECT_EQ(pageError, GL_NO_ERROR);
 }
 
-
-TEST ( TEST_CORE, entity )
+TEST(TEST_CORE, entity)
 {
     int argc = 2;
     char *argv[2];
     argv[0] = "core";
     argv[1] = "test";
-    Core::Game g;
+    Core::Game g("test");
     //g.coreMain ( argc, argv );
-    EXPECT_EQ ( entityError, GL_NO_ERROR );
+    EXPECT_EQ(entityError, GL_NO_ERROR);
 }
 
-
-TEST ( TEST_GAME, Game_SetgetName )
+TEST(TEST_GAME, Game_SetgetName)
 {
-    Core::Game g ( "hello" );
-    std::string s ( g.getGameName () );
-    EXPECT_TRUE ( !s.compare ( "hello" ) );
+    Core::Game g("hello");
+    std::string s(g.getGameName());
+    EXPECT_TRUE(!s.compare("hello"));
 }
-TEST ( TEMPTEST, supertemp )
+TEST(TEMPTEST, supertemp)
 {
-    Core::Game g ( "wulala" );
-    g.init ();
-    g.initShader ();
+    Core::Game g("wulala");
+    g.init();
+    g.initShader();
     //g.s1test ();
-    json * j = g.serialize ();
+    json *j = g.serialize();
 
-    WriteFile ( "wulala.gdata", j->dump ( 2 ) );
+    WriteFile("wulala.gdata", j->dump(2));
 }
 //TEST ( TEST_CORE, Serialize )
 //{
@@ -76,7 +73,7 @@ TEST ( TEMPTEST, supertemp )
 //    Core::Page* page = new Core::Page;
 //    page->setName("test_pageName");
 //    page->SetBackgroundColor(0.1, 0.2, 0.3, 0.4);
-//    
+//
 //    Core::Entity* entity = new Core::Entity("test_entityName");
 //    entity->setLocation(glm::vec2(0.1, 0.2));
 //    entity->setScale(glm::vec2(0.3, 0.4));
@@ -165,4 +162,3 @@ TEST ( TEMPTEST, supertemp )
 //    EXPECT_EQ(entities[0]->getScale(), glm::vec2(1.0, 2.0));
 //    EXPECT_EQ(entities[0]->getRotation(), 1.0);
 //}
-

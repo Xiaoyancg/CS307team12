@@ -1,12 +1,11 @@
 #pragma once
-
+#pragma warning(disable: 5033)
 #include <cstdio>
 #include <string>
 #include <vector>
 
 #include <SDL.h>
 #include <glad/glad.h>
-#include <glm/core/type_mat.hpp>
 #include <nlohmann/json.hpp>
 #include <iterator>
 #include <Entity.h>
@@ -64,7 +63,7 @@ namespace Core
 
 
     protected:
-        // the eneity that bind to keys of current page
+        // the entity that bind to keys of current page
         Entity *ctrlEntity;
         std::string name;
         glm::vec4 backgroundColor;
