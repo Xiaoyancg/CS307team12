@@ -5,6 +5,7 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glad/glad.h>
 #include <iostream>
+#include <algorithm>
 #include <MapPage.h>
 
 #ifdef __TEST_CORE
@@ -141,6 +142,9 @@ namespace Core
 
     void Game::deletePage(Page *dp)
     {
+        // TODO Use something like:
+        // std::vector<Page*>::iterator ptr = find(pageList.begin(), pageList.end(), dp);
+        // if (ptr != pageList.end())  
         for (std::vector<Page *>::iterator ptr = pageList.begin();
              ptr != pageList.end();
              ptr++)
@@ -253,29 +257,28 @@ namespace Core
 
         // Source for the vertex shader
         const char *vertexSource = R"glsl(
-		#version 330 core
+		    #version 330 core
 
-		layout (location = 0) in vec2 pos;
-		uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
+		    layout (location = 0) in vec2 pos;
+		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
 
-		void main()
-		{
-		  gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
-		}
-	)glsl";
+		    void main()
+		    {
+		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
+		    }
+	    )glsl";
 
         // Source for the fragment shader
         const char *fragmentSource = R"glsl(
-		// fragment shader
-		#version 330 core
+		    #version 330 core
 
-		out vec4 FragColor;
+		    out vec4 FragColor;
 
-		void main()
-		{
-		  FragColor = vec4(1.0,1.0,1.0,1.0);
-		}
-	)glsl";
+		    void main()
+		    {
+		      FragColor = vec4(1.0,1.0,1.0,1.0);
+		    }
+	    )glsl";
 
         // Create vertex and fragment shaders
         GLuint vertexShaderID, fragmentShaderID;
