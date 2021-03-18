@@ -9,7 +9,7 @@ namespace Core
         mMapDimensions ( dimensions ),
         mTileSize ( tileSize )
     {
-// Create map 
+        // Create map 
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
         mTileArray = new Tile[mNumTiles];
         setTileCoords ();
@@ -19,7 +19,7 @@ namespace Core
     void Map::setDimensions ( glm::vec2 dimensions )
     {
         // FIXME: type convension
-// setDimensions should copy the map to the new map! right now it just discards the old one
+        // setDimensions should copy the map to the new map! right now it just discards the old one
         delete mTileArray;
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
         Tile *newMap = new Tile[mNumTiles];
@@ -126,7 +126,7 @@ namespace Core
 
     // Takes a pointer to an array of integers, containing the spriteID for each tile in the Map
     // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS Map::mMapDimensions
-// This will have to take a depth parameter when Tile depth gets implemented
+    // This will have to take a depth parameter when Tile depth gets implemented
     void Map::setMapTileSpritesFromArray ( int *spriteIDMap )
     {
         // FIXME: type convension

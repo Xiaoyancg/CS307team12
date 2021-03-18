@@ -2,13 +2,13 @@
 file(GLOB srcs "src/*.cpp")
 file(GLOB headers "include/*.h")
 
-add_library(corelib ${srcs} ${headers} )
+add_library(corelib ${srcs} ${headers}  "src/Sprite.cpp" "src/SpriteManager.cpp")
 #target_compile_options( corelib PRIVATE /w)
 target_include_directories(corelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(corelib sdl glad sdlmain imgui nlohmann_json::nlohmann_json glm )
 
-add_executable(core "CoreMain.cpp" ${srcs} ${headers} )
+add_executable(core "CoreMain.cpp" ${srcs} ${headers}  "src/Sprite.cpp" "src/SpriteManager.cpp")
 
 target_compile_options(core PRIVATE /w)
 target_include_directories(core
