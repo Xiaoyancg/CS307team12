@@ -176,6 +176,16 @@ namespace Core
         }
     }
 
+    int Game::createSprite(std::string filename) {
+        return mGameSprites.createSprite(filename);
+    }
+    void Game::deleteSprite(int id) {
+        mGameSprites.deleteSprite(id);
+    }
+    Sprite* Game::getSpriteFromID(int id) {
+        return mGameSprites.atID(id);
+    }
+
     // =========================
     // UTILITY OPERATION
 

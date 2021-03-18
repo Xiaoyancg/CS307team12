@@ -5,15 +5,24 @@ namespace Core
 	// Creates a new sprite at the correct location in mSprites 
 	int SpriteManager::createSprite(std::string filename) {
 		int id = mCurrSpriteID;
-		printf("with ID %d... ", id);
 		this->mSprites[id] = new Sprite(filename);
 		this->mCurrSpriteID++; // Increment the sprite ID so no sprite gets a duplicate ID
-		return id;
+		//printSprites();
+		return id; // Return ID of the new sprite
 	}
 
 	void SpriteManager::deleteSprite(int spriteID) {
 		delete this->mSprites[spriteID];
 		mSprites.erase(spriteID);
+		//printSprites();
+	}
+
+	// Private function used for debugging
+	void SpriteManager::printSprites() {
+		printf("SPRITES:\n");
+		for (const auto& [key, value] : mSprites) {
+			printf(" > ID: %d, %p\n", key, value);
+		}
 	}
 
 	// This may never be used, but if you need the whole list of sprites here it is!
@@ -24,7 +33,6 @@ namespace Core
 		return this->mSprites;
 	}
 	*/
-
 
 	// Returns to a pointer to the sprite with the requested ID
 	Sprite* SpriteManager::atID(int spriteID) {

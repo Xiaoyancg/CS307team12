@@ -4,7 +4,6 @@ namespace Core
 {
 	Sprite::Sprite(std::string filename) {
 		loadImageFromFilename(filename);
-		printf("Creating sprite from: %s\n", filename.c_str());
 	}
 
 	unsigned char* Sprite::getImageData() {
