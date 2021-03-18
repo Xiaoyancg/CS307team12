@@ -14,6 +14,7 @@
 #include "Page.h"
 #include "Entity.h"
 #include "MapPage.h"
+#include "SpriteManager.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator

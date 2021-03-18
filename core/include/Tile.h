@@ -24,7 +24,7 @@ namespace Core
 			return mSpriteID;
 		}
 
-		void setCoords ( int *coords );
+		void setCoords ( int *coords ); // coords points to an array of 8 ints, 4 pairs of coordinates
 		int *getCoords ();
 
 
