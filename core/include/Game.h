@@ -31,6 +31,8 @@ namespace Core
         static int width;
         static int height;
 
+        SpriteManager gameSprites;
+
         // =========================
         // CONSTRUCTOR
 

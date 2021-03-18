@@ -11,7 +11,10 @@ namespace Core
 	public:
 		Sprite(std::string filename);
 
+		unsigned char* getImageData();
+
 	private:
+		// Loads image in 'filename' into mImageData 
 		void loadImageFromFilename(std::string filename);
 
 		// This is where the image data will be stored (PAR-159)
