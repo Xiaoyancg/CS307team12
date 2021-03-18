@@ -1,8 +1,21 @@
+# Root CMAKELIST
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 project(Parchment VERSION 0.1 LANGUAGES CXX)
+
+#set(CMAKE_CXX_FLAGS_T "${CMAKE_CXX_FLAGS}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /IGNORE:4005")
+
+#if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+#	string(REGEX REPLACE "/W[0-4]" "/w" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")	
+#else()
+#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
+#endif(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+	
+
+message("${CMAKE_CXX_FLAGS}")
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   message(
@@ -11,14 +24,15 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   )
 endif()
 
-option(WITH_TESTS "Build tests" ON)
 
+option(WITH_TESTS "Build tests" ON)
 if(WITH_TESTS)
 	enable_testing()
 	include(GoogleTest)
 	set(gtest_force_shared_crt ON)
 	add_subdirectory(lib/googletest)
 endif()
+
 
 set(SDL_DIR "${PROJECT_SOURCE_DIR}/lib/SDL")
 add_library(sdl SHARED IMPORTED)
@@ -47,6 +61,14 @@ set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE ${GLM_DIR})
 
+#file(GLOB glm_srcs "${GLM_DIR}/glm/*.hpp" "${GLM_DIR}/glm/core/*.hpp" "${GLM_DIR}/glm/core/*.inl")
+#file(GLOB glm_srcs_empty "${PROJECT_SOURCE_DIR}/core/src/glm.cpp")
+#add_library(glm ${glm_srcs} ${glm_srcs_empty})
+#target_compile_options(glm PRIVATE /w)
+#set_target_properties(glm PROPERTIES LINKER_LANGUAGE CXX)
+#target_include_directories(glm SYSTEM PUBLIC ${GLM_DIR})
+
+
 set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
 add_library(imfb INTERFACE)
 target_include_directories(imfb INTERFACE ${IMFB_DIR})
@@ -57,8 +79,14 @@ target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
 add_subdirectory(lib/json)
 
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_T}")
+#message("${CMAKE_CXX_FLAGS}")
 
 add_subdirectory(core)
 add_subdirectory(gamevm)
 add_subdirectory(editor)
 add_subdirectory(unit_test)
+
+# practice
+add_subdirectory(practice/Demo_of_ImGui)
+add_subdirectory(practice/Demo_of_ImGui_Docking)

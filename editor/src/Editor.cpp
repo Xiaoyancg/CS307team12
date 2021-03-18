@@ -5,81 +5,99 @@
 #include <TestEditor.h>
 #endif // __TEST_EDITOR
 
-static void ShowExampleAppMainMenuBar ();
+static void ShowExampleAppMainMenuBar();
 bool running = true;
 ImGui::FileBrowser saveDialog;
 ImGui::FileBrowser openDialog;
 ImGui::FileBrowser delDialog;
 
+// ====================================
+// Global Variable
+
 // bool array to track the selections made on main menu bar
 static bool selection[COUNT];
 
-GLuint *texcbo;
+// main texture color buffer object
+GLuint *texcbo = nullptr;
+
+// Game object
 Core::Game *game = nullptr;
-Core::Page *currPage;
-std::string dir;
-int EditorMain ( int argc, char *argv[] )
+
+// Current page pointer
+Core::Page *currPage = nullptr;
+
+// project directory
+std::string dir = "";
+
+// Game Name
+std::string gameName = "empty";
+
+// is game saved before (for save)
+bool isSaved = false;
+
+// ===============================
+// Main function
+
+int EditorMain(int argc, char *argv[])
 {
     // Set Up SDL2
-    SDL_Init ( SDL_INIT_VIDEO );
+    SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_FLAGS, 0 );
-    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-    SDL_GL_SetAttribute ( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
     // opengl buffer details
-    SDL_GL_SetAttribute ( SDL_GL_DOUBLEBUFFER, 1 );
-    SDL_GL_SetAttribute ( SDL_GL_DEPTH_SIZE, 24 );
-    SDL_GL_SetAttribute ( SDL_GL_STENCIL_SIZE, 8 );
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
 
     // Create window with graphics context
     // sdl windows flags (attributes)
     SDL_WindowFlags window_flags =
-        ( SDL_WindowFlags ) ( SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI );
+        (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI);
     // create a window for opengl. opengl can't create a window. we use sdl to create window
-    SDL_Window *window = SDL_CreateWindow (
+    SDL_Window *window = SDL_CreateWindow(
         "Parchment",                                    // Main Window Title
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
         1280, 720,                                      // CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
         window_flags                                    // flags of sdl windows
     );
     // create a gl context for further rendering in the window(should be a opengl sdl window). and make it current
-    SDL_GLContext gl_context = SDL_GL_CreateContext ( window );
+    SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     // set up the opengl context for rendering in to an opengl window
-    SDL_GL_MakeCurrent ( window, gl_context );
+    SDL_GL_MakeCurrent(window, gl_context);
 
 #ifdef __TEST_EDITOR
-    SDLInitError = std::string ( SDL_GetError () );
+    SDLInitError = std::string(SDL_GetError());
 #endif // __TEST_EDITOR
-
 
     // init opengl loader
-    gladLoadGL ();
+    gladLoadGL();
 
 #ifdef __TEST_EDITOR
-    OpenGLInitError = glGetError ();
+    OpenGLInitError = glGetError();
 #endif // __TEST_EDITOR
 
-
     // Setup Dear Imgui context
-    IMGUI_CHECKVERSION ();
+    IMGUI_CHECKVERSION();
     // can't find document of ImGui::CreateContext. Just use it anyway
-    ImGui::CreateContext ();
+    ImGui::CreateContext();
     // ImGuiIO: Communicate most settings and inputs/outputs to Dear ImGui using this structure.
-    ImGuiIO &io = ImGui::GetIO ();
+    ImGuiIO &io = ImGui::GetIO();
     io.WantCaptureMouse = true;
     io.WantCaptureKeyboard = true;
     io.ConfigWindowsResizeFromEdges = true;
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark (); // alternative: Classic
+    ImGui::StyleColorsDark(); // alternative: Classic
 
     // Setup Platform/Renderer backends
     // these two functions are from imgui_impl_*.h it's in the backend folder in imgui-master
-    ImGui_ImplSDL2_InitForOpenGL ( window, gl_context );
-    ImGui_ImplOpenGL3_Init ();
+    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+    ImGui_ImplOpenGL3_Init();
 
     bool showDemoWindow = false;
     // clear color, opengl use clear color to clear the context for the next drawing
@@ -87,101 +105,95 @@ int EditorMain ( int argc, char *argv[] )
     // Also, for the convenience, we use the vector class from ImGui. ImVec4.
     // clear_color is a RGBA color, Red Green Blue and alpha. read more:https://en.wikipedia.org/wiki/RGBA_color_model
     // Every color in opengl stored as vector. can be vec3 or vec4.
-    ImVec4 clear_color = ImVec4 ( 0.45f, 0.55f, 0.60f, 1.00f );
-
-    
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // set the default game view window state to open
-//    selection[GAMEVIEW] = true;
+    //    selection[GAMEVIEW] = true;
 
-
-    while ( running )
+    while (running)
     {
         SDL_Event evt;
-        while ( SDL_PollEvent ( &evt ) )
+        while (SDL_PollEvent(&evt))
         {
-            ImGui_ImplSDL2_ProcessEvent ( &evt );
-            if ( evt.type == SDL_QUIT )
+            ImGui_ImplSDL2_ProcessEvent(&evt);
+            if (evt.type == SDL_QUIT)
             {
                 running = false;
             }
-            if ( evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID ( window ) )
+            if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID(window))
             {
                 running = false;
             }
-            if ( evt.type == SDL_KEYDOWN )
+            if (evt.type == SDL_KEYDOWN)
             {
-                if ( game != nullptr )
+                if (game != nullptr)
                 {
-                    game->handleInput ( evt );
+                    game->handleInput(evt);
                 }
             }
         }
         // Draw ImGui windows
         // Start the dear Imgui frame
-        ImGui_ImplOpenGL3_NewFrame ();
-        ImGui_ImplSDL2_NewFrame ( window );
-        ImGui::NewFrame ();
-        if ( !showDemoWindow )
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame(window);
+        ImGui::NewFrame();
+        if (!showDemoWindow)
         {
             // test main menu bar
-            ShowExampleAppMainMenuBar ();
+            ShowExampleAppMainMenuBar();
         }
 
-
-        if ( showDemoWindow )
+        if (showDemoWindow)
         {
-            ImGui::ShowDemoWindow ( &showDemoWindow );
+            ImGui::ShowDemoWindow(&showDemoWindow);
         }
 
         // this command does not render that imgui window, we need to use opengl to render imgui
-        ImGui::Render ();
+        ImGui::Render();
         // render the ImGui windows
-        glViewport ( 0, 0, ( int ) io.DisplaySize.x, ( int ) io.DisplaySize.y );
+        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         // use the clear color we passed to opengl before to clear the context
-        glClearColor ( clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w );
-        glClear ( GL_COLOR_BUFFER_BIT );
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT);
         // use opengl to render the imgui window
-        ImGui_ImplOpenGL3_RenderDrawData ( ImGui::GetDrawData () );
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // Update and Render additional Platform Windows
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
-            SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+            SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
             SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
             SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
         }
         // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
-        SDL_GL_SwapWindow ( window );
+        SDL_GL_SwapWindow(window);
 
 #ifdef __TEST_EDITOR
-        if ( dobreak )  running = false;
+        if (dobreak)
+            running = false;
 #endif // __TEST_EDITOR
-
     }
 
     // IMGUI Clean Up
-    ImGui_ImplOpenGL3_Shutdown ();
-    ImGui_ImplSDL2_Shutdown ();
-    ImGui::DestroyContext ();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
 
     // SDL Clean Up
-    SDL_GL_DeleteContext ( gl_context );
-    SDL_DestroyWindow ( window );
-    SDL_Quit ();
+    SDL_GL_DeleteContext(gl_context);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     return 0;
 }
 
-
-static void ShowExampleAppMainMenuBar ()
+static void ShowExampleAppMainMenuBar()
 {
 #ifdef __TEST_EDITOR
     selection[SAVEAS] = true;
 #endif // __TEST_EDITOR
-
 
     //deletion flag if an entity, map, or page is deleted
     bool delete_success = false;
@@ -193,189 +205,185 @@ static void ShowExampleAppMainMenuBar ()
      */
 
     // open save as popup
-    if ( selection[SAVEAS] )
+    if (selection[SAVEAS])
     {
-        ImGui::OpenPopup ( "Save As" );
+        ImGui::OpenPopup("Save As");
 #ifdef __TEST_EDITOR
-        isSaveAsOpen = ImGui::IsPopupOpen ( "Save As" );
+        isSaveAsOpen = ImGui::IsPopupOpen("Save As");
 #endif // __TEST_EDITOR
         selection[SAVEAS] = false;
     }
 
     // Game view
-    if ( selection[GAMEVIEW] )
+    if (selection[GAMEVIEW])
     {
         // possibly implement a new function here for readability purposes
-        if ( game != nullptr )
+        if (game != nullptr)
         {
-        // set the windows default size
-            ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+            // set the windows default size
+            ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
             // the game view window itself
-            ImGui::Begin ( "Game View", &selection[GAMEVIEW] );
+            ImGui::Begin("Game View", &selection[GAMEVIEW]);
 
-            GLuint t = *texcbo;
-            ImVec2 dims = ImGui::GetWindowSize ();
+            ImVec2 dims = ImGui::GetWindowSize();
 
-            glViewport ( 0, 0, game->width, game->height ); // Set viewport to the Game dimensions
+            glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
 
-            game->render (); // Render Game with new viewport size
-            glViewport ( 0, 0, dims.x, dims.y ); // Reset viewport size
-            ImGui::Image ( ( void * ) t, ImVec2 ( dims.x, dims.y ), ImVec2 ( 0, 1 ), ImVec2 ( 1, 0 ) );
-            ImGui::End ();
+            game->render();                             // Render Game with new viewport size
+            glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
+            ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::End();
         }
     }
 
     // Entity editor
-    if ( selection[ENTITYEDITOR] )
+    if (selection[ENTITYEDITOR])
     {
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         static char entity_name[128] = "";
         bool entity_info = false;
-        if ( ImGui::Begin ( "Entity Editor", &selection[ENTITYEDITOR] ) )
+        if (ImGui::Begin("Entity Editor", &selection[ENTITYEDITOR]))
         {
-            ImGui::InputText ( "", entity_name, IM_ARRAYSIZE ( entity_name ) );
-            if ( ImGui::Button ( "Create New Entity" ) )
+            ImGui::InputText("", entity_name, IM_ARRAYSIZE(entity_name));
+            if (ImGui::Button("Create New Entity"))
             {
-                currPage->createEntity ( entity_name );
+                currPage->createEntity(entity_name);
                 // memset to clear the buffer after use
-                memset ( entity_name, 0, 128 );
+                memset(entity_name, 0, 128);
             }
-            ImGui::SameLine ();
-            if ( ImGui::Button ( "Delete This Entity" ) )
+            ImGui::SameLine();
+            if (ImGui::Button("Delete This Entity"))
             {
-                int original = game->getCurrPage()->getEntityList ().size ();
-                currPage->deleteEntity ( entity_name );
-                if ( currPage->getEntityList ().size () < original )
+                size_t original = game->getCurrPage()->getEntityList().size();
+                currPage->deleteEntity(entity_name);
+                if (currPage->getEntityList().size() < original)
                 {
                     delete_success = true;
                     // memset to clear the buffer after use
-                    memset ( entity_name, 0, 128 );
+                    memset(entity_name, 0, 128);
                 }
             }
-            if ( ImGui::Button ( "Show Entity Information" ) )
+            if (ImGui::Button("Show Entity Information"))
             {
                 entity_info = true;
             }
-            ImGui::End ();
+            ImGui::End();
         }
 
-        if ( entity_info )
+        if (entity_info)
         {
-            ImGui::OpenPopup ( "Entity Information" );
+            ImGui::OpenPopup("Entity Information");
             entity_info = false;
         }
     }
 
     // Page editor
-    if ( selection[PAGEEDITOR] )
+    if (selection[PAGEEDITOR])
     {
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         static char page_name[128] = "";
         bool page_info = false;
-        if ( ImGui::Begin ( "Page Editor", &selection[PAGEEDITOR] ) )
+        if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
-            ImGui::InputText ( "", page_name, IM_ARRAYSIZE ( page_name ) );
-            if ( ImGui::Button ( "Create This Page" ) )
+            ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
+            if (ImGui::Button("Create This Page"))
             {
-                game->createPage ( page_name );
+                game->createPage(page_name);
                 // memset to clear the buffer after use
-                memset ( page_name, 0, 128 );
+                memset(page_name, 0, 128);
             }
-            ImGui::SameLine ();
-            if ( ImGui::Button ( "Delete This Page" ) )
+            ImGui::SameLine();
+            if (ImGui::Button("Delete This Page"))
             {
-                int original = game->getPageList ()->size ();
-                game->deletePage ( page_name );
-                if ( game->getPageList ()->size () < original )
+                size_t original = game->getPageList()->size();
+                game->deletePage(page_name);
+                if (game->getPageList()->size() < original)
                 {
                     delete_success = true;
                     // memset to clear the buffer after use
-                    memset ( page_name, 0, 128 );
+                    memset(page_name, 0, 128);
                 }
             }
-            if ( ImGui::Button ( "Show Page Information" ) )
+            if (ImGui::Button("Show Page Information"))
             {
                 page_info = true;
-                ImGui::OpenPopup ( "Page Information" );
+                ImGui::OpenPopup("Page Information");
             }
-            ImGui::End ();
+            ImGui::End();
         }
 
-        if ( page_info )
+        if (page_info)
         {
-            ImGui::OpenPopup ( "Page Information" );
+            ImGui::OpenPopup("Page Information");
             page_info = false;
         }
 
-        if ( ImGui::BeginPopup ( "Page Information" ) )
+        if (ImGui::BeginPopup("Page Information"))
         {
-            ImGui::Text ( "Page Name:" );
-            ImGui::SameLine ();
-            ImGui::Text ( currPage->getName ().c_str () );
-            std::vector <Core::Page *> plist = *game->getPageList ();
-            ImGui::Text ( "Page Names: " );
-            for ( Core::Page *p : plist )
+            ImGui::Text("Page Name:");
+            ImGui::SameLine();
+            ImGui::Text(currPage->getName().c_str());
+            std::vector<Core::Page *> plist = *game->getPageList();
+            ImGui::Text("Page Names: ");
+            for (Core::Page *p : plist)
             {
-                ImGui::Text ( p->getName ().c_str () );
+                ImGui::Text(p->getName().c_str());
             }
-            ImGui::EndPopup ();
+            ImGui::EndPopup();
         }
     }
 
     // Map editor
     static char map_name[128] = "";
     bool map_info = false;
-    if ( selection[MAPEDITOR] )
+    if (selection[MAPEDITOR])
     {
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize ( ImVec2 ( 200, 200 ), ImGuiCond_FirstUseEver );
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         // map editor
-        if ( ImGui::Begin ( "Map Editor", &selection[MAPEDITOR] ) )
+        if (ImGui::Begin("Map Editor", &selection[MAPEDITOR]))
         {
-            if ( ImGui::Button ( "Create New Map" ) )
+            if (ImGui::Button("Create New Map"))
             {
-                game->createMapPage ( map_name );
+                game->createMapPage(map_name);
                 // memset to clear the buffer after use
-                memset ( map_name, 0, 128 );
+                memset(map_name, 0, 128);
             }
-            if ( ImGui::Button ( "Delete This Map" ) )
+            if (ImGui::Button("Delete This Map"))
             {
-
             }
-            if ( ImGui::Button ( "Show Map Information " ) )
+            if (ImGui::Button("Show Map Information "))
             {
-
             }
-            ImGui::End ();
+            ImGui::End();
         }
     }
 
     // Calls saved successfully popup on project save
-    if ( selection[SAVEPOPUP] )
+    if (selection[SAVEPOPUP])
     {
-        ImGui::OpenPopup ( "Saved Successfully" );
+        ImGui::OpenPopup("Saved Successfully");
         selection[SAVEPOPUP] = false;
     }
 
     // Calls delete successfully popup on successful project deletion
-    if ( selection[DELETEPOPUP] )
+    if (selection[DELETEPOPUP])
     {
-        ImGui::OpenPopup ( "Deleted Successfully" );
+        ImGui::OpenPopup("Deleted Successfully");
         selection[DELETEPOPUP] = false;
     }
-
 
     /*
      *  ========================
@@ -383,22 +391,20 @@ static void ShowExampleAppMainMenuBar ()
      *  ========================
      */
 
-
     // Open delete project popup
-    if ( selection[DELETEPROJECT] )
+    if (selection[DELETEPROJECT])
     {
-        ImGui::OpenPopup ( "Delete Successful" );
-        ImGui::OpenPopup ( "Delete Project" );
+        ImGui::OpenPopup("Delete Successful");
+        ImGui::OpenPopup("Delete Project");
         selection[DELETEPROJECT] = false;
     }
 
     // Open delete element popup
-    if ( delete_success )
+    if (delete_success)
     {
-        ImGui::OpenPopup ( "Delete Successful" );
+        ImGui::OpenPopup("Delete Successful");
         delete_success = false;
     }
-
 
     /*
      *  ========================
@@ -406,34 +412,32 @@ static void ShowExampleAppMainMenuBar ()
      *  ========================
      */
 
-
     // main menu bar code
-    if ( ImGui::BeginMainMenuBar () )
+    if (ImGui::BeginMainMenuBar())
     {
         // File menu
-        if ( ImGui::BeginMenu ( "File" ) )
+        if (ImGui::BeginMenu("File"))
         {
-            if ( ImGui::MenuItem ( "New Project" ) )
+            if (ImGui::MenuItem("New Project"))
             {
-                texcbo = new GLuint ();
-                glGenTextures ( 1, texcbo );
-                game = new Core::Game ( texcbo );
-                currPage = game->getCurrPage ();
-                game->initShader ();
+                texcbo = new GLuint();
+                glGenTextures(1, texcbo);
+                game = new Core::Game(texcbo);
+                currPage = game->getCurrPage();
+                game->initShader();
                 selection[GAMEVIEW] = true;
                 // When user new project, it won't save
                 // User should call save manually
                 // selection[SAVEAS] = true;
             }
-            if ( ImGui::MenuItem ( "Open Project" ) )
+            if (ImGui::MenuItem("Open Project"))
             {
                 openDialog = ImGui::FileBrowser(
-                    ImGuiFileBrowserFlags_NoTitleBar
-                );
-                openDialog.SetTypeFilters({ ".gdata" });
-                openDialog.Open ();
+                    ImGuiFileBrowserFlags_NoTitleBar);
+                openDialog.SetTypeFilters({".gdata"});
+                openDialog.Open();
             }
-            if ( ImGui::MenuItem ( "Delete Project" ) )
+            if (ImGui::MenuItem("Delete Project"))
             {
                 selection[DELETEPROJECT] = true;
             }
@@ -443,9 +447,11 @@ static void ShowExampleAppMainMenuBar ()
                 // not yet implemented as of sprint 1
             }*/
 
-            if ( game != nullptr )
+            // Can't save empty game
+            // save button can be grey in the future ( no need to implement)
+            if (game != nullptr)
             {
-                if ( ImGui::MenuItem ( "Save" ) )
+                if (ImGui::MenuItem("Save"))
                 {
                     /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
                     if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
@@ -454,30 +460,38 @@ static void ShowExampleAppMainMenuBar ()
                     same name & directory as before. right now if they click SAVE the project saves
                     with a placeholder name/directory.
                     */
-                    nlohmann::json *content = game->serialize ();
-                    WriteFile ( "New Game Project", ( content->dump () ) );
-                    selection[SAVEPOPUP] = true;
+                    if (isSaved)
+                    {
+                        nlohmann::json *content = game->serialize();
+                        WriteFile(dir, (content->dump()));
+                        // pointer deletion
+                        delete (content);
+                        selection[SAVEPOPUP] = true;
+                    }
+                    else
+                    {
+                        ImGui::OpenPopup("Save As");
+                    }
                 }
-                if ( ImGui::MenuItem ( "Save As" ) )
+                if (ImGui::MenuItem("Save As"))
                 {
                     selection[SAVEAS] = true;
                 }
             }
-            ImGui::EndMenu ();
+            ImGui::EndMenu();
         }
 
         // Add menu
-        if ( ImGui::BeginMenu ( "View" ) )
+        if (ImGui::BeginMenu("View"))
         {
-            ImGui::MenuItem ( "Game View", "", &selection[GAMEVIEW] );
-            ImGui::MenuItem ( "Entity Editor", "", &selection[ENTITYEDITOR] );
-            ImGui::MenuItem ( "Page Editor", "", &selection[PAGEEDITOR] );
-            ImGui::MenuItem ( "Map Editor", "", &selection[MAPEDITOR] );
-            ImGui::EndMenu ();
+            ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
+            ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
+            ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
+            ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
+            ImGui::EndMenu();
         }
-        ImGui::EndMainMenuBar ();
+        ImGui::EndMainMenuBar();
     }
-
 
     /*
      *  ========================
@@ -485,46 +499,52 @@ static void ShowExampleAppMainMenuBar ()
      *  ========================
      */
 
-
     // Save dialog selection return
-    saveDialog.Display ();
-    if ( saveDialog.HasSelected () )
+    saveDialog.Display();
+    if (saveDialog.HasSelected())
     {
         //printf ( "(printf) Selected Directory: %s\n", saveDialog.GetSelected ().string ().c_str () );
         //std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
-        dir = std::string ( saveDialog.GetSelected ().string () ).append ( "//" ).append ( dir );
-        nlohmann::json *content = game->serialize ();
-        WriteFile ( dir, ( content->dump ( 2 ) ) );
-        saveDialog.ClearSelected ();
+        dir = std::string(saveDialog.GetSelected().string()).append("//").append(gameName).append(".gdata");
+        nlohmann::json *content = game->serialize();
+        WriteFile(dir, (content->dump(2)));
+        // pointer deletion
+        delete (content);
+        isSaved = true;
+        saveDialog.ClearSelected();
         selection[SAVEPOPUP] = true;
     }
 
     // Open dialog selection return
-    openDialog.Display ();
-    if ( openDialog.HasSelected () )
+    openDialog.Display();
+    if (openDialog.HasSelected())
     {
         //printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
         //std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
-        nlohmann::json *j = readGameDataFile ( openDialog.GetSelected ().string () );
-        texcbo = new GLuint ();
-        glGenTextures ( 1, texcbo );
-        game = new Core::Game ( *j, texcbo );
-        currPage = game->getCurrPage ();
-        game->initShader ();
+        nlohmann::json *j = readGameDataFile(openDialog.GetSelected().string());
+        dir = openDialog.GetSelected().string();
+        texcbo = new GLuint();
+        glGenTextures(1, texcbo);
+        game = new Core::Game(*j, texcbo);
+        // pointer deletion
+        delete (j);
+        gameName = game->getGameName();
+        currPage = game->getCurrPage();
+        game->initShader();
         selection[GAMEVIEW] = true;
+        isSaved = true;
 
-        openDialog.ClearSelected ();
+        openDialog.ClearSelected();
     }
 
     // Delete dialog selection return
-    delDialog.Display ();
-    if ( delDialog.HasSelected () )
+    delDialog.Display();
+    if (delDialog.HasSelected())
     {
-        DeleteFile ( delDialog.GetSelected ().string ().c_str () );
-        delDialog.ClearSelected ();
+        DeleteFile(delDialog.GetSelected().string().c_str());
+        delDialog.ClearSelected();
         selection[DELETEPOPUP] = true;
     }
-
 
     /*
      *  ========================
@@ -532,75 +552,74 @@ static void ShowExampleAppMainMenuBar ()
      *  ========================
      */
 
-
     // Delete project popup
-    if ( ImGui::BeginPopup ( "Delete Project" ) )
+    if (ImGui::BeginPopup("Delete Project"))
     {
-        ImGui::Text ( "Are you sure you want to delete a project? Click outside of this popup to cancel." );
-        if ( ImGui::Button ( "Yes" ) )
+        ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
+        if (ImGui::Button("Yes"))
         {
             delDialog = ImGui::FileBrowser(
-                ImGuiFileBrowserFlags_NoTitleBar
-            );
+                ImGuiFileBrowserFlags_NoTitleBar);
             delDialog.Open();
         }
-        ImGui::EndPopup ();
+        ImGui::EndPopup();
     }
 
     // Save as project popup
     static char name[128] = "";
-    if ( ImGui::BeginPopup ( "Save As" ) )
+    if (ImGui::BeginPopup("Save As"))
     {
-        ImGui::Text ( "Enter theFFFF name of your project." );
-        ImGui::InputText ( "", name, IM_ARRAYSIZE ( name ) );
-        if ( ImGui::Button ( "Save" ) )
+        ImGui::Text("Enter the name of your project.");
+        ImGui::InputText("", name, IM_ARRAYSIZE(name));
+        if (ImGui::Button("Save"))
         {
+            // init file browser ( update info every time it was opened)
             saveDialog = ImGui::FileBrowser(
                 ImGuiFileBrowserFlags_NoTitleBar |
                 ImGuiFileBrowserFlags_SelectDirectory |
-                ImGuiFileBrowserFlags_CreateNewDir
-            );
-            saveDialog.Open ();
-            if ( !saveDialog.IsOpened () )
+                ImGuiFileBrowserFlags_CreateNewDir);
+            saveDialog.Open();
+
+            if (!saveDialog.IsOpened())
             {
-                dir.append ( name ).append ( ".gdata" );
+                gameName = std::string(name);
                 // memset to clear the buffer after use
-                memset ( name, 0, 128 );
+                memset(name, 0, 128);
             }
         }
-        ImGui::EndPopup ();
+        ImGui::EndPopup();
     }
 
     // Successful save popup
-    if ( ImGui::BeginPopup ( "Saved Successfully" ) )
+    if (ImGui::BeginPopup("Saved Successfully"))
     {
-        ImGui::Text ( "Project saved successfully!" );
-        ImGui::EndPopup ();
+        ImGui::Text("Project saved successfully!");
+        ImGui::EndPopup();
     }
 
     // Successful Project deletion popup
-    if ( ImGui::BeginPopup ( "Deleted Successfully" ) )
+    if (ImGui::BeginPopup("Deleted Successfully"))
     {
-        ImGui::Text ( "Project deleted successfully!" );
-        ImGui::EndPopup ();
+        ImGui::Text("Project deleted successfully!");
+        ImGui::EndPopup();
     }
 
     // Entity information popup
-    if ( ImGui::BeginPopup ( "Entity Information" ) )
+    if (ImGui::BeginPopup("Entity Information"))
     {
-        std::vector <Core::Entity *> elist = currPage->getEntityList ();
-        ImGui::Text ( "Entity Names: " );
-        for ( Core::Entity *e : elist )
+        std::vector<Core::Entity *> elist = currPage->getEntityList();
+        ImGui::Text("Entity Names: ");
+        for (Core::Entity *e : elist)
         {
-            ImGui::Text ( e->getName ().c_str () );
+            ImGui::Text(e->getName().c_str());
         }
-        ImGui::EndPopup ();
+        ImGui::EndPopup();
     }
 
     // Successful deletion popup
-    if ( ImGui::BeginPopup ( "Delete Successful" ) )
+    if (ImGui::BeginPopup("Delete Successful"))
     {
-        ImGui::Text ( "Deletion successful!" );
-        ImGui::EndPopup ();
+        ImGui::Text("Deletion successful!");
+        ImGui::EndPopup();
     }
 }

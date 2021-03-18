@@ -8,7 +8,7 @@ namespace Core
 {
 // Constructor of the game class
     Entity::Entity ( std::string s, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID )
-        : entityName ( s ),
+        : mEntityName ( s ),
         mLocation ( location ),
         mScale ( scale ),
         mRotation ( rotation ),
@@ -24,9 +24,19 @@ namespace Core
 
         // =========================
         // ATTRIBUTES OPERATION
-    std::string &Entity::getName ()
+    std::string Entity::getName ()
     {
-        return this->entityName;
+        return this->mEntityName;
+    }
+    
+    // Sets name based on a given string variable
+    void Entity::setName(std::string name) {
+        this->mEntityName = name;
+    }
+
+    // Sets name based on a constant string, for example setName("Entity1")
+    void Entity::setName(const char* name) {
+        this->mEntityName = std::string(name);
     }
         // =========================
         // PROPERTY OPERATION
@@ -64,14 +74,12 @@ namespace Core
 
 
 
-    Entity::Entity ( std::string s ):entityName ( s )
-    {
-
-    }
+    Entity::Entity ( std::string s )
+        : mEntityName ( s ) {}
 
     void Entity::calculateCoords ( glm::vec2 location, glm::vec2 scale )
     {
-// Get the distances to the left/right and top/bottom of the entity from the center
+        // Get the distances to the left/right and top/bottom of the entity from the center
         int halfScaleWidth = scale.x / 2;
         int halfScaleHeight = scale.y / 2;
 

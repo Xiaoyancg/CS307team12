@@ -36,7 +36,9 @@ namespace Core
 
         // =========================
         // ATTRIBUTES OPERATION
-        std::string &getName ();
+        std::string getName ();
+        void setName(std::string); // For variable name (setName(x);)
+        void setName(const char*); // For constant "Name" (setName("EntityAHHHHH");)
         // =========================
         // PROPERTY OPERATION
 
@@ -69,7 +71,7 @@ namespace Core
 
     private:
         // Basic Entity variables
-        std::string entityName;
+        std::string mEntityName;
         glm::vec2 mLocation; // Center of the entity (x, y)
         glm::vec2 mScale; // (x width, y height)
         double mRotation;
