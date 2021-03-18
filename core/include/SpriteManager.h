@@ -17,8 +17,18 @@ namespace Core
 	class SpriteManager
 	{
 	public:
+		// Constructor just sets mCurrSpriteID to the initial value of 0
+		SpriteManager()
+			: mCurrSpriteID(0) {}
+
 		// Creates a new sprite based on the filename and returns the new sprite's ID
 		int createSprite(std::string filename); 
+
+		// Delete the sprite with the given ID 
+		void SpriteManager::deleteSprite(int spriteID);
+
+		// Unused for now, can be uncommented if needed
+		//std::unordered_map<int, Sprite*> getSprites();
 
 		// Returns a pointer to the sprite with the requested ID
 		// (in constant time because we're using unordered_maps instead of vectors!)
