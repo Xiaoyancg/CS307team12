@@ -16,6 +16,4 @@ namespace Core
 
 		// TODO Set Sprite::mImageDimensions here as well
 	}
-
-
 }

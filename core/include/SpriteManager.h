@@ -25,7 +25,7 @@ namespace Core
 		int createSprite(std::string filename); 
 
 		// Delete the sprite with the given ID 
-		void SpriteManager::deleteSprite(int spriteID);
+		void deleteSprite(int spriteID);
 
 		// Unused for now, can be uncommented if needed
 		//std::unordered_map<int, Sprite*> getSprites();

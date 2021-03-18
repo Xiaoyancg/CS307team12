@@ -31,7 +31,11 @@ namespace Core
         static int width;
         static int height;
 
-        SpriteManager gameSprites;
+        // Holds pointers to all the game's sprites and handles ID's properly
+        // Use gameSprites.createSprite(filename); to create the sprite from the file
+        // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'
+        // Use gameSprites.deleteSprite(id); to delete the sprite with ID 'id'
+        SpriteManager gameSprites; 
 
         // =========================
         // CONSTRUCTOR
