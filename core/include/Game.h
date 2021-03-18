@@ -31,12 +31,6 @@ namespace Core
         static int width;
         static int height;
 
-        // Holds pointers to all the game's sprites and handles ID's properly
-        // Use gameSprites.createSprite(filename); to create the sprite from the file
-        // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'
-        // Use gameSprites.deleteSprite(id); to delete the sprite with ID 'id'
-        SpriteManager gameSprites; 
-
         // =========================
         // CONSTRUCTOR
 
@@ -84,6 +78,12 @@ namespace Core
         void deletePage(std::string);
         std::vector<Page *> *getPageList();
         int getNumPage();
+
+        // Sprite operations
+        int createSprite(std::string);
+        void deleteSprite(int);
+        Sprite* getSpriteFromID(int);
+
 
         // =========================
         // STATE OPERATION
@@ -165,5 +165,12 @@ namespace Core
         SDL_Window *window;         // Window of this Game
         SDL_GLContext gl_context;   // The context of this Game
         unsigned int shaderProgram; // The shaders, set by initShaders before entering the game loop
+
+
+        // Holds pointers to all the game's sprites and handles ID's properly
+        // Use gameSprites.createSprite(filename); to create the sprite from the file
+        // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'
+        // Use gameSprites.deleteSprite(id); to delete the sprite with ID 'id'
+        SpriteManager mGameSprites;
     };
 }

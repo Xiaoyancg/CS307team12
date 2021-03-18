@@ -40,5 +40,8 @@ namespace Core
 		// This is where sprites are stored, like an array based on their IDs
 		// If a sprite has ID=32, then a pointer to it is stored at mSprites[32]
 		std::unordered_map<int, Sprite*> mSprites; 
+
+		// Used for debugging
+		void printSprites();
 	};
 }
