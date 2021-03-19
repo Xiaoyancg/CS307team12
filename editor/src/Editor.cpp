@@ -230,18 +230,28 @@ static void ShowExampleAppMainMenuBar()
         {
             // set the windows default size
             ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
             // the game view window itself
             ImGui::Begin("Game View", &selection[GAMEVIEW]);
 
-            ImVec2 dims = ImGui::GetWindowSize();
+            //ImVec2 dims = ImGui::GetWindowSize();
+
+            // Get size of drawable space on the window, instead of the entire size of the window
+            ImVec2 canvas_size = ImGui::GetContentRegionAvail(); 
 
             glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
 
             game->render();                             // Render Game with new viewport size
-            glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
-            ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
+            //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size
+            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+
             ImGui::End();
+            ImGui::PopStyleVar();
         }
     }
 
