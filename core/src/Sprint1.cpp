@@ -48,9 +48,9 @@ namespace Core
             11, 22, 33, 44,
             55, 66, 77, 88};
 
-        Map *map1 = new Map(glm::vec2(4, 4), 64);
+        Map *map1 = new Map("Map 1 woohoo!", glm::vec2(4, 4), 64);
         map1->setMapTileSpritesFromArray(spriteMap);
-        Map *map2 = new Map(glm::vec2(16, 16), 32);
+        Map *map2 = new Map("Map 2 ahhh!", glm::vec2(16, 16), 32);
 
         // Here are the 2 ways to make MapPages with set maps
         mapPage1 = game->createMapPage("1", map1);

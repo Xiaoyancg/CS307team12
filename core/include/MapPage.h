@@ -11,11 +11,11 @@ namespace Core
     public:
         // Needs the current window to make a new opengl context, in the Page constructor 
         MapPage::MapPage () : 
-            MapPage ( "empty", new Map ( glm::vec2 ( 0, 0 ), 0 ) )
+            MapPage ( "empty", new Map ( "No map name :(", glm::vec2 ( 0, 0 ), 0 ) )
         { }
 
         MapPage::MapPage (std::string s): 
-            MapPage (s, new Map ( glm::vec2 ( 0, 0 ), 0 ) )
+            MapPage (s, new Map ( "No map name :(", glm::vec2 ( 0, 0 ), 0 ) )
         { }
 
         // Users can specify a map if it's already created
@@ -27,6 +27,9 @@ namespace Core
 
         // Sets mMap to the map created by the user
         void setMap ( Map *map );
+
+        // Returns mMap
+        Map* getMap();
 
         void initShaders (); // Shader function for the map tiles, may be temporary
 
