@@ -88,8 +88,15 @@ int EditorMain(int argc, char *argv[])
     ImGuiIO &io = ImGui::GetIO();
     io.WantCaptureMouse = true;
     io.WantCaptureKeyboard = true;
+    // resize from window edge flag
     io.ConfigWindowsResizeFromEdges = true;
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    // multiple viewports flag
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    // docking flag
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    // keep docking bound to shift
+    io.ConfigDockingWithShift = true;
+
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
@@ -139,7 +146,8 @@ int EditorMain(int argc, char *argv[])
         ImGui::NewFrame();
         if (!showDemoWindow)
         {
-            // test main menu bar
+            // turn the main viewport into a docking one to allow for docking
+            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
             ShowExampleAppMainMenuBar();
         }
 
