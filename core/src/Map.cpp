@@ -1,15 +1,16 @@
+#pragma once
+#include <string>
 #include "Map.h"
-
 #include "Game.h"
 
 namespace Core
 {
     // Takes a scale, the number of tiles in the x and y direction 
-    Map::Map ( glm::vec2 dimensions, int tileSize ):
+    Map::Map (std::string name, glm::vec2 dimensions, int tileSize ):
         mMapDimensions ( dimensions ),
         mTileSize ( tileSize )
     {
-// Create map 
+        // Create map 
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
         mTileArray = new Tile[mNumTiles];
         setTileCoords ();
@@ -18,10 +19,12 @@ namespace Core
     // Set mMapDimensions to new dimensions
     void Map::setDimensions ( glm::vec2 dimensions )
     {
-        // FIXME: type convension
-// setDimensions should copy the map to the new map! right now it just discards the old one
+        if (dimensions.x < 0 || dimensions.y < 0) {
+            return;
+        }
+
         delete mTileArray;
-        mNumTiles = mMapDimensions.x * mMapDimensions.y;
+        mNumTiles = dimensions.x * dimensions.y;
         Tile *newMap = new Tile[mNumTiles];
         mTileArray = newMap;
         mMapDimensions = dimensions;
@@ -36,7 +39,12 @@ namespace Core
 
     void Map::setTileSize ( int size )
     {
+        if (size < 0) {
+            return;
+        }
+
         mTileSize = size;
+        setTileCoords();
     }
 
     int Map::getTileSize ()
@@ -47,6 +55,14 @@ namespace Core
     int Map::getNumTiles ()
     {
         return mNumTiles;
+    }
+
+    void Map::setName(std::string name) {
+        mMapName = name;
+    }
+
+    std::string Map::getName() {
+        return mMapName;
     }
 
     // This will set the 4 corners of each tile of the map based on the dimensions and tilesize.

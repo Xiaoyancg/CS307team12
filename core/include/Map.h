@@ -10,7 +10,7 @@ namespace Core
 	{
 	public:
 		// Takes a scale, the number of tiles in the x and y direction 
-		Map ( glm::vec2 scale, int tileSize );
+		Map (std::string name, glm::vec2 scale, int tileSize );
 
 		// Creates a 
 		void setMapTileSpritesFromArray ( int *spriteIDMap );
@@ -30,6 +30,9 @@ namespace Core
 		// Get mNumTiles
 		int getNumTiles ();
 
+		void setName(std::string);
+		std::string getName();
+
 	private:
 		// Set tile coordinates (so we don't have to recalculate with each update)
 		void setTileCoords ();
@@ -46,6 +49,7 @@ namespace Core
 		// The dimensions of the map in tiles
 		glm::vec2 mMapDimensions; // (32, 32) means the map is 32 tiles by 32 tiles
 
+		std::string mMapName;
 
 		friend class MapPage;
 	};

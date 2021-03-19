@@ -483,13 +483,10 @@ namespace Core
                 break;
             }
         }
+
         // Control pages switch.
         switch (event.key.keysym.sym)
         {
-        // Press '1' to see map1,
-        // '2', to see map2, and
-        // '3' to see the initial interactive demo
-
         // use 1 to look the previous page
         case SDLK_1:
             // have to check begin and end here
