@@ -114,8 +114,8 @@ int EditorMain(int argc, char *argv[])
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-     //set the default game view window state to open
-        selection[SPLASHSCREEN] = true;
+    //set the default splash screen state to open
+    selection[SPLASHSCREEN] = true;
 
     while (running)
     {
@@ -267,7 +267,7 @@ static void ShowExampleAppMainMenuBar()
     }
     
     //this isnt really a "selection", it opens by default
-    /*
+    
     if (selection[SPLASHSCREEN])
     {
         int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
@@ -275,12 +275,13 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-        if (ImGui::Begin("Parchment"), &selection[SPLASHSCREEN])
+        if (ImGui::Begin("Parchment", &selection[SPLASHSCREEN]))
         {
+            // Here we will implement a render window type thing I assume to hold the slpash screen
             ImGui::Text("Parchment Splash Screen");
         }
         ImGui::End();
-    }*/
+    }
 
     // Entity editor
     if (selection[ENTITYEDITOR])
@@ -476,6 +477,8 @@ static void ShowExampleAppMainMenuBar()
         // map editor
         if (ImGui::Begin("Map Editor", &selection[MAPEDITOR]))
         {
+            ImGui::Text("Enter Map Name:");
+            ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
             if (ImGui::Button("Create New Map"))
             {
                 game->createMapPage(map_name);
@@ -484,9 +487,13 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::Button("Delete This Map"))
             {
+                // TODO remove map function
+                // memset to clear the buffer after use
+                memset(map_name, 0, 128);
             }
             if (ImGui::Button("Show Map Information "))
             {
+                // TODO show map list?
             }
         }
 
