@@ -259,7 +259,7 @@ static void ShowExampleAppMainMenuBar()
     if (selection[OBJECTTREE])
     {
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-        if (ImGui::Begin("Object Tree"), &selection[OBJECTTREE])
+        if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
 
         }
