@@ -114,8 +114,8 @@ int EditorMain(int argc, char *argv[])
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    // set the default game view window state to open
-    //    selection[GAMEVIEW] = true;
+     //set the default game view window state to open
+        selection[SPLASHSCREEN] = true;
 
     while (running)
     {
@@ -255,6 +255,33 @@ static void ShowExampleAppMainMenuBar()
         }
     }
 
+    //object tree
+    if (selection[OBJECTTREE])
+    {
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        if (ImGui::Begin("Object Tree"), &selection[OBJECTTREE])
+        {
+
+        }
+        ImGui::End();
+    }
+    
+    //this isnt really a "selection", it opens by default
+    /*
+    if (selection[SPLASHSCREEN])
+    {
+        int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
+        int dwHeight = GetSystemMetrics(SM_CYSCREEN) / 2;
+        ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+        if (ImGui::Begin("Parchment"), &selection[SPLASHSCREEN])
+        {
+            ImGui::Text("Parchment Splash Screen");
+        }
+        ImGui::End();
+    }*/
+
     // Entity editor
     if (selection[ENTITYEDITOR])
     {
@@ -267,6 +294,7 @@ static void ShowExampleAppMainMenuBar()
         bool entity_info = false;
         if (ImGui::Begin("Entity Editor", &selection[ENTITYEDITOR]))
         {
+            ImGui::Text("Enter Entity Name:");
             ImGui::InputText("", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
             {
@@ -312,7 +340,24 @@ static void ShowExampleAppMainMenuBar()
         bool page_info = false;
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
+            ImGui::Text("Enter Page Name:");
             ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
+            const char* page_options[] = { "Page", "Menu" };
+            static int current_item = 0;
+            if (ImGui::BeginListBox(""))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
+                {
+                    const bool is_selected = (current_item == n);
+                    if (ImGui::Selectable(page_options[n], is_selected))
+                        current_item = n;
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndListBox();
+            }
             if (ImGui::Button("Create This Page"))
             {
                 game->createPage(page_name);
@@ -357,6 +402,60 @@ static void ShowExampleAppMainMenuBar()
                 ImGui::Text(p->getName().c_str());
             }
             ImGui::EndPopup();
+        }
+    }
+
+    // Script editor
+    if (selection[SCRIPTEDITOR])
+    {
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+
+        static char script_name[128] = "";
+        bool script_info = false;
+        if (ImGui::Begin("Script Editor", &selection[SCRIPTEDITOR]))
+        {
+            ImGui::InputText("", script_name, IM_ARRAYSIZE(script_name));
+            if (ImGui::Button("Create New Script"))
+            {
+
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Delete This Script"))
+            {
+
+            }
+            if (ImGui::Button("Link This Script"))
+            {
+
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Show Script Information"))
+            {
+                script_info = true;
+            }
+            ImGui::End();
+        }
+    }
+
+    // Sprite editor
+    if (selection[SPRITEEDITOR])
+    {
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+
+        bool sprite_info = false;
+        if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
+        {
+            if (ImGui::Button("Import Sprite"))
+            {
+
+            }
+            if (ImGui::Button("Show Sprite Information"))
+            {
+                sprite_info = true;
+            }
+            ImGui::End();
         }
     }
 
@@ -502,10 +601,13 @@ static void ShowExampleAppMainMenuBar()
         // Add menu
         if (ImGui::BeginMenu("View"))
         {
+            ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
             ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
             ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
             ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
             ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
+            ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
+            ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
