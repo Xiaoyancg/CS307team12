@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <Tile.h>
 
+
 // Map class
 namespace Core
 {
@@ -10,7 +11,8 @@ namespace Core
 	{
 	public:
 		// Takes a scale, the number of tiles in the x and y direction 
-		Map (std::string name, glm::vec2 scale, int tileSize );
+		Map(std::string name, glm::vec2 scale, int tileSize);
+		~Map();
 
 		// Creates a 
 		void setMapTileSpritesFromArray ( int *spriteIDMap );
@@ -33,6 +35,8 @@ namespace Core
 		void setName(std::string);
 		std::string getName();
 
+		friend class MapPage;
+
 	private:
 		// Set tile coordinates (so we don't have to recalculate with each update)
 		void setTileCoords ();
@@ -51,6 +55,9 @@ namespace Core
 
 		std::string mMapName;
 
-		friend class MapPage;
+		// This is set to a MapPage only when the map is in use on the MapPage.
+		// It's used to remove itself from the MapPage if it's suddenly deleted while in use.
+		MapPage* mAssociatedPage;
+
 	};
 }
