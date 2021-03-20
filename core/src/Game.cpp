@@ -124,11 +124,15 @@ namespace Core
         Page *p = new Page(n);
         return addPage(p);
     }
-
-    MapPage *Game::createMapPage(std::string n)
+    MapPage* Game::createMapPage()
     {
-        MapPage *mp = new MapPage(n);
-        return (MapPage *)addPage(mp);
+        MapPage* mp = new MapPage();
+        return (MapPage*)addPage(mp);
+    }
+    MapPage* Game::createMapPage(std::string n)
+    {
+        MapPage* mp = new MapPage(n);
+        return (MapPage*)addPage(mp);
     }
     MapPage *Game::createMapPage(std::string n, Map *m)
     {

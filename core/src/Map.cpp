@@ -8,18 +8,37 @@ namespace Core
     // Takes a scale, the number of tiles in the x and y direction 
     Map::Map (std::string name, glm::vec2 dimensions, int tileSize ):
         mMapDimensions ( dimensions ),
-        mTileSize ( tileSize )
+        mTileSize ( tileSize ),
+        mAssociatedPage(nullptr)
     {
         // Create map 
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
-        mTileArray = new Tile[mNumTiles];
-        setTileCoords ();
+        if (mNumTiles > 0) {
+            mTileArray = new Tile[mNumTiles];
+            setTileCoords();
+        }
+        else {
+            mTileArray = nullptr;
+        }
+    }
+
+    Map::~Map() {
+        if (mTileArray != nullptr) {
+            delete mTileArray;
+            mTileArray = nullptr;
+        }
+
+        // If the map is deleted while being used in a MapPage
+        if (mAssociatedPage != nullptr) {
+            mAssociatedPage->setMap(nullptr);
+        }
     }
 
     // Set mMapDimensions to new dimensions
     void Map::setDimensions ( glm::vec2 dimensions )
     {
         if (dimensions.x < 0 || dimensions.y < 0) {
+            printf("Don't set negative map dimensions >:(\n");
             return;
         }
 
@@ -145,7 +164,6 @@ namespace Core
 // This will have to take a depth parameter when Tile depth gets implemented
     void Map::setMapTileSpritesFromArray ( int *spriteIDMap )
     {
-        // FIXME: type convension
         mNumTiles = mMapDimensions.x * mMapDimensions.y; // Get the number of tiles in the map
 
         for ( int i = 0; i < mNumTiles; i++ )
