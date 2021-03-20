@@ -318,14 +318,16 @@ static void ShowExampleAppMainMenuBar()
             {
                 entity_info = true;
             }
-            ImGui::End();
         }
-
+        
         if (entity_info)
         {
             ImGui::OpenPopup("Entity Information");
             entity_info = false;
+            ImGui::EndPopup();
         }
+
+        ImGui::End();
     }
 
     // Page editor
@@ -381,7 +383,6 @@ static void ShowExampleAppMainMenuBar()
                 page_info = true;
                 ImGui::OpenPopup("Page Information");
             }
-            ImGui::End();
         }
 
         if (page_info)
@@ -403,6 +404,8 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndPopup();
         }
+
+        ImGui::End();
     }
 
     // Script editor
@@ -434,8 +437,9 @@ static void ShowExampleAppMainMenuBar()
             {
                 script_info = true;
             }
-            ImGui::End();
         }
+
+        ImGui::End();
     }
 
     // Sprite editor
@@ -455,8 +459,9 @@ static void ShowExampleAppMainMenuBar()
             {
                 sprite_info = true;
             }
-            ImGui::End();
         }
+
+        ImGui::End();
     }
 
     // Map editor
@@ -484,8 +489,9 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Show Map Information "))
             {
             }
-            ImGui::End();
         }
+
+        ImGui::End();
     }
 
     // Calls saved successfully popup on project save
