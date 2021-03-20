@@ -326,6 +326,18 @@ static void ShowExampleAppMainMenuBar()
             entity_info = false;
         }
 
+        // Entity information popup
+        if (ImGui::BeginPopup("Entity Information"))
+        {
+            std::vector<Core::Entity*> elist = currPage->getEntityList();
+            ImGui::Text("Entity Names: ");
+            for (Core::Entity* e : elist)
+            {
+                ImGui::Text(e->getName().c_str());
+            }
+            ImGui::EndPopup();
+        }
+
         ImGui::End();
     }
 
@@ -380,7 +392,6 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Show Page Information"))
             {
                 page_info = true;
-                ImGui::OpenPopup("Page Information");
             }
         }
 
@@ -390,6 +401,7 @@ static void ShowExampleAppMainMenuBar()
             page_info = false;
         }
 
+        // Page information popup
         if (ImGui::BeginPopup("Page Information"))
         {
             ImGui::Text("Page Name:");
@@ -728,19 +740,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::Text("Project deleted successfully!");
         ImGui::EndPopup();
     }
-
-    // Entity information popup
-    if (ImGui::BeginPopup("Entity Information"))
-    {
-        std::vector<Core::Entity *> elist = currPage->getEntityList();
-        ImGui::Text("Entity Names: ");
-        for (Core::Entity *e : elist)
-        {
-            ImGui::Text(e->getName().c_str());
-        }
-        ImGui::EndPopup();
-    }
-
+    
     // Successful deletion popup
     if (ImGui::BeginPopup("Delete Successful"))
     {
