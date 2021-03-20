@@ -295,7 +295,7 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Entity Editor", &selection[ENTITYEDITOR]))
         {
             ImGui::Text("Enter Entity Name:");
-            ImGui::InputText("", entity_name, IM_ARRAYSIZE(entity_name));
+            ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
             {
                 currPage->createEntity(entity_name);
@@ -342,7 +342,7 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
             ImGui::Text("Enter Page Name:");
-            ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
+            ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
             const char* page_options[] = { "Page", "Menu" };
             static int current_item = 0;
             if (ImGui::BeginListBox(""))
@@ -417,7 +417,7 @@ static void ShowExampleAppMainMenuBar()
         bool script_info = false;
         if (ImGui::Begin("Script Editor", &selection[SCRIPTEDITOR]))
         {
-            ImGui::InputText("", script_name, IM_ARRAYSIZE(script_name));
+            ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create New Script"))
             {
 
