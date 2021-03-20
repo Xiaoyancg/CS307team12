@@ -10,6 +10,7 @@ bool running = true;
 ImGui::FileBrowser saveDialog;
 ImGui::FileBrowser openDialog;
 ImGui::FileBrowser delDialog;
+ImGui::FileBrowser importDialog;
 
 // ====================================
 // Global Variable
@@ -465,7 +466,10 @@ static void ShowExampleAppMainMenuBar()
         {
             if (ImGui::Button("Import Sprite"))
             {
-
+                importDialog = ImGui::FileBrowser(
+                    ImGuiFileBrowserFlags_NoTitleBar);
+                importDialog.SetTypeFilters({ ".jpg", ".png" });
+                importDialog.Open();
             }
             if (ImGui::Button("Show Sprite Information"))
             {
@@ -688,6 +692,16 @@ static void ShowExampleAppMainMenuBar()
         DeleteFile(delDialog.GetSelected().string().c_str());
         delDialog.ClearSelected();
         selection[DELETEPOPUP] = true;
+    }
+
+    // import dialog selection return
+    importDialog.Display();
+    if (importDialog.HasSelected())
+    {
+        // temporary output lines - connect to importing function - possibly link to sprite obj?
+        printf ( "(printf) Selected File: %s\n", importDialog.GetSelected ().string ().c_str () );
+        std::cout << "(cout) Selected File: " << importDialog.GetSelected().string() << std::endl;
+        importDialog.ClearSelected();
     }
 
     /*
