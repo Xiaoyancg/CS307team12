@@ -324,7 +324,6 @@ static void ShowExampleAppMainMenuBar()
         {
             ImGui::OpenPopup("Entity Information");
             entity_info = false;
-            ImGui::EndPopup();
         }
 
         ImGui::End();
