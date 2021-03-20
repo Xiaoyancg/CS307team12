@@ -622,7 +622,23 @@ static void ShowExampleAppMainMenuBar()
             ImGui::EndMenu();
         }
 
-        // Add menu
+        // Edit menu
+        if (ImGui::BeginMenu("Edit"))
+        {
+            if (ImGui::MenuItem("Undo"))
+            {
+                printf("Undo!\n");
+                // TODO: Implement UNDO
+            }
+            if (ImGui::MenuItem("Redo"))
+            {
+                printf("Redo!\n");
+                // TODO: Implement REDO
+            }
+            ImGui::EndMenu();
+        }
+
+        // View menu
         if (ImGui::BeginMenu("View"))
         {
             ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
