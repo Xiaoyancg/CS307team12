@@ -121,21 +121,22 @@ TEST(TEST_CORE, Parse)
 {
     nlohmann::json gamefile = R"(
         {
-            "GameName": "example name",
-            "Author": "example author",
-            "Version": "example version",
-            "LastModifiedTime": "example Date Time",
-            "Note": "example Note",
+            "FileType": "Parchment Game Data",
+            "GameName": "test_gameName",
+            "Author": "test_author",
+            "Version": "test_version",
+            "LastModifiedTime": "test_lmtime",
+            "Note": "test_note",
             "PageList": [
                 {
-                    "Name": "example Page",
+                    "Name": "test_pageName",
                     "EntityList": [
                         {
-                            "Name": "example Entity Name",
-                            "Entity ID": 1,
-                            "location": [ 0.5, 0.5 ],
-                            "scale": [ 1.0, 2.0 ],
-                            "rotation": 1.0,
+                            "Name": "test_entityName",
+                            "Entity ID": 999,
+                            "location": [ 0.1, 0.2 ],
+                            "scale": [ 0.3, 0.4 ],
+                            "rotation": 360.0
                         }
                     ]
                 }
