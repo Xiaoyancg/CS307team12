@@ -20,7 +20,7 @@ namespace Core
 		void setDimensions(glm::vec2 dimensions);
 
 		// Get mMapDimensions
-		glm::vec2 getDimensions();
+		glm::ivec2 getDimensions();
 
 		// Set mTileSize
 		void setTileSize(int size);
@@ -55,7 +55,7 @@ namespace Core
 
 		// The dimensions of the map in tiles
 		// (32, 32) means the map is 32 tiles by 32 tiles
-		glm::vec2 mMapDimensions;
+		glm::ivec2 mMapDimensions;
 
 		std::string mMapName;
 
