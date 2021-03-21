@@ -33,7 +33,7 @@ namespace Core
         // =========================
         // CONSTRUCTOR
 
-        // Game ();
+        Game() {}
         Game(GLuint *o);
         Game(std::string gameName);
         Game(nlohmann::json &json, GLuint *o);
