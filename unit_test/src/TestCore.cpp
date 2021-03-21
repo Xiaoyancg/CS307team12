@@ -101,8 +101,8 @@ TEST(TEST_CORE, Serialize)
                         {
                             "Name": "test_entityName",
                             "Entity ID": 999,
-                            "location": [ 0.10, 0.20 ],
-                            "scale": [ 0.30, 0.40 ],
+                            "location": [ 0.1, 0.2 ],
+                            "scale": [ 0.3, 0.4 ],
                             "rotation": 360.0
                         }
                     ]
