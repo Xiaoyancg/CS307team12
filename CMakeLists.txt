@@ -77,6 +77,12 @@ set(GLAD_DIR "${PROJECT_SOURCE_DIR}/lib/glad")
 add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
 
+set(SOIL_DIR "${PROJECT_SOURCE_DIR}/lib/SOIL")
+add_library(soil STATIC IMPORTED)
+set_property(TARGET soil PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${SOIL_DIR}/include")
+set_property(TARGET soil PROPERTY IMPORTED_LOCATION "${SOIL_DIR}/SOIL.lib")
+target_link_libraries(soil INTERFACE opengl32)
+
 add_subdirectory(lib/json)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_T}")

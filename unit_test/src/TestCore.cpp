@@ -1,12 +1,17 @@
 #include <TestCore.h>
+
+#include <filesystem>
+
 #include "VMTool.h"
 #include "Game.h"
 #include "Sprint1.h"
+#include "Sprite.h"
 #include "gtest/gtest.h"
 unsigned int pageError = 1;
 unsigned int coreError = 1;
 unsigned int entityError = 1;
 bool enableTest = true;
+
 
 TEST(PRODUCE_GDATA, s1)
 {
@@ -162,3 +167,20 @@ TEST(TEMPTEST, supertemp)
 //    EXPECT_EQ(entities[0]->getScale(), glm::vec2(1.0, 2.0));
 //    EXPECT_EQ(entities[0]->getRotation(), 1.0);
 //}
+
+
+TEST(TEST_CORE, LoadNonexistantImage) {
+    Core::Sprite nonexistantSprite("this_file_does_not_exist.png");
+    EXPECT_EQ(nonexistantSprite.getImageData(), nullptr);
+}
+
+TEST(TEST_CORE, ImplTestImageExists) {
+    EXPECT_TRUE(std::filesystem::exists("test_image.png"));
+}
+
+TEST(TEST_CORE, LoadImage) {
+    Core::Sprite sprite("test_image.png");
+    EXPECT_EQ(sprite.getDimensions().x, 256);
+    EXPECT_EQ(sprite.getDimensions().y, 256);
+    EXPECT_NE(sprite.getImageData(), nullptr);
+}
