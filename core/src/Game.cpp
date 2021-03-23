@@ -283,7 +283,7 @@ namespace Core
 		    void main()
 		    {
 		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
-                TexCoord = textureCoords;
+                TexCoord = vec2(textureCoords.x, 1 - textureCoords.y);
 		    }
 	    )glsl";
 
@@ -366,10 +366,10 @@ namespace Core
         // 2 ints are read at a time (x, y)
         // The the type is float (GL_INT)
         // GL_FALSE means the data should not be normalized
-        // The size to be read in bytes (2 * sizeof(int))
+        // Spread between each set of attributes (4 * sizeof(int))
         // Offset isn't used yet since there's only one attribute in 'vertices'
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 2 * sizeof(int), (void *)0); // attribute ptr for position coords
-        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 2 * sizeof(int), (void*)(2 * sizeof(int))); // attribute ptr for texture coords
+        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0); // attribute ptr for position coords
+        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void*)(2 * sizeof(int))); // attribute ptr for texture coords
 
         // Enable the vertex attributes
         glEnableVertexAttribArray(0);
@@ -609,7 +609,7 @@ namespace Core
     void Game::mainLoop()
     {
 
-        createSprite("");
+        unsigned int guySprite = createSprite("C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\oh_yeah_woo_yeah.png");
 
         SDL_Event event;
         int close_window = false;
