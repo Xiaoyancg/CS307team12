@@ -176,14 +176,18 @@ namespace Core
         }
     }
 
-    int Game::createSprite(std::string filename) {
-        return mGameSprites.createSprite(filename);
+    unsigned int Game::createSprite(std::string filename) {
+        Sprite* newSprite = new Sprite(filename);
+        unsigned int id = newSprite->getSpriteID();
+        this->mSprites[id] = newSprite;
+        return id; // Return OpenGL ID of the new sprite
     }
     void Game::deleteSprite(int id) {
-        mGameSprites.deleteSprite(id);
+        delete this->mSprites[id];
+        mSprites.erase(id);
     }
     Sprite* Game::getSpriteFromID(int id) {
-        return mGameSprites.atID(id);
+        return mSprites[id];
     }
 
     // =========================
@@ -270,11 +274,16 @@ namespace Core
 		    #version 330 core
 
 		    layout (location = 0) in vec2 pos;
+            layout (location = 1) in vec2 textureCoords;
+
 		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
+
+            out vec2 TexCoord;
 
 		    void main()
 		    {
 		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
+                TexCoord = textureCoords;
 		    }
 	    )glsl";
 
@@ -282,11 +291,15 @@ namespace Core
         const char *fragmentSource = R"glsl(
 		    #version 330 core
 
+            in vec2 TexCoord;
+
+            uniform sampler2D texture1;
+
 		    out vec4 FragColor;
 
 		    void main()
 		    {
-		      FragColor = vec4(1.0,1.0,1.0,1.0);
+		      FragColor = texture(texture1, TexCoord);
 		    }
 	    )glsl";
 
@@ -355,13 +368,20 @@ namespace Core
         // GL_FALSE means the data should not be normalized
         // The size to be read in bytes (2 * sizeof(int))
         // Offset isn't used yet since there's only one attribute in 'vertices'
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 2 * sizeof(int), (void *)0);
+        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 2 * sizeof(int), (void *)0); // attribute ptr for position coords
+        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 2 * sizeof(int), (void*)(2 * sizeof(int))); // attribute ptr for texture coords
 
-        // Enable the position vertex attribute
+        // Enable the vertex attributes
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        // Enable textures (we use GL_TEXTURE0, we don't need more than 1 at a time)
+        glActiveTexture(GL_TEXTURE0);
 
         // Enable the Vertex Object Array
         glBindVertexArray(vao);
+
+        glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
         // Set the scale based on the width and height
         int scaleID = glGetUniformLocation(shaderProgram, "scale");
@@ -588,6 +608,8 @@ namespace Core
     ///////////////
     void Game::mainLoop()
     {
+
+        createSprite("");
 
         SDL_Event event;
         int close_window = false;

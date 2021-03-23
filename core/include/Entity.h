@@ -75,7 +75,7 @@ namespace Core
         glm::vec2 mLocation; // Center of the entity (x, y)
         glm::vec2 mScale; // (x width, y height)
         double mRotation;
-        int mCoords[8]; // Stores 4 pairs of (x, y) int coordinates (8 total), one for each corner of the entity
+        int mCoords[16]; // Stores 4 pairs of (x, y) int coordinates (8 total), one for each corner of the entity
 
         // Sprite ID used to index sprites loaded into memory from the Game class
         // This isn't used yet though, I'm just adding it for later

@@ -1,3 +1,4 @@
+#pragma once
 #include "Sprite.h"
 #include <SOIL.h>
 #include <glad/glad.h>
@@ -5,6 +6,8 @@
 namespace Core
 {
 	Sprite::Sprite(std::string filename) {
+		mTextureID = -1;
+
 		int width;
 		int height;
 		int channels;
@@ -26,10 +29,7 @@ namespace Core
 		}
 	}
 
-	Sprite::~Sprite() {
-	}
-
-	unsigned int Sprite::getSprite() {
+	unsigned int Sprite::getSpriteID() {
 		return mTextureID;
 	}
 

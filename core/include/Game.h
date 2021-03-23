@@ -14,6 +14,7 @@
 #include "Page.h"
 #include "Entity.h"
 #include "MapPage.h"
+#include "Sprite.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
@@ -78,6 +79,11 @@ namespace Core
         void deletePage(std::string);
         std::vector<Page *> *getPageList();
         int getNumPage();
+
+        // Sprite operations
+        unsigned int createSprite(std::string);
+        void deleteSprite(int);
+        Sprite* getSpriteFromID(int);
 
         // =========================
         // STATE OPERATION
@@ -159,5 +165,8 @@ namespace Core
         SDL_Window *window;         // Window of this Game
         SDL_GLContext gl_context;   // The context of this Game
         unsigned int shaderProgram; // The shaders, set by initShaders before entering the game loop
+
+        // Holds pointers to all the game's sprites
+        std::unordered_map<int, Sprite*> mSprites;
     };
 }
