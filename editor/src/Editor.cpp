@@ -98,7 +98,6 @@ int EditorMain(int argc, char *argv[])
     // keep docking bound to shift
     io.ConfigDockingWithShift = true;
 
-
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
 
@@ -239,17 +238,17 @@ static void ShowExampleAppMainMenuBar()
             //ImVec2 dims = ImGui::GetWindowSize();
 
             // Get size of drawable space on the window, instead of the entire size of the window
-            ImVec2 canvas_size = ImGui::GetContentRegionAvail(); 
+            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
             glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
 
-            game->render();                             // Render Game with new viewport size
+            game->render(); // Render Game with new viewport size
 
             //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size
-            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            // glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
+            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
@@ -265,11 +264,11 @@ static void ShowExampleAppMainMenuBar()
             //entities node
             if (ImGui::CollapsingHeader("Entities"))
             {
-                if (game != nullptr) 
+                if (game != nullptr)
                 {
-                    std::vector<Core::Entity*> elist = currPage->getEntityList();
+                    std::vector<Core::Entity *> elist = currPage->getEntityList();
                     ImGui::Indent();
-                    for (Core::Entity* e : elist)
+                    for (Core::Entity *e : elist)
                     {
                         ImGui::Selectable(("%s", e->getName().c_str()));
                     }
@@ -279,21 +278,19 @@ static void ShowExampleAppMainMenuBar()
             //maps node
             if (ImGui::CollapsingHeader("Maps"))
             {
-
             }
             //logic node
             if (ImGui::CollapsingHeader("Logic"))
             {
-
             }
             //pages node
             if (ImGui::CollapsingHeader("Pages"))
             {
                 if (game != nullptr)
                 {
-                    std::vector<Core::Page*> plist = *game->getPageList();
+                    std::vector<Core::Page *> plist = *game->getPageList();
                     ImGui::Indent();
-                    for (Core::Page* p : plist)
+                    for (Core::Page *p : plist)
                     {
                         ImGui::Selectable(("%s", p->getName().c_str()));
                     }
@@ -302,16 +299,14 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::CollapsingHeader("Scripts"))
             {
-
             }
             if (ImGui::CollapsingHeader("Sprites"))
             {
-
             }
         }
         ImGui::End();
     }
-    
+
     //this isnt really a "selection", it opens by default
     if (selection[SPLASHSCREEN])
     {
@@ -366,7 +361,7 @@ static void ShowExampleAppMainMenuBar()
                 entity_info = true;
             }
         }
-        
+
         if (entity_info)
         {
             ImGui::OpenPopup("Entity Information");
@@ -376,9 +371,9 @@ static void ShowExampleAppMainMenuBar()
         // Entity information popup
         if (ImGui::BeginPopup("Entity Information"))
         {
-            std::vector<Core::Entity*> elist = currPage->getEntityList();
+            std::vector<Core::Entity *> elist = currPage->getEntityList();
             ImGui::Text("Entity Names: ");
-            for (Core::Entity* e : elist)
+            for (Core::Entity *e : elist)
             {
                 ImGui::Text(e->getName().c_str());
             }
@@ -403,7 +398,7 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Enter Page Name:");
             ImGui::PushItemWidth(200);
             ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
-            const char* page_options[] = { "Page", "Menu" };
+            const char *page_options[] = {"Page", "Menu"};
             static int current_item = 0;
             ImGui::Text("Select Page Type:");
             if (ImGui::BeginListBox("", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
@@ -482,16 +477,13 @@ static void ShowExampleAppMainMenuBar()
             ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create New Script"))
             {
-
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Script"))
             {
-
             }
             if (ImGui::Button("Link This Script"))
             {
-
             }
             ImGui::SameLine();
             if (ImGui::Button("Show Script Information"))
@@ -516,7 +508,7 @@ static void ShowExampleAppMainMenuBar()
             {
                 importDialog = ImGui::FileBrowser(
                     ImGuiFileBrowserFlags_NoTitleBar);
-                importDialog.SetTypeFilters({ ".jpg", ".png" });
+                importDialog.SetTypeFilters({".jpg", ".png"});
                 importDialog.Open();
             }
             if (ImGui::Button("Show Sprite Information"))
@@ -577,7 +569,7 @@ static void ShowExampleAppMainMenuBar()
             // Map information popup
             if (ImGui::BeginPopup("Map Information"))
             {
-                //TODO: implement map info 
+                //TODO: implement map info
                 ImGui::EndPopup();
             }
         }
@@ -784,7 +776,7 @@ static void ShowExampleAppMainMenuBar()
     if (importDialog.HasSelected())
     {
         // temporary output lines - connect to importing function - possibly link to sprite obj?
-        printf ( "(printf) Selected File: %s\n", importDialog.GetSelected ().string ().c_str () );
+        printf("(printf) Selected File: %s\n", importDialog.GetSelected().string().c_str());
         std::cout << "(cout) Selected File: " << importDialog.GetSelected().string() << std::endl;
         importDialog.ClearSelected();
     }
@@ -846,7 +838,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::Text("Project deleted successfully!");
         ImGui::EndPopup();
     }
-    
+
     // Successful deletion popup
     if (ImGui::BeginPopup("Delete Successful"))
     {
