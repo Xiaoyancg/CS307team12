@@ -265,16 +265,14 @@ static void ShowExampleAppMainMenuBar()
             //entities node
             if (ImGui::CollapsingHeader("Entities"))
             {
-                if (game != nullptr) 
+                std::vector<Core::Entity*> elist = currPage->getEntityList();
+                ImGui::Indent();
+                for (Core::Entity* e : elist)
                 {
-                    std::vector<Core::Entity*> elist = currPage->getEntityList();
-                    ImGui::Indent();
-                    for (Core::Entity* e : elist)
-                    {
-                        ImGui::Selectable(("%s", e->getName().c_str()));
-                    }
-                    ImGui::Unindent();
+                    ImGui::Selectable(("%s", e->getName().c_str()));
                 }
+                ImGui::Unindent();
+                
             }
             //maps node
             if (ImGui::CollapsingHeader("Maps"))
@@ -289,16 +287,13 @@ static void ShowExampleAppMainMenuBar()
             //pages node
             if (ImGui::CollapsingHeader("Pages"))
             {
-                if (game != nullptr)
+                std::vector<Core::Page*> plist = *game->getPageList();
+                ImGui::Indent();
+                for (Core::Page* p : plist)
                 {
-                    std::vector<Core::Page*> plist = *game->getPageList();
-                    ImGui::Indent();
-                    for (Core::Page* p : plist)
-                    {
-                        ImGui::Selectable(("%s", p->getName().c_str()));
-                    }
-                    ImGui::Unindent();
+                    ImGui::Selectable(("%s", p->getName().c_str()));
                 }
+                ImGui::Unindent();
             }
             if (ImGui::CollapsingHeader("Scripts"))
             {
@@ -546,14 +541,18 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Enter Map Name:");
             ImGui::PushItemWidth(200);
             ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
-            ImGui::Text("Select Dimensions: ");
+            ImGui::Text("Rows:    ");
             ImGui::PushItemWidth(100);
+            ImGui::SameLine();
             ImGui::SliderInt("##1", &dim1, 0, 50);
+            ImGui::Text("Columns: ");
+            ImGui::SameLine();
             ImGui::SliderInt("##2", &dim2, 0, 50);
             if (ImGui::Button("Create New Map"))
             {
-                game->createMapPage(map_name);
-                // memset to clear the buffer after use
+                Core::MapPage* new_map = game->createMapPage(map_name);
+                new_map->getMap()->setDimensions(glm::vec2(dim1, dim2));
+                //TODO: render new map
                 memset(map_name, 0, 128);
             }
             ImGui::SameLine();
@@ -694,34 +693,38 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndMenu();
         }
-
-        // Edit menu
-        if (ImGui::BeginMenu("Edit"))
+        
+        //only display the edit and view menus if a project exists
+        if (game != nullptr)
         {
-            if (ImGui::MenuItem("Undo"))
+            // Edit menu
+            if (ImGui::BeginMenu("Edit"))
             {
-                printf("Undo!\n");
-                // TODO: Implement UNDO
+                if (ImGui::MenuItem("Undo"))
+                {
+                    printf("Undo!\n");
+                    // TODO: Implement UNDO
+                }
+                if (ImGui::MenuItem("Redo"))
+                {
+                    printf("Redo!\n");
+                    // TODO: Implement REDO
+                }
+                ImGui::EndMenu();
             }
-            if (ImGui::MenuItem("Redo"))
-            {
-                printf("Redo!\n");
-                // TODO: Implement REDO
-            }
-            ImGui::EndMenu();
-        }
 
-        // View menu
-        if (ImGui::BeginMenu("View"))
-        {
-            ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
-            ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
-            ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
-            ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
-            ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
-            ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
-            ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
-            ImGui::EndMenu();
+            //view menu
+            if (ImGui::BeginMenu("View"))
+            {
+                ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
+                ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
+                ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
+                ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
+                ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
+                ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
+                ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
+                ImGui::EndMenu();
+            }
         }
         ImGui::EndMainMenuBar();
     }
