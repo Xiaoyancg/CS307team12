@@ -546,10 +546,10 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Enter Map Name:");
             ImGui::PushItemWidth(200);
             ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
-            ImGui::Text("Enter Dimensions: ");
+            ImGui::Text("Select Dimensions: ");
             ImGui::PushItemWidth(100);
-            ImGui::InputInt(" ", &dim1);
-            ImGui::InputInt(" ", &dim2);
+            ImGui::SliderInt("##1", &dim1, 0, 50);
+            ImGui::SliderInt("##2", &dim2, 0, 50);
             if (ImGui::Button("Create New Map"))
             {
                 game->createMapPage(map_name);
