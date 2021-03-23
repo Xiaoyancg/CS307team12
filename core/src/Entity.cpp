@@ -92,17 +92,30 @@ namespace Core
         // P1
         mCoords[0] = lowX; // Top left x
         mCoords[1] = highY; // Top left y
+        // P1 texture coords
+        mCoords[2] = 0;
+        mCoords[3] = 1;
 
         // P2
-        mCoords[2] = lowX; // Bottom left x
-        mCoords[3] = lowY; // Bottom left y
-        // P3
-        mCoords[4] = highX; // Top right x
-        mCoords[5] = highY; // Top right y
-        // P4
-        mCoords[6] = highX; // Bottom right x
-        mCoords[7] = lowY; // Bottom right y
+        mCoords[4] = lowX; // Bottom left x
+        mCoords[5] = lowY; // Bottom left y
+        // P2 texture coords
+        mCoords[6] = 0;
+        mCoords[7] = 0;
 
+        // P3
+        mCoords[8] = highX; // Top right x
+        mCoords[9] = highY; // Top right y
+        // P3 texture coords
+        mCoords[10] = 1;
+        mCoords[11] = 1;
+
+        // P4
+        mCoords[12] = highX; // Bottom right x
+        mCoords[13] = lowY; // Bottom right y
+        // P4 texture coords
+        mCoords[14] = 1;
+        mCoords[15] = 0;
     }
 
     void Entity::setLocation ( glm::vec2 location )

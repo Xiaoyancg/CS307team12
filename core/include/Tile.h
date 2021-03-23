@@ -29,7 +29,7 @@ namespace Core
 
 
 	private:
-		int mCoords[8]; // 4 pairs of (x,y) coordinates in pixels
+		int mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
 
 		// Basic Tile variables
 		int mCurrentDepth; // Not implemented yet, but saving for later
