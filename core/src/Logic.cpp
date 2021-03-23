@@ -1,9 +1,14 @@
 #include "Logic.h"
 
-Logic::Logic(/* args */)
+namespace Core
 {
-}
 
-Logic::~Logic()
-{
+    Logic::Logic(/* args */)
+    {
+    }
+
+    Logic::~Logic()
+    {
+    }
+
 }
