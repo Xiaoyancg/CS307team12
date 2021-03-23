@@ -10,6 +10,7 @@ bool running = true;
 ImGui::FileBrowser saveDialog;
 ImGui::FileBrowser openDialog;
 ImGui::FileBrowser delDialog;
+ImGui::FileBrowser importDialog;
 
 // ====================================
 // Global Variable
@@ -114,8 +115,8 @@ int EditorMain(int argc, char *argv[])
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-     //set the default game view window state to open
-        selection[SPLASHSCREEN] = true;
+    //set the default splash screen state to open
+    selection[SPLASHSCREEN] = true;
 
     while (running)
     {
@@ -259,15 +260,54 @@ static void ShowExampleAppMainMenuBar()
     if (selection[OBJECTTREE])
     {
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-        if (ImGui::Begin("Object Tree"), &selection[OBJECTTREE])
+        if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
+            //entities node
+            if (ImGui::CollapsingHeader("Entities"))
+            {
+                std::vector<Core::Entity*> elist = currPage->getEntityList();
+                ImGui::Indent();
+                for (Core::Entity* e : elist)
+                {
+                    ImGui::Selectable(("%s", e->getName().c_str()));
+                }
+                ImGui::Unindent();
+                
+            }
+            //maps node
+            if (ImGui::CollapsingHeader("Maps"))
+            {
 
+            }
+            //logic node
+            if (ImGui::CollapsingHeader("Logic"))
+            {
+
+            }
+            //pages node
+            if (ImGui::CollapsingHeader("Pages"))
+            {
+                std::vector<Core::Page*> plist = *game->getPageList();
+                ImGui::Indent();
+                for (Core::Page* p : plist)
+                {
+                    ImGui::Selectable(("%s", p->getName().c_str()));
+                }
+                ImGui::Unindent();
+            }
+            if (ImGui::CollapsingHeader("Scripts"))
+            {
+
+            }
+            if (ImGui::CollapsingHeader("Sprites"))
+            {
+
+            }
         }
         ImGui::End();
     }
     
     //this isnt really a "selection", it opens by default
-    /*
     if (selection[SPLASHSCREEN])
     {
         int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
@@ -275,12 +315,13 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-        if (ImGui::Begin("Parchment"), &selection[SPLASHSCREEN])
+        if (ImGui::Begin("Parchment", &selection[SPLASHSCREEN]))
         {
+            // Here we will implement a render window type thing I assume to hold the splash screen
             ImGui::Text("Parchment Splash Screen");
         }
         ImGui::End();
-    }*/
+    }
 
     // Entity editor
     if (selection[ENTITYEDITOR])
@@ -294,8 +335,9 @@ static void ShowExampleAppMainMenuBar()
         bool entity_info = false;
         if (ImGui::Begin("Entity Editor", &selection[ENTITYEDITOR]))
         {
+            ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
-            ImGui::InputText("", entity_name, IM_ARRAYSIZE(entity_name));
+            ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
             {
                 currPage->createEntity(entity_name);
@@ -324,6 +366,17 @@ static void ShowExampleAppMainMenuBar()
         {
             ImGui::OpenPopup("Entity Information");
             entity_info = false;
+        }
+
+        // Entity information popup
+        if (ImGui::BeginPopup("Entity Information"))
+        {
+            std::vector<Core::Entity*> elist = currPage->getEntityList();
+            ImGui::Text("Entity Names: ");
+            for (Core::Entity* e : elist)
+            {
+                ImGui::Text(e->getName().c_str());
+            }
             ImGui::EndPopup();
         }
 
@@ -343,10 +396,12 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
             ImGui::Text("Enter Page Name:");
-            ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
+            ImGui::PushItemWidth(200);
+            ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
             const char* page_options[] = { "Page", "Menu" };
             static int current_item = 0;
-            if (ImGui::BeginListBox(""))
+            ImGui::Text("Select Page Type:");
+            if (ImGui::BeginListBox("", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
                 {
@@ -360,7 +415,7 @@ static void ShowExampleAppMainMenuBar()
                 }
                 ImGui::EndListBox();
             }
-            if (ImGui::Button("Create This Page"))
+            if (ImGui::Button("Create New Page"))
             {
                 game->createPage(page_name);
                 // memset to clear the buffer after use
@@ -381,7 +436,6 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Show Page Information"))
             {
                 page_info = true;
-                ImGui::OpenPopup("Page Information");
             }
         }
 
@@ -391,6 +445,7 @@ static void ShowExampleAppMainMenuBar()
             page_info = false;
         }
 
+        // Page information popup
         if (ImGui::BeginPopup("Page Information"))
         {
             ImGui::Text("Page Name:");
@@ -418,7 +473,8 @@ static void ShowExampleAppMainMenuBar()
         bool script_info = false;
         if (ImGui::Begin("Script Editor", &selection[SCRIPTEDITOR]))
         {
-            ImGui::InputText("", script_name, IM_ARRAYSIZE(script_name));
+            ImGui::PushItemWidth(200);
+            ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create New Script"))
             {
 
@@ -453,7 +509,10 @@ static void ShowExampleAppMainMenuBar()
         {
             if (ImGui::Button("Import Sprite"))
             {
-
+                importDialog = ImGui::FileBrowser(
+                    ImGuiFileBrowserFlags_NoTitleBar);
+                importDialog.SetTypeFilters({ ".jpg", ".png" });
+                importDialog.Open();
             }
             if (ImGui::Button("Show Sprite Information"))
             {
@@ -466,6 +525,8 @@ static void ShowExampleAppMainMenuBar()
 
     // Map editor
     static char map_name[128] = "";
+    static int dim1 = 0;
+    static int dim2 = 0;
     bool map_info = false;
     if (selection[MAPEDITOR])
     {
@@ -477,17 +538,46 @@ static void ShowExampleAppMainMenuBar()
         // map editor
         if (ImGui::Begin("Map Editor", &selection[MAPEDITOR]))
         {
+            ImGui::Text("Enter Map Name:");
+            ImGui::PushItemWidth(200);
+            ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
+            ImGui::Text("Rows:    ");
+            ImGui::PushItemWidth(100);
+            ImGui::SameLine();
+            ImGui::SliderInt("##1", &dim1, 0, 50);
+            ImGui::Text("Columns: ");
+            ImGui::SameLine();
+            ImGui::SliderInt("##2", &dim2, 0, 50);
             if (ImGui::Button("Create New Map"))
             {
-                game->createMapPage(map_name);
+                Core::MapPage* new_map = game->createMapPage(map_name);
+                new_map->getMap()->setDimensions(glm::vec2(dim1, dim2));
+                //TODO: render new map
+                memset(map_name, 0, 128);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Delete This Map"))
+            {
+                // TODO remove map function
                 // memset to clear the buffer after use
                 memset(map_name, 0, 128);
             }
-            if (ImGui::Button("Delete This Map"))
-            {
-            }
             if (ImGui::Button("Show Map Information "))
             {
+                map_info = true;
+            }
+
+            if (map_info)
+            {
+                ImGui::OpenPopup("Map Information");
+                map_info = false;
+            }
+
+            // Map information popup
+            if (ImGui::BeginPopup("Map Information"))
+            {
+                //TODO: implement map info 
+                ImGui::EndPopup();
             }
         }
 
@@ -603,18 +693,38 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndMenu();
         }
-
-        // Add menu
-        if (ImGui::BeginMenu("View"))
+        
+        //only display the edit and view menus if a project exists
+        if (game != nullptr)
         {
-            ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
-            ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
-            ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
-            ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
-            ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
-            ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
-            ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
-            ImGui::EndMenu();
+            // Edit menu
+            if (ImGui::BeginMenu("Edit"))
+            {
+                if (ImGui::MenuItem("Undo"))
+                {
+                    printf("Undo!\n");
+                    // TODO: Implement UNDO
+                }
+                if (ImGui::MenuItem("Redo"))
+                {
+                    printf("Redo!\n");
+                    // TODO: Implement REDO
+                }
+                ImGui::EndMenu();
+            }
+
+            //view menu
+            if (ImGui::BeginMenu("View"))
+            {
+                ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
+                ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
+                ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
+                ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
+                ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
+                ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
+                ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
+                ImGui::EndMenu();
+            }
         }
         ImGui::EndMainMenuBar();
     }
@@ -670,6 +780,16 @@ static void ShowExampleAppMainMenuBar()
         DeleteFile(delDialog.GetSelected().string().c_str());
         delDialog.ClearSelected();
         selection[DELETEPOPUP] = true;
+    }
+
+    // import dialog selection return
+    importDialog.Display();
+    if (importDialog.HasSelected())
+    {
+        // temporary output lines - connect to importing function - possibly link to sprite obj?
+        printf ( "(printf) Selected File: %s\n", importDialog.GetSelected ().string ().c_str () );
+        std::cout << "(cout) Selected File: " << importDialog.GetSelected().string() << std::endl;
+        importDialog.ClearSelected();
     }
 
     /*
@@ -729,19 +849,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::Text("Project deleted successfully!");
         ImGui::EndPopup();
     }
-
-    // Entity information popup
-    if (ImGui::BeginPopup("Entity Information"))
-    {
-        std::vector<Core::Entity *> elist = currPage->getEntityList();
-        ImGui::Text("Entity Names: ");
-        for (Core::Entity *e : elist)
-        {
-            ImGui::Text(e->getName().c_str());
-        }
-        ImGui::EndPopup();
-    }
-
+    
     // Successful deletion popup
     if (ImGui::BeginPopup("Delete Successful"))
     {
