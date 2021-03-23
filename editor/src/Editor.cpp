@@ -262,13 +262,57 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
+            //entities node
+            if (ImGui::CollapsingHeader("Entities"))
+            {
+                if (game != nullptr) 
+                {
+                    std::vector<Core::Entity*> elist = currPage->getEntityList();
+                    ImGui::Indent();
+                    for (Core::Entity* e : elist)
+                    {
+                        ImGui::Selectable(("%s", e->getName().c_str()));
+                    }
+                    ImGui::Unindent();
+                }
+            }
+            //maps node
+            if (ImGui::CollapsingHeader("Maps"))
+            {
 
+            }
+            //logic node
+            if (ImGui::CollapsingHeader("Logic"))
+            {
+
+            }
+            //pages node
+            if (ImGui::CollapsingHeader("Pages"))
+            {
+                if (game != nullptr)
+                {
+                    std::vector<Core::Page*> plist = *game->getPageList();
+                    ImGui::Indent();
+                    for (Core::Page* p : plist)
+                    {
+                        ImGui::Selectable(("%s", p->getName().c_str()));
+                    }
+                    ImGui::Unindent();
+                }
+            }
+            if (ImGui::CollapsingHeader("Scripts"))
+            {
+
+            }
+            if (ImGui::CollapsingHeader("Sprites"))
+            {
+
+            }
         }
         ImGui::End();
     }
     
     //this isnt really a "selection", it opens by default
-    
     if (selection[SPLASHSCREEN])
     {
         int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
@@ -278,7 +322,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         if (ImGui::Begin("Parchment", &selection[SPLASHSCREEN]))
         {
-            // Here we will implement a render window type thing I assume to hold the slpash screen
+            // Here we will implement a render window type thing I assume to hold the splash screen
             ImGui::Text("Parchment Splash Screen");
         }
         ImGui::End();
@@ -296,6 +340,7 @@ static void ShowExampleAppMainMenuBar()
         bool entity_info = false;
         if (ImGui::Begin("Entity Editor", &selection[ENTITYEDITOR]))
         {
+            ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
             ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
@@ -356,10 +401,12 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
             ImGui::Text("Enter Page Name:");
+            ImGui::PushItemWidth(200);
             ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
             const char* page_options[] = { "Page", "Menu" };
             static int current_item = 0;
-            if (ImGui::BeginListBox(""))
+            ImGui::Text("Select Page Type:");
+            if (ImGui::BeginListBox("", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
                 {
@@ -373,7 +420,7 @@ static void ShowExampleAppMainMenuBar()
                 }
                 ImGui::EndListBox();
             }
-            if (ImGui::Button("Create This Page"))
+            if (ImGui::Button("Create New Page"))
             {
                 game->createPage(page_name);
                 // memset to clear the buffer after use
@@ -431,6 +478,7 @@ static void ShowExampleAppMainMenuBar()
         bool script_info = false;
         if (ImGui::Begin("Script Editor", &selection[SCRIPTEDITOR]))
         {
+            ImGui::PushItemWidth(200);
             ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create New Script"))
             {
@@ -482,6 +530,8 @@ static void ShowExampleAppMainMenuBar()
 
     // Map editor
     static char map_name[128] = "";
+    static int dim1 = 0;
+    static int dim2 = 0;
     bool map_info = false;
     if (selection[MAPEDITOR])
     {
@@ -494,13 +544,19 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Map Editor", &selection[MAPEDITOR]))
         {
             ImGui::Text("Enter Map Name:");
+            ImGui::PushItemWidth(200);
             ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
+            ImGui::Text("Enter Dimensions: ");
+            ImGui::PushItemWidth(100);
+            ImGui::InputInt(" ", &dim1);
+            ImGui::InputInt(" ", &dim2);
             if (ImGui::Button("Create New Map"))
             {
                 game->createMapPage(map_name);
                 // memset to clear the buffer after use
                 memset(map_name, 0, 128);
             }
+            ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
             {
                 // TODO remove map function
@@ -509,7 +565,20 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::Button("Show Map Information "))
             {
-                // TODO show map list?
+                map_info = true;
+            }
+
+            if (map_info)
+            {
+                ImGui::OpenPopup("Map Information");
+                map_info = false;
+            }
+
+            // Map information popup
+            if (ImGui::BeginPopup("Map Information"))
+            {
+                //TODO: implement map info 
+                ImGui::EndPopup();
             }
         }
 
