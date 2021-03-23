@@ -74,50 +74,55 @@ namespace Core
 
         int border = 1; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
         int index = 0; // An easy way to access the mTileArray without having to do any calculations
-        for ( int row = mMapDimensions.y - 1; row >= 0; row-- )
+        for (int row = mMapDimensions.y - 1; row >= 0; row--)
         {
-            for ( int col = 0; col < mMapDimensions.x; col++ )
+            for (int col = 0; col < mMapDimensions.x; col++)
             {
-                int coords[8];
+                // posCoords will be filled with the 4 position coordinates for each tile and will be
+                // given to Tile::setCoords() where it will be stored in a render-able buffer correctly
+                int posCoords[8];
 
                 // P1
-                coords[0] = lowX; // Top left x
-                coords[1] = highY; // Top left y
+                posCoords[0] = lowX; // Top left x
+                posCoords[1] = highY; // Top left y
 
                 // P2
-                coords[2] = lowX; // Bottom left x
-                coords[3] = lowY; // Bottom left y
+                posCoords[2] = lowX; // Bottom left x
+                posCoords[3] = lowY; // Bottom left y
                 // P3
-                coords[4] = highX; // Top right x
-                coords[5] = highY; // Top right y
+                posCoords[4] = highX; // Top right x
+                posCoords[5] = highY; // Top right y
                 // P4
-                coords[6] = highX; // Bottom right x
-                coords[7] = lowY; // Bottom right y
+                posCoords[6] = highX; // Bottom right x
+                posCoords[7] = lowY; // Bottom right y
 
 
                 // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
                 // P1
-                coords[0] += border;
-                coords[1] -= border;
+                posCoords[0] += border;
+                posCoords[1] -= border;
 
                 // P2
-                coords[2] += border;
-                coords[3] += border;
+                posCoords[2] += border;
+                posCoords[3] += border;
                 // P3
-                coords[4] -= border;
-                coords[5] -= border;
+                posCoords[4] -= border;
+                posCoords[5] -= border;
                 // P4
-                coords[6] -= border;
-                coords[7] += border;
+                posCoords[6] -= border;
+                posCoords[7] += border;
 
+                // Set the coordinates for the current tile
+                mTileArray[index].setCoords(posCoords);
 
-                mTileArray[index].setCoords ( coords );
-
+                // Increment loop variables to find the next tile in the same row
                 lowX += mTileSize;
                 highX += mTileSize;
                 index++;
             }
-            lowX = ( Game::width / 2 ) - halfXPixels;;
+
+            // Calculate the next tile in a new row
+            lowX = (Game::width / 2) - halfXPixels;;
             highX = lowX + mTileSize;
             highY -= mTileSize;
             lowY -= mTileSize;

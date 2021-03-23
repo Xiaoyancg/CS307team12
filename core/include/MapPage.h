@@ -36,7 +36,5 @@ namespace Core
     private:
         // The map! only one for now, I plan to add code to support 1 MapPage for an arbitrary amount of maps with std::vector and unique_ptrs
         Map *mMap;
-
-        int mCurrentMap = -1; // Unimplemented, but will be used when multiple-map MapPages get added
     };
 }

@@ -14,7 +14,7 @@ namespace Core
         mRotation ( rotation ),
         mSpriteID ( spriteID )
     {
-// All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
+        // All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
         calculateCoords ( location, scale );
     }
 
