@@ -1,19 +1,20 @@
 
-// logic class contains all the information needed to achieve the designed result
-class Logic
+namespace Core
 {
-private:
-    /* data */
+    // logic class contains all the information needed to achieve the designed result
+    // support functions: {
+    //      set current page
+    // }
+    enum class LogicT
+    {
+        currPage
+    };
 
-public:
-    Logic(/* args */);
-    ~Logic();
-};
-
-Logic::Logic(/* args */)
-{
-}
-
-Logic::~Logic()
-{
+    class Logic
+    {
+    private:
+    public:
+        Logic(/* args */);
+        ~Logic();
+    };
 }

@@ -22,6 +22,9 @@ namespace Core
 {
     typedef std::vector<Page *>::iterator PLitr;
     typedef std::vector<Page *> PL;
+
+    //Game *game; // init in editor or vm, used by logic
+
     class Game
     {
     public:

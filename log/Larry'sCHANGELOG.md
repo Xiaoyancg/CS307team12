@@ -20,12 +20,17 @@ All notable changes to this project will be documented in this file.
 - string gameName in Editor.cpp 
 - bool isSaved in Editor.cpp
 - set isSaved after open/ save
+- add class Script in Script.h, Script.cpp
+- add class Logic in Logic.h, Logic.cpp
+- add enum class LogicT in Logic.h 
+- add //Core::Game *game in Game.h
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
 - Editor.cpp save menu item
 - Editor.cpp save as popup
 - Editor openDialog
+- type conversion in map, use ivec2 instead of vec2
 ### Changed
 - typedef name change
 - make glm a library instead of interface to get rid of warnings
