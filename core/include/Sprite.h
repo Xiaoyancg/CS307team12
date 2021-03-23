@@ -10,18 +10,14 @@ namespace Core
 	{
 	public:
 		Sprite(std::string filename);
-		~Sprite();
 
-		unsigned char* getImageData();
+		unsigned int getSprite();
 
 		glm::vec2 getDimensions();
 
 	private:
-		// Loads image in 'filename' into mImageData 
-		bool loadImageFromFilename(std::string filename);
-
-		unsigned char* mImageData;
-
 		glm::vec2 mImageDimensions;
+
+		unsigned int mTextureID; // Set by OpenGL
 	};
 }
