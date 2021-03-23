@@ -88,8 +88,15 @@ int EditorMain(int argc, char *argv[])
     ImGuiIO &io = ImGui::GetIO();
     io.WantCaptureMouse = true;
     io.WantCaptureKeyboard = true;
+    // resize from window edge flag
     io.ConfigWindowsResizeFromEdges = true;
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    // multiple viewports flag
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    // docking flag
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    // keep docking bound to shift
+    io.ConfigDockingWithShift = true;
+
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
@@ -107,8 +114,8 @@ int EditorMain(int argc, char *argv[])
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    // set the default game view window state to open
-    //    selection[GAMEVIEW] = true;
+     //set the default game view window state to open
+        selection[SPLASHSCREEN] = true;
 
     while (running)
     {
@@ -139,7 +146,8 @@ int EditorMain(int argc, char *argv[])
         ImGui::NewFrame();
         if (!showDemoWindow)
         {
-            // test main menu bar
+            // turn the main viewport into a docking one to allow for docking
+            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
             ShowExampleAppMainMenuBar();
         }
 
@@ -222,20 +230,57 @@ static void ShowExampleAppMainMenuBar()
         {
             // set the windows default size
             ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
             // the game view window itself
             ImGui::Begin("Game View", &selection[GAMEVIEW]);
 
-            ImVec2 dims = ImGui::GetWindowSize();
+            //ImVec2 dims = ImGui::GetWindowSize();
+
+            // Get size of drawable space on the window, instead of the entire size of the window
+            ImVec2 canvas_size = ImGui::GetContentRegionAvail(); 
 
             glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
 
             game->render();                             // Render Game with new viewport size
-            glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
-            ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
+            //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size
+            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+
             ImGui::End();
+            ImGui::PopStyleVar();
         }
     }
+
+    //object tree
+    if (selection[OBJECTTREE])
+    {
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        if (ImGui::Begin("Object Tree"), &selection[OBJECTTREE])
+        {
+
+        }
+        ImGui::End();
+    }
+    
+    //this isnt really a "selection", it opens by default
+    /*
+    if (selection[SPLASHSCREEN])
+    {
+        int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
+        int dwHeight = GetSystemMetrics(SM_CYSCREEN) / 2;
+        ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+        ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+        ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+        if (ImGui::Begin("Parchment"), &selection[SPLASHSCREEN])
+        {
+            ImGui::Text("Parchment Splash Screen");
+        }
+        ImGui::End();
+    }*/
 
     // Entity editor
     if (selection[ENTITYEDITOR])
@@ -249,6 +294,7 @@ static void ShowExampleAppMainMenuBar()
         bool entity_info = false;
         if (ImGui::Begin("Entity Editor", &selection[ENTITYEDITOR]))
         {
+            ImGui::Text("Enter Entity Name:");
             ImGui::InputText("", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
             {
@@ -272,14 +318,16 @@ static void ShowExampleAppMainMenuBar()
             {
                 entity_info = true;
             }
-            ImGui::End();
         }
-
+        
         if (entity_info)
         {
             ImGui::OpenPopup("Entity Information");
             entity_info = false;
+            ImGui::EndPopup();
         }
+
+        ImGui::End();
     }
 
     // Page editor
@@ -294,7 +342,24 @@ static void ShowExampleAppMainMenuBar()
         bool page_info = false;
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
+            ImGui::Text("Enter Page Name:");
             ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
+            const char* page_options[] = { "Page", "Menu" };
+            static int current_item = 0;
+            if (ImGui::BeginListBox(""))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
+                {
+                    const bool is_selected = (current_item == n);
+                    if (ImGui::Selectable(page_options[n], is_selected))
+                        current_item = n;
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndListBox();
+            }
             if (ImGui::Button("Create This Page"))
             {
                 game->createPage(page_name);
@@ -318,7 +383,6 @@ static void ShowExampleAppMainMenuBar()
                 page_info = true;
                 ImGui::OpenPopup("Page Information");
             }
-            ImGui::End();
         }
 
         if (page_info)
@@ -340,6 +404,64 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndPopup();
         }
+
+        ImGui::End();
+    }
+
+    // Script editor
+    if (selection[SCRIPTEDITOR])
+    {
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+
+        static char script_name[128] = "";
+        bool script_info = false;
+        if (ImGui::Begin("Script Editor", &selection[SCRIPTEDITOR]))
+        {
+            ImGui::InputText("", script_name, IM_ARRAYSIZE(script_name));
+            if (ImGui::Button("Create New Script"))
+            {
+
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Delete This Script"))
+            {
+
+            }
+            if (ImGui::Button("Link This Script"))
+            {
+
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Show Script Information"))
+            {
+                script_info = true;
+            }
+        }
+
+        ImGui::End();
+    }
+
+    // Sprite editor
+    if (selection[SPRITEEDITOR])
+    {
+        // set the windows default size
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+
+        bool sprite_info = false;
+        if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
+        {
+            if (ImGui::Button("Import Sprite"))
+            {
+
+            }
+            if (ImGui::Button("Show Sprite Information"))
+            {
+                sprite_info = true;
+            }
+        }
+
+        ImGui::End();
     }
 
     // Map editor
@@ -367,8 +489,9 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Show Map Information "))
             {
             }
-            ImGui::End();
         }
+
+        ImGui::End();
     }
 
     // Calls saved successfully popup on project save
@@ -484,10 +607,13 @@ static void ShowExampleAppMainMenuBar()
         // Add menu
         if (ImGui::BeginMenu("View"))
         {
+            ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
             ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
             ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
             ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
             ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
+            ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
+            ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
