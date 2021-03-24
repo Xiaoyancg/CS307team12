@@ -528,6 +528,8 @@ static void ShowExampleAppMainMenuBar()
     static int dim1 = 0;
     static int dim2 = 0;
     bool map_info = false;
+    Core::MapPage* map_page = NULL;
+    Core::Map* new_map = NULL;
     if (selection[MAPEDITOR])
     {
         // possibly implement a new function here for readability purposes
@@ -550,17 +552,25 @@ static void ShowExampleAppMainMenuBar()
             ImGui::SliderInt("##2", &dim2, 0, 50);
             if (ImGui::Button("Create New Map"))
             {
-                Core::MapPage* new_map = game->createMapPage(map_name);
-                new_map->getMap()->setDimensions(glm::vec2(dim1, dim2));
+                //creates a new map with map_name specified by user and dimensions as specified by user
+                new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64);
+                map_page = game->createMapPage(map_name, new_map);
+                new_map->setName(map_name);
+                new_map->setDimensions(glm::vec2(dim1, dim2));
                 //TODO: render new map
-                memset(map_name, 0, 128);
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
             {
-                // TODO remove map function
-                // memset to clear the buffer after use
+                //creates a map with 0x0 dimensions and an empty name
                 memset(map_name, 0, 128);
+                dim1 = 0;
+                dim2 = 0;
+                new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64);
+                map_page = game->createMapPage(map_name, new_map);
+                new_map->setName(map_name);
+                new_map->setDimensions(glm::vec2(dim1, dim2));
+                delete_success = true;
             }
             if (ImGui::Button("Show Map Information "))
             {
@@ -576,12 +586,17 @@ static void ShowExampleAppMainMenuBar()
             // Map information popup
             if (ImGui::BeginPopup("Map Information"))
             {
-                //TODO: implement map info 
+                ImGui::Text("Map Name:");
+                ImGui::SameLine();
+                ImGui::Text(map_name);
+                ImGui::Text("Dimensions:");
+                ImGui::SameLine();
+                ImGui::Text("%i Rows x %i Columns", dim1, dim2);
                 ImGui::EndPopup();
             }
+            ImGui::End();
         }
-
-        ImGui::End();
+        //ImGui::End();
     }
 
     // Calls saved successfully popup on project save
