@@ -520,21 +520,6 @@ static void ShowExampleAppMainMenuBar()
             }
         }
 
-        if (sprite_info)
-        {
-            ImGui::OpenPopup("Sprite Information");
-            sprite_info = false;
-        }
-
-        // Entity information popup
-        if (ImGui::BeginPopup("Sprite Information"))
-        {
-            ImGui::Text("Sprite Names: ");
-            // TODO: Sprite name with each ID?
-
-            ImGui::EndPopup();
-        }
-
         ImGui::End();
     }
 
