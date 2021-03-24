@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <ctime>
 #include <vector>
-#include <memory> // For unique_ptr
 #include <string>
 #include <iterator>
 #include <SDL.h>
@@ -81,9 +80,10 @@ namespace Core
         int getNumPage();
 
         // Sprite operations
-        unsigned int createSprite(std::string);
+        unsigned int createSprite(std::string, std::string);
         void deleteSprite(int);
         Sprite* getSpriteFromID(int);
+        std::unordered_map<int, Sprite*> getSprites();
 
         // =========================
         // STATE OPERATION

@@ -9,13 +9,17 @@ namespace Core
 	class Sprite
 	{
 	public:
-		Sprite(std::string filename);
+		Sprite(std::string name, std::string filename);
 
 		unsigned int getSpriteID();
 
 		glm::vec2 getDimensions();
 
+		std::string getName();
+
 	private:
+		std::string mSpriteName;
+
 		glm::vec2 mImageDimensions;
 
 		unsigned int mTextureID; // Set by OpenGL
