@@ -526,6 +526,10 @@ static void ShowExampleAppMainMenuBar()
             {
                 sprite_info = true;
             }
+            if (ImGui::Button("Delete This Sprite"))
+            {
+                // TODO: Implement sprite deletion
+            }
         }
 
         if (spriteIDInput != "")
