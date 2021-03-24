@@ -620,9 +620,8 @@ static void ShowExampleAppMainMenuBar()
                 ImGui::Text("%i Rows x %i Columns", dim1, dim2);
                 ImGui::EndPopup();
             }
-            ImGui::End();
         }
-        //ImGui::End();
+        ImGui::End();
     }
 
     // Calls saved successfully popup on project save
