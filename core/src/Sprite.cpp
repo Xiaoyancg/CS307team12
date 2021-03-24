@@ -5,7 +5,8 @@
 
 namespace Core
 {
-	Sprite::Sprite(std::string filename) {
+	Sprite::Sprite(std::string name, std::string filename) {
+		mSpriteName = name;
 		mTextureID = -1;
 
 		int width;
@@ -19,7 +20,6 @@ namespace Core
 		if (mImageData) {
 			glGenTextures(1, &mTextureID);
 			glBindTexture(GL_TEXTURE_2D, mTextureID);
-
 			// set the texture wrapping parameters
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -45,4 +45,7 @@ namespace Core
 		return mImageDimensions;
 	}
 
+	std::string Sprite::getName() {
+		return mSpriteName;
+	}
 }

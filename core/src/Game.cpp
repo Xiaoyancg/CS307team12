@@ -180,18 +180,24 @@ namespace Core
         }
     }
 
-    unsigned int Game::createSprite(std::string filename) {
-        Sprite* newSprite = new Sprite(filename);
+    unsigned int Game::createSprite(std::string name, std::string filename) {
+        Sprite* newSprite = new Sprite(name, filename);
         unsigned int id = newSprite->getSpriteID();
         this->mSprites[id] = newSprite;
         return id; // Return OpenGL ID of the new sprite
     }
+    
     void Game::deleteSprite(int id) {
         delete this->mSprites[id];
         mSprites.erase(id);
     }
+    
     Sprite* Game::getSpriteFromID(int id) {
         return mSprites[id];
+    }
+
+    std::unordered_map<int, Sprite*> Game::getSprites() {
+        return mSprites;
     }
 
     // =========================
@@ -609,9 +615,6 @@ namespace Core
     ///////////////
     void Game::mainLoop()
     {
-
-        unsigned int guySprite = createSprite("C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\oh_yeah_woo_yeah.png");
-
         SDL_Event event;
         int close_window = false;
         while (!close_window)

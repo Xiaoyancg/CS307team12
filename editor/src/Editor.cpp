@@ -98,7 +98,6 @@ int EditorMain(int argc, char *argv[])
     // keep docking bound to shift
     io.ConfigDockingWithShift = true;
 
-
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
 
@@ -504,9 +503,18 @@ static void ShowExampleAppMainMenuBar()
         // set the windows default size
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
+        static char sprite_name[128] = "";
         bool sprite_info = false;
         if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
         {
+
+
+            /////////////////////////////////
+            ImGui::PushItemWidth(200);
+            ImGui::Text("Enter Sprite Name:");
+            ImGui::InputText(" ", sprite_name, IM_ARRAYSIZE(sprite_name));
+
+
             if (ImGui::Button("Import Sprite"))
             {
                 importDialog = ImGui::FileBrowser(
@@ -514,12 +522,40 @@ static void ShowExampleAppMainMenuBar()
                 importDialog.SetTypeFilters({ ".jpg", ".png" });
                 importDialog.Open();
             }
+            ImGui::SameLine();
+
             if (ImGui::Button("Show Sprite Information"))
             {
                 sprite_info = true;
             }
-        }
+            if (sprite_info)
+            {
+                ImGui::OpenPopup("Sprite Information");
+                sprite_info = false;
+            }
 
+            // Sprite information popup
+            if (ImGui::BeginPopup("Sprite Information"))
+            {
+                std::unordered_map<int, Core::Sprite*> spriteList = game->getSprites();
+                ImGui::Text("id: Sprite Name");
+                for (const auto& [key, value] : spriteList)
+                {
+                    ImGui::Text(std::to_string(key).append(": ").append(value->getName()).c_str());
+                }
+                ImGui::EndPopup();
+            }
+
+            // Sprite import dialog
+            // NOTE: I had to move this here from the bottom section because this needs access to sprite_name
+            importDialog.Display();
+            if (importDialog.HasSelected())
+            {
+                game->createSprite(sprite_name, importDialog.GetSelected().string());
+                importDialog.ClearSelected();
+                memset(sprite_name, 0, 128);
+            }
+        }
         ImGui::End();
     }
 
@@ -770,6 +806,9 @@ static void ShowExampleAppMainMenuBar()
         selection[GAMEVIEW] = true;
         isSaved = true;
 
+        // TEMPORARY TEST SPRITE IMPORTING FROM EDITOR
+
+
         openDialog.ClearSelected();
     }
 
@@ -782,15 +821,7 @@ static void ShowExampleAppMainMenuBar()
         selection[DELETEPOPUP] = true;
     }
 
-    // import dialog selection return
-    importDialog.Display();
-    if (importDialog.HasSelected())
-    {
-        // temporary output lines - connect to importing function - possibly link to sprite obj?
-        printf ( "(printf) Selected File: %s\n", importDialog.GetSelected ().string ().c_str () );
-        std::cout << "(cout) Selected File: " << importDialog.GetSelected().string() << std::endl;
-        importDialog.ClearSelected();
-    }
+
 
     /*
      *  ========================
