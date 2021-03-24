@@ -524,6 +524,28 @@ static void ShowExampleAppMainMenuBar()
             }
         }
 
+        if (sprite_info)
+        {
+            ImGui::OpenPopup("Sprite Information");
+            sprite_info = false;
+        }
+
+        // Sprite information popup
+        if (ImGui::BeginPopup("Sprite Information"))
+        {
+            // Sprite name, dimensions, ID?
+            if (currentComponent == "No Component Selected") 
+            {
+                ImGui::Text("Sprite Name: None");
+            }
+            else
+            {
+                std::string sprite_name = "Sprite Name: " + currentComponent;
+                ImGui::Text(sprite_name.c_str());
+            }
+            ImGui::EndPopup();
+        }
+
         ImGui::End();
     }
 
