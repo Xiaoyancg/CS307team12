@@ -36,6 +36,9 @@ std::string gameName = "empty";
 // is game saved before (for save)
 bool isSaved = false;
 
+// currently selected game component
+std::string currentComponent = "No Component Selected";
+
 // ===============================
 // Main function
 
@@ -503,10 +506,11 @@ static void ShowExampleAppMainMenuBar()
     {
         // set the windows default size
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-
+        
         bool sprite_info = false;
         if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
         {
+            ImGui::Text(currentComponent.c_str());
             if (ImGui::Button("Import Sprite"))
             {
                 importDialog = ImGui::FileBrowser(
@@ -801,6 +805,10 @@ static void ShowExampleAppMainMenuBar()
     importDialog.Display();
     if (importDialog.HasSelected())
     {
+        // extract just the file name from the selected path
+        std::string fileName = importDialog.GetSelected().string().substr(importDialog.GetSelected().string().find_last_of('\\', std::string::npos) + 1, std::string::npos);
+        currentComponent = fileName;
+
         // temporary output lines - connect to importing function - possibly link to sprite obj?
         printf ( "(printf) Selected File: %s\n", importDialog.GetSelected ().string ().c_str () );
         std::cout << "(cout) Selected File: " << importDialog.GetSelected().string() << std::endl;
