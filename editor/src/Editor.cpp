@@ -507,9 +507,13 @@ static void ShowExampleAppMainMenuBar()
         // set the windows default size
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         
+        static char spriteIDInput[128] = "";
+        static int spriteID = 0;
         bool sprite_info = false;
         if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
         {
+            ImGui::Text("Set Sprite ID:");
+            ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
             ImGui::Text(currentComponent.c_str());
             if (ImGui::Button("Import Sprite"))
             {
@@ -522,6 +526,11 @@ static void ShowExampleAppMainMenuBar()
             {
                 sprite_info = true;
             }
+        }
+
+        if (spriteIDInput != "")
+        {
+            spriteID = atoi(spriteIDInput);
         }
 
         if (sprite_info)
