@@ -806,9 +806,6 @@ static void ShowExampleAppMainMenuBar()
         selection[GAMEVIEW] = true;
         isSaved = true;
 
-        // TEMPORARY TEST SPRITE IMPORTING FROM EDITOR
-
-
         openDialog.ClearSelected();
     }
 

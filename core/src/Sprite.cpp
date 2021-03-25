@@ -30,6 +30,8 @@ namespace Core
 			// Load mImageData into the currently bound texture (mTextureID)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mImageDimensions.x, mImageDimensions.x, 0, GL_RGBA, GL_UNSIGNED_BYTE, mImageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
+
+			glBindTexture(GL_TEXTURE_2D, 0); // Unbind the new sprite
 			SOIL_free_image_data(mImageData); // Delete image data after loading into OpenGL 
 		}
 		else {
