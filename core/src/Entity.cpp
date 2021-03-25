@@ -142,15 +142,19 @@ namespace Core
 
     void Entity::render ()
     {
-// Load the data of the 'coords' buffer into the currently bound array buffer, VBO
+        if (mSpriteID != -1) {
+            glBindTexture(GL_TEXTURE_2D, mSpriteID); // Bind correct sprite
+        }
+        // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData ( GL_ARRAY_BUFFER, sizeof ( mCoords ), mCoords, GL_DYNAMIC_DRAW );
         // Draw the bound buffer (coords)
         glDrawArrays ( GL_TRIANGLE_STRIP, 0, 4 );
+
+        glBindTexture(GL_TEXTURE_2D, 0); // Unbind current sprite
+
 #ifdef __TEST_CORE
         entityError = glGetError ();
 #endif // __TEST_CORE
-
-
     }
 
 
