@@ -5,7 +5,7 @@
 
 int GameVMMain(int argc, char *argv[])
 {
-    std::string gdatastring = ReadFile(searchGdata("./")));
+    std::string gdatastring = ReadFile(searchGdata("./"));
     if (gdatastring.size() == 0)
     {
         // FIXME: should use windows warning window

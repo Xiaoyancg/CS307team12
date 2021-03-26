@@ -61,14 +61,6 @@ set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE ${GLM_DIR})
 
-#file(GLOB glm_srcs "${GLM_DIR}/glm/*.hpp" "${GLM_DIR}/glm/core/*.hpp" "${GLM_DIR}/glm/core/*.inl")
-#file(GLOB glm_srcs_empty "${PROJECT_SOURCE_DIR}/core/src/glm.cpp")
-#add_library(glm ${glm_srcs} ${glm_srcs_empty})
-#target_compile_options(glm PRIVATE /w)
-#set_target_properties(glm PROPERTIES LINKER_LANGUAGE CXX)
-#target_include_directories(glm SYSTEM PUBLIC ${GLM_DIR})
-
-
 set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
 add_library(imfb INTERFACE)
 target_include_directories(imfb INTERFACE ${IMFB_DIR})
