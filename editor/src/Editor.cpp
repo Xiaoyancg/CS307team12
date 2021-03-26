@@ -502,12 +502,9 @@ static void ShowExampleAppMainMenuBar()
         // set the windows default size
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
-<<<<<<< HEAD
-        == == == =
-                     // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given,
-            //       and will find and return the next usable ID if none is explicitly requested on Sprite creation.
-            static char sprite_name[128] = "";
->>>>>>> 6e3b9978e461e51314929d4095b3b01875ddeb39
+        // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given,
+        //       and will find and return the next usable ID if none is explicitly requested on Sprite creation.
+        static char sprite_name[128] = "";
         static char spriteIDInput[128] = "";
         int spriteID = -1; // -1 means the ID has not been sent (can't default to 0 because 0 is a valid ID)
         bool sprite_info = false;
