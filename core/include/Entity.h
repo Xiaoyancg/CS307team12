@@ -1,9 +1,8 @@
 #pragma once
-
 #include <string>
-
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
+#include "SpriteManager.h"
 
 namespace Core
 {
@@ -68,6 +67,13 @@ namespace Core
         // UTILITY OPERATION
 
 
+        // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+        // This is set by Game.cpp when a Game object is created
+        // Any class that renders sprites needs a way to translate between Parchment Sprite IDs and imported OpenGL IDs.
+        // The only other solution I could think of was to make mGameSprites in Game.cpp a global variable, 
+        // but that sounds like a disgusting solution and im not about to break encapsulation.
+        // If anyone has a better idea, feel free to implement it. Otherwise, this should be fine. 
+        static inline SpriteManager* mGameSprites;
 
     private:
         // Basic Entity variables

@@ -26,6 +26,7 @@ namespace Core
     Game::Game(std::string gameName) : gameName(gameName)
     {
         useFramebuffer = false;
+        setupSpriteRefs();
     }
 
     // editor open
@@ -34,6 +35,7 @@ namespace Core
         this->parse(json);
         texcbo = o;
         useFramebuffer = true;
+        setupSpriteRefs();
     }
 
     // editor new
@@ -43,6 +45,14 @@ namespace Core
         useFramebuffer = true;
         this->gameName = "editortestname";
         this->setCurrentPage(this->createPage("emptyPage"));
+        setupSpriteRefs();
+    }
+
+    // Each class that renders sprites needs a reference to the same SpriteManager as this class. 
+    // Whenever a new class is added that renders sprites, its reference must be set here.
+    void Game::setupSpriteRefs() {
+        Entity::mGameSprites = &mGameSprites;
+        MapPage::mGameSprites = &mGameSprites;
     }
 
     // =========================
@@ -180,24 +190,27 @@ namespace Core
         }
     }
 
-    unsigned int Game::createSprite(std::string name, std::string filename) {
-        Sprite* newSprite = new Sprite(name, filename);
-        unsigned int id = newSprite->getSpriteID();
-        this->mSprites[id] = newSprite;
-        return id; // Return OpenGL ID of the new sprite
+    unsigned int Game::createSprite(std::string name, std::string filename, int id) {
+        // If an ID is given
+        if (id != -1) {
+            return mGameSprites.createSprite(name, filename, id); // Return OpenGL ID of the new sprite
+        }
+        // If an ID is not given
+        else {
+            return mGameSprites.createSprite(name, filename);
+        }
     }
     
     void Game::deleteSprite(int id) {
-        delete this->mSprites[id];
-        mSprites.erase(id);
+        mGameSprites.deleteSprite(id);
     }
     
     Sprite* Game::getSpriteFromID(int id) {
-        return mSprites[id];
+        return mGameSprites.atID(id);
     }
 
     std::unordered_map<int, Sprite*> Game::getSprites() {
-        return mSprites;
+        return mGameSprites.getSprites();
     }
 
     // =========================
@@ -615,6 +628,11 @@ namespace Core
     ///////////////
     void Game::mainLoop()
     {
+        createSprite("1", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_1.png", 1);
+        createSprite("2", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_2.png", 2);
+        createSprite("3", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_3.png", 3);
+        createSprite("guy", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\oh_yeah_woo_yeah.png", 4);
+
         SDL_Event event;
         int close_window = false;
         while (!close_window)

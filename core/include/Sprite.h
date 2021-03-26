@@ -11,7 +11,7 @@ namespace Core
 	public:
 		Sprite(std::string name, std::string filename);
 
-		unsigned int getSpriteID();
+		unsigned int getOpenGLTextureID();
 
 		glm::vec2 getDimensions();
 

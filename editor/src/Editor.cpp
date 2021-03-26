@@ -506,10 +506,11 @@ static void ShowExampleAppMainMenuBar()
         // set the windows default size
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
+        // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given, 
+        //       and will find and return the next usable ID if none is explicitly requested on Sprite creation.
         static char sprite_name[128] = "";
-        
         static char spriteIDInput[128] = "";
-        static int spriteID = 0;
+        int spriteID = -1; // -1 means the ID has not been sent (can't default to 0 because 0 is a valid ID)
         bool sprite_info = false;
         if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
         {
@@ -518,8 +519,9 @@ static void ShowExampleAppMainMenuBar()
             /////////////////////////////////
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Sprite Name:");
-            ImGui::InputText(" ", sprite_name, IM_ARRAYSIZE(sprite_name));
+            ImGui::InputText("  ", sprite_name, IM_ARRAYSIZE(sprite_name));
 
+            ImGui::PushItemWidth(200);
 
             ImGui::Text("Set Sprite ID:");
             ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
@@ -531,6 +533,7 @@ static void ShowExampleAppMainMenuBar()
                 importDialog.SetTypeFilters({ ".jpg", ".png" });
                 importDialog.Open();
             }
+
             if (ImGui::Button("Show Sprite Information"))
             {
                 sprite_info = true;
@@ -541,7 +544,8 @@ static void ShowExampleAppMainMenuBar()
             }
         }
 
-        if (spriteIDInput != "")
+        // Check if the input is null (using != "" in this situation causes issues)
+        if (spriteIDInput[0] != 0)
         {
             spriteID = atoi(spriteIDInput);
         }
@@ -558,14 +562,44 @@ static void ShowExampleAppMainMenuBar()
             // Sprite name, dimensions, ID?
             if (currentComponent == "No Component Selected") 
             {
-                ImGui::Text("Sprite Name: None");
+                ImGui::Text("Current Sprite Name: None");
             }
             else
             {
-                std::string sprite_name = "Sprite Name: " + currentComponent;
-                ImGui::Text(sprite_name.c_str());
+                // Show all sprites
+                for (auto& [key, value] : game->getSprites()) {
+                    // Any sprite referenced in the .gdata file will exist in game->getSprites, but may not have been loaded into memory yet.
+                    // This is just preventing referencing a null pointer. Once the sprite with the correct ID is loaded, this should correctly show its info
+                    if (value) {
+                        // Show the current sprite name
+                        std::string sprite_info = std::to_string(key).append(": ").append(value->getName());
+                        ImGui::Text(sprite_info.c_str());
+                    }
+                }
             }
             ImGui::EndPopup();
+        }
+
+        // Sprite import dialog
+        // NOTE: I had to move this here from the bottom section because this needs access to sprite_name
+        importDialog.Display();
+        if (importDialog.HasSelected())
+        {
+            // extract just the file name from the selected path
+            std::string fileName = importDialog.GetSelected().string().substr(importDialog.GetSelected().string().find_last_of('\\', std::string::npos) + 1, std::string::npos);
+
+            if (sprite_name[0] != 0) {
+                currentComponent = sprite_name;
+                game->createSprite(sprite_name, importDialog.GetSelected().string(), spriteID);
+            }
+            else {
+                currentComponent = fileName;
+                game->createSprite(fileName, importDialog.GetSelected().string(), spriteID);
+            }
+            importDialog.ClearSelected();
+            memset(sprite_name, 0, 128);
+            memset(spriteIDInput, 0, 128);
+
         }
 
         ImGui::End();
@@ -842,20 +876,6 @@ static void ShowExampleAppMainMenuBar()
         DeleteFile(delDialog.GetSelected().string().c_str());
         delDialog.ClearSelected();
         selection[DELETEPOPUP] = true;
-    }
-
-    // import dialog selection return
-    importDialog.Display();
-    if (importDialog.HasSelected())
-    {
-        // extract just the file name from the selected path
-        std::string fileName = importDialog.GetSelected().string().substr(importDialog.GetSelected().string().find_last_of('\\', std::string::npos) + 1, std::string::npos);
-        currentComponent = fileName;
-
-        // temporary output lines - connect to importing function - possibly link to sprite obj?
-        printf ( "(printf) Selected File: %s\n", importDialog.GetSelected ().string ().c_str () );
-        std::cout << "(cout) Selected File: " << importDialog.GetSelected().string() << std::endl;
-        importDialog.ClearSelected();
     }
 
     /*
