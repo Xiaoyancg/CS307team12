@@ -20,11 +20,12 @@ All notable changes to this project will be documented in this file.
 - string gameName in Editor.cpp 
 - bool isSaved in Editor.cpp
 - set isSaved after open/ save
-- add class Script in Script.h, Script.cpp
-- add class Logic in Logic.h, Logic.cpp
-- add enum class LogicT in Logic.h 
-- add //Core::Game *game in Game.h
-- add Game::Game(json) for VM
+- class Script in Script.h, Script.cpp
+- class Logic in Logic.h, Logic.cpp
+- enum class LogicT in Logic.h 
+- //Core::Game *game in Game.h
+- Game::Game(json) for VM
+- searchGdata() in VMTool
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
