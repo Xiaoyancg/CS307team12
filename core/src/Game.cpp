@@ -12,8 +12,6 @@
 #include <TestCore.h>
 #endif // __TEST_CORE
 
-using json = nlohmann::json;
-
 namespace Core
 {
 
@@ -27,6 +25,11 @@ namespace Core
     {
         useFramebuffer = false;
         setupSpriteRefs();
+    }
+    Game::Game(nlohmann::json &json)
+    {
+        this->parse(json);
+        this->useFramebuffer = false;
     }
 
     // editor open
@@ -48,9 +51,10 @@ namespace Core
         setupSpriteRefs();
     }
 
-    // Each class that renders sprites needs a reference to the same SpriteManager as this class. 
+    // Each class that renders sprites needs a reference to the same SpriteManager as this class.
     // Whenever a new class is added that renders sprites, its reference must be set here.
-    void Game::setupSpriteRefs() {
+    void Game::setupSpriteRefs()
+    {
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
     }
@@ -134,15 +138,15 @@ namespace Core
         Page *p = new Page(n);
         return addPage(p);
     }
-    MapPage* Game::createMapPage()
+    MapPage *Game::createMapPage()
     {
-        MapPage* mp = new MapPage();
-        return (MapPage*)addPage(mp);
+        MapPage *mp = new MapPage();
+        return (MapPage *)addPage(mp);
     }
-    MapPage* Game::createMapPage(std::string n)
+    MapPage *Game::createMapPage(std::string n)
     {
-        MapPage* mp = new MapPage(n);
-        return (MapPage*)addPage(mp);
+        MapPage *mp = new MapPage(n);
+        return (MapPage *)addPage(mp);
     }
     MapPage *Game::createMapPage(std::string n, Map *m)
     {
@@ -158,7 +162,7 @@ namespace Core
     {
         // TODO Use something like:
         // std::vector<Page*>::iterator ptr = find(pageList.begin(), pageList.end(), dp);
-        // if (ptr != pageList.end())  
+        // if (ptr != pageList.end())
         for (std::vector<Page *>::iterator ptr = pageList.begin();
              ptr != pageList.end();
              ptr++)
@@ -190,33 +194,39 @@ namespace Core
         }
     }
 
-    unsigned int Game::createSprite(std::string name, std::string filename, int id) {
+    unsigned int Game::createSprite(std::string name, std::string filename, int id)
+    {
         // If an ID is given
-        if (id != -1) {
+        if (id != -1)
+        {
             return mGameSprites.createSprite(name, filename, id); // Return OpenGL ID of the new sprite
         }
         // If an ID is not given
-        else {
+        else
+        {
             return mGameSprites.createSprite(name, filename);
         }
     }
-    
-    void Game::deleteSprite(int id) {
+
+    void Game::deleteSprite(int id)
+    {
         mGameSprites.deleteSprite(id);
     }
-    
-    Sprite* Game::getSpriteFromID(int id) {
+
+    Sprite *Game::getSpriteFromID(int id)
+    {
         return mGameSprites.atID(id);
     }
 
-    std::unordered_map<int, Sprite*> Game::getSprites() {
+    std::unordered_map<int, Sprite *> Game::getSprites()
+    {
         return mGameSprites.getSprites();
     }
 
     // =========================
     // UTILITY OPERATION
 
-    Game *Game::parse(json &root)
+    Game *Game::parse(nlohmann::json &root)
     {
 
         this->SetGameName(root.at("GameName").get<std::string>());
@@ -226,8 +236,8 @@ namespace Core
         this->SetNote(root.at("Note").get<std::string>());
         try
         {
-            auto pageVec = root.at("PageList").get<std::vector<json>>();
-            for (json pageJson : pageVec)
+            auto pageVec = root.at("PageList").get<std::vector<nlohmann::json>>();
+            for (nlohmann::json pageJson : pageVec)
             {
                 this->pageList.push_back(Page::parse(pageJson));
             }
@@ -248,22 +258,22 @@ namespace Core
     nlohmann::json *Game::serialize()
     {
         // TODO: bg color
-        json j;
+        nlohmann::json j;
         j["FileType"] = "Parchment Game Data";
         j["GameName"] = getGameName();
         j["Author"] = getAuthor();
         j["Version"] = getVersion();
         j["LastModifiedTime"] = getLMTime();
         j["Note"] = getNote();
-        std::vector<json> pageVector;
+        std::vector<nlohmann::json> pageVector;
         for (Page *p : this->pageList)
         {
-            json pj;
+            nlohmann::json pj;
             pj["PageName"] = p->getName();
-            std::vector<json> entityVector;
+            std::vector<nlohmann::json> entityVector;
             for (Entity *e : p->getEntityList())
             {
-                json ej;
+                nlohmann::json ej;
                 ej["EntityName"] = e->getName();
                 ej["location"] = {e->getLocation().x, e->getLocation().y};
                 ej["scale"] = {e->getScale().x, e->getScale().y};
@@ -275,7 +285,7 @@ namespace Core
             pageVector.push_back(pj);
         }
         j["PageList"] = pageVector;
-        return new json(j);
+        return new nlohmann::json(j);
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
@@ -391,8 +401,8 @@ namespace Core
         // GL_FALSE means the data should not be normalized
         // Spread between each set of attributes (4 * sizeof(int))
         // Offset isn't used yet since there's only one attribute in 'vertices'
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0); // attribute ptr for position coords
-        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void*)(2 * sizeof(int))); // attribute ptr for texture coords
+        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);                 // attribute ptr for position coords
+        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int))); // attribute ptr for texture coords
 
         // Enable the vertex attributes
         glEnableVertexAttribArray(0);
