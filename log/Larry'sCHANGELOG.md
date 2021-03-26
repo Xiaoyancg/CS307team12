@@ -58,6 +58,7 @@ All notable changes to this project will be documented in this file.
 - Game::Game(json) for VM
 - searchGdata() in VMTool
 - timer.h, a header-only general timer class in core
+- Example sprite 1,2.png
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
