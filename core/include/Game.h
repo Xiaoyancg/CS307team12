@@ -38,6 +38,7 @@ namespace Core
 
         // Game ();
         Game(GLuint *o);
+        Game(nlohmann::json &json);
         Game(std::string gameName);
         Game(nlohmann::json &json, GLuint *o);
 
@@ -85,8 +86,8 @@ namespace Core
         // Sprite operations
         unsigned int createSprite(std::string, std::string, int);
         void deleteSprite(int);
-        Sprite* getSpriteFromID(int);
-        std::unordered_map<int, Sprite*> getSprites();
+        Sprite *getSpriteFromID(int);
+        std::unordered_map<int, Sprite *> getSprites();
 
         // =========================
         // STATE OPERATION
