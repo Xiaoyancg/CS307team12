@@ -170,8 +170,8 @@ TEST(TEMPTEST, supertemp)
 
 
 TEST(TEST_CORE, LoadNonexistantImage) {
-    Core::Sprite nonexistantSprite("this_file_does_not_exist.png");
-    EXPECT_EQ(nonexistantSprite.getSpriteID(), -1);
+    Core::Sprite nonexistantSprite("name", "this_file_does_not_exist.png");
+    EXPECT_EQ(nonexistantSprite.getOpenGLTextureID(), -1);
 }
 
 TEST(TEST_CORE, ImplTestImageExists) {
@@ -179,8 +179,8 @@ TEST(TEST_CORE, ImplTestImageExists) {
 }
 
 TEST(TEST_CORE, LoadImage) {
-    Core::Sprite sprite("test_image.png");
+    Core::Sprite sprite("name", "test_image.png");
     EXPECT_EQ(sprite.getDimensions().x, 256);
     EXPECT_EQ(sprite.getDimensions().y, 256);
-    EXPECT_NE(sprite.getSpriteID(), -1);
+    EXPECT_NE(sprite.getOpenGLTextureID(), -1);
 }

@@ -39,7 +39,7 @@ namespace Core
 		}
 	}
 
-	unsigned int Sprite::getSpriteID() {
+	unsigned int Sprite::getOpenGLTextureID() {
 		return mTextureID;
 	}
 

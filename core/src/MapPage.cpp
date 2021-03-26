@@ -34,9 +34,9 @@ namespace Core
                 // Render each tile of the map!
                 int* coords = mMap->mTileArray[i].getCoords(); // Get ptr to the tile coordinates
                 
-                // Bind the correct sprite
-                if (mMap->mTileArray[i].getSpriteID() != -1) {
-                    glBindTexture(GL_TEXTURE_2D, mMap->mTileArray[i].getSpriteID());
+                // Bind the correct sprite if it exists
+                if (mMap->mTileArray[i].getSpriteID() != -1 && mGameSprites->atID(mMap->mTileArray[i].getSpriteID())) {
+                    glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mMap->mTileArray[i].getSpriteID())->getOpenGLTextureID());
                 }
 
                 // Buffer and draw tile

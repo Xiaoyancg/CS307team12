@@ -142,8 +142,8 @@ namespace Core
 
     void Entity::render ()
     {
-        if (mSpriteID != -1) {
-            glBindTexture(GL_TEXTURE_2D, mSpriteID); // Bind correct sprite
+        if (mSpriteID != -1 && mGameSprites->atID(mSpriteID)) {
+            glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
         }
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData ( GL_ARRAY_BUFFER, sizeof ( mCoords ), mCoords, GL_DYNAMIC_DRAW );

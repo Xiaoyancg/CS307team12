@@ -13,7 +13,7 @@
 #include "Page.h"
 #include "Entity.h"
 #include "MapPage.h"
-#include "Sprite.h"
+#include "SpriteManager.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
@@ -80,7 +80,7 @@ namespace Core
         int getNumPage();
 
         // Sprite operations
-        unsigned int createSprite(std::string, std::string);
+        unsigned int createSprite(std::string, std::string, int);
         void deleteSprite(int);
         Sprite* getSpriteFromID(int);
         std::unordered_map<int, Sprite*> getSprites();
@@ -129,6 +129,7 @@ namespace Core
         bool _isBegin(PLitr i);
         bool _isBeforeEnd(PLitr i);
 
+        void setupSpriteRefs();
         // ==========================
         // ATTRIBUTES VARIABLE
 
@@ -166,7 +167,10 @@ namespace Core
         SDL_GLContext gl_context;   // The context of this Game
         unsigned int shaderProgram; // The shaders, set by initShaders before entering the game loop
 
-        // Holds pointers to all the game's sprites
-        std::unordered_map<int, Sprite*> mSprites;
+        // Holds pointers to all the game's sprites and handles ID's properly
+        // Use gameSprites.createSprite(filename); to create the sprite from the file
+        // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'
+        // Use gameSprites.deleteSprite(id); to delete the sprite with ID 'id'
+        SpriteManager mGameSprites;
     };
 }
