@@ -1,4 +1,3 @@
-
 namespace Core
 {
     class Script

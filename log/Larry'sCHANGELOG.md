@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 - script
 - logic
 - signal
+- add test function in editor
+  - make a new sdl context
+  - when that window should close set the current context back
+- unittest for everything
+- add a timer logic 
+- text
 # Note:
 - use typedef
 - private class member has prefix m instead of _
@@ -23,6 +29,15 @@ All notable changes to this project will be documented in this file.
 ### Design Notes
 - Logic and signal
   - signal is a function to set a flag on the current game logic list ( or signal list )
+  - Storage and linking way in json, the script can logics are connected by the id. in run time, they are bind by logic pointers
+  - loop
+    1. game state logic ( should close / mute ) 
+    2. timer
+    3. game content logic ( switch page, render entity, change new sprite)
+    4. script logics ( damage )
+    5. user inputs ( mouse key)
+  
+
 ### Added
 - practice/demo_of_ImGui_Docking
 - CMakeList new subdirectory demo_of_ImGui_Docking
@@ -41,6 +56,7 @@ All notable changes to this project will be documented in this file.
 - //Core::Game *game in Game.h
 - Game::Game(json) for VM
 - searchGdata() in VMTool
+- timer.h, a header-only general timer class in core
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *

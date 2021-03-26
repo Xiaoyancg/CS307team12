@@ -59,7 +59,7 @@ TEST(TEST_GAME, Game_SetgetName)
 TEST(TEMPTEST, supertemp)
 {
     Core::Game g("wulala");
-    g.init();
+    g.initContext();
     g.initShader();
     //g.s1test ();
     json *j = g.serialize();
