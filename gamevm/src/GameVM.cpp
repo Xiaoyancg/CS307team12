@@ -14,10 +14,10 @@ int GameVMMain(int argc, char *argv[])
         std::cout << "no game found" << std::endl;
         return 1;
     }
-    std::cout << gdatastring << std::endl;
 
     // can't use constructor, use json::parse
     nlohmann::json j = nlohmann::json::parse(gdatastring);
     Core::Game g(j);
+    g.run();
     return 0;
 }
