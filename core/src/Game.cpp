@@ -26,6 +26,7 @@ namespace Core
     Game::Game(std::string gameName) : gameName(gameName)
     {
         useFramebuffer = false;
+        setupSpriteRefs();
     }
 
     // editor open
@@ -34,6 +35,7 @@ namespace Core
         this->parse(json);
         texcbo = o;
         useFramebuffer = true;
+        setupSpriteRefs();
     }
 
     // editor new
@@ -43,6 +45,14 @@ namespace Core
         useFramebuffer = true;
         this->gameName = "editortestname";
         this->setCurrentPage(this->createPage("emptyPage"));
+        setupSpriteRefs();
+    }
+
+    // Each class that renders sprites needs a reference to the same SpriteManager as this class. 
+    // Whenever a new class is added that renders sprites, its reference must be set here.
+    void Game::setupSpriteRefs() {
+        Entity::mGameSprites = &mGameSprites;
+        MapPage::mGameSprites = &mGameSprites;
     }
 
     // =========================
@@ -180,6 +190,29 @@ namespace Core
         }
     }
 
+    unsigned int Game::createSprite(std::string name, std::string filename, int id) {
+        // If an ID is given
+        if (id != -1) {
+            return mGameSprites.createSprite(name, filename, id); // Return OpenGL ID of the new sprite
+        }
+        // If an ID is not given
+        else {
+            return mGameSprites.createSprite(name, filename);
+        }
+    }
+    
+    void Game::deleteSprite(int id) {
+        mGameSprites.deleteSprite(id);
+    }
+    
+    Sprite* Game::getSpriteFromID(int id) {
+        return mGameSprites.atID(id);
+    }
+
+    std::unordered_map<int, Sprite*> Game::getSprites() {
+        return mGameSprites.getSprites();
+    }
+
     // =========================
     // UTILITY OPERATION
 
@@ -264,11 +297,16 @@ namespace Core
 		    #version 330 core
 
 		    layout (location = 0) in vec2 pos;
+            layout (location = 1) in vec2 textureCoords;
+
 		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
+
+            out vec2 TexCoord;
 
 		    void main()
 		    {
 		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
+                TexCoord = vec2(textureCoords.x, 1 - textureCoords.y);
 		    }
 	    )glsl";
 
@@ -276,11 +314,15 @@ namespace Core
         const char *fragmentSource = R"glsl(
 		    #version 330 core
 
+            in vec2 TexCoord;
+
+            uniform sampler2D texture1;
+
 		    out vec4 FragColor;
 
 		    void main()
 		    {
-		      FragColor = vec4(1.0,1.0,1.0,1.0);
+		      FragColor = texture(texture1, TexCoord);
 		    }
 	    )glsl";
 
@@ -347,15 +389,22 @@ namespace Core
         // 2 ints are read at a time (x, y)
         // The the type is float (GL_INT)
         // GL_FALSE means the data should not be normalized
-        // The size to be read in bytes (2 * sizeof(int))
+        // Spread between each set of attributes (4 * sizeof(int))
         // Offset isn't used yet since there's only one attribute in 'vertices'
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 2 * sizeof(int), (void *)0);
+        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0); // attribute ptr for position coords
+        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void*)(2 * sizeof(int))); // attribute ptr for texture coords
 
-        // Enable the position vertex attribute
+        // Enable the vertex attributes
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        // Enable textures (we use GL_TEXTURE0, we don't need more than 1 at a time)
+        glActiveTexture(GL_TEXTURE0);
 
         // Enable the Vertex Object Array
         glBindVertexArray(vao);
+
+        glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
         // Set the scale based on the width and height
         int scaleID = glGetUniformLocation(shaderProgram, "scale");
@@ -579,6 +628,10 @@ namespace Core
     ///////////////
     void Game::mainLoop()
     {
+        createSprite("1", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_1.png", 1);
+        createSprite("2", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_2.png", 2);
+        createSprite("3", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_3.png", 3);
+        createSprite("guy", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\oh_yeah_woo_yeah.png", 4);
 
         SDL_Event event;
         int close_window = false;
