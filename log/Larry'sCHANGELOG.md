@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - Spent 10 hours trying to ignore warning from glm, failed
 - C5033 is level 1 warning can't 
 - also .iln warning is tricky to ignore
+- Reconsider the role of core and vm
+  - Core has to handle logic, where logic contain input event. So the core has to know the context. It's redundant to init sdl and pass the context to VM, since core can just do all stuff. I didn't consider the event handler thing, I thought core can be a render. Now, I think we don't actually need the vm thing. But since we have that in the backlog, we just make a place holder with the functionality of finding the gdata file.
 ### Added
 - practice/demo_of_ImGui_Docking
 - CMakeList new subdirectory demo_of_ImGui_Docking
@@ -41,7 +43,7 @@ All notable changes to this project will be documented in this file.
 - add comment in CMakeList
 - change the target include rules
 - rename Game::currPage
-- GameVMMain
+- GameVMMain, search gdata file
 
 
 ### Removed
