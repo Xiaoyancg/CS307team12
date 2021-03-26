@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 - json
 - script
 - logic
+  - keyup
 - signal
 - add test function in editor
   - make a new sdl context
