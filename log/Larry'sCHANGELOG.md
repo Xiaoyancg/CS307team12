@@ -33,6 +33,8 @@ All notable changes to this project will be documented in this file.
 - Editor.cpp save as popup
 - Editor openDialog
 - type conversion in map, use ivec2 instead of vec2
+- function naming convention 
+- json instance error, use json::parse instead of constructor
 ### Changed
 - typedef name change
 - make glm a library instead of interface to get rid of warnings

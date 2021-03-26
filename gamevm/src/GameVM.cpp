@@ -14,7 +14,8 @@ int GameVMMain(int argc, char *argv[])
     }
     std::cout << gdatastring << std::endl;
 
-    nlohmann::json json(gdatastring);
-    Core::Game g(json);
+    // can't use constructor, use json::parse
+    nlohmann::json j = nlohmann::json::parse(gdatastring);
+    Core::Game g(j);
     return 0;
 }

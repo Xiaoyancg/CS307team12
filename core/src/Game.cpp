@@ -67,12 +67,12 @@ namespace Core
         return this->gameName;
     }
 
-    void Game::SetGameName(std::string newName)
+    void Game::setGameName(std::string newName)
     {
         this->gameName = newName;
     }
 
-    void Game::SetAuthor(std::string newAuthor)
+    void Game::setAuthor(std::string newAuthor)
     {
         this->author = newAuthor;
     }
@@ -82,7 +82,7 @@ namespace Core
         return this->author;
     }
 
-    void Game::SetVersion(std::string newVersion)
+    void Game::setVersion(std::string newVersion)
     {
         this->version = newVersion;
     }
@@ -92,7 +92,7 @@ namespace Core
         return this->version;
     }
 
-    void Game::SetLMTime(std::string time)
+    void Game::setLMTime(std::string time)
     {
         this->lMTime = time;
     }
@@ -113,7 +113,7 @@ namespace Core
         return this->lMTime;
     }
 
-    void Game::SetNote(std::string newNote)
+    void Game::setNote(std::string newNote)
     {
         this->note = newNote;
     }
@@ -228,12 +228,14 @@ namespace Core
 
     Game *Game::parse(nlohmann::json &root)
     {
+        nlohmann::json j = nlohmann::json{{"name", "hello"}};
+        auto k = j.at("name");
 
-        this->SetGameName(root.at("GameName").get<std::string>());
-        this->SetAuthor(root.at("Author").get<std::string>());
-        this->SetVersion(root.at("Version").get<std::string>());
-        this->SetLMTime(root.at("LastModifiedTime").get<std::string>());
-        this->SetNote(root.at("Note").get<std::string>());
+        this->setGameName(root.at(std::string("GameName")).get<std::string>());
+        this->setAuthor(root.at("Author").get<std::string>());
+        this->setVersion(root.at("Version").get<std::string>());
+        this->setLMTime(root.at("LastModifiedTime").get<std::string>());
+        this->setNote(root.at("Note").get<std::string>());
         try
         {
             auto pageVec = root.at("PageList").get<std::vector<nlohmann::json>>();

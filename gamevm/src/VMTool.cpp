@@ -47,16 +47,16 @@ json *readGameDataFile(std::string f)
 Core::Game *CreateExampleGame()
 {
     Core::Game *g = new Core::Game(std::string("example"));
-    g->SetAuthor(std::string("example author"));
-    g->SetVersion(std::string("0.1.0"));
+    g->setAuthor(std::string("example author"));
+    g->setVersion(std::string("0.1.0"));
     time_t rawtime;
     struct tm *timeinfo = new struct tm();
     time(&rawtime);
     localtime_s(timeinfo, &rawtime);
     char c[256];
     asctime_s(c, 256, timeinfo);
-    g->SetLMTime(std::string(c));
-    g->SetNote(std::string("example Note"));
+    g->setLMTime(std::string(c));
+    g->setNote(std::string("example Note"));
     // TODO page
     return g;
 }
@@ -87,10 +87,10 @@ Core::Game *ConstructGame(std::string fileName)
     std::string s(ReadFile(fileName));
     json j = json::parse(s);
     Core::Game *g = new Core::Game(j["GameName"]);
-    g->SetAuthor(j["Author"]);
-    g->SetLMTime(j["LastModifiedTime"]);
-    g->SetNote(j["Note"]);
-    g->SetVersion(j["Version"]);
+    g->setAuthor(j["Author"]);
+    g->setLMTime(j["LastModifiedTime"]);
+    g->setNote(j["Note"]);
+    g->setVersion(j["Version"]);
     return g;
 }
 

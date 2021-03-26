@@ -168,21 +168,21 @@ TEST(TEMPTEST, supertemp)
 //    EXPECT_EQ(entities[0]->getRotation(), 1.0);
 //}
 
-TEST(TEST_CORE, LoadNonexistantImage)
-{
-    Core::Sprite nonexistantSprite("name", "this_file_does_not_exist.png");
-    EXPECT_EQ(nonexistantSprite.getOpenGLTextureID(), -1);
-}
+//TEST(TEST_CORE, LoadNonexistantImage)
+//{
+//Core::Sprite nonexistantSprite("name", "this_file_does_not_exist.png");
+//EXPECT_EQ(nonexistantSprite.getOpenGLTextureID(), -1);
+//}
 
-TEST(TEST_CORE, ImplTestImageExists)
-{
-    EXPECT_TRUE(std::filesystem::exists("test_image.png"));
-}
+//TEST(TEST_CORE, ImplTestImageExists)
+//{
+//EXPECT_TRUE(std::filesystem::exists("test_image.png"));
+//}
 
-TEST(TEST_CORE, LoadImage)
-{
-    Core::Sprite sprite("name", "test_image.png");
-    EXPECT_EQ(sprite.getDimensions().x, 256);
-    EXPECT_EQ(sprite.getDimensions().y, 256);
-    EXPECT_NE(sprite.getOpenGLTextureID(), -1);
-}
+//TEST(TEST_CORE, LoadImage)
+//{
+//Core::Sprite sprite("name", "test_image.png");
+//EXPECT_EQ(sprite.getDimensions().x, 256);
+//EXPECT_EQ(sprite.getDimensions().y, 256);
+//EXPECT_NE(sprite.getOpenGLTextureID(), -1);
+//}

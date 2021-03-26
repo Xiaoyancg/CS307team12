@@ -46,20 +46,20 @@ namespace Core
         // ATTRIBUTES OPERATION
 
         std::string getGameName();
-        void SetGameName(std::string newName);
+        void setGameName(std::string newName);
 
         std::string getAuthor();
-        void SetAuthor(std::string newAuthor);
+        void setAuthor(std::string newAuthor);
 
         std::string getVersion();
-        void SetVersion(std::string newVersion);
+        void setVersion(std::string newVersion);
 
         std::string getLMTime();
         void SetLMTime();
-        void SetLMTime(std::string time);
+        void setLMTime(std::string time);
 
         std::string getNote();
-        void SetNote(std::string newNote);
+        void setNote(std::string newNote);
         int AddNote(std::string moreNote);
 
         // File loading and serialization
