@@ -39,6 +39,7 @@ All notable changes to this project will be documented in this file.
 - add comment in CMakeList
 - change the target include rules
 - rename Game::currPage
+- GameVMMain
 
 
 ### Removed

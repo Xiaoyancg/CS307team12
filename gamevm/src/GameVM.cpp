@@ -1,9 +1,19 @@
 #include "GameVM.h"
+#include "VMTool.h"
+#include <iostream>
 #include "Game.h"
 
 int GameVMMain(int argc, char *argv[])
 {
-    Core::Game g();
-    //return g.coreMain(argc, argv);
+    std::string gdatastring = ReadFile(searchGdata("./")));
+    if (gdatastring.size() == 0)
+    {
+        // FIXME: should use windows warning window
+        std::cout << "no game found" << std::endl;
+        return 1;
+    }
+
+    nlohmann::json json(gdatastring);
+    Core::Game g(json);
     return 0;
 }
