@@ -5,6 +5,5 @@
 int main(int argc, char *argv[])
 {
     int r = GameVMMain(argc, argv);
-
     return r;
 }
