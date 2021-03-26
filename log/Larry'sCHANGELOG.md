@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 - add class Logic in Logic.h, Logic.cpp
 - add enum class LogicT in Logic.h 
 - add //Core::Game *game in Game.h
+- add Game::Game(json) for VM
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
