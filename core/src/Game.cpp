@@ -597,7 +597,7 @@ namespace Core
         }
     }
 
-    // only render graphics
+    // only render graphics so can be used in editor
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
@@ -625,10 +625,9 @@ namespace Core
     {
         // Initialize OpenGL and necessary SDL objects
         initContext();
+
         // Create the shaders
         initShader();
-
-        //serialize ();
 
         mainLoop();
 
@@ -647,7 +646,7 @@ namespace Core
 
     void Game::mainLoop()
     {
-        // FIXME: use relative directory
+        // FIXME: use relative directory. also remove from here
         createSprite("1", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_1.png", 1);
         createSprite("2", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_2.png", 2);
         createSprite("3", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_3.png", 3);
