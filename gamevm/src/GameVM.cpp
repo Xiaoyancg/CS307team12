@@ -3,7 +3,7 @@
 
 int GameVMMain(int argc, char *argv[])
 {
-    Core::Game g("empty");
+    Core::Game g();
     //return g.coreMain(argc, argv);
     return 0;
 }
