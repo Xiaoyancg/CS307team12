@@ -10,9 +10,11 @@ std::string searchGdata(std::string location)
     // search every file in that location
     for (auto &p : std::filesystem::recursive_directory_iterator(location))
     {
+        std::cout << p.path().string() << std::endl;
         // if the extension matches
         if (p.path().extension().compare(ext) == 0)
         {
+
             // return the target file name
             return p.path().string();
         }
