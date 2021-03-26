@@ -14,7 +14,7 @@ namespace Core
         mRotation ( rotation ),
         mSpriteID ( spriteID )
     {
-// All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
+        // All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
         calculateCoords ( location, scale );
     }
 
@@ -92,17 +92,30 @@ namespace Core
         // P1
         mCoords[0] = lowX; // Top left x
         mCoords[1] = highY; // Top left y
+        // P1 texture coords
+        mCoords[2] = 0;
+        mCoords[3] = 1;
 
         // P2
-        mCoords[2] = lowX; // Bottom left x
-        mCoords[3] = lowY; // Bottom left y
-        // P3
-        mCoords[4] = highX; // Top right x
-        mCoords[5] = highY; // Top right y
-        // P4
-        mCoords[6] = highX; // Bottom right x
-        mCoords[7] = lowY; // Bottom right y
+        mCoords[4] = lowX; // Bottom left x
+        mCoords[5] = lowY; // Bottom left y
+        // P2 texture coords
+        mCoords[6] = 0;
+        mCoords[7] = 0;
 
+        // P3
+        mCoords[8] = highX; // Top right x
+        mCoords[9] = highY; // Top right y
+        // P3 texture coords
+        mCoords[10] = 1;
+        mCoords[11] = 1;
+
+        // P4
+        mCoords[12] = highX; // Bottom right x
+        mCoords[13] = lowY; // Bottom right y
+        // P4 texture coords
+        mCoords[14] = 1;
+        mCoords[15] = 0;
     }
 
     void Entity::setLocation ( glm::vec2 location )
@@ -129,15 +142,19 @@ namespace Core
 
     void Entity::render ()
     {
-// Load the data of the 'coords' buffer into the currently bound array buffer, VBO
+        if (mSpriteID != -1 && mGameSprites->atID(mSpriteID)) {
+            glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
+        }
+        // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData ( GL_ARRAY_BUFFER, sizeof ( mCoords ), mCoords, GL_DYNAMIC_DRAW );
         // Draw the bound buffer (coords)
         glDrawArrays ( GL_TRIANGLE_STRIP, 0, 4 );
+
+        glBindTexture(GL_TEXTURE_2D, 0); // Unbind current sprite
+
 #ifdef __TEST_CORE
         entityError = glGetError ();
 #endif // __TEST_CORE
-
-
     }
 
 
