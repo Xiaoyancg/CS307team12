@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 # TODO:
 - pointer deletion
+- json
+- script
+- logic
+- signal
 # Note:
 - use typedef
 - private class member has prefix m instead of _
@@ -12,6 +16,13 @@ All notable changes to this project will be documented in this file.
   - Core has to handle logic, where logic contain input event. So the core has to know the context. It's redundant to init sdl and pass the context to VM, since core can just do all stuff. I didn't consider the event handler thing, I thought core can be a render. Now, I think we don't actually need the vm thing. But since we have that in the backlog, we just make a place holder with the functionality of finding the gdata file.
 - There's a linker error when linking soil to unittest.
   - It's due to the conflict in c++ runtime library. soil is using another flag. I did search some solution but it doesn't solve the problem. However, the problem will magically disappear and turns into warning if restart the IDE or console. If it works, it works. 
+- Use google c++ style guide for commenting
+  - Declaration comments describe use of the function (when it is non-obvious); comments at the definition of a function describe operation.
+
+
+### Design Notes
+- Logic and signal
+  - signal is a function to set a flag on the current game logic list ( or signal list )
 ### Added
 - practice/demo_of_ImGui_Docking
 - CMakeList new subdirectory demo_of_ImGui_Docking
