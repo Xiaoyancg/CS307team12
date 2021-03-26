@@ -12,6 +12,7 @@ int GameVMMain(int argc, char *argv[])
         std::cout << "no game found" << std::endl;
         return 1;
     }
+    std::cout << gdatastring << std::endl;
 
     nlohmann::json json(gdatastring);
     Core::Game g(json);
