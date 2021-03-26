@@ -1,10 +1,18 @@
+#include <iostream>
 #include "GameVM.h"
 #include "VMTool.h"
-#include <iostream>
 #include "Game.h"
-
+#include "Timer.h"
+volatile unsigned sink = 0;
 int GameVMMain(int argc, char *argv[])
 {
+    Timer t = Timer();
+    for (size_t i = 0; i < 10000000; i++)
+    {
+        if (t.getPassedTimeInMS() > 0.01f)
+            std::cout << "ima out!" << std::endl;
+    }
+
     std::string gdatastring = ReadFile(searchGdata("./"));
     if (gdatastring.size() == 0)
     {
