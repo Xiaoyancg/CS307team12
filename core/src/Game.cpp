@@ -443,8 +443,7 @@ namespace Core
         }
     }
 
-    // This takes care of initializing everything SDL needs to begin running
-    void Game::init()
+    void Game::initContext()
     {
         // Initialize video mode of SDL
         if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -475,6 +474,9 @@ namespace Core
 
         // Setup function pointers for OpenGL
         gladLoadGL();
+
+        // Show the current context
+        SDL_GL_MakeCurrent(window, gl_context);
     }
 
     int Game::moveCurrentPage(std::vector<Page *>::iterator i)
@@ -498,10 +500,12 @@ namespace Core
         this->currCtrlEntity = e;
         return e;
     }
+
     Entity *Game::getCurrCtrlEntity()
     {
         return this->currCtrlEntity;
     }
+
     void Game::handleInput(SDL_Event event)
     {
         glm::vec2 loc;
@@ -574,6 +578,7 @@ namespace Core
     {
         return !(i > pageList.begin());
     }
+
     bool Game::_isBeforeEnd(PLitr i)
     {
         return (i < pageList.end() - 1);
@@ -592,6 +597,8 @@ namespace Core
         }
     }
 
+    // only render graphics
+    // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
         if (useFramebuffer)
@@ -613,10 +620,11 @@ namespace Core
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+
     void Game::run()
     {
         // Initialize OpenGL and necessary SDL objects
-        init();
+        initContext();
         // Create the shaders
         initShader();
 
@@ -635,18 +643,18 @@ namespace Core
         SDL_Quit();
     }
 
-    ///////////////
-    // Game loop //
-    ///////////////
+    /* -------------------------------- Game loop ------------------------------- */
+
     void Game::mainLoop()
     {
+        // FIXME: use relative directory
         createSprite("1", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_1.png", 1);
         createSprite("2", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_2.png", 2);
         createSprite("3", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_3.png", 3);
         createSprite("guy", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\oh_yeah_woo_yeah.png", 4);
 
         SDL_Event event;
-        int close_window = false;
+        bool close_window = false;
         while (!close_window)
         {
             // Input handling!
@@ -684,13 +692,10 @@ namespace Core
                 }
             }
 
-            // Show the current context
-            SDL_GL_MakeCurrent(window, gl_context);
-
             render();
 
-            SDL_GL_SwapWindow(window); // Show the entities by bringing showing the back buffer
-            ///////////////
+            // Show the entities by bringing showing the back buffer
+            SDL_GL_SwapWindow(window);
 
             // Error checking! This will only print out an error if one is detected each loop
             GLenum err(glGetError());
