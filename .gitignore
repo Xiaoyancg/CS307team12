@@ -9,3 +9,5 @@ dependency
 
 .vs
 .vscode
+practice/Demo_of_engine/editor/src/fragment-compiled.frag
+practice/Demo_of_engine/editor/src/vertex-compiled.vert
