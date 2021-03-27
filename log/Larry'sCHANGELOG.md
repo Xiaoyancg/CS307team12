@@ -1,5 +1,7 @@
 # Larry's Changelog
 All notable changes to this project will be documented in this file.
+# Meeting memo
+- move mGameSprite to Core
 # TODO:
 - pointer deletion
 - json

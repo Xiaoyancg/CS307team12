@@ -2,6 +2,10 @@
 
 namespace Core
 {
+	SpriteManager::SpriteManager() : mCurrSpriteID(0)
+	{
+	}
+
 	// Creates a new sprite at the correct location in mSprites
 	int SpriteManager::createSprite(std::string name, std::string filename)
 	{
@@ -80,5 +84,16 @@ namespace Core
 	Sprite *SpriteManager::atID(int spriteID)
 	{
 		return mSprites[spriteID];
+	}
+
+	int SpriteManager::parse(nlohmann::json j)
+	{
+		for (nlohmann::json sj : j)
+		{
+			createSprite(
+				sj.at("SpriteName").get<std::string>(),
+				sj.at("FileName").get<std::string>(),
+				sj.at("SpriteID").get<int>());
+		}
 	}
 }
