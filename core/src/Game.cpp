@@ -424,9 +424,12 @@ namespace Core
         // The the type is float (GL_INT)
         // GL_FALSE means the data should not be normalized
         // Spread between each set of attributes (4 * sizeof(int))
-        // Offset isn't used yet since there's only one attribute in 'vertices'
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);                 // attribute ptr for position coords
-        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int))); // attribute ptr for texture coords
+        //// Offset isn't used yet since there's only one attribute in 'vertices'
+
+        // attribute ptr for position coords
+        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);
+        // attribute ptr for texture coords
+        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int)));
 
         // Enable the vertex attributes
         glEnableVertexAttribArray(0);
@@ -444,7 +447,7 @@ namespace Core
         int scaleID = glGetUniformLocation(shaderProgram, "scale");
         glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
-        // Larry framebuffer
+        // if in editor mode
         if (useFramebuffer)
         {
             glGenFramebuffers(1, &fbo);
