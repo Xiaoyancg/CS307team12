@@ -16,7 +16,8 @@ All notable changes to this project will be documented in this file.
 - add a timer logic 
 - render text
 - better cmake
-- a sprite initializer after initshader
+- a sprite initializer after initShader
+- move set/get to header
 
 # Note:
 - use typedef
@@ -42,6 +43,8 @@ All notable changes to this project will be documented in this file.
     3. game content logic ( switch page, render entity, change new sprite)
     4. script logics ( damage )
     5. user inputs ( mouse key)
+  - logic is a container of signal and Action, evoke is in Action
+    - action has a class for each kind of action
   
 
 ### Added
@@ -71,6 +74,7 @@ All notable changes to this project will be documented in this file.
 - init mGameSprite in setupSpriteReference
 - s2sprint
 - searchAllFileWithExtension
+- Action, MoveEntityConstantly
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *

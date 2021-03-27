@@ -11,4 +11,8 @@ namespace Core
     {
     }
 
+    //void Logic::evoke()
+    //{
+    //}
+
 }
