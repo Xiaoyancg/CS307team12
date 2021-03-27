@@ -1,40 +1,16 @@
 #pragma once
-#include "Game.h"
-#include <any>
+#include "signal.h"
 
 namespace Core
 {
-    // classes
+    // forwar declaration
+    enum class SignalType;
+    class Signal;
+
+    // *classes list
     class KeyResponse;
 
-    enum class ResponseType
-    {
-        key,
-        mouse,
-        time
-    };
-
-    // the class for outside
-    class Response
-    {
-    private:
-        ResponseType mtype;
-        union
-        {
-            KeyResponse kr;
-            // add more here
-        };
-
-    public:
-        ResponseType getType() { return mtype; }
-        void setType(ResponseType type) { mtype = type; }
-        // must call after settype
-        void inti();
-        bool response(std::any signal);
-        Response() {}
-        ~Response() {}
-    };
-
+    //* --------------------------- different response -------------------------- */
     class KeyResponse
     {
     private:
@@ -49,9 +25,39 @@ namespace Core
         SDL_KeyCode getKey() { return mkey; }
         void setType(Uint32 type) { mtype = type; }
         Uint32 getType() { return mtype; }
-        bool keyResponse(SDL_KeyboardEvent event);
+
+        // check for KeyResponse
+        // singal is KeySignal
+        bool check(Core::Signal signal);
         KeyResponse() {}
         ~KeyResponse() {}
+    };
+
+    typedef std::variant<KeyResponse> ResponseEvent;
+    //* ----------------------------- Entry Response ----------------------------- */
+    class Response
+    {
+    private:
+        SignalType mtype;
+
+        // name starts with m for member
+        union
+        {
+            Core::KeyResponse mkr;
+            // add more here
+        };
+        bool mready = false;
+
+    public:
+        SignalType getType() { return mtype; }
+        void setType(SignalType type) { mtype = type; }
+        bool isReady() { return mready; }
+        void setReady(bool ready) { mready = ready; }
+        // must call after settype
+
+        bool response(Signal signal);
+        Response() {}
+        ~Response() {}
     };
 
 }

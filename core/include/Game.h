@@ -1,25 +1,41 @@
 #pragma once
 
+#include <iostream>
 #include <cstdio>
 #include <ctime>
 #include <vector>
 #include <string>
 #include <iterator>
+#include <any>
+#include <variant>
+
 #include <SDL.h>
 #include <nlohmann/json.hpp>
 
 // Parchment header
-#include "RenderTarget.h"
 #include "Page.h"
 #include "Entity.h"
 #include "MapPage.h"
+#include "RenderTarget.h"
 #include "SpriteManager.h"
+#include "Signal.h"
+#include "Response.h"
+#include "Action.h"
+#include "Logic.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
 #define __pl std::vector<Page *>
 namespace Core
 {
+    //* forward declaration
+    enum class SignalType;
+    enum class ActionType;
+    class Signal;
+    class Response;
+    class Action;
+    class Logic;
+
     typedef std::vector<Page *>::iterator PLitr;
     typedef std::vector<Page *> PL;
 

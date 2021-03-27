@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 - a sprite initializer after initShader
 - move set/get to header
 - move constructor to header
+- logic family get/set/constructor
 
 # Note:
 - use typedef
@@ -46,8 +47,16 @@ All notable changes to this project will be documented in this file.
     3. game content logic ( switch page, render entity, change new sprite)
     4. script logics ( damage )
     5. user inputs ( mouse key)
-  - logic is a container of signal and Action, evoke is in Action
+  - logic is a container of response and Action, evoke is in Action
     - action has a class for each kind of action
+    - Esignal | Response | Action
+    - order of logics
+    1. add signals (from the script in last loop, from sdl event)
+    2. traverse signal list
+       1. for each signal, go through all the corresponding type of response. e.g. for each key signal, go through all key response.
+       2. When a response meets it's defined condition, set the logic to ready.
+    3. Traverse Logic list in order (some logic should execute before others). When a logic is in ready, evoke action.
+    
   
 
 ### Added
@@ -79,6 +88,7 @@ All notable changes to this project will be documented in this file.
 - searchAllFileWithExtension
 - Action, MoveEntityConstantly
 - Response
+- Esignal
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
@@ -99,6 +109,9 @@ All notable changes to this project will be documented in this file.
 - separate Game::createSprite
 - move all output to myexe in build to remove the error from mix library location
 - glsl 1-y
+- Esignal -> Signal
+- Game.h include everything
+- rearrange include order or logic family
 
 
 ### Removed
