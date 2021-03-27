@@ -190,6 +190,7 @@ namespace Core
         // The shaders, set by initShaders before entering the game loop
         unsigned int shaderProgram;
 
+        // FIXME: to Core
         // Holds pointers to all the game's sprites and handles ID's properly
         // Use gameSprites.createSprite(filename); to create the sprite from the file
         // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'
