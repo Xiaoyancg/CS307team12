@@ -2,12 +2,12 @@
 namespace Core
 {
 
-    SignalEvent &Core::Signal::getSignal()
+    SignalVariant &Core::Signal::getSignal()
     {
         switch (this->mtype)
         {
-        case SignalType::key:
-            return (SignalEvent)mks;
+        case EventType::key:
+            return (SignalVariant)mks;
             break;
 
         default:

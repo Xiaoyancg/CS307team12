@@ -1,19 +1,19 @@
-#include "Response.h"
+#include "Logic.h"
 namespace Core
 {
-    void Response::inti()
+    void Logic::init()
     {
         switch (this->mtype)
         {
-        case SignalType::key:
-            this->mkr = KeyResponse();
+        case EventType::key:
+            this->mkr = KeyLogic();
             break;
 
         default:
             break;
         }
     }
-    bool KeyResponse::check(Core::Signal signal)
+    bool KeyLogic::check(Core::Signal signal)
     {
 
         return (signal.getType());

@@ -6,7 +6,7 @@ namespace Core
 {
 
     // Event(signal and response) types
-    enum class SignalType
+    enum class EventType
     {
         key, // key event use SDL_KeyboardEvent
         mouse,
@@ -41,7 +41,7 @@ namespace Core
     };
 
     // *the signal variant type to mix all signal types
-    typedef std::variant<KeySignal> SignalEvent;
+    typedef std::variant<KeySignal> SignalVariant;
 
     //* ------------------------------ entry signal ------------------------------ */
     // *entry class
@@ -52,14 +52,18 @@ namespace Core
         {
             KeySignal mks;
         };
-        SignalType mtype;
+        EventType mtype;
 
     public:
-        SignalType getType() { return mtype; }
-        void setType(SignalType type) { mtype = type; }
+        EventType getType() { return mtype; }
+        void setType(EventType type) { mtype = type; }
+
         // get the signal in specific Signaltype
-        SignalEvent &getSignal();
-        Signal(SignalType type) : mtype(type) {}
+        // when init, use this to get reference and then use the constructor of the specific signal to construct it.
+        //TODO: need to test and add example here
+        // When use in checking condition in logic, use this to get the signal and call its get function
+        SignalVariant &getSignal();
+        Signal(EventType type) : mtype(type) {}
         ~Signal() {}
     };
 }
