@@ -12,9 +12,9 @@ add_custom_command (TARGET demo_editor POST_BUILD
 add_custom_command (TARGET demo_editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_CURRENT_SOURCE_DIR}/src/fragment.frag
-            ${CMAKE_BINARY_DIR}/myexe/fragment.frag)
+            ${CMAKE_BINARY_DIR}/myexe/Debug/fragment.frag)
 add_custom_command (TARGET demo_editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_CURRENT_SOURCE_DIR}/src/vertex.vert
-            ${CMAKE_BINARY_DIR}/myexe/vertex.vert)
+            ${CMAKE_BINARY_DIR}/myexe/Debug/vertex.vert)
 
