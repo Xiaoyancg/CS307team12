@@ -8,6 +8,7 @@
 #include <imgui_impl_opengl3.h>
 #include <SDL.h>
 #include <glad/glad.h>
+#include <SOIL.h>
 
 // normal libraries
 #include <string>
@@ -99,10 +100,10 @@ int main(int argc, char **argv)
     // pass the clear color to opengl server. for further usage
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
-    float vertices[] = {-0.5f, -0.5f, 0.0f,
-                        -0.5f, 0.5f, 0.0f,
-                        0.5f, -0.5f, 0.0f,
-                        0.5f, 0.5f, 0.0f};
+    float vertices[] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+                        0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                        0.5f, 0.5f, 0.0f, 1.0f, 1.0f};
 
     unsigned int vao, vbo;
     glGenVertexArrays(1, &vao);
@@ -110,10 +111,29 @@ int main(int argc, char **argv)
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    glBindVertexArray(vao);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    //    glBindVertexArray(vao);
 
+    // array but use one first
+    GLuint tid;
+    glGenTextures(1, &tid);
+    glBindTexture(GL_TEXTURE_2D, tid);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    int width, height, channels;
+    unsigned char *imagedata = SOIL_load_image("1.png", &width, &height, &channels, SOIL_LOAD_AUTO);
+    if (imagedata)
+    {
+        std::cout << channels << std::endl;
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imagedata);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    SOIL_free_image_data(imagedata);
     const char *vscs, *fscs;
     std::string vss, fss;
     std::ifstream vsfs("vertex.vert");
@@ -153,6 +173,8 @@ int main(int argc, char **argv)
     glDeleteShader(fs);
     glUseProgram(program);
 
+    // set texture uniform
+    glUniform1i(glGetUniformLocation(program, "texture1"), 0);
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -198,6 +220,8 @@ int main(int argc, char **argv)
             }
         }
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, tid);
         // Rendering
         // render the ImGui windows
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
@@ -208,7 +232,7 @@ int main(int argc, char **argv)
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Rendering
-        // render the ImGui windows
+        // render the sdl windows
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
         // use the clear color we passed to opengl before to clear the context
         glClear(GL_COLOR_BUFFER_BIT);
