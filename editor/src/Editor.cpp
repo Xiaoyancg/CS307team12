@@ -1,3 +1,4 @@
+#include "UndoRedo.h"
 #include <Editor.h>
 #include <VMTool.h>
 #include "Game.h"
@@ -35,6 +36,9 @@ std::string gameName = "empty";
 
 // is game saved before (for save)
 bool isSaved = false;
+
+// is control key pressed
+bool ctrl_pressed = false;
 
 // currently selected game component
 std::string currentComponent = "No Component Selected";
@@ -136,9 +140,31 @@ int EditorMain(int argc, char *argv[])
             }
             if (evt.type == SDL_KEYDOWN)
             {
+                if (evt.key.keysym.sym == SDLK_LCTRL)
+                {
+                    ctrl_pressed = true;
+                }
+                if (ctrl_pressed)
+                {
+                    if (evt.key.keysym.sym == SDLK_z)
+                    {
+                        undo();
+                    }
+                    if (evt.key.keysym.sym == SDLK_y)
+                    {
+                        redo();
+                    }
+                }
                 if (game != nullptr)
                 {
                     game->handleInput(evt);
+                }
+            }
+            if (evt.type == SDL_KEYUP)
+            {
+                if (evt.key.keysym.sym == SDLK_LCTRL)
+                {
+                    ctrl_pressed = false;
                 }
             }
         }
@@ -342,7 +368,18 @@ static void ShowExampleAppMainMenuBar()
             ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
             {
-                currPage->createEntity(entity_name);
+                //UNDO
+                Core::Page* p = currPage;
+                std::string e = entity_name;
+                auto action = [p, e]() {
+                    p->createEntity(e);
+                };
+                auto restore = [p, e]() {
+                    p->deleteEntity(e);
+                };
+                pushAction(action, restore);
+                action();
+                //ENDUNDO
                 // memset to clear the buffer after use
                 memset(entity_name, 0, 128);
             }
@@ -350,10 +387,24 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Delete This Entity"))
             {
                 size_t original = game->getCurrPage()->getEntityList().size();
-                currPage->deleteEntity(entity_name);
+                //UNDO
+                Core::Page* p = currPage;
+                std::string e = entity_name;
+                Core::Entity savedEntity = *currPage->getEntity(entity_name);
+                auto action = [p, e]() {
+                    currPage->deleteEntity(entity_name);
+                };
+                auto restore = [p, savedEntity]() {
+                    Core::Entity* newEntity = new Core::Entity(savedEntity);
+                    currPage->getEntityList().push_back(newEntity);
+                };
+                action();
+                //ENDUNDO
+
                 if (currPage->getEntityList().size() < original)
                 {
                     delete_success = true;
+                    pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(entity_name, 0, 128);
                 }
