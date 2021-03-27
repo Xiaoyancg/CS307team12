@@ -51,10 +51,12 @@ namespace Core
         setupSpriteRefs();
     }
 
+    // FIXME: move to core
     // Each class that renders sprites needs a reference to the same SpriteManager as this class.
     // Whenever a new class is added that renders sprites, its reference must be set here.
     void Game::setupSpriteRefs()
     {
+        mGameSprites = SpriteManager::SpriteManager();
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
     }

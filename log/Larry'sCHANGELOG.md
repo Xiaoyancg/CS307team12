@@ -65,6 +65,8 @@ All notable changes to this project will be documented in this file.
 - Sprite::(name,filename, ID)
 - serialize of sprites
 - parse of sprites in Game and SpriteManager::parse(json)
+- init mGameSprite in setupSpriteReference
+- s2sprint
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *

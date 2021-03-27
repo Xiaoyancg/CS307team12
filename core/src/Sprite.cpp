@@ -6,8 +6,9 @@
 namespace Core
 {
 	Sprite::Sprite(std::string name, std::string filename, int spriteID)
-		: Sprite::Sprite(name, filename), mSpriteID(spriteID)
+		: Sprite::Sprite(name, filename)
 	{
+		mSpriteID = spriteID;
 	}
 
 	Sprite::Sprite(std::string name, std::string filename)

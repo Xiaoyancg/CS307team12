@@ -3,7 +3,7 @@ namespace Core
 {
     Game *s1Game()
     {
-        Game *game = new Game("empty");
+        Game *game = new Game("s1Game");
         Entity *entityInteractive;
         Entity *entityTallThin;
         Entity *entityShortWide;
@@ -12,8 +12,8 @@ namespace Core
         Page *entityPage;
         MapPage *mapPage1;
         MapPage *mapPage2;
-        MapPage* mapPage3;
-        MapPage* mapPage4;
+        MapPage *mapPage3;
+        MapPage *mapPage4;
 
         ///////////////
         // ENTITY TEST (This is here just for demo purposes)
@@ -59,7 +59,6 @@ namespace Core
         mapPage2 = game->createMapPage("MapPage 16x16 32px");
         mapPage2->setMap(map2); // Sets empty map page 2's map
 
-
         // Creating a map with only a name, no dimensions (0 x 0) or tile size
         mapPage3 = game->createMapPage("yee"); // Should be a blank screen
 
@@ -67,10 +66,9 @@ namespace Core
         mapPage4 = game->createMapPage();
 
         // Set the properties of the empty mapPage4
-        Map* map4 = mapPage4->getMap();
+        Map *map4 = mapPage4->getMap();
         mapPage4->getMap()->setTileSize(32);
         map4->setDimensions(glm::vec2(7, 3));
-
 
         // very important
         game->setCurrentPage(entityPage);
