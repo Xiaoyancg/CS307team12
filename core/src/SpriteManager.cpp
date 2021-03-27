@@ -1,5 +1,5 @@
 #include "SpriteManager.h"
-
+#include <iostream>
 namespace Core
 {
 	SpriteManager::SpriteManager() : mCurrSpriteID(0)
@@ -88,12 +88,22 @@ namespace Core
 
 	int SpriteManager::parse(nlohmann::json j)
 	{
-		for (nlohmann::json sj : j)
+		try
 		{
-			createSprite(
-				sj.at("SpriteName").get<std::string>(),
-				sj.at("FileName").get<std::string>(),
-				sj.at("SpriteID").get<int>());
+			for (nlohmann::json sj : j)
+			{
+				createSprite(
+					sj.at("SpriteName").get<std::string>(),
+					sj.at("FileName").get<std::string>(),
+					sj.at("SpriteID").get<int>());
+			}
 		}
+		catch (const std::exception &e)
+		{
+			std::cerr << e.what() << '\n';
+			return 1;
+		}
+
+		return 0;
 	}
 }
