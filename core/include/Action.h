@@ -1,18 +1,23 @@
 #pragma once
-
 #include <vector>
-
 #include "Entity.h"
-#include "Logic.h"
-#include "Game.h"
+#include "Response.h"
 namespace Core
 {
+    // forwar declaration
+    enum class SignalType;
+    class Signal;
+    class Response;
 
-    //enum class MoveType
-    //{
-    //    constant
-    //    //,velocity
-    //};
+    // action type
+    enum class ActionType
+    {
+        MoveEntityConstantly // move entities in constant speed
+    };
+    // *actions
+    class MoveEntityConstantly;
+
+    //* ---------------------------- Different actions --------------------------- */
 
     class MoveEntityConstantly
     {
@@ -35,10 +40,18 @@ namespace Core
         ~MoveEntityConstantly();
     };
 
-    class Action : MoveEntityConstantly
+    //* ---------------------------- Entry Action ---------------------------- */
+
+    // the Action class for outside
+    class Action
     {
     private:
         ActionType mtype;
+        union
+        {
+            // name start with m for member
+            MoveEntityConstantly mmec;
+        };
 
     public:
         void setType(ActionType type) { mtype = type; }
@@ -46,5 +59,4 @@ namespace Core
         Action(/* args */);
         ~Action();
     };
-
 }

@@ -1,19 +1,15 @@
 #pragma once
 #include "Action.h"
-#include "Response.h"
 namespace Core
 {
-
-    // logic class contains all the information needed to achieve the designed result
-    // support functions: {
-    //      set current page
-    // }
-
-    enum class ActionType
-    {
-        moveEntity
-    };
-
+    // forwar declaration
+    enum class EventType;
+    enum class ActionType;
+    class Signal;
+    class Response;
+    class Action;
+    class Logic;
+    // *logic class connecting response and action
     // there are two usage of construct Logic:
     //-------1 is in editor, 2 is when parse.
     // In both circumstance, user knows the type of Logic,
@@ -21,15 +17,12 @@ namespace Core
     class Logic
     {
     private:
-        // this logic type
-        ActionType mactionT;
         Action maction;
         Response mresponse;
+        bool mready;
 
     public:
-        ActionType getActionType() { return mactionT; }
-        void setActionType(ActionType actiontype) { mactionT = actiontype; }
-        //void evoke();
+        void check();
         Logic(/* args */);
         ~Logic();
     };

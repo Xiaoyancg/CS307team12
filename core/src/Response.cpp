@@ -5,16 +5,17 @@ namespace Core
     {
         switch (this->mtype)
         {
-        case ResponseType::key:
-            this->kr = KeyResponse();
+        case SignalType::key:
+            this->mkr = KeyResponse();
             break;
 
         default:
             break;
         }
     }
-    bool KeyResponse::keyResponse(SDL_KeyboardEvent event)
+    bool KeyResponse::check(Core::Signal signal)
     {
-        return event.keysym.sym == mkey && event.type == mtype;
+
+        return (signal.getType());
     }
 }

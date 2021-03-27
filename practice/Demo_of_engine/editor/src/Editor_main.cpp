@@ -54,6 +54,7 @@ public:
         int a;
         char b;
     };
+    int &geta() { return a; }
 };
 int main(int argc, char **argv)
 {
@@ -70,7 +71,9 @@ int main(int argc, char **argv)
         mtu.y = 1;
         std::cout << "size is " << sizeof(mtu.y);
         cu mcu;
-        mcu.a = 1;
+        int &x = mcu.geta();
+        x = 5;
+        std::cout << "should be 5: " << mcu.a << std::endl;
 
         return 0;
     }
