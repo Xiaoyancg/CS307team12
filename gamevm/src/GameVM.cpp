@@ -1,8 +1,8 @@
 #include "GameVM.h"
 #include "Game.h"
+#include "VMTool.h"
 
 #include <string>
-#include <fstream>
 #include <filesystem>
 #include <nlohmann/json.hpp>
 
@@ -22,10 +22,8 @@ int GameVMMain(int argc, char *argv[])
     if (path.empty()) {
         return 1;
     }
-    ifstream gameFile(path);
-    json gameData;
-    gameFile >> gameData;
-    Core::Game g(gameData);
+    json* gameData = readGameDataFile(path);
+    Core::Game g(*gameData);
     g.run();
     return 0;
 }
