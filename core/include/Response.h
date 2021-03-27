@@ -1,5 +1,6 @@
 #pragma once
 #include "Game.h"
+#include <any>
 
 namespace Core
 {
@@ -29,6 +30,7 @@ namespace Core
         void setType(ResponseType type) { mtype = type; }
         // must call after settype
         void inti();
+        bool response(std::any signal);
         Response() {}
         ~Response() {}
     };
