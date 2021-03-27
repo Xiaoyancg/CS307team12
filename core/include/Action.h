@@ -1,13 +1,13 @@
 #pragma once
 #include <vector>
 #include "Entity.h"
-#include "Response.h"
+#include "Logic.h"
 namespace Core
 {
     // forwar declaration
-    enum class SignalType;
+    enum class EventType;
     class Signal;
-    class Response;
+    class Logic;
 
     // action type
     enum class ActionType

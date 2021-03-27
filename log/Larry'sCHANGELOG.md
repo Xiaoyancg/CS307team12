@@ -56,9 +56,18 @@ All notable changes to this project will be documented in this file.
        1. for each signal, go through all the corresponding type of response. e.g. for each key signal, go through all key response.
        2. When a response meets it's defined condition, set the logic to ready.
     3. Traverse Logic list in order (some logic should execute before others). When a logic is in ready, evoke action.
-    
-  
-
+  - changed design use this one below
+     ```    
+        for each (signal in signalList) {
+             switch (signal.type) {
+                 case key:
+                     for each (logic in inputLogicList){
+                         logic.check(signal)
+                     }
+                     break;
+             }
+         }
+  - Do we really need a signal class?
 ### Added
 - practice/demo_of_ImGui_Docking
 - CMakeList new subdirectory demo_of_ImGui_Docking
@@ -112,6 +121,10 @@ All notable changes to this project will be documented in this file.
 - Esignal -> Signal
 - Game.h include everything
 - rearrange include order or logic family
+- remove logic
+- rename response to logic
+- rename signaltype to eventtype
+- rename SignalEvent to SignalVariant
 
 
 ### Removed

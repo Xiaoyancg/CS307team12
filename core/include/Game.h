@@ -19,7 +19,7 @@
 #include "RenderTarget.h"
 #include "SpriteManager.h"
 #include "Signal.h"
-#include "Response.h"
+#include "Logic.h"
 #include "Action.h"
 
 // page list iterator
@@ -28,10 +28,10 @@
 namespace Core
 {
     //* forward declaration
-    enum class SignalType;
+    enum class EventType;
     enum class ActionType;
     class Signal;
-    class Response;
+    class Logic;
     class Action;
     class Logic;
 
