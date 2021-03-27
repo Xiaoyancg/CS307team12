@@ -1,6 +1,6 @@
 #pragma once
 #include "Action.h"
-#include "Signal.h"
+#include "Response.h"
 namespace Core
 {
 
@@ -8,12 +8,7 @@ namespace Core
     // support functions: {
     //      set current page
     // }
-    enum class SignalType
-    {
-        key,
-        mouse,
-        time
-    };
+
     enum class ActionType
     {
         moveEntity
@@ -27,14 +22,11 @@ namespace Core
     {
     private:
         // this logic type
-        SignalType msignalT;
         ActionType mactionT;
         Action maction;
 
     public:
-        SignalType getSignalType() { return msignalT; }
         ActionType getActionType() { return mactionT; }
-        void setSignalType(SignalType signaltype) { msignalT = signaltype; }
         void setActionType(ActionType actiontype) { mactionT = actiontype; }
         //void evoke();
         Logic(/* args */);
