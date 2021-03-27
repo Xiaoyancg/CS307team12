@@ -75,6 +75,7 @@ All notable changes to this project will be documented in this file.
 - s2sprint
 - searchAllFileWithExtension
 - Action, MoveEntityConstantly
+- Response
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
