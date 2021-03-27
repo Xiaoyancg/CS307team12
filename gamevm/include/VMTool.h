@@ -4,9 +4,10 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-// search gdata file in a given location
+std::vector<std::string> searchAllFileWithExtension(std::string location, std::string extension);
+// search  file in a given location
 // return the first met file name
-std::string searchGdata(std::string location);
+std::string searchFileWithExtension(std::string location, std::string extension);
 
 std::string ReadFile(std::string fileName);
 

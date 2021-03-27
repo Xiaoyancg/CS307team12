@@ -198,16 +198,12 @@ namespace Core
 
     unsigned int Game::createSprite(std::string name, std::string filename, int id)
     {
-        // If an ID is given
-        if (id != -1)
-        {
-            return mGameSprites.createSprite(name, filename, id); // Return OpenGL ID of the new sprite
-        }
-        // If an ID is not given
-        else
-        {
-            return mGameSprites.createSprite(name, filename);
-        }
+        // Return OpenGL ID of the new sprite
+        return mGameSprites.createSprite(name, filename, id);
+    }
+    unsigned int Game::createSprite(std::string name, std::string filename, int id)
+    {
+        return mGameSprites.createSprite(name, filename);
     }
 
     void Game::deleteSprite(int id)
@@ -672,11 +668,6 @@ namespace Core
 
     void Game::mainLoop()
     {
-        // FIXME: use relative directory. also remove from here
-        createSprite("1", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_1.png", 1);
-        createSprite("2", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_2.png", 2);
-        createSprite("3", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\test_image_3.png", 3);
-        createSprite("guy", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\core\\res\\oh_yeah_woo_yeah.png", 4);
 
         SDL_Event event;
         bool close_window = false;

@@ -3,16 +3,29 @@
 #include <iostream>
 #include <filesystem>
 
-std::string searchGdata(std::string location)
+std::vector<std::string> searchAllFileWithExtension(std::string location, std::string extension)
+{
+    std::vector<std::string> fileList;
+    for (auto &p : std::filesystem::recursive_directory_iterator(location))
+    {
+        // if the extension matches
+        if (p.path().extension().compare(extension) == 0)
+        {
+            // add to file list
+            fileList.push_back(p.path().string());
+        }
+    }
+    return fileList;
+}
+std::string searchFileWithExtension(std::string location, std::string extension)
 {
     // the target extension
-    std::string ext(".gdata");
+    //std::string ext(".gdata");
     // search every file in that location
     for (auto &p : std::filesystem::recursive_directory_iterator(location))
     {
-        std::cout << p.path().string() << std::endl;
         // if the extension matches
-        if (p.path().extension().compare(ext) == 0)
+        if (p.path().extension().compare(extension) == 0)
         {
 
             // return the target file name
