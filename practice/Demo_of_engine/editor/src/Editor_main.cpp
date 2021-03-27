@@ -46,6 +46,15 @@ union tu
     char y;
 };
 
+class cu
+{
+public:
+    union
+    {
+        int a;
+        char b;
+    };
+};
 int main(int argc, char **argv)
 {
     bool t = true;
@@ -60,6 +69,8 @@ int main(int argc, char **argv)
         tu mtu;
         mtu.y = 1;
         std::cout << "size is " << sizeof(mtu.y);
+        cu mcu;
+        mcu.a = 1;
 
         return 0;
     }
