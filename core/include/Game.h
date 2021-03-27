@@ -37,6 +37,7 @@ namespace Core
         Game(GLuint *o);
         Game(std::string gameName);
         Game(nlohmann::json &json, GLuint *o);
+        Game(nlohmann::json& json);
 
         // =========================
         // ATTRIBUTES OPERATION
