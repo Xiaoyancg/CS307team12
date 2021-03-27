@@ -8,6 +8,7 @@ target_include_directories(corelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 target_link_libraries(corelib gamevmlib sdl glad sdlmain imgui nlohmann_json::nlohmann_json glm soil)
 
+# Core exe
 add_executable(core "CoreMain.cpp" ${srcs} ${headers})
 
 target_compile_options(core PRIVATE /w)
