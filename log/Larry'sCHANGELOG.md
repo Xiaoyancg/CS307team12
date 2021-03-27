@@ -59,6 +59,9 @@ All notable changes to this project will be documented in this file.
 - searchGdata() in VMTool
 - timer.h, a header-only general timer class in core
 - Example sprite 1,2.png
+- Sprite::mFilename, Sprite::mSpriteID, and associated operation 
+- Sprite::(name,filename, ID)
+- serialize of sprites
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
