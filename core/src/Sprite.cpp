@@ -5,8 +5,15 @@
 
 namespace Core
 {
-	Sprite::Sprite(std::string name, std::string filename) {
+	Sprite::Sprite(std::string name, std::string filename, int spriteID)
+		: Sprite::Sprite(name, filename), mSpriteID(spriteID)
+	{
+	}
+
+	Sprite::Sprite(std::string name, std::string filename)
+	{
 		mSpriteName = name;
+		mFileName = filename;
 		mTextureID = -1;
 
 		int width;
@@ -14,10 +21,11 @@ namespace Core
 		int channels;
 
 		// Load image into mImageData
-		unsigned char* mImageData = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_AUTO);
+		unsigned char *mImageData = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_AUTO);
 		mImageDimensions = glm::vec2(width, height);
 
-		if (mImageData) {
+		if (mImageData)
+		{
 			glGenTextures(1, &mTextureID);
 			glBindTexture(GL_TEXTURE_2D, mTextureID);
 			// set the texture wrapping parameters
@@ -31,23 +39,36 @@ namespace Core
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mImageDimensions.x, mImageDimensions.x, 0, GL_RGBA, GL_UNSIGNED_BYTE, mImageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
-			glBindTexture(GL_TEXTURE_2D, 0); // Unbind the new sprite
-			SOIL_free_image_data(mImageData); // Delete image data after loading into OpenGL 
+			glBindTexture(GL_TEXTURE_2D, 0);  // Unbind the new sprite
+			SOIL_free_image_data(mImageData); // Delete image data after loading into OpenGL
 		}
-		else {
+		else
+		{
 			printf("Sprite::Sprite > Image loading error!\n");
 		}
 	}
 
-	unsigned int Sprite::getOpenGLTextureID() {
+	unsigned int Sprite::getOpenGLTextureID()
+	{
 		return mTextureID;
 	}
 
-	glm::vec2 Sprite::getDimensions() {
+	glm::vec2 Sprite::getDimensions()
+	{
 		return mImageDimensions;
 	}
 
-	std::string Sprite::getName() {
+	std::string Sprite::getName()
+	{
 		return mSpriteName;
+	}
+
+	std::string Sprite::getFileName()
+	{
+		return this->mFileName;
+	}
+	int Sprite::getSpriteID()
+	{
+		return this->mSpriteID;
 	}
 }

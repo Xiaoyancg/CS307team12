@@ -259,7 +259,7 @@ namespace Core
 
     nlohmann::json *Game::serialize()
     {
-        // TODO: bg color
+        // TODO: bg color ? I don't think that's necessary
         nlohmann::json j;
         j["FileType"] = "Parchment Game Data";
         j["GameName"] = getGameName();
@@ -267,11 +267,13 @@ namespace Core
         j["Version"] = getVersion();
         j["LastModifiedTime"] = getLMTime();
         j["Note"] = getNote();
+        // pages
         std::vector<nlohmann::json> pageVector;
         for (Page *p : this->pageList)
         {
             nlohmann::json pj;
             pj["PageName"] = p->getName();
+            // entities
             std::vector<nlohmann::json> entityVector;
             for (Entity *e : p->getEntityList())
             {
@@ -287,6 +289,23 @@ namespace Core
             pageVector.push_back(pj);
         }
         j["PageList"] = pageVector;
+
+        // Sprites
+        std::vector<nlohmann::json> spriteVector;
+        // I didn't attend the meeting. I have sinned.
+        // The only save is to iterate an unordered_map
+        std::unordered_map<int, Sprite *> spriteMap = mGameSprites.getSprites();
+        for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
+        {
+            Sprite &s = *(sit->second);
+            nlohmann::json sj;
+            sj["SpriteName"] = s.getName();
+            sj["FileName"] = s.getFileName();
+            sj["SpriteID"] = s.getSpriteID();
+            spriteVector.push_back(sj);
+        }
+        j["SpriteList"] = spriteVector;
+
         return new nlohmann::json(j);
     }
 
