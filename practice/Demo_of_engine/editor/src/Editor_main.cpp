@@ -40,6 +40,11 @@ class C : public virtual Base
 class myTop : public A, public B, C
 {
 };
+union tu
+{
+    int x;
+    char y;
+};
 
 int main(int argc, char **argv)
 {
@@ -52,6 +57,9 @@ int main(int argc, char **argv)
         B b;
         std::cout << "base size: " << sizeof(base) << "\nA size: " << sizeof(a) << "\nB size: " << sizeof(b) << "\nTop size: " << sizeof(t)
                   << "\n t=" << t.t << std::endl;
+        tu mtu;
+        mtu.y = 1;
+        std::cout << "size is " << sizeof(mtu.y);
 
         return 0;
     }
