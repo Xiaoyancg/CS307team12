@@ -24,6 +24,7 @@ namespace Core
         // this logic type
         ActionType mactionT;
         Action maction;
+        Response mresponse;
 
     public:
         ActionType getActionType() { return mactionT; }
