@@ -100,8 +100,9 @@ int main(int argc, char **argv)
     glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
     float vertices[] = {-0.5f, -0.5f, 0.0f,
+                        -0.5f, 0.5f, 0.0f,
                         0.5f, -0.5f, 0.0f,
-                        0.0f, 0.5f, 0.0f};
+                        0.5f, 0.5f, 0.0f};
 
     unsigned int vao, vbo;
     glGenVertexArrays(1, &vao);
@@ -200,18 +201,18 @@ int main(int argc, char **argv)
         // Rendering
         // render the ImGui windows
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        // use the clear clor we passed to opengl before to clear the context
+        // use the clear color we passed to opengl before to clear the context
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // Rendering
         // render the ImGui windows
         glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-        // use the clear clor we passed to opengl before to clear the context
+        // use the clear color we passed to opengl before to clear the context
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         // Draw ImGui windows
         // Start the dear Imgui frame
