@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 - add a timer logic 
 - render text
 - better cmake
+- a sprite initializer after initopengl
 
 # Note:
 - use typedef
