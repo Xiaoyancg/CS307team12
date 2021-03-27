@@ -64,6 +64,7 @@ All notable changes to this project will be documented in this file.
 - Sprite::mFilename, Sprite::mSpriteID, and associated operation 
 - Sprite::(name,filename, ID)
 - serialize of sprites
+- parse of sprites in Game and SpriteManager::parse(json)
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
