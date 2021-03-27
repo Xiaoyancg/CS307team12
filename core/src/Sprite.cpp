@@ -37,7 +37,7 @@ namespace Core
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 			// Load mImageData into the currently bound texture (mTextureID)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mImageDimensions.x, mImageDimensions.x, 0, GL_RGBA, GL_UNSIGNED_BYTE, mImageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, mImageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			glBindTexture(GL_TEXTURE_2D, 0);  // Unbind the new sprite
