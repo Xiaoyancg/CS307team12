@@ -12,7 +12,7 @@ std::vector<std::string> searchAllFileWithExtension(std::string location, std::s
         if (p.path().extension().compare(extension) == 0)
         {
             // add to file list
-            fileList.push_back(p.path().string());
+            fileList.push_back(p.path().filename().string());
         }
     }
     return fileList;
