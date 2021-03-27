@@ -8,7 +8,7 @@ namespace Core
     // support functions: {
     //      set current page
     // }
-    enum class ResponseType
+    enum class SignalType
     {
         key,
         mouse,
@@ -27,14 +27,14 @@ namespace Core
     {
     private:
         // this logic type
-        ResponseType msignalT;
+        SignalType msignalT;
         ActionType mactionT;
         Action maction;
 
     public:
-        ResponseType getSignalType() { return msignalT; }
+        SignalType getSignalType() { return msignalT; }
         ActionType getActionType() { return mactionT; }
-        void setSignalType(ResponseType signaltype) { msignalT = signaltype; }
+        void setSignalType(SignalType signaltype) { msignalT = signaltype; }
         void setActionType(ActionType actiontype) { mactionT = actiontype; }
         //void evoke();
         Logic(/* args */);

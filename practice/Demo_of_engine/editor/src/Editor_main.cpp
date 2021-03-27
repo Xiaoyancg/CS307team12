@@ -11,6 +11,7 @@
 #include <SOIL.h>
 
 // normal libraries
+#include <any>
 #include <string>
 #include <streambuf>
 #include <fstream>
@@ -20,8 +21,40 @@
 // Our libraries
 #include "FileManager.h";
 
+class Base
+{
+public:
+    int t = 1;
+};
+class A : public virtual Base
+{
+};
+class B : public virtual Base
+{
+private:
+    int x[100];
+};
+class C : public virtual Base
+{
+};
+class myTop : public A, public B, C
+{
+};
+
 int main(int argc, char **argv)
 {
+    bool t = true;
+    if (t)
+    {
+        myTop t;
+        Base base;
+        A a;
+        B b;
+        std::cout << "base size: " << sizeof(base) << "\nA size: " << sizeof(a) << "\nB size: " << sizeof(b) << "\nTop size: " << sizeof(t)
+                  << "\n t=" << t.t << std::endl;
+
+        return 0;
+    }
 
     // set up SDL2
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)

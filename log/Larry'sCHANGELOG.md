@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - better cmake
 - a sprite initializer after initShader
 - move set/get to header
+- move constructor to header
 
 # Note:
 - use typedef
@@ -31,6 +32,8 @@ All notable changes to this project will be documented in this file.
   - It's due to the conflict in c++ runtime library. soil is using another flag. I did search some solution but it doesn't solve the problem. However, the problem will magically disappear and turns into warning if restart the IDE or console. If it works, it works. 
 - Use google c++ style guide for commenting
   - Declaration comments describe use of the function (when it is non-obvious); comments at the definition of a function describe operation.
+- Tried some inherit way, the best way is to use pointer and union
+
 
 
 ### Design Notes
