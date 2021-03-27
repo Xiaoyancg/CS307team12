@@ -67,6 +67,7 @@ All notable changes to this project will be documented in this file.
 - parse of sprites in Game and SpriteManager::parse(json)
 - init mGameSprite in setupSpriteReference
 - s2sprint
+- searchAllFileWithExtension
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
@@ -83,6 +84,8 @@ All notable changes to this project will be documented in this file.
 - change the target include rules
 - rename Game::currPage
 - GameVMMain, search gdata file
+- searchGdataFile to searchFileWithExtension
+- separate Game::createSprite
 
 
 ### Removed

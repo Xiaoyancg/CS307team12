@@ -85,6 +85,7 @@ namespace Core
         int getNumPage();
 
         // Sprite operations
+        unsigned int createSprite(std::string, std::string);
         unsigned int createSprite(std::string, std::string, int);
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
