@@ -21,7 +21,6 @@
 #include "Signal.h"
 #include "Response.h"
 #include "Action.h"
-#include "Logic.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
