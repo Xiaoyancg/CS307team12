@@ -3,6 +3,36 @@
 
 namespace Core
 {
+    // classes
+    class KeyResponse;
+
+    enum class ResponseType
+    {
+        key,
+        mouse,
+        time
+    };
+
+    // the class for outside
+    class Response
+    {
+    private:
+        ResponseType mtype;
+        union
+        {
+            KeyResponse kr;
+            // add more here
+        };
+
+    public:
+        ResponseType getType() { return mtype; }
+        void setType(ResponseType type) { mtype = type; }
+        // must call after settype
+        void inti();
+        Response() {}
+        ~Response() {}
+    };
+
     class KeyResponse
     {
     private:
@@ -20,15 +50,6 @@ namespace Core
         bool keyResponse(SDL_KeyboardEvent event);
         KeyResponse() {}
         ~KeyResponse() {}
-    };
-
-    class Response : KeyResponse
-    {
-    private:
-        /* data */
-    public:
-        Response() {}
-        ~Response() {}
     };
 
 }
