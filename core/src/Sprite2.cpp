@@ -12,9 +12,11 @@ namespace Core
         // FIXME: use relative directory. also remove from here
         std::vector<std::string> spriteList =
             searchAllFileWithExtension("./", ".png");
+
         for (auto s : spriteList)
         {
             game->createSprite(s.substr(0, s.find_first_of('.')), s);
+            break;
         }
         for (auto e : game->getPageList()->at(0)->getEntityList())
         {

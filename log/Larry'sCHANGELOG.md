@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 - add a timer logic 
 - render text
 - better cmake
-- a sprite initializer after initopengl
+- a sprite initializer after initshader
 
 # Note:
 - use typedef
@@ -89,6 +89,8 @@ All notable changes to this project will be documented in this file.
 - GameVMMain, search gdata file
 - searchGdataFile to searchFileWithExtension
 - separate Game::createSprite
+- move all output to myexe in build to remove the error from mix library location
+- glsl 1-y
 
 
 ### Removed
