@@ -1,11 +1,14 @@
-
+#pragma once
+#include "Action.h"
+#include "Signal.h"
 namespace Core
 {
+
     // logic class contains all the information needed to achieve the designed result
     // support functions: {
     //      set current page
     // }
-    enum class SignalType
+    enum class ResponseType
     {
         key,
         mouse,
@@ -24,14 +27,14 @@ namespace Core
     {
     private:
         // this logic type
-        SignalType msignalT;
+        ResponseType msignalT;
         ActionType mactionT;
         Action maction;
 
     public:
-        SignalType getSignalType() { return msignalT; }
+        ResponseType getSignalType() { return msignalT; }
         ActionType getActionType() { return mactionT; }
-        void setSignalType(SignalType signaltype) { msignalT = signaltype; }
+        void setSignalType(ResponseType signaltype) { msignalT = signaltype; }
         void setActionType(ActionType actiontype) { mactionT = actiontype; }
         //void evoke();
         Logic(/* args */);
