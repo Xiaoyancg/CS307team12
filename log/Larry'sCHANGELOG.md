@@ -14,7 +14,9 @@ All notable changes to this project will be documented in this file.
   - when that window should close set the current context back
 - unittest for everything
 - add a timer logic 
-- text
+- render text
+- better cmake
+
 # Note:
 - use typedef
 - private class member has prefix m instead of _

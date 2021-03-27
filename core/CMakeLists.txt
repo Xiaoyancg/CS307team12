@@ -6,7 +6,7 @@ add_library(corelib ${srcs} ${headers})
 #target_compile_options( corelib PRIVATE /w)
 target_include_directories(corelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(corelib sdl glad sdlmain imgui nlohmann_json::nlohmann_json glm soil)
+target_link_libraries(corelib gamevmlib sdl glad sdlmain imgui nlohmann_json::nlohmann_json glm soil)
 
 add_executable(core "CoreMain.cpp" ${srcs} ${headers})
 
@@ -19,7 +19,7 @@ target_include_directories(core
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(core editorlib gamevmlib sdl glad sdlmain imgui glm nlohmann_json::nlohmann_json soil)
+target_link_libraries(core editorlib sdl glad sdlmain imgui glm nlohmann_json::nlohmann_json soil)
 
 add_custom_command (TARGET core POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

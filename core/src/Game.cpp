@@ -196,14 +196,14 @@ namespace Core
         }
     }
 
-    unsigned int Game::createSprite(std::string name, std::string filename, int id)
+    unsigned int Game::createSprite(std::string name, std::string filename)
     {
         // Return OpenGL ID of the new sprite
-        return mGameSprites.createSprite(name, filename, id);
+        return mGameSprites.createSprite(name, filename);
     }
     unsigned int Game::createSprite(std::string name, std::string filename, int id)
     {
-        return mGameSprites.createSprite(name, filename);
+        return mGameSprites.createSprite(name, filename, id);
     }
 
     void Game::deleteSprite(int id)
