@@ -59,18 +59,12 @@ namespace Core
         setupSpriteRefs();
     }
 
-<<<<<<< HEAD
-=======
     // FIXME: move to core
->>>>>>> larry
     // Each class that renders sprites needs a reference to the same SpriteManager as this class.
     // Whenever a new class is added that renders sprites, its reference must be set here.
     void Game::setupSpriteRefs()
     {
-<<<<<<< HEAD
-=======
         mGameSprites = SpriteManager::SpriteManager();
->>>>>>> larry
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
     }
@@ -210,20 +204,6 @@ namespace Core
         }
     }
 
-<<<<<<< HEAD
-    unsigned int Game::createSprite(std::string name, std::string filename, int id)
-    {
-        // If an ID is given
-        if (id != -1)
-        {
-            return mGameSprites.createSprite(name, filename, id); // Return OpenGL ID of the new sprite
-        }
-        // If an ID is not given
-        else
-        {
-            return mGameSprites.createSprite(name, filename);
-        }
-=======
     unsigned int Game::createSprite(std::string name, std::string filename)
     {
         // Return OpenGL ID of the new sprite
@@ -232,7 +212,6 @@ namespace Core
     unsigned int Game::createSprite(std::string name, std::string filename, int id)
     {
         return mGameSprites.createSprite(name, filename, id);
->>>>>>> larry
     }
 
     void Game::deleteSprite(int id)
@@ -453,18 +432,12 @@ namespace Core
         // The the type is float (GL_INT)
         // GL_FALSE means the data should not be normalized
         // Spread between each set of attributes (4 * sizeof(int))
-<<<<<<< HEAD
-        // Offset isn't used yet since there's only one attribute in 'vertices'
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);                 // attribute ptr for position coords
-        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int))); // attribute ptr for texture coords
-=======
         //// Offset isn't used yet since there's only one attribute in 'vertices'
 
         // attribute ptr for position coords
         glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);
         // attribute ptr for texture coords
         glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int)));
->>>>>>> larry
 
         // Enable the vertex attributes
         glEnableVertexAttribArray(0);
@@ -706,13 +679,6 @@ namespace Core
 
     void Game::mainLoop()
     {
-<<<<<<< HEAD
-        createSprite("1", "D:\\1.png", 1);
-        createSprite("2", "D:\\2.png", 2);
-        createSprite("3", "D:\\1.png", 3);
-        createSprite("guy", "D:\\1.png", 4);
-=======
->>>>>>> larry
 
         SDL_Event event;
         bool close_window = false;
