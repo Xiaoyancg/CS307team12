@@ -74,17 +74,6 @@ namespace Core
         }
     }
 
-    Entity *Page::getEntity(std::string s)
-    {
-        for (std::vector<Entity*>::iterator ptr = entityList.begin();
-            ptr != entityList.end();
-            ptr++)         {
-            if (!(*ptr)->getName().compare(s))             {
-                return *ptr;
-            }
-        }
-    }
-
         // =========================
         // STATE OPERATION
     // Idea is that only game has the curr(current keywoard)
