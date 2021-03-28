@@ -8,8 +8,12 @@ namespace Core
     // forwar declaration
     enum class SignalType;
     enum class ActionType;
-    class Signal;
     class Action;
+    extern std::vector<Logic *> *keyLogicList;
+    extern std::vector<Logic *> *mouseLogicList;
+    extern std::vector<Logic *> *timerLogicList;
+    extern std::vector<Logic *> *directLogicList;
+    extern std::vector<Logic *> *readyLogicList;
 
     // *classes list
     class KeyLogic;
@@ -32,7 +36,7 @@ namespace Core
 
         // check for KeyLogic
         // singal is KeySignal
-        bool check(Core::Signal signal);
+        bool check(Core::KeySignal signal);
         KeyLogic() {}
         ~KeyLogic() {}
     };
@@ -62,30 +66,25 @@ namespace Core
         SignalType msignalType;
         ActionType mactionType;
         ActionVariant action;
-
+        LogicVariant logic;
         // name starts with m for member
-        union
-        {
-            Core::KeyLogic mkr;
-            // add more here
-        };
+
         //bool mready = false;
 
     public:
-        SignalType getSignalType() { return msignalType; }
+        SignalType
+        getSignalType()
+        {
+            return msignalType;
+        }
         void setSignalType(SignalType signalType) { msignalType = signalType; }
         ActionType getActionType() { return mactionType; }
         void setActionType(ActionType actionType) { mactionType = actionType; }
-        bool check(SignalVariant signal);
+        int check(SignalVariant signal);
         void setAction();
         Logic(SignalType signalType, ActionType actionType, ActionVariant action)
             : msignalType(signalType), mactionType(actionType) {}
         ~Logic() {}
     };
-
-    std::vector<Logic> *keyLogicList;
-    std::vector<Logic> *mouseLogicList;
-    std::vector<Logic> *timerLogicList;
-    std::vector<Logic> *directLogicList;
 
 }

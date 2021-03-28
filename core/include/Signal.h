@@ -45,9 +45,6 @@ namespace Core
     typedef std::variant<KeySignal> SignalVariant;
     typedef std::pair<SignalVariant, SignalType> Signal;
 
-    // the signalList that game loop checks
-    std::vector<Signal> signalList;
-
     //  // ------------------------------ entry signal ------------------------------ */
     // // *entry class
     ////class Signal
