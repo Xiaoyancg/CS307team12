@@ -46,9 +46,9 @@ namespace Core
         // MAP TEST
         int spriteMap[] = {
             1, 2, 3, 4,
-            5, 6, 7, 8,
-            11, 22, 33, 44,
-            55, 66, 77, 88};
+            4, 3, 2, 1,
+            2, 4, 1, 3,
+            3, 1, 4, 2};
 
         Map *map1 = new Map("Map 1 woohoo!", glm::vec2(4, 4), 64);
         map1->setMapTileSpritesFromArray(spriteMap); // Doesn't do anything right now, but will once sprite rendering is implemented!
