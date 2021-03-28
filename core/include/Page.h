@@ -51,7 +51,6 @@ namespace Core
         Entity *createEntity ( std::string, glm::vec2, glm::vec2, double, int );
         void deleteEntity (std::string);
         void deleteEntity (Entity*);
-        Entity* getEntity(std::string);
         // =========================
         // STATE OPERATION
         Entity *getCtrlEntity ();

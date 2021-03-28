@@ -1,5 +1,6 @@
 #include "UndoRedo.h"
 
+#include <iostream>
 #include <vector>
 #include <utility>
 
@@ -11,6 +12,9 @@ vector<pair<function<void()>, function<void()>>> actionStack;
 
 
 void pushAction(function<void()> action, function<void()> restore) {
+    if (index != actionStack.size()) {
+        actionStack.erase(actionStack.begin() + index, actionStack.end());
+    }
     auto p = make_pair(action, restore);
     actionStack.push_back(p);
     index++;
