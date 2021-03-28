@@ -5,15 +5,12 @@
 
 namespace Core
 {
-<<<<<<< HEAD
-=======
 	Sprite::Sprite(std::string name, std::string filename, int spriteID)
 		: Sprite::Sprite(name, filename)
 	{
 		mSpriteID = spriteID;
 	}
 
->>>>>>> larry
 	Sprite::Sprite(std::string name, std::string filename)
 	{
 		mSpriteName = name;
@@ -52,11 +49,7 @@ namespace Core
 				break;
 			}
 			// Load mImageData into the currently bound texture (mTextureID)
-<<<<<<< HEAD
 			glTexImage2D(GL_TEXTURE_2D, 0, channelType, mImageDimensions.x, mImageDimensions.x, 0, channelType, GL_UNSIGNED_BYTE, mImageData);
-=======
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, mImageData);
->>>>>>> larry
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			glBindTexture(GL_TEXTURE_2D, 0);  // Unbind the new sprite
