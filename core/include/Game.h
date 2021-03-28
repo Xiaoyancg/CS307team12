@@ -1,27 +1,38 @@
 #pragma once
 
+#include <iostream>
 #include <cstdio>
 #include <ctime>
 #include <vector>
 #include <string>
 #include <iterator>
+#include <any>
+#include <variant>
+
 #include <SDL.h>
 #include <nlohmann/json.hpp>
 
 // Parchment header
-#include "RenderTarget.h"
 #include "Page.h"
 #include "Entity.h"
 #include "MapPage.h"
+#include "RenderTarget.h"
 #include "SpriteManager.h"
+#include "Signal.h"
+#include "Logic.h"
+#include "Action.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
 #define __pl std::vector<Page *>
 namespace Core
 {
+
     typedef std::vector<Page *>::iterator PLitr;
     typedef std::vector<Page *> PL;
+
+    //Game *game; // initContext in editor or vm, used by logic
+
     class Game
     {
     public:
@@ -35,40 +46,42 @@ namespace Core
 
         // Game ();
         Game(GLuint *o);
+        Game(nlohmann::json &json);
         Game(std::string gameName);
         Game(nlohmann::json &json, GLuint *o);
 
         // =========================
-        // ATTRIBUTES OPERATION
+        // ATTRIBUTES OPERATION (attributes mean non functionality related variables)
+        // Attributes are refering to additional information of an object. Properties are describing the characteristics of an object.
 
         std::string getGameName();
-        void SetGameName(std::string newName);
+        void setGameName(std::string newName);
 
         std::string getAuthor();
-        void SetAuthor(std::string newAuthor);
+        void setAuthor(std::string newAuthor);
 
         std::string getVersion();
-        void SetVersion(std::string newVersion);
+        void setVersion(std::string newVersion);
 
         std::string getLMTime();
         void SetLMTime();
-        void SetLMTime(std::string time);
+        void setLMTime(std::string time);
 
         std::string getNote();
-        void SetNote(std::string newNote);
+        void setNote(std::string newNote);
         int AddNote(std::string moreNote);
 
-        // File loading and serialization
+        // parse json to game data for both editor and vm
         Game *parse(nlohmann::json &root);
+        // serialize the game data to json for usage in editor
         nlohmann::json *serialize();
 
-        // from core team
+        // =========================
+        // PROPERTY OPERATION ( Properties are the variables that may change the performance, like the size of the window or IDK )
 
         // =========================
-        // PROPERTY OPERATION
+        // MEMBER OPERATION ( functions that targeting )
 
-        // =========================
-        // MEMBER OPERATION
         Page *addPage(Page *p);
         Page *createPage(std::string n);
         MapPage *createMapPage(std::string, Map *);
@@ -80,14 +93,16 @@ namespace Core
         int getNumPage();
 
         // Sprite operations
+        unsigned int createSprite(std::string, std::string);
         unsigned int createSprite(std::string, std::string, int);
         void deleteSprite(int);
-        Sprite* getSpriteFromID(int);
-        std::unordered_map<int, Sprite*> getSprites();
+        Sprite *getSpriteFromID(int);
+        std::unordered_map<int, Sprite *> getSprites();
 
-        // =========================
-        // STATE OPERATION
+        /* ----------------------------- STATE OPERATION ---------------------------- */
+        // ( the flags and pointers that describing the current state of performance )
 
+        // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
         Page *getCurrPage();
         Entity *setCurrCtrlEntity(Entity *);
@@ -105,28 +120,34 @@ namespace Core
         // =========================
         // UTILITY OPERATION
 
-        // init SDL
-        void init();
+        // initContext SDL context
+        void initContext();
+        // init opengl related flag
         void initShader();
+
         void sdl_die(const char *err_msg);
         void handleInput(SDL_Event event);
+
+        // render the all currpage with entities
         void render();
 
-        // main entry for vm
+        // main entry for vm, deals everything, call after constructed instance
+        // handle exit
         void run();
 
-        // clean context after loop end
+        // clean context
         void destroy();
 
-        // main game loop
+        // the only game loop
         void mainLoop();
 
     private:
         // =========================
         // UTILITY OPERATION
 
-        // check the iterator not begin
+        // check the page list iterator not begin
         bool _isBegin(PLitr i);
+        // check the page list iterator not end
         bool _isBeforeEnd(PLitr i);
 
         void setupSpriteRefs();
@@ -153,20 +174,32 @@ namespace Core
         // if true use cbo
         bool editorMode;
 
-        // =========================u=
-        // MEMBER VARIABLES
+        /* ---------------------------- MEMBER VARIABLES ---------------------------- */
 
+        // page pointer
         Page *currPage = nullptr;
+
+        // texcbo from editor
         GLuint *texcbo;
+        // framebuffer object
         GLuint fbo;
+        // contains all pages
         std::vector<Page *> pageList;
 
+        // the current in display pagelist
+        // FIXME: why use int?
         std::vector<int> inDisplayList;
 
-        SDL_Window *window;         // Window of this Game
-        SDL_GLContext gl_context;   // The context of this Game
-        unsigned int shaderProgram; // The shaders, set by initShaders before entering the game loop
+        // the render window of this Game
+        SDL_Window *window;
 
+        // The context of this Game
+        SDL_GLContext gl_context;
+
+        // The shaders, set by initShaders before entering the game loop
+        unsigned int shaderProgram;
+
+        // FIXME: to Core
         // Holds pointers to all the game's sprites and handles ID's properly
         // Use gameSprites.createSprite(filename); to create the sprite from the file
         // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'

@@ -1,11 +1,10 @@
 #include <Game.h>
-#include <Sprint1.h>
+#include <Sprint2.h>
 using namespace Core;
 
-int main ( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
-    Game *game = s1Game ();
-    game->run ();
+    Game *game = s2Game();
 
     return 0;
 }

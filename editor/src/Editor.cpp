@@ -241,17 +241,17 @@ static void ShowExampleAppMainMenuBar()
             //ImVec2 dims = ImGui::GetWindowSize();
 
             // Get size of drawable space on the window, instead of the entire size of the window
-            ImVec2 canvas_size = ImGui::GetContentRegionAvail(); 
+            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
             glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
 
-            game->render();                             // Render Game with new viewport size
+            game->render(); // Render Game with new viewport size
 
             //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size
-            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
+            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
@@ -267,31 +267,32 @@ static void ShowExampleAppMainMenuBar()
             //entities node
             if (ImGui::CollapsingHeader("Entities"))
             {
-                std::vector<Core::Entity*> elist = currPage->getEntityList();
-                ImGui::Indent();
-                for (Core::Entity* e : elist)
+                if (game != nullptr)
                 {
-                    ImGui::Selectable(("%s", e->getName().c_str()));
+                    std::vector<Core::Entity *> elist = currPage->getEntityList();
+                    ImGui::Indent();
+                    for (Core::Entity *e : elist)
+                    {
+                        ImGui::Selectable(("%s", e->getName().c_str()));
+                    }
+                    ImGui::Unindent();
                 }
                 ImGui::Unindent();
-                
             }
             //maps node
             if (ImGui::CollapsingHeader("Maps"))
             {
-
             }
             //logic node
             if (ImGui::CollapsingHeader("Logic"))
             {
-
             }
             //pages node
             if (ImGui::CollapsingHeader("Pages"))
             {
-                std::vector<Core::Page*> plist = *game->getPageList();
+                std::vector<Core::Page *> plist = *game->getPageList();
                 ImGui::Indent();
-                for (Core::Page* p : plist)
+                for (Core::Page *p : plist)
                 {
                     ImGui::Selectable(("%s", p->getName().c_str()));
                 }
@@ -299,16 +300,14 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::CollapsingHeader("Scripts"))
             {
-
             }
             if (ImGui::CollapsingHeader("Sprites"))
             {
-
             }
         }
         ImGui::End();
     }
-    
+
     //this isnt really a "selection", it opens by default
     if (selection[SPLASHSCREEN])
     {
@@ -363,7 +362,7 @@ static void ShowExampleAppMainMenuBar()
                 entity_info = true;
             }
         }
-        
+
         if (entity_info)
         {
             ImGui::OpenPopup("Entity Information");
@@ -373,9 +372,9 @@ static void ShowExampleAppMainMenuBar()
         // Entity information popup
         if (ImGui::BeginPopup("Entity Information"))
         {
-            std::vector<Core::Entity*> elist = currPage->getEntityList();
+            std::vector<Core::Entity *> elist = currPage->getEntityList();
             ImGui::Text("Entity Names: ");
-            for (Core::Entity* e : elist)
+            for (Core::Entity *e : elist)
             {
                 ImGui::Text(e->getName().c_str());
             }
@@ -400,7 +399,7 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Enter Page Name:");
             ImGui::PushItemWidth(200);
             ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
-            const char* page_options[] = { "Page", "Menu" };
+            const char *page_options[] = {"Page", "Menu"};
             static int current_item = 0;
             ImGui::Text("Select Page Type:");
             if (ImGui::BeginListBox("", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
@@ -479,16 +478,13 @@ static void ShowExampleAppMainMenuBar()
             ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create New Script"))
             {
-
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Script"))
             {
-
             }
             if (ImGui::Button("Link This Script"))
             {
-
             }
             ImGui::SameLine();
             if (ImGui::Button("Show Script Information"))
@@ -506,7 +502,7 @@ static void ShowExampleAppMainMenuBar()
         // set the windows default size
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
-        // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given, 
+        // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given,
         //       and will find and return the next usable ID if none is explicitly requested on Sprite creation.
         static char sprite_name[128] = "";
         static char spriteIDInput[128] = "";
@@ -514,7 +510,6 @@ static void ShowExampleAppMainMenuBar()
         bool sprite_info = false;
         if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
         {
-
 
             /////////////////////////////////
             ImGui::PushItemWidth(200);
@@ -530,7 +525,7 @@ static void ShowExampleAppMainMenuBar()
             {
                 importDialog = ImGui::FileBrowser(
                     ImGuiFileBrowserFlags_NoTitleBar);
-                importDialog.SetTypeFilters({ ".jpg", ".png" });
+                importDialog.SetTypeFilters({".jpg", ".png"});
                 importDialog.Open();
             }
 
@@ -560,17 +555,19 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::BeginPopup("Sprite Information"))
         {
             // Sprite name, dimensions, ID?
-            if (currentComponent == "No Component Selected") 
+            if (currentComponent == "No Component Selected")
             {
                 ImGui::Text("Current Sprite Name: None");
             }
             else
             {
                 // Show all sprites
-                for (auto& [key, value] : game->getSprites()) {
+                for (auto &[key, value] : game->getSprites())
+                {
                     // Any sprite referenced in the .gdata file will exist in game->getSprites, but may not have been loaded into memory yet.
                     // This is just preventing referencing a null pointer. Once the sprite with the correct ID is loaded, this should correctly show its info
-                    if (value) {
+                    if (value)
+                    {
                         // Show the current sprite name
                         std::string sprite_info = std::to_string(key).append(": ").append(value->getName());
                         ImGui::Text(sprite_info.c_str());
@@ -588,18 +585,19 @@ static void ShowExampleAppMainMenuBar()
             // extract just the file name from the selected path
             std::string fileName = importDialog.GetSelected().string().substr(importDialog.GetSelected().string().find_last_of('\\', std::string::npos) + 1, std::string::npos);
 
-            if (sprite_name[0] != 0) {
+            if (sprite_name[0] != 0)
+            {
                 currentComponent = sprite_name;
                 game->createSprite(sprite_name, importDialog.GetSelected().string(), spriteID);
             }
-            else {
+            else
+            {
                 currentComponent = fileName;
                 game->createSprite(fileName, importDialog.GetSelected().string(), spriteID);
             }
             importDialog.ClearSelected();
             memset(sprite_name, 0, 128);
             memset(spriteIDInput, 0, 128);
-
         }
 
         ImGui::End();
@@ -610,8 +608,8 @@ static void ShowExampleAppMainMenuBar()
     static int dim1 = 0;
     static int dim2 = 0;
     bool map_info = false;
-    Core::MapPage* map_page = NULL;
-    Core::Map* new_map = NULL;
+    Core::MapPage *map_page = NULL;
+    Core::Map *new_map = NULL;
     if (selection[MAPEDITOR])
     {
         // possibly implement a new function here for readability purposes
@@ -782,7 +780,7 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::EndMenu();
         }
-        
+
         //only display the edit and view menus if a project exists
         if (game != nullptr)
         {
@@ -928,7 +926,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::Text("Project deleted successfully!");
         ImGui::EndPopup();
     }
-    
+
     // Successful deletion popup
     if (ImGui::BeginPopup("Delete Successful"))
     {
