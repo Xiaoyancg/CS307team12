@@ -49,6 +49,7 @@ namespace Core
         Game(nlohmann::json &json);
         Game(std::string gameName);
         Game(nlohmann::json &json, GLuint *o);
+        Game(nlohmann::json& json);
 
         // =========================
         // ATTRIBUTES OPERATION (attributes mean non functionality related variables)
