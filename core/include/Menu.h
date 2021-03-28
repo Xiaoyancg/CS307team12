@@ -1,7 +1,9 @@
 #pragma once
 #pragma warning(disable : 5033)
 #include <glm/glm.hpp>
-#include <Tile.h>
+#include <vector>
+#include "MenuPage.h"
+#include "MenuEntry.h"
 
 // Menu class
 namespace Core
@@ -30,7 +32,7 @@ namespace Core
 		// This will hold an arbitrary number of MenuEntry objects.
 		// A MenuEntry is just text with a button or two (depending on what is specified by the user).
 		// Each entry will be rendered on a separate line of the MenuPage based on mRowSize
-		std::vector<MenuEntry> mMenuEntries;
+		std::vector<MenuEntry*> mMenuEntries;
 
 		int mRowSize;
 

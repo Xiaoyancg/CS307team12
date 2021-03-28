@@ -12,17 +12,19 @@ namespace Core
     public:
 
         // Needs the current window to make a new opengl context, in the Page constructor 
-        MenuPage::MenuPage() :
+        MenuPage() :
             MenuPage("No MenuPage name :(")
         { }
 
-        MenuPage::MenuPage(std::string s) :
+        MenuPage(std::string s) :
             MenuPage(s, new Menu("No Menu name :("))
         { }
 
-        MenuPage::MapPage(std::string s, Menu* menu) :
-            Page(s), mMenu(menu)
-        { }
+        MenuPage(std::string s, Menu* menu) :
+            Page(s), mMenu(nullptr)
+        {
+            setMenu(menu);
+        }
 
 
         // Sets mMenu to the Menu created by the user
