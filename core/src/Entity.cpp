@@ -18,7 +18,6 @@ namespace Core
         calculateCoords ( location, scale );
     }
 
-
         // =========================
         // CONSTRUCTOR
 

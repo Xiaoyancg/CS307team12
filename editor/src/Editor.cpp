@@ -1,3 +1,4 @@
+#include "UndoRedo.h"
 #include <Editor.h>
 #include <VMTool.h>
 #include "Game.h"
@@ -35,6 +36,9 @@ std::string gameName = "empty";
 
 // is game saved before (for save)
 bool isSaved = false;
+
+// is control key pressed
+bool ctrl_pressed = false;
 
 // currently selected game component
 std::string currentComponent = "No Component Selected";
@@ -136,9 +140,31 @@ int EditorMain(int argc, char *argv[])
             }
             if (evt.type == SDL_KEYDOWN)
             {
+                if (evt.key.keysym.sym == SDLK_LCTRL)
+                {
+                    ctrl_pressed = true;
+                }
+                if (ctrl_pressed)
+                {
+                    if (evt.key.keysym.sym == SDLK_z)
+                    {
+                        undo();
+                    }
+                    if (evt.key.keysym.sym == SDLK_y)
+                    {
+                        redo();
+                    }
+                }
                 if (game != nullptr)
                 {
                     game->handleInput(evt);
+                }
+            }
+            if (evt.type == SDL_KEYUP)
+            {
+                if (evt.key.keysym.sym == SDLK_LCTRL)
+                {
+                    ctrl_pressed = false;
                 }
             }
         }
@@ -342,7 +368,18 @@ static void ShowExampleAppMainMenuBar()
             ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
             {
-                currPage->createEntity(entity_name);
+                //UNDO
+                Core::Page* p = currPage;
+                std::string e = entity_name;
+                auto action = [p, e]() {
+                    p->createEntity(e);
+                };
+                auto restore = [p, e]() {
+                    p->deleteEntity(e);
+                };
+                pushAction(action, restore);
+                action();
+                //ENDUNDO
                 // memset to clear the buffer after use
                 memset(entity_name, 0, 128);
             }
@@ -350,10 +387,42 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Delete This Entity"))
             {
                 size_t original = game->getCurrPage()->getEntityList().size();
-                currPage->deleteEntity(entity_name);
+                //UNDO
+                Core::Page* p = currPage;
+                std::string e = entity_name;
+                int idx = -1;
+                bool isCtrlEntity = false;
+                auto& eList = currPage->getEntityList();
+                for (int i = 0; i < eList.size(); i++)
+                {
+                    if (eList[i]->getName() == entity_name)
+                    {
+                        idx = i;
+                        if (eList[i] == currPage->getCtrlEntity())
+                        {
+                            isCtrlEntity = true;
+                        }
+                        break;
+                    }
+                }
+                Core::Entity savedEntity = *eList[idx];
+                auto action = [p, e]() {
+                    p->deleteEntity(e);
+                };
+                auto restore = [idx, p, savedEntity, isCtrlEntity]() {
+                    Core::Entity* newEntity = new Core::Entity(savedEntity);
+                    p->getEntityList().insert(p->getEntityList().begin() + idx, newEntity);
+                    if (isCtrlEntity) {
+                        p->setCtrlEntity(newEntity);
+                    }
+                };
+                action();
+                //ENDUNDO
+
                 if (currPage->getEntityList().size() < original)
                 {
                     delete_success = true;
+                    pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(entity_name, 0, 128);
                 }
@@ -419,7 +488,17 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::Button("Create New Page"))
             {
-                game->createPage(page_name);
+                //UNDO
+                std::string pname = page_name;
+                auto action = [pname]() {
+                    game->createPage(pname);
+                };
+                auto restore = [pname]() {
+                    game->deletePage(pname);
+                };
+                pushAction(action, restore);
+                action();
+                //ENDUNDO
                 // memset to clear the buffer after use
                 memset(page_name, 0, 128);
             }
@@ -427,10 +506,32 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Delete This Page"))
             {
                 size_t original = game->getPageList()->size();
-                game->deletePage(page_name);
+                //UNDO
+                std::string pname = page_name;
+                int idx = 0;
+                auto& pList = *game->getPageList();
+                for (int i = 0; i < pList.size(); i++)
+                {
+                    if (pList[i]->getName() == page_name)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+                Core::Page savedPage = *pList[idx];
+                auto action = [pname]() {
+                    game->deletePage(pname);
+                };
+                auto restore = [idx, savedPage]() {
+                    Core::Page* newPage = new Core::Page(savedPage);
+                    game->getPageList()->insert(game->getPageList()->begin() + idx, newPage);
+                };
+                action();
+                //ENDUNDO
                 if (game->getPageList()->size() < original)
                 {
                     delete_success = true;
+                    pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(page_name, 0, 128);
                 }
@@ -635,10 +736,22 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Create New Map"))
             {
                 //creates a new map with map_name specified by user and dimensions as specified by user
-                new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64);
-                map_page = game->createMapPage(map_name, new_map);
-                new_map->setName(map_name);
-                new_map->setDimensions(glm::vec2(dim1, dim2));
+                //UNDO
+                std::string mname = map_name;
+                int savedDim1 = dim1;
+                int savedDim2 = dim2;
+                auto action = [&new_map, &map_page, mname, savedDim1, savedDim2]() {
+                    new_map = new Core::Map(mname, glm::vec2(savedDim1, savedDim2), 64);
+                    map_page = game->createMapPage(mname, new_map);
+                    new_map->setName(mname);
+                    new_map->setDimensions(glm::vec2(savedDim1, savedDim2));
+                };
+                auto restore = [mname]() {
+                    game->deletePage(mname);
+                };
+                pushAction(action, restore);
+                action();
+                //ENDUNDO
                 //TODO: render new map
             }
             ImGui::SameLine();
