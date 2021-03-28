@@ -6,7 +6,6 @@ namespace Core
 {
     // forwar declaration
     enum class SignalType;
-    class Signal;
     class Logic;
 
     // action type
@@ -27,17 +26,17 @@ namespace Core
         glm::vec2 mdistance;
 
     public:
-        void setList(std::vector<Entity *> *targetList) { mtargetList = targetList; }
-        void addEntity(Entity *e) { mtargetList->push_back(e); }
-        std::vector<Entity *> *getList() { return mtargetList; }
+        void setTargetList(std::vector<Entity *> *targetList) { mtargetList = targetList; }
+        void addTargetEntitytoTargetList(Entity *e) { mtargetList->push_back(e); }
+        std::vector<Entity *> *getTargetList() { return mtargetList; }
         //void setMoveType(MoveType moveT) { mmoveT = moveT; }
         //MoveType getMoveType() { return mmoveT; }
         void setDistance(glm::vec2 &distance) { mdistance = distance; }
         glm::vec2 getDistance() { return mdistance; }
         void evoke();
 
-        ActionMoveEntityConstantly(/* args */);
-        ~ActionMoveEntityConstantly();
+        ActionMoveEntityConstantly(/* args */) {}
+        ~ActionMoveEntityConstantly() {}
     };
     typedef std::variant<ActionMoveEntityConstantly> ActionVariant;
     //// the action list main loop calls

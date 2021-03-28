@@ -27,13 +27,6 @@
 #define __pl std::vector<Page *>
 namespace Core
 {
-    //* forward declaration
-    enum class SignalType;
-    enum class ActionType;
-    class Signal;
-    class Logic;
-    class Action;
-    class Logic;
 
     typedef std::vector<Page *>::iterator PLitr;
     typedef std::vector<Page *> PL;

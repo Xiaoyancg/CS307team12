@@ -15,6 +15,14 @@
 namespace Core
 {
 
+    std::vector<Logic *> *keyLogicList;
+    std::vector<Logic *> *mouseLogicList;
+    std::vector<Logic *> *timerLogicList;
+    std::vector<Logic *> *directLogicList;
+    std::vector<Logic *> *readyLogicList;
+    // the signalList that game loop checks
+    std::vector<Signal> signalList;
+
     int Game::width = 1280;
     int Game::height = 720;
 
