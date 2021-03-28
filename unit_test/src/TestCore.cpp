@@ -1,7 +1,11 @@
 #include <TestCore.h>
+
+#include <filesystem>
+
 #include "VMTool.h"
 #include "Game.h"
 #include "Sprint1.h"
+#include "Sprite.h"
 #include "gtest/gtest.h"
 unsigned int pageError = 1;
 unsigned int coreError = 1;
@@ -55,13 +59,14 @@ TEST(TEST_GAME, Game_SetgetName)
 TEST(TEMPTEST, supertemp)
 {
     Core::Game g("wulala");
-    g.init();
+    g.initContext();
     g.initShader();
     //g.s1test ();
     json *j = g.serialize();
 
     WriteFile("wulala.gdata", j->dump(2));
 }
+
 //TEST ( TEST_CORE, Serialize )
 //{
 //    Core::Game g ( "test_gameName" );
@@ -161,4 +166,23 @@ TEST(TEMPTEST, supertemp)
 //    EXPECT_EQ(entities[0]->getLocation(), glm::vec2(0.5, 0.5));
 //    EXPECT_EQ(entities[0]->getScale(), glm::vec2(1.0, 2.0));
 //    EXPECT_EQ(entities[0]->getRotation(), 1.0);
+//}
+
+//TEST(TEST_CORE, LoadNonexistantImage)
+//{
+//Core::Sprite nonexistantSprite("name", "this_file_does_not_exist.png");
+//EXPECT_EQ(nonexistantSprite.getOpenGLTextureID(), -1);
+//}
+
+//TEST(TEST_CORE, ImplTestImageExists)
+//{
+//EXPECT_TRUE(std::filesystem::exists("test_image.png"));
+//}
+
+//TEST(TEST_CORE, LoadImage)
+//{
+//Core::Sprite sprite("name", "test_image.png");
+//EXPECT_EQ(sprite.getDimensions().x, 256);
+//EXPECT_EQ(sprite.getDimensions().y, 256);
+//EXPECT_NE(sprite.getOpenGLTextureID(), -1);
 //}

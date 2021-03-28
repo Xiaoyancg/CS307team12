@@ -1,3 +1,4 @@
+#include "UndoRedo.h"
 #include <Editor.h>
 #include <VMTool.h>
 #include "Game.h"
@@ -10,6 +11,7 @@ bool running = true;
 ImGui::FileBrowser saveDialog;
 ImGui::FileBrowser openDialog;
 ImGui::FileBrowser delDialog;
+ImGui::FileBrowser importDialog;
 
 // ====================================
 // Global Variable
@@ -34,6 +36,12 @@ std::string gameName = "empty";
 
 // is game saved before (for save)
 bool isSaved = false;
+
+// is control key pressed
+bool ctrl_pressed = false;
+
+// currently selected game component
+std::string currentComponent = "No Component Selected";
 
 // ===============================
 // Main function
@@ -97,7 +105,6 @@ int EditorMain(int argc, char *argv[])
     // keep docking bound to shift
     io.ConfigDockingWithShift = true;
 
-
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
 
@@ -133,9 +140,31 @@ int EditorMain(int argc, char *argv[])
             }
             if (evt.type == SDL_KEYDOWN)
             {
+                if (evt.key.keysym.sym == SDLK_LCTRL)
+                {
+                    ctrl_pressed = true;
+                }
+                if (ctrl_pressed)
+                {
+                    if (evt.key.keysym.sym == SDLK_z)
+                    {
+                        undo();
+                    }
+                    if (evt.key.keysym.sym == SDLK_y)
+                    {
+                        redo();
+                    }
+                }
                 if (game != nullptr)
                 {
                     game->handleInput(evt);
+                }
+            }
+            if (evt.type == SDL_KEYUP)
+            {
+                if (evt.key.keysym.sym == SDLK_LCTRL)
+                {
+                    ctrl_pressed = false;
                 }
             }
         }
@@ -238,17 +267,17 @@ static void ShowExampleAppMainMenuBar()
             //ImVec2 dims = ImGui::GetWindowSize();
 
             // Get size of drawable space on the window, instead of the entire size of the window
-            ImVec2 canvas_size = ImGui::GetContentRegionAvail(); 
+            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
             glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
 
-            game->render();                             // Render Game with new viewport size
+            game->render(); // Render Game with new viewport size
 
             //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size
-            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
+            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
@@ -261,13 +290,51 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
-
+            //entities node
+            if (ImGui::CollapsingHeader("Entities"))
+            {
+                if (game != nullptr)
+                {
+                    std::vector<Core::Entity *> elist = currPage->getEntityList();
+                    ImGui::Indent();
+                    for (Core::Entity *e : elist)
+                    {
+                        ImGui::Selectable(("%s", e->getName().c_str()));
+                    }
+                    ImGui::Unindent();
+                }
+                ImGui::Unindent();
+            }
+            //maps node
+            if (ImGui::CollapsingHeader("Maps"))
+            {
+            }
+            //logic node
+            if (ImGui::CollapsingHeader("Logic"))
+            {
+            }
+            //pages node
+            if (ImGui::CollapsingHeader("Pages"))
+            {
+                std::vector<Core::Page *> plist = *game->getPageList();
+                ImGui::Indent();
+                for (Core::Page *p : plist)
+                {
+                    ImGui::Selectable(("%s", p->getName().c_str()));
+                }
+                ImGui::Unindent();
+            }
+            if (ImGui::CollapsingHeader("Scripts"))
+            {
+            }
+            if (ImGui::CollapsingHeader("Sprites"))
+            {
+            }
         }
         ImGui::End();
     }
-    
+
     //this isnt really a "selection", it opens by default
-    
     if (selection[SPLASHSCREEN])
     {
         int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
@@ -277,7 +344,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         if (ImGui::Begin("Parchment", &selection[SPLASHSCREEN]))
         {
-            // Here we will implement a render window type thing I assume to hold the slpash screen
+            // Here we will implement a render window type thing I assume to hold the splash screen
             ImGui::Text("Parchment Splash Screen");
         }
         ImGui::End();
@@ -295,11 +362,23 @@ static void ShowExampleAppMainMenuBar()
         bool entity_info = false;
         if (ImGui::Begin("Entity Editor", &selection[ENTITYEDITOR]))
         {
+            ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
             ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
             if (ImGui::Button("Create New Entity"))
             {
-                currPage->createEntity(entity_name);
+                //UNDO
+                Core::Page* p = currPage;
+                std::string e = entity_name;
+                auto action = [p, e]() {
+                    p->createEntity(e);
+                };
+                auto restore = [p, e]() {
+                    p->deleteEntity(e);
+                };
+                pushAction(action, restore);
+                action();
+                //ENDUNDO
                 // memset to clear the buffer after use
                 memset(entity_name, 0, 128);
             }
@@ -307,10 +386,42 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Delete This Entity"))
             {
                 size_t original = game->getCurrPage()->getEntityList().size();
-                currPage->deleteEntity(entity_name);
+                //UNDO
+                Core::Page* p = currPage;
+                std::string e = entity_name;
+                int idx = -1;
+                bool isCtrlEntity = false;
+                auto& eList = currPage->getEntityList();
+                for (int i = 0; i < eList.size(); i++)
+                {
+                    if (eList[i]->getName() == entity_name)
+                    {
+                        idx = i;
+                        if (eList[i] == currPage->getCtrlEntity())
+                        {
+                            isCtrlEntity = true;
+                        }
+                        break;
+                    }
+                }
+                Core::Entity savedEntity = *eList[idx];
+                auto action = [p, e]() {
+                    p->deleteEntity(e);
+                };
+                auto restore = [idx, p, savedEntity, isCtrlEntity]() {
+                    Core::Entity* newEntity = new Core::Entity(savedEntity);
+                    p->getEntityList().insert(p->getEntityList().begin() + idx, newEntity);
+                    if (isCtrlEntity) {
+                        p->setCtrlEntity(newEntity);
+                    }
+                };
+                action();
+                //ENDUNDO
+
                 if (currPage->getEntityList().size() < original)
                 {
                     delete_success = true;
+                    pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(entity_name, 0, 128);
                 }
@@ -320,11 +431,23 @@ static void ShowExampleAppMainMenuBar()
                 entity_info = true;
             }
         }
-        
+
         if (entity_info)
         {
             ImGui::OpenPopup("Entity Information");
             entity_info = false;
+        }
+
+        // Entity information popup
+        if (ImGui::BeginPopup("Entity Information"))
+        {
+            std::vector<Core::Entity *> elist = currPage->getEntityList();
+            ImGui::Text("Entity Names: ");
+            for (Core::Entity *e : elist)
+            {
+                ImGui::Text(e->getName().c_str());
+            }
+            ImGui::EndPopup();
         }
 
         ImGui::End();
@@ -343,10 +466,12 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
             ImGui::Text("Enter Page Name:");
+            ImGui::PushItemWidth(200);
             ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
-            const char* page_options[] = { "Page", "Menu" };
+            const char *page_options[] = {"Page", "Menu"};
             static int current_item = 0;
-            if (ImGui::BeginListBox(""))
+            ImGui::Text("Select Page Type:");
+            if (ImGui::BeginListBox("", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
                 {
@@ -360,9 +485,19 @@ static void ShowExampleAppMainMenuBar()
                 }
                 ImGui::EndListBox();
             }
-            if (ImGui::Button("Create This Page"))
+            if (ImGui::Button("Create New Page"))
             {
-                game->createPage(page_name);
+                //UNDO
+                std::string pname = page_name;
+                auto action = [pname]() {
+                    game->createPage(pname);
+                };
+                auto restore = [pname]() {
+                    game->deletePage(pname);
+                };
+                pushAction(action, restore);
+                action();
+                //ENDUNDO
                 // memset to clear the buffer after use
                 memset(page_name, 0, 128);
             }
@@ -370,10 +505,32 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Delete This Page"))
             {
                 size_t original = game->getPageList()->size();
-                game->deletePage(page_name);
+                //UNDO
+                std::string pname = page_name;
+                int idx = 0;
+                auto& pList = *game->getPageList();
+                for (int i = 0; i < pList.size(); i++)
+                {
+                    if (pList[i]->getName() == page_name)
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+                Core::Page savedPage = *pList[idx];
+                auto action = [pname]() {
+                    game->deletePage(pname);
+                };
+                auto restore = [idx, savedPage]() {
+                    Core::Page* newPage = new Core::Page(savedPage);
+                    game->getPageList()->insert(game->getPageList()->begin() + idx, newPage);
+                };
+                action();
+                //ENDUNDO
                 if (game->getPageList()->size() < original)
                 {
                     delete_success = true;
+                    pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(page_name, 0, 128);
                 }
@@ -381,7 +538,6 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Show Page Information"))
             {
                 page_info = true;
-                ImGui::OpenPopup("Page Information");
             }
         }
 
@@ -391,6 +547,7 @@ static void ShowExampleAppMainMenuBar()
             page_info = false;
         }
 
+        // Page information popup
         if (ImGui::BeginPopup("Page Information"))
         {
             ImGui::Text("Page Name:");
@@ -418,19 +575,17 @@ static void ShowExampleAppMainMenuBar()
         bool script_info = false;
         if (ImGui::Begin("Script Editor", &selection[SCRIPTEDITOR]))
         {
+            ImGui::PushItemWidth(200);
             ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create New Script"))
             {
-
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Script"))
             {
-
             }
             if (ImGui::Button("Link This Script"))
             {
-
             }
             ImGui::SameLine();
             if (ImGui::Button("Show Script Information"))
@@ -448,17 +603,102 @@ static void ShowExampleAppMainMenuBar()
         // set the windows default size
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
+        // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given,
+        //       and will find and return the next usable ID if none is explicitly requested on Sprite creation.
+        static char sprite_name[128] = "";
+        static char spriteIDInput[128] = "";
+        int spriteID = -1; // -1 means the ID has not been sent (can't default to 0 because 0 is a valid ID)
         bool sprite_info = false;
         if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
         {
+
+            /////////////////////////////////
+            ImGui::PushItemWidth(200);
+            ImGui::Text("Enter Sprite Name:");
+            ImGui::InputText("  ", sprite_name, IM_ARRAYSIZE(sprite_name));
+
+            ImGui::PushItemWidth(200);
+
+            ImGui::Text("Set Sprite ID:");
+            ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
+            ImGui::Text(currentComponent.c_str());
             if (ImGui::Button("Import Sprite"))
             {
-
+                importDialog = ImGui::FileBrowser(
+                    ImGuiFileBrowserFlags_NoTitleBar);
+                importDialog.SetTypeFilters({".jpg", ".png"});
+                importDialog.Open();
             }
+
             if (ImGui::Button("Show Sprite Information"))
             {
                 sprite_info = true;
             }
+            if (ImGui::Button("Delete This Sprite"))
+            {
+                // TODO: Implement sprite deletion
+            }
+        }
+
+        // Check if the input is null (using != "" in this situation causes issues)
+        if (spriteIDInput[0] != 0)
+        {
+            spriteID = atoi(spriteIDInput);
+        }
+
+        if (sprite_info)
+        {
+            ImGui::OpenPopup("Sprite Information");
+            sprite_info = false;
+        }
+
+        // Sprite information popup
+        if (ImGui::BeginPopup("Sprite Information"))
+        {
+            // Sprite name, dimensions, ID?
+            if (currentComponent == "No Component Selected")
+            {
+                ImGui::Text("Current Sprite Name: None");
+            }
+            else
+            {
+                // Show all sprites
+                for (auto &[key, value] : game->getSprites())
+                {
+                    // Any sprite referenced in the .gdata file will exist in game->getSprites, but may not have been loaded into memory yet.
+                    // This is just preventing referencing a null pointer. Once the sprite with the correct ID is loaded, this should correctly show its info
+                    if (value)
+                    {
+                        // Show the current sprite name
+                        std::string sprite_info = std::to_string(key).append(": ").append(value->getName());
+                        ImGui::Text(sprite_info.c_str());
+                    }
+                }
+            }
+            ImGui::EndPopup();
+        }
+
+        // Sprite import dialog
+        // NOTE: I had to move this here from the bottom section because this needs access to sprite_name
+        importDialog.Display();
+        if (importDialog.HasSelected())
+        {
+            // extract just the file name from the selected path
+            std::string fileName = importDialog.GetSelected().string().substr(importDialog.GetSelected().string().find_last_of('\\', std::string::npos) + 1, std::string::npos);
+
+            if (sprite_name[0] != 0)
+            {
+                currentComponent = sprite_name;
+                game->createSprite(sprite_name, importDialog.GetSelected().string(), spriteID);
+            }
+            else
+            {
+                currentComponent = fileName;
+                game->createSprite(fileName, importDialog.GetSelected().string(), spriteID);
+            }
+            importDialog.ClearSelected();
+            memset(sprite_name, 0, 128);
+            memset(spriteIDInput, 0, 128);
         }
 
         ImGui::End();
@@ -466,7 +706,11 @@ static void ShowExampleAppMainMenuBar()
 
     // Map editor
     static char map_name[128] = "";
+    static int dim1 = 0;
+    static int dim2 = 0;
     bool map_info = false;
+    Core::MapPage *map_page = NULL;
+    Core::Map *new_map = NULL;
     if (selection[MAPEDITOR])
     {
         // possibly implement a new function here for readability purposes
@@ -478,25 +722,72 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::Begin("Map Editor", &selection[MAPEDITOR]))
         {
             ImGui::Text("Enter Map Name:");
+            ImGui::PushItemWidth(200);
             ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
+            ImGui::Text("Rows:    ");
+            ImGui::PushItemWidth(100);
+            ImGui::SameLine();
+            ImGui::SliderInt("##1", &dim1, 0, 50);
+            ImGui::Text("Columns: ");
+            ImGui::SameLine();
+            ImGui::SliderInt("##2", &dim2, 0, 50);
             if (ImGui::Button("Create New Map"))
             {
-                game->createMapPage(map_name);
-                // memset to clear the buffer after use
-                memset(map_name, 0, 128);
+                //creates a new map with map_name specified by user and dimensions as specified by user
+                //UNDO
+                std::string mname = map_name;
+                int savedDim1 = dim1;
+                int savedDim2 = dim2;
+                auto action = [&new_map, &map_page, mname, savedDim1, savedDim2]() {
+                    new_map = new Core::Map(mname, glm::vec2(savedDim1, savedDim2), 64);
+                    map_page = game->createMapPage(mname, new_map);
+                    new_map->setName(mname);
+                    new_map->setDimensions(glm::vec2(savedDim1, savedDim2));
+                };
+                auto restore = [mname]() {
+                    game->deletePage(mname);
+                };
+                pushAction(action, restore);
+                action();
+                //ENDUNDO
+                //TODO: render new map
             }
+            ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
             {
-                // TODO remove map function
-                // memset to clear the buffer after use
+                //creates a map with 0x0 dimensions and an empty name
                 memset(map_name, 0, 128);
+                dim1 = 0;
+                dim2 = 0;
+                new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64);
+                map_page = game->createMapPage(map_name, new_map);
+                new_map->setName(map_name);
+                new_map->setDimensions(glm::vec2(dim1, dim2));
+                delete_success = true;
             }
             if (ImGui::Button("Show Map Information "))
             {
-                // TODO show map list?
+                map_info = true;
+            }
+
+            if (map_info)
+            {
+                ImGui::OpenPopup("Map Information");
+                map_info = false;
+            }
+
+            // Map information popup
+            if (ImGui::BeginPopup("Map Information"))
+            {
+                ImGui::Text("Map Name:");
+                ImGui::SameLine();
+                ImGui::Text(map_name);
+                ImGui::Text("Dimensions:");
+                ImGui::SameLine();
+                ImGui::Text("%i Rows x %i Columns", dim1, dim2);
+                ImGui::EndPopup();
             }
         }
-
         ImGui::End();
     }
 
@@ -582,13 +873,6 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (ImGui::MenuItem("Save"))
                 {
-                    /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
-                    if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
-                    before (to specify a name and directory). otherwise, if they click SAVE and have
-                    previously specified a desired name/directory, the file should be saved with the
-                    same name & directory as before. right now if they click SAVE the project saves
-                    with a placeholder name/directory.
-                    */
                     if (isSaved)
                     {
                         nlohmann::json *content = game->serialize();
@@ -599,7 +883,7 @@ static void ShowExampleAppMainMenuBar()
                     }
                     else
                     {
-                        ImGui::OpenPopup("Save As");
+                        selection[SAVEAS] = true;
                     }
                 }
                 if (ImGui::MenuItem("Save As"))
@@ -610,17 +894,35 @@ static void ShowExampleAppMainMenuBar()
             ImGui::EndMenu();
         }
 
-        // Add menu
-        if (ImGui::BeginMenu("View"))
+        //only display the edit and view menus if a project exists
+        if (game != nullptr)
         {
-            ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
-            ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
-            ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
-            ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
-            ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
-            ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
-            ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
-            ImGui::EndMenu();
+            // Edit menu
+            if (ImGui::BeginMenu("Edit"))
+            {
+                if (ImGui::MenuItem("Undo"))
+                {
+                    undo();
+                }
+                if (ImGui::MenuItem("Redo"))
+                {
+                    redo();
+                }
+                ImGui::EndMenu();
+            }
+
+            //view menu
+            if (ImGui::BeginMenu("View"))
+            {
+                ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
+                ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
+                ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
+                ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
+                ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
+                ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
+                ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
+                ImGui::EndMenu();
+            }
         }
         ImGui::EndMainMenuBar();
     }
@@ -733,18 +1035,6 @@ static void ShowExampleAppMainMenuBar()
     if (ImGui::BeginPopup("Deleted Successfully"))
     {
         ImGui::Text("Project deleted successfully!");
-        ImGui::EndPopup();
-    }
-
-    // Entity information popup
-    if (ImGui::BeginPopup("Entity Information"))
-    {
-        std::vector<Core::Entity *> elist = currPage->getEntityList();
-        ImGui::Text("Entity Names: ");
-        for (Core::Entity *e : elist)
-        {
-            ImGui::Text(e->getName().c_str());
-        }
         ImGui::EndPopup();
     }
 

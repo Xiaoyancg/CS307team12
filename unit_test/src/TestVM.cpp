@@ -25,7 +25,7 @@ TEST(TEST_VM, WriteReadFile)
 TEST(TEST_VM, ProduceDataFile)
 {
     Core::Game g = Core::Game("empty");
-    g.SetGameName("name");
+    g.setGameName("name");
     EXPECT_TRUE(!ProduceDataFile(&g));
 }
 

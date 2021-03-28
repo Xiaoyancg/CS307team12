@@ -3,7 +3,7 @@ namespace Core
 {
     Game *s1Game()
     {
-        Game *game = new Game("empty");
+        Game *game = new Game("s1Game");
         Entity *entityInteractive;
         Entity *entityTallThin;
         Entity *entityShortWide;
@@ -12,8 +12,8 @@ namespace Core
         Page *entityPage;
         MapPage *mapPage1;
         MapPage *mapPage2;
-        MapPage* mapPage3;
-        MapPage* mapPage4;
+        MapPage *mapPage3;
+        MapPage *mapPage4;
 
         ///////////////
         // ENTITY TEST (This is here just for demo purposes)
@@ -40,15 +40,13 @@ namespace Core
         entityOrigin =
             entityPage->createEntity("origin", glm::vec2(1000, 300),
                                      glm::vec2(128, 128), 0, 0);
-        ///////////////
 
-        ///////////////
         // MAP TEST
         int spriteMap[] = {
             1, 2, 3, 4,
-            5, 6, 7, 8,
-            11, 22, 33, 44,
-            55, 66, 77, 88};
+            4, 3, 2, 1,
+            2, 4, 1, 3,
+            3, 1, 4, 2};
 
         Map *map1 = new Map("Map 1 woohoo!", glm::vec2(4, 4), 64);
         map1->setMapTileSpritesFromArray(spriteMap); // Doesn't do anything right now, but will once sprite rendering is implemented!
@@ -59,7 +57,6 @@ namespace Core
         mapPage2 = game->createMapPage("MapPage 16x16 32px");
         mapPage2->setMap(map2); // Sets empty map page 2's map
 
-
         // Creating a map with only a name, no dimensions (0 x 0) or tile size
         mapPage3 = game->createMapPage("yee"); // Should be a blank screen
 
@@ -67,10 +64,9 @@ namespace Core
         mapPage4 = game->createMapPage();
 
         // Set the properties of the empty mapPage4
-        Map* map4 = mapPage4->getMap();
+        Map *map4 = mapPage4->getMap();
         mapPage4->getMap()->setTileSize(32);
         map4->setDimensions(glm::vec2(7, 3));
-
 
         // very important
         game->setCurrentPage(entityPage);

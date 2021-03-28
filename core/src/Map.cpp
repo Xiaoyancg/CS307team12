@@ -5,39 +5,44 @@
 
 namespace Core
 {
-    // Takes a scale, the number of tiles in the x and y direction 
-    Map::Map (std::string name, glm::vec2 dimensions, int tileSize ):
-        mMapDimensions ( dimensions ),
-        mTileSize ( tileSize ),
-        mAssociatedPage(nullptr)
+    // Takes a scale, the number of tiles in the x and y direction
+    Map::Map(std::string name, glm::vec2 dimensions, int tileSize) : mMapDimensions(dimensions),
+                                                                     mTileSize(tileSize),
+                                                                     mAssociatedPage(nullptr)
     {
-        // Create map 
+        // Create map
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
-        if (mNumTiles > 0) {
+        if (mNumTiles > 0)
+        {
             mTileArray = new Tile[mNumTiles];
             setTileCoords();
         }
-        else {
+        else
+        {
             mTileArray = nullptr;
         }
     }
 
-    Map::~Map() {
-        if (mTileArray != nullptr) {
+    Map::~Map()
+    {
+        if (mTileArray != nullptr)
+        {
             delete mTileArray;
             mTileArray = nullptr;
         }
 
         // If the map is deleted while being used in a MapPage
-        if (mAssociatedPage != nullptr) {
+        if (mAssociatedPage != nullptr)
+        {
             mAssociatedPage->setMap(nullptr);
         }
     }
 
     // Set mMapDimensions to new dimensions
-    void Map::setDimensions ( glm::vec2 dimensions )
+    void Map::setDimensions(glm::vec2 dimensions)
     {
-        if (dimensions.x < 0 || dimensions.y < 0) {
+        if (dimensions.x < 0 || dimensions.y < 0)
+        {
             printf("Don't set negative map dimensions >:(\n");
             return;
         }
@@ -47,18 +52,19 @@ namespace Core
         Tile *newMap = new Tile[mNumTiles];
         mTileArray = newMap;
         mMapDimensions = dimensions;
-        setTileCoords ();
+        setTileCoords();
     }
 
     // Get mMapDimensions
-    glm::vec2 Map::getDimensions ()
+    glm::ivec2 Map::getDimensions()
     {
         return mMapDimensions;
     }
 
-    void Map::setTileSize ( int size )
+    void Map::setTileSize(int size)
     {
-        if (size < 0) {
+        if (size < 0)
+        {
             return;
         }
 
@@ -66,30 +72,31 @@ namespace Core
         setTileCoords();
     }
 
-    int Map::getTileSize ()
+    int Map::getTileSize()
     {
         return mTileSize;
     }
 
-    int Map::getNumTiles ()
+    int Map::getNumTiles()
     {
         return mNumTiles;
     }
 
-    void Map::setName(std::string name) {
+    void Map::setName(std::string name)
+    {
         mMapName = name;
     }
 
-    std::string Map::getName() {
+    std::string Map::getName()
+    {
         return mMapName;
     }
 
     // This will set the 4 corners of each tile of the map based on the dimensions and tilesize.
     // Having tile coordinates pre-set allows for quick map rendering, with minimal calculations.
     // These coordinates do not change often, only in the case of changing dimensions or tile size.
-    void Map::setTileCoords ()
+    void Map::setTileCoords()
     {
-        // FIXME: type convension
         // Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
         // Starting at the top left corner
         // Find the amount of tiles to the left/right and top/bottom (in tiles)
@@ -101,58 +108,62 @@ namespace Core
         int halfYPixels = halfYTiles * mTileSize;
 
         // Calculate the top-left corner of the centered map
-        int lowX = ( Game::width / 2 ) - halfXPixels;
+        int lowX = (Game::width / 2) - halfXPixels;
         int highX = lowX + mTileSize;
-        int highY = ( Game::height / 2 ) + halfYPixels;
+        int highY = (Game::height / 2) + halfYPixels;
         int lowY = highY - mTileSize;
 
-
         int border = 1; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
-        int index = 0; // An easy way to access the mTileArray without having to do any calculations
-        for ( int row = mMapDimensions.y - 1; row >= 0; row-- )
+        int index = 0;  // An easy way to access the mTileArray without having to do any calculations
+        for (int row = mMapDimensions.y - 1; row >= 0; row--)
         {
-            for ( int col = 0; col < mMapDimensions.x; col++ )
+            for (int col = 0; col < mMapDimensions.x; col++)
             {
-                int coords[8];
+                // posCoords will be filled with the 4 position coordinates for each tile and will be
+                // given to Tile::setCoords() where it will be stored in a render-able buffer correctly
+                int posCoords[8];
 
                 // P1
-                coords[0] = lowX; // Top left x
-                coords[1] = highY; // Top left y
+                posCoords[0] = lowX;  // Top left x
+                posCoords[1] = highY; // Top left y
 
                 // P2
-                coords[2] = lowX; // Bottom left x
-                coords[3] = lowY; // Bottom left y
+                posCoords[2] = lowX; // Bottom left x
+                posCoords[3] = lowY; // Bottom left y
                 // P3
-                coords[4] = highX; // Top right x
-                coords[5] = highY; // Top right y
+                posCoords[4] = highX; // Top right x
+                posCoords[5] = highY; // Top right y
                 // P4
-                coords[6] = highX; // Bottom right x
-                coords[7] = lowY; // Bottom right y
-
+                posCoords[6] = highX; // Bottom right x
+                posCoords[7] = lowY;  // Bottom right y
 
                 // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
                 // P1
-                coords[0] += border;
-                coords[1] -= border;
+                posCoords[0] += border;
+                posCoords[1] -= border;
 
                 // P2
-                coords[2] += border;
-                coords[3] += border;
+                posCoords[2] += border;
+                posCoords[3] += border;
                 // P3
-                coords[4] -= border;
-                coords[5] -= border;
+                posCoords[4] -= border;
+                posCoords[5] -= border;
                 // P4
-                coords[6] -= border;
-                coords[7] += border;
+                posCoords[6] -= border;
+                posCoords[7] += border;
 
+                // Set the coordinates for the current tile
+                mTileArray[index].setCoords(posCoords);
 
-                mTileArray[index].setCoords ( coords );
-
+                // Increment loop variables to find the next tile in the same row
                 lowX += mTileSize;
                 highX += mTileSize;
                 index++;
             }
-            lowX = ( Game::width / 2 ) - halfXPixels;;
+
+            // Calculate the next tile in a new row
+            lowX = (Game::width / 2) - halfXPixels;
+            ;
             highX = lowX + mTileSize;
             highY -= mTileSize;
             lowY -= mTileSize;
@@ -161,14 +172,14 @@ namespace Core
 
     // Takes a pointer to an array of integers, containing the spriteID for each tile in the Map
     // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS Map::mMapDimensions
-// This will have to take a depth parameter when Tile depth gets implemented
-    void Map::setMapTileSpritesFromArray ( int *spriteIDMap )
+    // This will have to take a depth parameter when Tile depth gets implemented
+    void Map::setMapTileSpritesFromArray(int *spriteIDMap)
     {
         mNumTiles = mMapDimensions.x * mMapDimensions.y; // Get the number of tiles in the map
 
-        for ( int i = 0; i < mNumTiles; i++ )
+        for (int i = 0; i < mNumTiles; i++)
         {
-            mTileArray[i].setSpriteID ( spriteIDMap[i] ); // Copy the spriteID to the Map at tile 'i'
+            mTileArray[i].setSpriteID(spriteIDMap[i]); // Copy the spriteID to the Map at tile 'i'
         }
     }
 }

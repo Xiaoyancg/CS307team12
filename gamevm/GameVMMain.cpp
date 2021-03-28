@@ -1,7 +1,9 @@
 #include <GameVM.h>
+#include <Timer.h>
+#include <stdio.h>
 
-int main ( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
-    return GameVMMain ( argc, argv );
+    int r = GameVMMain(argc, argv);
+    return r;
 }
-

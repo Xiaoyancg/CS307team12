@@ -1,8 +1,8 @@
 file(GLOB srcs "src/*.cpp")
 
-add_library(core ${srcs})
+add_library(demo_core ${srcs})
 
-target_include_directories(core 
+target_include_directories(demo_core 
 	PUBLIC
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 		$<INSTALL_INTERFACE:include>
@@ -10,4 +10,4 @@ target_include_directories(core
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(core sdl glad imgui)
+target_link_libraries(demo_core sdl glad imgui)
