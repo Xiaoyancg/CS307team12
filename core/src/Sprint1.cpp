@@ -1,4 +1,7 @@
 #include "Sprint1.h"
+#include "MenuPage.h"
+#include "Menu.h"
+
 namespace Core
 {
     Game *s1Game()
@@ -67,6 +70,14 @@ namespace Core
         Map *map4 = mapPage4->getMap();
         mapPage4->getMap()->setTileSize(32);
         map4->setDimensions(glm::vec2(7, 3));
+
+        // MENU PAGE TEST //////////////////////
+        Menu* menu = new Menu("example menu");
+        menu->createMenuEntry("text ahhh", nullptr, nullptr);
+        menu->createMenuEntry("", nullptr, nullptr);
+        menu->createMenuEntry("text asdf", nullptr, nullptr);
+        MenuPage* mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
+        /////////////////////////////////////////
 
         // very important
         game->setCurrentPage(entityPage);

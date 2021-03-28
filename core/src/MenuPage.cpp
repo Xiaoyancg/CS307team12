@@ -4,18 +4,8 @@
 namespace Core {
     // Sets mMenu to the Menu created by the user
     void MenuPage::setMenu(Menu* menu) {
-        // Set the old menu to have no associated page
-        if (mMenu) {
-            mMenu->mAssociatedPage = nullptr;
-        }
-
         // Set the new menu
         mMenu = menu;
-
-        // Set the new menu's associated page
-        if (mMenu != nullptr) {
-            mMenu->mAssociatedPage = this;
-        }
     }
 
     // Returns mMenu
@@ -30,7 +20,24 @@ namespace Core {
             // Loop through all menu entries in the menu
             for (MenuEntry* entry : mMenu->mMenuEntries) {
                 // Render the current menu entry
-                printf("MenuEntry %p\n", entry);
+
+                // If the text is not empty
+                if (entry->getText().compare("")) {
+                    // TODO Draw text
+                }
+
+                // Get button callbacks
+                void* cb1 = entry->getButtonCallback1();
+                void* cb2 = entry->getButtonCallback2();
+
+                // If both buttons exist
+                if (cb1 && cb2) {
+                    // TODO draw both buttons
+                }
+                // If only one button exists
+                else if (cb1 && !cb2) {
+                    // TODO draw one button
+                }
             }
         }
         else {

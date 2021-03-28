@@ -1,9 +1,8 @@
 #pragma once
 #pragma warning(disable : 5033)
-#include <glm/glm.hpp>
 #include <vector>
-#include "MenuPage.h"
 #include "MenuEntry.h"
+
 
 // Menu class
 namespace Core
@@ -22,11 +21,10 @@ namespace Core
 
 		// A MenuEntry consists of some text, and two buttons at most.
 		// If a button function pointer is null, then that button will not be created or rendered
-		void createMenuEntry(std::string entryText, void* buttonFunc1());
-		void createMenuEntry(std::string entryText, void *buttonFunc1(), void *buttonFunc2());
+		MenuEntry* createMenuEntry(std::string entryText, void* buttonFunc1);
+		MenuEntry* createMenuEntry(std::string entryText, void *buttonFunc1, void *buttonFunc2);
 
 
-		friend class MenuPage;
 
 	private:
 		// This will hold an arbitrary number of MenuEntry objects.
@@ -38,9 +36,7 @@ namespace Core
 
 		std::string mMenuName;
 
-		// This is set to a MenuPage only when the map is in use on the MenuPage.
-		// It's used to remove itself from the MenuPage if it's suddenly deleted
-		// while in use.
-		MenuPage* mAssociatedPage;
+		friend class MenuPage;
+
 	};
 }

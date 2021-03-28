@@ -17,6 +17,8 @@ namespace Core
 		void* getButtonCallback1();
 		void* getButtonCallback2();
 
+		void debugPrint();
+
 	private:
 		std::string mText;
 		void* mButtonCallback1;
