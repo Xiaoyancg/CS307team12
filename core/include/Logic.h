@@ -1,13 +1,13 @@
 #pragma once
 #include <map>
 #include "Signal.h"
-#include "Action.h"
+#include "Script.h"
 
 namespace Core
 {
     // forwar declaration
     enum class SignalType;
-    enum class ActionType;
+    enum class ScriptType;
     class Action;
     extern std::vector<Logic *> *keyLogicList;
     extern std::vector<Logic *> *mouseLogicList;
@@ -57,19 +57,23 @@ namespace Core
     //      }
     //
 
-    // we need Logic because the signal may need to pass value to action
-    // also pair can't provite action type
+    // we need Logic because the signal may need to pass value to mscript
+    // also pair can't provite mscript type
     // And logic can be write to and load from json as object
+
+    /// Use as pointer
+    /// @param mlogic: instance of a specific logic
+    /// @param mscript: a pointer to a script
     class Logic
     {
     private:
         SignalType msignalType;
-        ActionType mactionType;
-        ActionVariant action;
-        LogicVariant logic;
+        ScriptType mscriptType;
+        LogicVariant mlogic;
+        ScriptVariant mscript;
         // name starts with m for member
 
-        //bool mready = false;
+        bool mpause = true;
 
     public:
         SignalType
@@ -78,12 +82,15 @@ namespace Core
             return msignalType;
         }
         void setSignalType(SignalType signalType) { msignalType = signalType; }
-        ActionType getActionType() { return mactionType; }
-        void setActionType(ActionType actionType) { mactionType = actionType; }
+        SignalType getSignalType() { return msignalType; }
+        void setScriptType(ScriptType actionType) { mscriptType = actionType; }
+        ScriptType getScriptType() { return mscriptType; }
+        void setLogic();
+        void setScript();
+
         int check(SignalVariant signal);
-        void setAction();
-        Logic(SignalType signalType, ActionType actionType, ActionVariant action)
-            : msignalType(signalType), mactionType(actionType) {}
+        Logic(SignalType signalType, ScriptType actionType, ScriptVariant mscript)
+            : msignalType(signalType), mscriptType(actionType) {}
         ~Logic() {}
     };
 

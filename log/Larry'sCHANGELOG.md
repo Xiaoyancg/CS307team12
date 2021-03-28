@@ -125,6 +125,7 @@ All notable changes to this project will be documented in this file.
 - rename response to logic
 - rename signaltype to eventtype
 - rename SignalEvent to SignalVariant
+- rename action to script to avoid conflict from the undo/redo
 
 
 ### Removed
