@@ -904,13 +904,11 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (ImGui::MenuItem("Undo"))
                 {
-                    printf("Undo!\n");
-                    // TODO: Implement UNDO
+                    undo();
                 }
                 if (ImGui::MenuItem("Redo"))
                 {
-                    printf("Redo!\n");
-                    // TODO: Implement REDO
+                    redo();
                 }
                 ImGui::EndMenu();
             }
