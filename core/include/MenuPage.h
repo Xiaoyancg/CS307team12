@@ -4,8 +4,10 @@
 #include "Menu.h"
 #include <string>
 
+
 namespace Core
 {
+
     // MenuPage class
     class MenuPage : public Page
     {

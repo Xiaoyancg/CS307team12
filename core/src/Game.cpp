@@ -164,6 +164,18 @@ namespace Core
         MapPage *mp = new MapPage(n, m);
         return (MapPage *)addPage(mp);
     }
+    MenuPage* Game::createMenuPage(std::string name, Menu* menu) {
+        MenuPage* mp = new MenuPage(name, menu);
+        return (MenuPage*)addPage(mp);
+    }
+    MenuPage* Game::createMenuPage(std::string name) {
+        MenuPage* mp = new MenuPage(name);
+        return (MenuPage*)addPage(mp);
+    }
+    MenuPage* Game::createMenuPage() {
+        MenuPage* mp = new MenuPage();
+        return (MenuPage*)addPage(mp);
+    }
     std::vector<Page *> *Game::getPageList()
     {
         return &pageList;

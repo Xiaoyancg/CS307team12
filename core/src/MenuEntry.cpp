@@ -11,4 +11,8 @@ namespace Core {
 	void* MenuEntry::getButtonCallback2() {
 		return mButtonCallback2;
 	}
+
+	void MenuEntry::debugPrint() {
+		printf("%s %p %p\n", mText.c_str(), mButtonCallback1, mButtonCallback2);
+	}
 }
