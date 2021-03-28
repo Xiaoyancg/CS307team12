@@ -875,13 +875,6 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (ImGui::MenuItem("Save"))
                 {
-                    /* TODO (for sprint 2?): this is a really ghetto implementation atm. ideally
-                    if the user clicks SAVE they should get the SAVE AS popup if they haven't saved
-                    before (to specify a name and directory). otherwise, if they click SAVE and have
-                    previously specified a desired name/directory, the file should be saved with the
-                    same name & directory as before. right now if they click SAVE the project saves
-                    with a placeholder name/directory.
-                    */
                     if (isSaved)
                     {
                         nlohmann::json *content = game->serialize();
@@ -892,7 +885,7 @@ static void ShowExampleAppMainMenuBar()
                     }
                     else
                     {
-                        ImGui::OpenPopup("Save As");
+                        selection[SAVEAS] = true;
                     }
                 }
                 if (ImGui::MenuItem("Save As"))
