@@ -257,7 +257,9 @@ namespace Core
         // I didn't attend the meeting.
         // It's my punishment
         mGameSprites = SpriteManager::SpriteManager();
-        mGameSprites.parse(root.at("SpriteList"));
+
+        if (root.end() != root.find("SpriteList"))
+            mGameSprites.parse(root.at("SpriteList"));
 
         // parse should set current
         // but the info of current in json is not implemented yet
