@@ -24,12 +24,12 @@ namespace Core
 			return mSpriteID;
 		}
 
-		void setCoords ( int *coords );
+		void setCoords ( int *coords ); // coords points to an array of 8 ints, 4 pairs of coordinates
 		int *getCoords ();
 
 
 	private:
-		int mCoords[8]; // 4 pairs of (x,y) coordinates in pixels
+		int mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
 
 		// Basic Tile variables
 		int mCurrentDepth; // Not implemented yet, but saving for later
@@ -37,7 +37,5 @@ namespace Core
 		// Sprite ID used to index sprites loaded into memory from the Game class
 		// This isn't used yet though, I'm just adding it for later
 		int mSpriteID = -1;
-
-		friend void setTileCoords ();
 	};
 }

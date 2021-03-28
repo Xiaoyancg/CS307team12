@@ -27,6 +27,10 @@ target_include_directories(core_test
 )
 target_link_libraries(core_test editorlib gamevmlib sdl glad sdlmain imgui glm testlib)
 
+add_custom_command (TARGET core_test PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/unit_test/assets $<TARGET_FILE_DIR:core_test>
+)
 add_custom_command (TARGET core_test POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:sdl> $<TARGET_FILE_DIR:core_test>
