@@ -31,7 +31,7 @@
             32.0,
             64.0
           ],
-          "spriteID": 0
+          "spriteID": 1
         },
         {
           "EntityName": "shortWide",
@@ -44,7 +44,7 @@
             64.0,
             32.0
           ],
-          "spriteID": 0
+          "spriteID": 2
         },
         {
           "EntityName": "veryShortWide",
@@ -57,7 +57,7 @@
             128.0,
             16.0
           ],
-          "spriteID": 0
+          "spriteID": 3
         },
         {
           "EntityName": "origin",
@@ -70,7 +70,7 @@
             128.0,
             128.0
           ],
-          "spriteID": 0
+          "spriteID": 4
         }
       ],
       "PageName": "entityPage"
