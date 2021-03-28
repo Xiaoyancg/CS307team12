@@ -126,6 +126,12 @@ int EditorMain(int argc, char *argv[])
 
     while (running)
     {
+        // Draw ImGui windows
+        // Start the dear Imgui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame(window);
+        ImGui::NewFrame();
+
         SDL_Event evt;
         while (SDL_PollEvent(&evt))
         {
@@ -167,12 +173,26 @@ int EditorMain(int argc, char *argv[])
                     ctrl_pressed = false;
                 }
             }
+            // Handle mouse clicks
+            if (evt.type == SDL_MOUSEBUTTONDOWN) {
+                // Left mouse click
+                int x, y;
+                if (evt.button.button == SDL_BUTTON_LEFT) {
+                    ;
+                    SDL_GetMouseState(&x, &y);
+                    printf("Click at (%d, %d)\n", x, y);
+                    printf("Cursor at (%f, %f)\n", ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
+
+                    ImVec2 pos = ImGui::GetCursorPos();
+                    ImVec2 start_pos = ImGui::GetCursorStartPos();
+                    ImVec2 abs_pos = ImGui::GetCursorScreenPos();
+                    ImVec2 window_pos = ImGui::GetWindowPos();
+                    printf("pos (%.0f,%.0f) startpos (%.0f,%.0f) pos+win_pos (%.0f,%.0f) abs_pos (%.0f,%.0f)\n",
+                        pos.x, pos.y, start_pos.x, start_pos.y, pos.x + window_pos.x, pos.y + window_pos.y, abs_pos.x, abs_pos.y);
+                }
+            }
         }
-        // Draw ImGui windows
-        // Start the dear Imgui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL2_NewFrame(window);
-        ImGui::NewFrame();
+
         if (!showDemoWindow)
         {
             // turn the main viewport into a docking one to allow for docking
