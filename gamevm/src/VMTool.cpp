@@ -2,7 +2,18 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include <ctime>
 
+std::string getTimeString()
+{
+    time_t rawtime;
+    struct tm *timeinfo = new struct tm();
+    time(&rawtime);
+    localtime_s(timeinfo, &rawtime);
+    char c[256];
+    asctime_s(c, 256, timeinfo);
+    return std::string(c);
+}
 std::vector<std::string> searchAllFileWithExtension(std::string location, std::string extension)
 {
     std::vector<std::string> fileList;
@@ -60,7 +71,7 @@ json *readGameDataFile(std::string f)
 Core::Game *CreateExampleGame()
 {
     Core::Game *g = new Core::Game(std::string("example"));
-    g->setAuthor(std::string("example author"));
+    g->setAuthor(std::string("example mauthor"));
     g->setVersion(std::string("0.1.0"));
     time_t rawtime;
     struct tm *timeinfo = new struct tm();

@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <cstdio>
-#include <ctime>
 #include <vector>
 #include <string>
 #include <iterator>
@@ -18,28 +17,49 @@
 #include "MapPage.h"
 #include "RenderTarget.h"
 #include "SpriteManager.h"
-#include "Signal.h"
 #include "Logic.h"
-#include "Action.h"
 
 // page list iterator
-#define __plitr std::vector<Page *>::iterator
-#define __pl std::vector<Page *>
+
+///
+/// @brief the package contains class game and global game variables
+///
+///
 namespace Core
 {
 
-    typedef std::vector<Page *>::iterator PLitr;
-    typedef std::vector<Page *> PL;
+    //* ------------------- GLOBAL VARIABLE ------------------ *//
 
-    //Game *game; // initContext in editor or vm, used by logic
+    // forward declaration
+    class Game;
 
+    // g stands for global variable
+    extern std::vector<Logic *> *gkeyLogicList;
+    extern std::vector<Logic *> *mouseLogicList;
+    extern std::vector<Logic *> *gtimerLogicList;
+    extern std::vector<Logic *> *gdirectLogicList;
+    extern std::vector<Logic *> *gscriptList;
+    // the signalList that game loop checks
+    extern std::vector<Signal> signalList;
+
+    extern int gwidth, gheight;
+
+    // initContext in editor or vm, used by logic
+    extern Game *ggame;
+
+    /// @brief The parchment game engine core component. The game runtime object
+    /// takes the role of rendering, event handling, game data file loading and
+    /// serializing, and running the game with one call.
+    ///
+    /// @note game doesn't contain runtime states, the game state variable is in
+    /// core as global variable
     class Game
     {
     public:
-        // =========================
         // PUBLIC VARIABLE
-        static int width;
-        static int height;
+        // moved to core global variable
+        //static int width;
+        //static int height;
 
         // =========================
         // CONSTRUCTOR
@@ -54,22 +74,20 @@ namespace Core
         // ATTRIBUTES OPERATION (attributes mean non functionality related variables)
         // Attributes are refering to additional information of an object. Properties are describing the characteristics of an object.
 
-        std::string getGameName();
-        void setGameName(std::string newName);
+        std::string getGameName() { return this->mgameName; }
+        void setGameName(std::string gameName) { this->mgameName = gameName; }
 
-        std::string getAuthor();
-        void setAuthor(std::string newAuthor);
+        std::string getAuthor() { return this->mauthor; }
+        void setAuthor(std::string author) { this->mauthor = author; }
 
-        std::string getVersion();
-        void setVersion(std::string newVersion);
+        std::string getVersion() { return this->mversion; }
+        void setVersion(std::string version) { this->mversion = version; }
 
-        std::string getLMTime();
-        void SetLMTime();
-        void setLMTime(std::string time);
+        std::string getLMTime() { return this->mLMTime; }
+        void setLMTime(std::string LMTTime) { this->mLMTime = LMTTime; }
 
-        std::string getNote();
-        void setNote(std::string newNote);
-        int AddNote(std::string moreNote);
+        std::string getNote() { return this->note; }
+        void setNote(std::string newNote) { this->note = newNote; }
 
         // parse json to game data for both editor and vm
         Game *parse(nlohmann::json &root);
@@ -146,19 +164,19 @@ namespace Core
         // UTILITY OPERATION
 
         // check the page list iterator not begin
-        bool _isBegin(PLitr i);
+        bool _isBegin(std::vector<Page *>::iterator i);
         // check the page list iterator not end
-        bool _isBeforeEnd(PLitr i);
+        bool _isBeforeEnd(std::vector<Page *>::iterator i);
 
         void setupSpriteRefs();
         // ==========================
         // ATTRIBUTES VARIABLE
 
-        std::string gameName;
-        std::string author;
-        std::string version;
+        std::string mgameName;
+        std::string mauthor;
+        std::string mversion;
         // last modified time
-        std::string lMTime;
+        std::string mLMTime;
         std::string note;
 
         // ===========================
@@ -168,7 +186,7 @@ namespace Core
         bool useFramebuffer;
 
         // page list iterator: current page iterator
-        PLitr _currPitr;
+        std::vector<Page *>::iterator _currPitr;
 
         // condition of game is rendering to editor
         // if true use cbo

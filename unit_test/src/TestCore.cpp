@@ -126,7 +126,7 @@ TEST(TEMPTEST, supertemp)
 //    nlohmann::json gamefile = R"(
 //        {
 //            "GameName": "example name",
-//            "Author": "example author",
+//            "Author": "example mauthor",
 //            "Version": "example version",
 //            "LastModifiedTime": "example Date Time",
 //            "Note": "example Note",
@@ -150,7 +150,7 @@ TEST(TEMPTEST, supertemp)
 //    Core::Game* game = Core::Game::parse(gamefile);
 //
 //    EXPECT_EQ(game->getGameName(), "example name");
-//    EXPECT_EQ(game->getAuthor(), "example author");
+//    EXPECT_EQ(game->getAuthor(), "example mauthor");
 //    EXPECT_EQ(game->getVersion(), "example version");
 //    EXPECT_EQ(game->getLMTime(), "example Date Time");
 //    EXPECT_EQ(game->getNote(), "example Note");

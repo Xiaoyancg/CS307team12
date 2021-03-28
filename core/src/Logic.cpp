@@ -4,6 +4,7 @@ namespace Core
 
     // check if signal meet the criteria
     // and add this to ready logic list if it meets
+
     int Logic::check(SignalVariant signal)
     {
 
@@ -12,7 +13,7 @@ namespace Core
         case SignalType::key:
             if (std::get<KeyLogic>(mlogic).check(std::get<KeySignal>(signal)))
             {
-                readyLogicList->push_back(this);
+                gscriptList->push_back(this);
             }
             break;
 

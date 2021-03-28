@@ -269,14 +269,14 @@ static void ShowExampleAppMainMenuBar()
             // Get size of drawable space on the window, instead of the entire size of the window
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
-            glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
+            glViewport(0, 0, Core::gwidth, Core::gheight); // Set viewport to the Game dimensions
 
             game->render(); // Render Game with new viewport size
 
             //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
-
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
+            // Reset viewport size // this line doesn't matter
+            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y);
             ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
@@ -334,7 +334,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::End();
     }
 
-    //this isnt really a "selection", it opens by default
+    //this isn't really a "selection", it opens by default
     if (selection[SPLASHSCREEN])
     {
         int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
@@ -368,7 +368,7 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Create New Entity"))
             {
                 //UNDO
-                Core::Page* p = currPage;
+                Core::Page *p = currPage;
                 std::string e = entity_name;
                 auto action = [p, e]() {
                     p->createEntity(e);
@@ -387,11 +387,11 @@ static void ShowExampleAppMainMenuBar()
             {
                 size_t original = game->getCurrPage()->getEntityList().size();
                 //UNDO
-                Core::Page* p = currPage;
+                Core::Page *p = currPage;
                 std::string e = entity_name;
                 int idx = -1;
                 bool isCtrlEntity = false;
-                auto& eList = currPage->getEntityList();
+                auto &eList = currPage->getEntityList();
                 for (int i = 0; i < eList.size(); i++)
                 {
                     if (eList[i]->getName() == entity_name)
@@ -409,9 +409,10 @@ static void ShowExampleAppMainMenuBar()
                     p->deleteEntity(e);
                 };
                 auto restore = [idx, p, savedEntity, isCtrlEntity]() {
-                    Core::Entity* newEntity = new Core::Entity(savedEntity);
+                    Core::Entity *newEntity = new Core::Entity(savedEntity);
                     p->getEntityList().insert(p->getEntityList().begin() + idx, newEntity);
-                    if (isCtrlEntity) {
+                    if (isCtrlEntity)
+                    {
                         p->setCtrlEntity(newEntity);
                     }
                 };
@@ -508,7 +509,7 @@ static void ShowExampleAppMainMenuBar()
                 //UNDO
                 std::string pname = page_name;
                 int idx = 0;
-                auto& pList = *game->getPageList();
+                auto &pList = *game->getPageList();
                 for (int i = 0; i < pList.size(); i++)
                 {
                     if (pList[i]->getName() == page_name)
@@ -522,7 +523,7 @@ static void ShowExampleAppMainMenuBar()
                     game->deletePage(pname);
                 };
                 auto restore = [idx, savedPage]() {
-                    Core::Page* newPage = new Core::Page(savedPage);
+                    Core::Page *newPage = new Core::Page(savedPage);
                     game->getPageList()->insert(game->getPageList()->begin() + idx, newPage);
                 };
                 action();

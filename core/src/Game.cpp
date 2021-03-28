@@ -15,21 +15,22 @@
 namespace Core
 {
 
-    std::vector<Logic *> *keyLogicList;
+    //* ----------------------- Global Variables ----------------------- */
+
+    std::vector<Logic *> *gkeyLogicList;
     std::vector<Logic *> *mouseLogicList;
-    std::vector<Logic *> *timerLogicList;
-    std::vector<Logic *> *directLogicList;
-    std::vector<Logic *> *readyLogicList;
-    // the signalList that game loop checks
+    std::vector<Logic *> *gtimerLogicList;
+    std::vector<Logic *> *gdirectLogicList;
+    std::vector<Logic *> *gscriptList;
     std::vector<Signal> signalList;
+    Game *ggame;
 
-    int Game::width = 1280;
-    int Game::height = 720;
+    int gwidth = 1280;
+    int gheight = 720;
 
-    // =========================
-    // CONSTRUCTOR
+    //* -------------------------- CONSTRUCTOR ------------------------- */
 
-    Game::Game(std::string gameName) : gameName(gameName)
+    Game::Game(std::string gameName) : mgameName(gameName)
     {
         useFramebuffer = false;
         setupSpriteRefs();
@@ -55,7 +56,7 @@ namespace Core
     {
         texcbo = o;
         useFramebuffer = true;
-        this->gameName = "editortestname";
+        this->mgameName = "editortestname";
         this->setCurrentPage(this->createPage("emptyPage"));
         setupSpriteRefs();
     }
@@ -72,67 +73,6 @@ namespace Core
 
     // =========================
     // ATTRIBUTES OPERATION
-
-    std::string Game::getGameName()
-    {
-        return this->gameName;
-    }
-
-    void Game::setGameName(std::string newName)
-    {
-        this->gameName = newName;
-    }
-
-    void Game::setAuthor(std::string newAuthor)
-    {
-        this->author = newAuthor;
-    }
-
-    std::string Game::getAuthor()
-    {
-        return this->author;
-    }
-
-    void Game::setVersion(std::string newVersion)
-    {
-        this->version = newVersion;
-    }
-
-    std::string Game::getVersion()
-    {
-        return this->version;
-    }
-
-    void Game::setLMTime(std::string time)
-    {
-        this->lMTime = time;
-    }
-
-    void Game::SetLMTime()
-    {
-        time_t rawtime;
-        struct tm *timeinfo = new struct tm();
-        time(&rawtime);
-        localtime_s(timeinfo, &rawtime);
-        char c[256];
-        asctime_s(c, 256, timeinfo);
-        this->lMTime = std::string(c);
-    }
-
-    std::string Game::getLMTime()
-    {
-        return this->lMTime;
-    }
-
-    void Game::setNote(std::string newNote)
-    {
-        this->note = newNote;
-    }
-
-    std::string Game::getNote()
-    {
-        return this->note;
-    }
 
     // =========================
     // PROPERTY OPERATION
@@ -335,7 +275,7 @@ namespace Core
     void Game::initShader()
     {
         // Create viewport with the default w/h (same as the window size)
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, gwidth, gheight);
 
         // Source for the vertex shader
         const char *vertexSource = R"glsl(
@@ -456,7 +396,7 @@ namespace Core
 
         // Set the scale based on the width and height
         int scaleID = glGetUniformLocation(shaderProgram, "scale");
-        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
+        glUniform2f(scaleID, (float)2 / gwidth, (float)2 / gheight);
 
         // if in editor mode
         if (useFramebuffer)
@@ -468,7 +408,7 @@ namespace Core
             // unsigned int texcbo; // texture color buffer obj
             // glGenTextures ( 1, &texcbo );
             glBindTexture(GL_TEXTURE_2D, *texcbo);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, gwidth, gheight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -503,7 +443,7 @@ namespace Core
         SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
         // Create a new centered game window based on window_flags (1280x720 for now)
-        window = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
+        window = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gwidth, gheight, window_flags);
 
         // Create the Game opengl context
         gl_context = SDL_GL_CreateContext(window);
@@ -610,12 +550,12 @@ namespace Core
         }
     }
 
-    bool Game::_isBegin(PLitr i)
+    bool Game::_isBegin(std::vector<Page *>::iterator i)
     {
         return !(i > pageList.begin());
     }
 
-    bool Game::_isBeforeEnd(PLitr i)
+    bool Game::_isBeforeEnd(std::vector<Page *>::iterator i)
     {
         return (i < pageList.end() - 1);
     }
@@ -701,17 +641,17 @@ namespace Core
                     // Handle resizing the window
                     if (event.window.event == SDL_WINDOWEVENT_RESIZED)
                     {
-                        width = event.window.data1;               // Set the width to the resized width
-                        height = event.window.data2;              // Set the height to the resized height
-                        SDL_SetWindowSize(window, width, height); // Set the new window dimensions
+                        gwidth = event.window.data1;                // Set the width to the resized width
+                        gheight = event.window.data2;               // Set the height to the resized height
+                        SDL_SetWindowSize(window, gwidth, gheight); // Set the new window dimensions
 
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
-                        glViewport(0, 0, width, height);
+                        glViewport(0, 0, gwidth, gheight);
 
                         // Preserve dimensions of objects after resize
                         // Set the scale based on the width and height of the screen
                         int scaleID = glGetUniformLocation(shaderProgram, "scale");
-                        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
+                        glUniform2f(scaleID, (float)2 / gwidth, (float)2 / gheight);
 
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }

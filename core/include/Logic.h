@@ -9,11 +9,11 @@ namespace Core
     enum class SignalType;
     enum class ScriptType;
     class Action;
-    extern std::vector<Logic *> *keyLogicList;
+    extern std::vector<Logic *> *gkeyLogicList;
     extern std::vector<Logic *> *mouseLogicList;
-    extern std::vector<Logic *> *timerLogicList;
-    extern std::vector<Logic *> *directLogicList;
-    extern std::vector<Logic *> *readyLogicList;
+    extern std::vector<Logic *> *gtimerLogicList;
+    extern std::vector<Logic *> *gdirectLogicList;
+    extern std::vector<Logic *> *gscriptList;
 
     // *classes list
     class KeyLogic;
@@ -64,6 +64,7 @@ namespace Core
     /// Use as pointer
     /// @param mlogic: instance of a specific logic
     /// @param mscript: a pointer to a script
+
     class Logic
     {
     private:
@@ -76,11 +77,6 @@ namespace Core
         bool mpause = true;
 
     public:
-        SignalType
-        getSignalType()
-        {
-            return msignalType;
-        }
         void setSignalType(SignalType signalType) { msignalType = signalType; }
         SignalType getSignalType() { return msignalType; }
         void setScriptType(ScriptType actionType) { mscriptType = actionType; }
