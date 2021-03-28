@@ -1,25 +1,25 @@
 #pragma once
 #include <vector>
+#include <variant>
 #include "Entity.h"
-#include "Logic.h"
 namespace Core
 {
     // forwar declaration
-    enum class EventType;
+    enum class SignalType;
     class Signal;
     class Logic;
 
     // action type
     enum class ActionType
     {
-        MoveEntityConstantly // move entities in constant speed
+        ActionMoveEntityConstantly // move entities in constant speed
     };
     // *actions
-    class MoveEntityConstantly;
+    class ActionMoveEntityConstantly;
 
     //* ---------------------------- Different actions --------------------------- */
 
-    class MoveEntityConstantly
+    class ActionMoveEntityConstantly
     {
     private:
         std::vector<Entity *> *mtargetList;
@@ -36,27 +36,30 @@ namespace Core
         glm::vec2 getDistance() { return mdistance; }
         void evoke();
 
-        MoveEntityConstantly(/* args */);
-        ~MoveEntityConstantly();
+        ActionMoveEntityConstantly(/* args */);
+        ~ActionMoveEntityConstantly();
     };
+    typedef std::variant<ActionMoveEntityConstantly> ActionVariant;
+    //// the action list main loop calls
+    ////std::vector<ActionVariant> actionList;
 
-    //* ---------------------------- Entry Action ---------------------------- */
+    //// ---------------------------- Entry Action ---------------------------- */
 
-    // the Action class for outside
-    class Action
-    {
-    private:
-        ActionType mtype;
-        union
-        {
-            // name start with m for member
-            MoveEntityConstantly mmec;
-        };
+    ////// the Action class for outside
+    ////class Action
+    ////{
+    ////private:
+    ////    ActionType mtype;
+    ////    union
+    ////    {
+    ////        // name start with m for member
+    ////        ActionMoveEntityConstantly mmec;
+    ////    };
 
-    public:
-        void setType(ActionType type) { mtype = type; }
-        ActionType getType() { return mtype; }
-        Action(/* args */);
-        ~Action();
-    };
+    ////public:
+    ////    void setType(ActionType type) { mtype = type; }
+    ////    ActionType getType() { return mtype; }
+    ////    Action(/* args */);
+    ////    ~Action();
+    ////};
 }

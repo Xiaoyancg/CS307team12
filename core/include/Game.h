@@ -28,7 +28,7 @@
 namespace Core
 {
     //* forward declaration
-    enum class EventType;
+    enum class SignalType;
     enum class ActionType;
     class Signal;
     class Logic;

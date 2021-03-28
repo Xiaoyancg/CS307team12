@@ -1,15 +1,15 @@
 #include "Action.h"
 namespace Core
 {
-    MoveEntityConstantly::MoveEntityConstantly(/* args */)
+    ActionMoveEntityConstantly::ActionMoveEntityConstantly(/* args */)
     {
     }
 
-    MoveEntityConstantly::~MoveEntityConstantly()
+    ActionMoveEntityConstantly::~ActionMoveEntityConstantly()
     {
     }
 
-    void MoveEntityConstantly::evoke()
+    void ActionMoveEntityConstantly::evoke()
     {
         //if (mmoveT == MoveType::constant)
         //{

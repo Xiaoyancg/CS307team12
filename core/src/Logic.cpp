@@ -1,21 +1,18 @@
 #include "Logic.h"
 namespace Core
 {
-    void Logic::init()
+
+    bool Logic::check(SignalVariant signal)
     {
-        switch (this->mtype)
+
+        switch (msignalType)
         {
-        case EventType::key:
-            this->mkr = KeyLogic();
+        case SignalType::key:
+
             break;
 
         default:
             break;
         }
-    }
-    bool KeyLogic::check(Core::Signal signal)
-    {
-
-        return (signal.getType());
     }
 }
