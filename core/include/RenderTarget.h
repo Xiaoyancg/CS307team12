@@ -2,6 +2,8 @@
 #include <glad/glad.h>
 namespace Core
 {
+    // The class to store buffer objects from editor
+    // if the game class constructed in editor mode, this class will be used
     class RenderTarget
     {
     private:

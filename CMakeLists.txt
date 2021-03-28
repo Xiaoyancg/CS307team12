@@ -61,14 +61,6 @@ set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE ${GLM_DIR})
 
-#file(GLOB glm_srcs "${GLM_DIR}/glm/*.hpp" "${GLM_DIR}/glm/core/*.hpp" "${GLM_DIR}/glm/core/*.inl")
-#file(GLOB glm_srcs_empty "${PROJECT_SOURCE_DIR}/core/src/glm.cpp")
-#add_library(glm ${glm_srcs} ${glm_srcs_empty})
-#target_compile_options(glm PRIVATE /w)
-#set_target_properties(glm PROPERTIES LINKER_LANGUAGE CXX)
-#target_include_directories(glm SYSTEM PUBLIC ${GLM_DIR})
-
-
 set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
 add_library(imfb INTERFACE)
 target_include_directories(imfb INTERFACE ${IMFB_DIR})
@@ -85,14 +77,16 @@ target_link_libraries(soil INTERFACE opengl32)
 
 add_subdirectory(lib/json)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_T}")
-#message("${CMAKE_CXX_FLAGS}")
-
+# set output locations to one place
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/myarc)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/mylib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/myexe)
 add_subdirectory(core)
 add_subdirectory(gamevm)
 add_subdirectory(editor)
 add_subdirectory(unit_test)
 
 # practice
-add_subdirectory(practice/Demo_of_ImGui)
 add_subdirectory(practice/Demo_of_ImGui_Docking)
+add_subdirectory(practice/Demo_of_engine)
+add_subdirectory(practice/Demo_of_ImGui)

@@ -12,10 +12,16 @@
 #include <TestCore.h>
 #endif // __TEST_CORE
 
-using json = nlohmann::json;
-
 namespace Core
 {
+
+    std::vector<Logic *> *keyLogicList;
+    std::vector<Logic *> *mouseLogicList;
+    std::vector<Logic *> *timerLogicList;
+    std::vector<Logic *> *directLogicList;
+    std::vector<Logic *> *readyLogicList;
+    // the signalList that game loop checks
+    std::vector<Signal> signalList;
 
     int Game::width = 1280;
     int Game::height = 720;
@@ -27,6 +33,11 @@ namespace Core
     {
         useFramebuffer = false;
         setupSpriteRefs();
+    }
+    Game::Game(nlohmann::json &json)
+    {
+        this->parse(json);
+        this->useFramebuffer = false;
     }
 
     // editor open
@@ -48,10 +59,18 @@ namespace Core
         setupSpriteRefs();
     }
 
+<<<<<<< HEAD
+=======
+    // FIXME: move to core
+>>>>>>> larry
     // Each class that renders sprites needs a reference to the same SpriteManager as this class.
     // Whenever a new class is added that renders sprites, its reference must be set here.
     void Game::setupSpriteRefs()
     {
+<<<<<<< HEAD
+=======
+        mGameSprites = SpriteManager::SpriteManager();
+>>>>>>> larry
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
     }
@@ -64,12 +83,12 @@ namespace Core
         return this->gameName;
     }
 
-    void Game::SetGameName(std::string newName)
+    void Game::setGameName(std::string newName)
     {
         this->gameName = newName;
     }
 
-    void Game::SetAuthor(std::string newAuthor)
+    void Game::setAuthor(std::string newAuthor)
     {
         this->author = newAuthor;
     }
@@ -79,7 +98,7 @@ namespace Core
         return this->author;
     }
 
-    void Game::SetVersion(std::string newVersion)
+    void Game::setVersion(std::string newVersion)
     {
         this->version = newVersion;
     }
@@ -89,7 +108,7 @@ namespace Core
         return this->version;
     }
 
-    void Game::SetLMTime(std::string time)
+    void Game::setLMTime(std::string time)
     {
         this->lMTime = time;
     }
@@ -110,7 +129,7 @@ namespace Core
         return this->lMTime;
     }
 
-    void Game::SetNote(std::string newNote)
+    void Game::setNote(std::string newNote)
     {
         this->note = newNote;
     }
@@ -191,6 +210,7 @@ namespace Core
         }
     }
 
+<<<<<<< HEAD
     unsigned int Game::createSprite(std::string name, std::string filename, int id)
     {
         // If an ID is given
@@ -203,6 +223,16 @@ namespace Core
         {
             return mGameSprites.createSprite(name, filename);
         }
+=======
+    unsigned int Game::createSprite(std::string name, std::string filename)
+    {
+        // Return OpenGL ID of the new sprite
+        return mGameSprites.createSprite(name, filename);
+    }
+    unsigned int Game::createSprite(std::string name, std::string filename, int id)
+    {
+        return mGameSprites.createSprite(name, filename, id);
+>>>>>>> larry
     }
 
     void Game::deleteSprite(int id)
@@ -223,18 +253,20 @@ namespace Core
     // =========================
     // UTILITY OPERATION
 
-    Game *Game::parse(json &root)
+    Game *Game::parse(nlohmann::json &root)
     {
+        nlohmann::json j = nlohmann::json{{"name", "hello"}};
+        auto k = j.at("name");
 
-        this->SetGameName(root.at("GameName").get<std::string>());
-        this->SetAuthor(root.at("Author").get<std::string>());
-        this->SetVersion(root.at("Version").get<std::string>());
-        this->SetLMTime(root.at("LastModifiedTime").get<std::string>());
-        this->SetNote(root.at("Note").get<std::string>());
+        this->setGameName(root.at(std::string("GameName")).get<std::string>());
+        this->setAuthor(root.at("Author").get<std::string>());
+        this->setVersion(root.at("Version").get<std::string>());
+        this->setLMTime(root.at("LastModifiedTime").get<std::string>());
+        this->setNote(root.at("Note").get<std::string>());
         try
         {
-            auto pageVec = root.at("PageList").get<std::vector<json>>();
-            for (json pageJson : pageVec)
+            auto pageVec = root.at("PageList").get<std::vector<nlohmann::json>>();
+            for (nlohmann::json pageJson : pageVec)
             {
                 this->pageList.push_back(Page::parse(pageJson));
             }
@@ -243,6 +275,11 @@ namespace Core
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
+        // I didn't attend the meeting.
+        // It's my punishment
+        mGameSprites = SpriteManager::SpriteManager();
+        mGameSprites.parse(root.at("SpriteList"));
+
         // parse should set current
         // but the info of current in json is not implemented yet
         setCurrentPage(this->pageList.at(0));
@@ -254,23 +291,25 @@ namespace Core
 
     nlohmann::json *Game::serialize()
     {
-        // TODO: bg color
-        json j;
+        // TODO: bg color ? I don't think that's necessary
+        nlohmann::json j;
         j["FileType"] = "Parchment Game Data";
         j["GameName"] = getGameName();
         j["Author"] = getAuthor();
         j["Version"] = getVersion();
         j["LastModifiedTime"] = getLMTime();
         j["Note"] = getNote();
-        std::vector<json> pageVector;
+        // pages
+        std::vector<nlohmann::json> pageVector;
         for (Page *p : this->pageList)
         {
-            json pj;
+            nlohmann::json pj;
             pj["PageName"] = p->getName();
-            std::vector<json> entityVector;
+            // entities
+            std::vector<nlohmann::json> entityVector;
             for (Entity *e : p->getEntityList())
             {
-                json ej;
+                nlohmann::json ej;
                 ej["EntityName"] = e->getName();
                 ej["location"] = {e->getLocation().x, e->getLocation().y};
                 ej["scale"] = {e->getScale().x, e->getScale().y};
@@ -282,7 +321,24 @@ namespace Core
             pageVector.push_back(pj);
         }
         j["PageList"] = pageVector;
-        return new json(j);
+
+        // Sprites
+        std::vector<nlohmann::json> spriteVector;
+        // I didn't attend the meeting. I have sinned.
+        // The only save is to iterate an unordered_map
+        std::unordered_map<int, Sprite *> spriteMap = mGameSprites.getSprites();
+        for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
+        {
+            Sprite &s = *(sit->second);
+            nlohmann::json sj;
+            sj["SpriteName"] = s.getName();
+            sj["FileName"] = s.getFileName();
+            sj["SpriteID"] = s.getSpriteID();
+            spriteVector.push_back(sj);
+        }
+        j["SpriteList"] = spriteVector;
+
+        return new nlohmann::json(j);
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
@@ -313,7 +369,7 @@ namespace Core
 		    void main()
 		    {
 		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
-                TexCoord = vec2(textureCoords.x, 1 - textureCoords.y);
+                TexCoord = vec2(textureCoords.x,  textureCoords.y);
 		    }
 	    )glsl";
 
@@ -397,9 +453,18 @@ namespace Core
         // The the type is float (GL_INT)
         // GL_FALSE means the data should not be normalized
         // Spread between each set of attributes (4 * sizeof(int))
+<<<<<<< HEAD
         // Offset isn't used yet since there's only one attribute in 'vertices'
         glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);                 // attribute ptr for position coords
         glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int))); // attribute ptr for texture coords
+=======
+        //// Offset isn't used yet since there's only one attribute in 'vertices'
+
+        // attribute ptr for position coords
+        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);
+        // attribute ptr for texture coords
+        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int)));
+>>>>>>> larry
 
         // Enable the vertex attributes
         glEnableVertexAttribArray(0);
@@ -417,7 +482,7 @@ namespace Core
         int scaleID = glGetUniformLocation(shaderProgram, "scale");
         glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
-        // Larry framebuffer
+        // if in editor mode
         if (useFramebuffer)
         {
             glGenFramebuffers(1, &fbo);
@@ -438,8 +503,7 @@ namespace Core
         }
     }
 
-    // This takes care of initializing everything SDL needs to begin running
-    void Game::init()
+    void Game::initContext()
     {
         // Initialize video mode of SDL
         if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -470,6 +534,9 @@ namespace Core
 
         // Setup function pointers for OpenGL
         gladLoadGL();
+
+        // Show the current context
+        SDL_GL_MakeCurrent(window, gl_context);
     }
 
     int Game::moveCurrentPage(std::vector<Page *>::iterator i)
@@ -493,10 +560,12 @@ namespace Core
         this->currCtrlEntity = e;
         return e;
     }
+
     Entity *Game::getCurrCtrlEntity()
     {
         return this->currCtrlEntity;
     }
+
     void Game::handleInput(SDL_Event event)
     {
         glm::vec2 loc;
@@ -569,6 +638,7 @@ namespace Core
     {
         return !(i > pageList.begin());
     }
+
     bool Game::_isBeforeEnd(PLitr i)
     {
         return (i < pageList.end() - 1);
@@ -587,6 +657,8 @@ namespace Core
         }
     }
 
+    // only render graphics so can be used in editor
+    // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
         if (useFramebuffer)
@@ -608,14 +680,14 @@ namespace Core
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+
     void Game::run()
     {
         // Initialize OpenGL and necessary SDL objects
-        init();
+        initContext();
+
         // Create the shaders
         initShader();
-
-        //serialize ();
 
         mainLoop();
 
@@ -630,18 +702,20 @@ namespace Core
         SDL_Quit();
     }
 
-    ///////////////
-    // Game loop //
-    ///////////////
+    /* -------------------------------- Game loop ------------------------------- */
+
     void Game::mainLoop()
     {
+<<<<<<< HEAD
         createSprite("1", "D:\\1.png", 1);
         createSprite("2", "D:\\2.png", 2);
         createSprite("3", "D:\\1.png", 3);
         createSprite("guy", "D:\\1.png", 4);
+=======
+>>>>>>> larry
 
         SDL_Event event;
-        int close_window = false;
+        bool close_window = false;
         while (!close_window)
         {
             // Input handling!
@@ -679,13 +753,10 @@ namespace Core
                 }
             }
 
-            // Show the current context
-            SDL_GL_MakeCurrent(window, gl_context);
-
             render();
 
-            SDL_GL_SwapWindow(window); // Show the entities by bringing showing the back buffer
-            ///////////////
+            // Show the entities by bringing showing the back buffer
+            SDL_GL_SwapWindow(window);
 
             // Error checking! This will only print out an error if one is detected each loop
             GLenum err(glGetError());

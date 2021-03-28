@@ -1,20 +1,20 @@
 file(GLOB srcs "src/*.cpp")
 
-add_executable(editor ${srcs})
+add_executable(demo_editor ${srcs})
 
-target_link_libraries(editor sdl imgui glad sdlmain)
-target_include_directories(editor PRIVATE "${GLM_DIR}")
+target_link_libraries(demo_editor sdl imgui glad sdlmain glm nlohmann_json::nlohmann_json soil )
+target_include_directories(demo_editor PRIVATE "${GLM_DIR}")
 
-add_custom_command (TARGET editor POST_BUILD
+add_custom_command (TARGET demo_editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:sdl> $<TARGET_FILE_DIR:editor>
+    $<TARGET_FILE:sdl> $<TARGET_FILE_DIR:demo_editor>
 )
-add_custom_command (TARGET editor POST_BUILD
+add_custom_command (TARGET demo_editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/editor/src/fragment.frag
-            ${CMAKE_CURRENT_BINARY_DIR}/fragment.frag)
-add_custom_command (TARGET editor POST_BUILD
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/fragment.frag
+            ${CMAKE_BINARY_DIR}/myexe/Debug/fragment.frag)
+add_custom_command (TARGET demo_editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/editor/src/vertex.vert
-            ${CMAKE_CURRENT_BINARY_DIR}/vertex.vert)
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/vertex.vert
+            ${CMAKE_BINARY_DIR}/myexe/Debug/vertex.vert)
 
