@@ -6,7 +6,7 @@ namespace Core
     {
         switch (this->mtype)
         {
-        case EventType::key:
+        case SignalType::key:
             return (SignalVariant)mks;
             break;
 

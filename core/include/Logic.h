@@ -1,16 +1,20 @@
 #pragma once
-#include "signal.h"
+#include <map>
+#include "Signal.h"
+#include "Action.h"
 
 namespace Core
 {
     // forwar declaration
-    enum class EventType;
+    enum class SignalType;
+    enum class ActionType;
     class Signal;
+    class Action;
 
     // *classes list
     class KeyLogic;
 
-    //* --------------------------- different response -------------------------- */
+    //* --------------------------- different Logic -------------------------- */
     class KeyLogic
     {
     private:
@@ -33,8 +37,9 @@ namespace Core
         ~KeyLogic() {}
     };
 
-    typedef std::variant<KeyLogic> ResponseVariant;
-    //* ----------------------------- Entry Response ----------------------------- */
+    typedef std::variant<KeyLogic> LogicVariant;
+    //    typedef std::variant<LogicVariant, Action>;
+    //* -----------------------------Logic Entry  ----------------------------- */
 
     // should be used in the logic list waiting for signals
     // e.g, for each (signal in signalList) {
@@ -47,10 +52,16 @@ namespace Core
     //          }
     //      }
     //
+
+    // we need Logic because the signal may need to pass value to action
+    // also pair can't provite action type
+    // And logic can be write to and load from json as object
     class Logic
     {
     private:
-        EventType mtype;
+        SignalType msignalType;
+        ActionType mactionType;
+        ActionVariant action;
 
         // name starts with m for member
         union
@@ -61,15 +72,20 @@ namespace Core
         //bool mready = false;
 
     public:
-        EventType getType() { return mtype; }
-        void setType(EventType type) { mtype = type; }
-        //bool isReady() { return mready; }
-        //void setReady(bool ready) { mready = ready; }
-        // must call after settype
-
-        bool check(Signal signal);
-        Logic() {}
+        SignalType getSignalType() { return msignalType; }
+        void setSignalType(SignalType signalType) { msignalType = signalType; }
+        ActionType getActionType() { return mactionType; }
+        void setActionType(ActionType actionType) { mactionType = actionType; }
+        bool check(SignalVariant signal);
+        void setAction();
+        Logic(SignalType signalType, ActionType actionType, ActionVariant action)
+            : msignalType(signalType), mactionType(actionType) {}
         ~Logic() {}
     };
+
+    std::vector<Logic> *keyLogicList;
+    std::vector<Logic> *mouseLogicList;
+    std::vector<Logic> *timerLogicList;
+    std::vector<Logic> *directLogicList;
 
 }
