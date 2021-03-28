@@ -49,6 +49,12 @@ namespace Core
         setupSpriteRefs();
     }
 
+    Game::Game(nlohmann::json& json)     {
+        this->parse(json);
+        useFramebuffer = false;
+        setupSpriteRefs();
+    }
+
     // editor new
     Game::Game(GLuint *o)
     {

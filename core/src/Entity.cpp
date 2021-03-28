@@ -18,12 +18,21 @@ namespace Core
         calculateCoords(location, scale);
     }
 
+<<<<<<< HEAD
     // =========================
     // CONSTRUCTOR
 
     // =========================
     // ATTRIBUTES OPERATION
     std::string Entity::getName()
+=======
+        // =========================
+        // CONSTRUCTOR
+
+        // =========================
+        // ATTRIBUTES OPERATION
+    std::string Entity::getName ()
+>>>>>>> 8adc54f046be9fdc06e2ed0777dba6a5ca6747bb
     {
         return this->mEntityName;
     }
