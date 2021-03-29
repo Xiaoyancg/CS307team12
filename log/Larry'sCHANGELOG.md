@@ -117,6 +117,7 @@ All notable changes to this project will be documented in this file.
 - mnumSprites in SpriteManager
 - struct EditorParam in Game.h
 - gstate/gresource/geditorPara 
+- SpriteManager::memptyIDQ
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *

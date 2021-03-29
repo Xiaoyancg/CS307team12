@@ -6,7 +6,12 @@ namespace Core
 	// Creates a new sprite at the correct location in mSprites
 	int SpriteManager::createSprite(std::string name, std::string filename)
 	{
-		unsigned int id = mCurrSpriteID;
+		int id = mCurrSpriteID;
+		if (!memptyIDQ.empty())
+		{
+			id = memptyIDQ.front();
+			memptyIDQ.pop();
+		}
 
 		// This will loop as long as it needs to until it finds the closest
 		// valid ID
@@ -64,6 +69,7 @@ namespace Core
 	void SpriteManager::deleteSprite(int spriteID)
 	{
 		delete this->mSprites[spriteID];
+		memptyIDQ.push(spriteID);
 		mSprites.erase(spriteID);
 		this->mnumSprites--;
 		//printSprites();

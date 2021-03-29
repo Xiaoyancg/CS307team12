@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <queue>
+
 #include <nlohmann/json.hpp>
 #include "Sprite.h"
 
@@ -58,6 +60,9 @@ namespace Core
 		// The current sprite ID,
 		// which will be set to whatever sprite is created next
 		int mCurrSpriteID;
+
+		// stores the deleted id, will be used in create
+		std::queue<int> memptyIDQ;
 
 		// total number of sprites
 		int mnumSprites;
