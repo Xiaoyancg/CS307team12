@@ -15,7 +15,7 @@ namespace Core
 
         for (auto s : spriteList)
         {
-            game->createSprite(s.substr(0, s.find_first_of('.')), s);
+            gresource.spriteManager->createSprite(s.substr(0, s.find_first_of('.')), s);
             break;
         }
         for (auto e : game->getPageList()->at(0)->getEntityList())

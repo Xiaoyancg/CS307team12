@@ -3,7 +3,7 @@ namespace Core
 {
     Game *s1Game()
     {
-        Game *game = new Game("s1Game");
+        Game *game = new Game();
         Entity *entityInteractive;
         Entity *entityTallThin;
         Entity *entityShortWide;

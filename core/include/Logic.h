@@ -9,11 +9,7 @@ namespace Core
     enum class SignalType;
     enum class ScriptType;
     class Action;
-    extern std::vector<Logic *> *gkeyLogicList;
-    extern std::vector<Logic *> *gmouseLogicList;
-    extern std::vector<Logic *> *gtimerLogicList;
-    extern std::vector<Logic *> *gdirectLogicList;
-    extern std::vector<Logic *> *gscriptList;
+    ;
 
     // *classes list
     class KeyLogic;

@@ -349,7 +349,7 @@ namespace Core
         glUniform2f(scaleID, (float)2 / gstate.width, (float)2 / gstate.height);
 
         // if in editor mode
-        if (editorMode)
+        if (gstate.editorMode)
         {
             glGenFramebuffers(1, &(geditorParam.fbo));
             glBindFramebuffer(GL_FRAMEBUFFER, geditorParam.fbo);
@@ -406,79 +406,75 @@ namespace Core
         SDL_GL_MakeCurrent(gstate.window, gstate.gl_context);
     }
 
-    void Game::handleInput(SDL_Event event)
-    {
-        glm::vec2 loc;
-        glm::vec2 scale;
-        if (setCurrCtrlEntity(gstate.currPage->getCtrlEntity()) != nullptr)
-        {
-            loc = gstate.currCtrlEntity->getLocation();
-            scale = currCtrlEntity->getScale();
-            float moveBy = 5;
-            int scaleBy = 3;
-
-            // Control entity movement and reshape
-            switch (event.key.keysym.sym)
-            {
-            // Control Entity movement in the interactive demo
-            // Handle left arrow key
-            case SDLK_LEFT:
-                currCtrlEntity->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
-                break;
-                // Handle right arrow key
-            case SDLK_RIGHT:
-                currCtrlEntity->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
-                break;
-                // Handle up arrow key
-            case SDLK_UP:
-                currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
-                break;
-                // Handle down arrow key
-            case SDLK_DOWN:
-                currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
-                break;
-
-                // Control Entity scaling in the interactive demo
-            case SDLK_a: // a key is Scale up, for now
-                currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
-                break;
-
-            case SDLK_z: // z key is Scale down, for now
-                // Make sure not to scale into the negatives
-                if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0)
-                {
-                    currCtrlEntity->setScale(glm::vec2(scale.x - scaleBy, scale.y - scaleBy));
-                }
-                break;
-            }
-        }
-
-        // Control pages switch.
-        switch (event.key.keysym.sym)
-        {
-        // use 1 to look the previous page
-        case SDLK_1:
-            // have to check begin and end here
-            if (!_isBegin(_currPitr))
-            {
-                moveCurrentPage(_currPitr - 1);
-            }
-            break;
-        // use 2 to look the next page
-        case SDLK_2:
-            if (_isBeforeEnd(_currPitr))
-            {
-                moveCurrentPage(_currPitr + 1);
-            }
-            break;
-        }
-    }
+    ////void Game::handleInput(SDL_Event event)
+    ////{
+    ////    glm::vec2 loc;
+    ////    glm::vec2 scale;
+    ////    if (setCurrCtrlEntity(gstate.currPage->getCtrlEntity()) != nullptr)
+    ////    {
+    ////        loc = gstate.currCtrlEntity->getLocation();
+    ////        scale = currCtrlEntity->getScale();
+    ////        float moveBy = 5;
+    ////        int scaleBy = 3;
+    ////        // Control entity movement and reshape
+    ////        switch (event.key.keysym.sym)
+    ////        {
+    ////        // Control Entity movement in the interactive demo
+    ////        // Handle left arrow key
+    ////        case SDLK_LEFT:
+    ////            currCtrlEntity->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
+    ////            break;
+    ////            // Handle right arrow key
+    ////        case SDLK_RIGHT:
+    ////            currCtrlEntity->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
+    ////            break;
+    ////            // Handle up arrow key
+    ////        case SDLK_UP:
+    ////            currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
+    ////            break;
+    ////            // Handle down arrow key
+    ////        case SDLK_DOWN:
+    ////            currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
+    ////            break;
+    ////            // Control Entity scaling in the interactive demo
+    ////        case SDLK_a: // a key is Scale up, for now
+    ////            currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
+    ////            break;
+    ////        case SDLK_z: // z key is Scale down, for now
+    ////            // Make sure not to scale into the negatives
+    ////            if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0)
+    ////            {
+    ////                currCtrlEntity->setScale(glm::vec2(scale.x - scaleBy, scale.y - scaleBy));
+    ////            }
+    ////            break;
+    ////        }
+    ////    }
+    ////    // Control pages switch.
+    ////    switch (event.key.keysym.sym)
+    ////    {
+    ////    // use 1 to look the previous page
+    ////    case SDLK_1:
+    ////        // have to check begin and end here
+    ////        if (!_isBegin(_currPitr))
+    ////        {
+    ////            moveCurrentPage(_currPitr - 1);
+    ////        }
+    ////        break;
+    ////    // use 2 to look the next page
+    ////    case SDLK_2:
+    ////        if (_isBeforeEnd(_currPitr))
+    ////        {
+    ////            moveCurrentPage(_currPitr + 1);
+    ////        }
+    ////        break;
+    ////    }
+    ////}
 
     // only render graphics so can be used in editor
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
-        if (editorMode)
+        if (gstate.editorMode)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, geditorParam.fbo);
         }
@@ -537,6 +533,18 @@ namespace Core
             {
                 switch (event.type)
                 {
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:;
+                    gstate.signalHandler.sendSignal(Signal(SignalVariant{KeySignal(event.key)}, SignalType::key));
+                    break;
+
+                default:
+                    break;
+                }
+
+                // default handler, change later
+                switch (event.type)
+                {
                     // Handle window closing
                 case SDL_QUIT:
                     close_window = true;
@@ -565,9 +573,6 @@ namespace Core
                         SDL_GL_SwapWindow(gstate.window); // Show the resized window
                     }
                     break;
-                    // Handle Keypresses
-                case SDL_KEYDOWN:
-                    handleInput(event);
                 }
             }
 

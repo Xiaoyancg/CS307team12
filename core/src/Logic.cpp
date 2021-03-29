@@ -1,6 +1,8 @@
 #include "Logic.h"
+#include "Game.h"
 namespace Core
 {
+    extern struct GameState gstate;
 
     void Logic::check(SignalVariant &signal)
     {
@@ -9,7 +11,7 @@ namespace Core
         case SignalType::key:
             if (std::get<KeyLogic>(mlogic).check(std::get<KeySignal>(signal)))
             {
-                gscriptList->push_back(this);
+                gstate.scriptList->push_back(this);
             }
             break;
 

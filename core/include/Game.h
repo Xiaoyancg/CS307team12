@@ -18,6 +18,7 @@
 #include "RenderTarget.h"
 #include "SpriteManager.h"
 #include "Logic.h"
+#include "SignalHandler.h"
 
 // page list iterator
 
@@ -36,6 +37,8 @@ namespace Core
         std::vector<Logic *> *directLogicList;
         std::vector<Logic *> *scriptList;
         std::vector<Signal> *signalList;
+        SignalHandler signalHandler;
+
         int width = 0, height = 0;
         // page pointer
         Page *currPage = nullptr;
@@ -74,20 +77,11 @@ namespace Core
         // framebuffer object
         GLuint fbo;
     };
+    // forward declaration
+    // g stands for global variable
     extern struct GameState gstate;
     extern struct GameResource gresource;
     extern struct EditorParam geditorParam;
-    // forward declaration
-    class Game;
-    extern SpriteManager gGameSprites = SpriteManager::SpriteManager();
-    // g stands for global variable
-    extern std::vector<Logic *> *gkeyLogicList;
-    extern std::vector<Logic *> *gmouseLogicList;
-    extern std::vector<Logic *> *gtimerLogicList;
-    extern std::vector<Logic *> *gdirectLogicList;
-    extern std::vector<Logic *> *gscriptList;
-    // the signalList that game loop checks
-    extern std::vector<Signal> signalList;
 
     /// @brief The parchment game engine core component. The game runtime object
     /// takes the role of rendering, event handling, game data file loading and
@@ -118,6 +112,9 @@ namespace Core
 
         // VM
         Game(nlohmann::json &json) { this->parse(json); }
+
+        // test
+        Game() {}
 
         //* ---------------- ATTRIBUTES OPERATION ---------------- *//
         //  (attributes mean non functionality related variables)
@@ -156,9 +153,6 @@ namespace Core
         std::vector<Page *> *getPageList();
         int getNumPage();
 
-        // Sprite operations
-        unsigned int createSprite(std::string, std::string);
-        unsigned int createSprite(std::string, std::string, int);
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();
@@ -168,10 +162,10 @@ namespace Core
         // performance )
 
         // set the currpage pointer and iterator to target
-        void setCurrentPage(Page *p);
-        Page *getCurrPage();
-        Entity *setCurrCtrlEntity(Entity *);
-        Entity *getCurrCtrlEntity();
+        void setCurrentPage(Page *p) { gstate.currPage = p; }
+        Page *getCurrPage() { return gstate.currPage; }
+        Entity *setCurrCtrlEntity(Entity *e) { gstate.currCtrlEntity = e; }
+        Entity *getCurrCtrlEntity() { return gstate.currCtrlEntity; }
 
         /// <summary>
         /// Move current page pointer and iterator

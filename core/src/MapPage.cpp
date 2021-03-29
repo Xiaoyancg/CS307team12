@@ -1,14 +1,17 @@
 #include "MapPage.h"
+#include "Game.h"
 #include "glm/glm.hpp"
 
-
 namespace Core
-{  
+{
+    // forward declaration
+    extern struct GameResource gresource;
     // Sets mMap to the given map ('map' argument should be created with 'new Map' on the heap)
-    void MapPage::setMap ( Map *map )
+    void MapPage::setMap(Map *map)
     {
         // Set the old map to have no associated page
-        if (mMap) {
+        if (mMap)
+        {
             mMap->mAssociatedPage = nullptr;
         }
 
@@ -16,27 +19,32 @@ namespace Core
         mMap = map;
 
         // Set the new map's associated page
-        if (mMap != nullptr) {
+        if (mMap != nullptr)
+        {
             mMap->mAssociatedPage = this;
         }
     }
 
-    Map* MapPage::getMap() {
+    Map *MapPage::getMap()
+    {
         return mMap;
     }
 
-    void MapPage::render ()
+    void MapPage::render()
     {
-        if (mMap != nullptr) {
+        if (mMap != nullptr)
+        {
             // Traverse all tiles in the Map
             for (int i = 0; i < mMap->getNumTiles(); i++)
             {
                 // Render each tile of the map!
-                int* coords = mMap->mTileArray[i].getCoords(); // Get ptr to the tile coordinates
-                
+                int *coords = mMap->mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+
                 // Bind the correct sprite if it exists
-                if (mMap->mTileArray[i].getSpriteID() != -1 && mGameSprites->atID(mMap->mTileArray[i].getSpriteID())) {
-                    glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mMap->mTileArray[i].getSpriteID())->getOpenGLTextureID());
+                if (mMap->mTileArray[i].getSpriteID() != -1 &&
+                    gresource.spriteManager->atID(mMap->mTileArray[i].getSpriteID()))
+                {
+                    glBindTexture(GL_TEXTURE_2D, gresource.spriteManager->atID(mMap->mTileArray[i].getSpriteID())->getOpenGLTextureID());
                 }
 
                 // Buffer and draw tile

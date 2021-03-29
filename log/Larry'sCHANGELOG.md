@@ -21,7 +21,8 @@ All notable changes to this project will be documented in this file.
 - move constructor to header
 - logic family get/set/constructor
 - a resource class and a interface class for editor
-- Json
+- Json 
+- include order
 
 # Note:
 - use typedef
@@ -46,6 +47,9 @@ All notable changes to this project will be documented in this file.
     comments at the definition of a function describe operation.
 - Tried some inherit way, the best way is to use pointer and union
 - Don't use pointer too much, use it only when required.
+- the game is still oop but resource is not oop
+  - MSDB
+
 
 
 
@@ -81,6 +85,8 @@ All notable changes to this project will be documented in this file.
              }
          }
   - Do we really need a signal class?
+  - wait a moment. I can let game execute the script can I?
+    - Script is just some parameter that let game run
 ### Added
 - practice/demo_of_ImGui_Docking
 - CMakeList new subdirectory demo_of_ImGui_Docking

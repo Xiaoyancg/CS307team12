@@ -70,7 +70,8 @@ json *readGameDataFile(std::string f)
 
 Core::Game *CreateExampleGame()
 {
-    Core::Game *g = new Core::Game(std::string("example"));
+    GLuint *t;
+    Core::Game *g = new Core::Game(std::string("example"), t);
     g->setAuthor(std::string("example mauthor"));
     g->setVersion(std::string("0.1.0"));
     time_t rawtime;
