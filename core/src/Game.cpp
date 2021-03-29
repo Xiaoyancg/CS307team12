@@ -140,8 +140,15 @@ namespace Core
         gresource.spriteManager = new SpriteManager();
 
         if (root.end() != root.find("SpriteList"))
+        {
             gresource.spriteManager->parse(root.at("SpriteList"));
+        }
 
+        if (root.end() != root.find("SpriteEmptyIDVector"))
+        {
+            gresource.spriteManager->setEmptyIDV(
+                root.at("SpriteEmptyIDVector").get<std::vector<int>>());
+        }
         // parse should set current
         // but the info of current in json is not implemented yet
         setCurrentPage(gresource.pageList->at(0));
@@ -189,7 +196,7 @@ namespace Core
             gresource.spriteManager->getSprites();
         j["NumSprites"] = gresource.spriteManager->getNumSprites();
         // nlohmann::json only support vector array
-        j["EmptyIDVector"] = gresource.spriteManager->getEmptyIDV();
+        j["SpriteEmptyIDVector"] = gresource.spriteManager->getEmptyIDV();
         for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
         {
             Sprite &s = *(sit->second);

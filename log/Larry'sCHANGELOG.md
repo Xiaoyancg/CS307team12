@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 - move constructor to header
 - logic family get/set/constructor
 - a resource class and a interface class for editor
+- Json
 
 # Note:
 - use typedef
