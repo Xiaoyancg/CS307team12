@@ -56,13 +56,16 @@ namespace Core
 		// parse json
 		int parse(nlohmann::json);
 
+		std::vector<int> getEmptyIDV() { return this->memptyIDV; }
+		void pushEmptyIDV(int id) { this->memptyIDV.push_back(id); }
+
 	private:
 		// The current sprite ID,
 		// which will be set to whatever sprite is created next
 		int mCurrSpriteID;
 
 		// stores the deleted id, will be used in create
-		std::queue<int> memptyIDQ;
+		std::vector<int> memptyIDV;
 
 		// total number of sprites
 		int mnumSprites;

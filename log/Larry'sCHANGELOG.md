@@ -149,6 +149,7 @@ All notable changes to this project will be documented in this file.
 - moved width and height to Core::gwidth and gheight
 - remove getLMT() in Game
 - moved every member variable in game to gstate/gresource/geditorParam
+- memptyIDQ -> memptyIDV
 
 
 ### Removed

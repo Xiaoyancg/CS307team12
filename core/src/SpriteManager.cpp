@@ -7,10 +7,10 @@ namespace Core
 	int SpriteManager::createSprite(std::string name, std::string filename)
 	{
 		int id = mCurrSpriteID;
-		if (!memptyIDQ.empty())
+		if (!memptyIDV.empty())
 		{
-			id = memptyIDQ.front();
-			memptyIDQ.pop();
+			id = memptyIDV.at(0);
+			memptyIDV.erase(memptyIDV.begin());
 		}
 
 		// This will loop as long as it needs to until it finds the closest
@@ -69,7 +69,7 @@ namespace Core
 	void SpriteManager::deleteSprite(int spriteID)
 	{
 		delete this->mSprites[spriteID];
-		memptyIDQ.push(spriteID);
+		memptyIDV.push_back(spriteID);
 		mSprites.erase(spriteID);
 		this->mnumSprites--;
 		//printSprites();

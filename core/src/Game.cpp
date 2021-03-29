@@ -97,16 +97,6 @@ namespace Core
         }
     }
 
-    unsigned int Game::createSprite(std::string name, std::string filename)
-    {
-        // Return OpenGL ID of the new sprite
-        return gresource.spriteManager->createSprite(name, filename);
-    }
-    unsigned int Game::createSprite(std::string name, std::string filename, int id)
-    {
-        return gresource.spriteManager->createSprite(name, filename, id);
-    }
-
     void Game::deleteSprite(int id)
     {
         gresource.spriteManager->deleteSprite(id);
@@ -193,12 +183,13 @@ namespace Core
             pageVector.push_back(pj);
         }
         j["PageList"] = pageVector;
-
         // Sprites
         std::vector<nlohmann::json> spriteVector;
         std::unordered_map<int, Sprite *> spriteMap =
             gresource.spriteManager->getSprites();
         j["NumSprites"] = gresource.spriteManager->getNumSprites();
+        // nlohmann::json only support vector array
+        j["EmptyIDVector"] = gresource.spriteManager->getEmptyIDV();
         for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
         {
             Sprite &s = *(sit->second);
