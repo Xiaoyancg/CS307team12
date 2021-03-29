@@ -1,11 +1,16 @@
-#include "Entity.h"
 #include <glad/glad.h>
+#include "Entity.h"
+#include "Game.h"
 #ifdef __TEST_CORE
 #include <TestCore.h>
 #endif // __TEST_CORE
 
 namespace Core
 {
+    extern struct GameState gstate;
+    extern struct GameResource gresource;
+    extern struct EditorParam geditorParam;
+
     // Constructor of the game class
     Entity::Entity(std::string s, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID)
         : mEntityName(s),
@@ -135,9 +140,9 @@ namespace Core
     {
         glActiveTexture(GL_TEXTURE0);
         // FIXME: get out of bound error when render game when there's no sprite file
-        if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
+        if (mSpriteID != -1 && gresource.spriteManager->atID(mSpriteID))
         {
-            glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
+            glBindTexture(GL_TEXTURE_2D, gresource.spriteManager->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
         }
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);

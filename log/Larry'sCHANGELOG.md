@@ -17,9 +17,10 @@ All notable changes to this project will be documented in this file.
 - render text
 - better cmake
 - a sprite initializer after initShader
-- move set/get to header
+- move set/get to header (done game)
 - move constructor to header
 - logic family get/set/constructor
+- a resource class and a interface class for editor
 
 # Note:
 - use typedef
@@ -43,6 +44,7 @@ All notable changes to this project will be documented in this file.
   - Declaration comments describe use of the function (when it is non-obvious);
     comments at the definition of a function describe operation.
 - Tried some inherit way, the best way is to use pointer and union
+- Don't use pointer too much, use it only when required.
 
 
 
@@ -109,6 +111,12 @@ All notable changes to this project will be documented in this file.
 - Response
 - Esignal
 - getTimeString() in VMTool
+- struct Core::GameState and GameResource in Game.h
+- json: 
+  - root: LogicList, StartState, SpriteList, NumberOfSprites
+- mnumSprites in SpriteManager
+- struct EditorParam in Game.h
+- gstate/gresource/geditorPara 
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
@@ -139,6 +147,7 @@ All notable changes to this project will be documented in this file.
 - rename action to script to avoid conflict from the undo/redo
 - moved width and height to Core::gwidth and gheight
 - remove getLMT() in Game
+- moved every member variable in game to gstate/gresource/geditorParam
 
 
 ### Removed

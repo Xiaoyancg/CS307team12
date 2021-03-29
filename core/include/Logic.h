@@ -10,7 +10,7 @@ namespace Core
     enum class ScriptType;
     class Action;
     extern std::vector<Logic *> *gkeyLogicList;
-    extern std::vector<Logic *> *mouseLogicList;
+    extern std::vector<Logic *> *gmouseLogicList;
     extern std::vector<Logic *> *gtimerLogicList;
     extern std::vector<Logic *> *gdirectLogicList;
     extern std::vector<Logic *> *gscriptList;
@@ -18,7 +18,8 @@ namespace Core
     // *classes list
     class KeyLogic;
 
-    //* --------------------------- different Logic -------------------------- */
+    //* ----------------------- DIFFERENT LOGIC ---------------------- *//
+
     class KeyLogic
     {
     private:
@@ -43,7 +44,8 @@ namespace Core
 
     typedef std::variant<KeyLogic> LogicVariant;
     //    typedef std::variant<LogicVariant, Action>;
-    //* -----------------------------Logic Entry  ----------------------------- */
+
+    //* ------------------------- LOGIC ENTRY ------------------------ *//
 
     // should be used in the logic list waiting for signals
     // e.g, for each (signal in signalList) {
@@ -81,12 +83,31 @@ namespace Core
         SignalType getSignalType() { return msignalType; }
         void setScriptType(ScriptType actionType) { mscriptType = actionType; }
         ScriptType getScriptType() { return mscriptType; }
-        void setLogic();
+        void setLogic(LogicVariant logic) { mlogic = logic; }
         void setScript();
 
-        int check(SignalVariant signal);
-        Logic(SignalType signalType, ScriptType actionType, ScriptVariant mscript)
-            : msignalType(signalType), mscriptType(actionType) {}
+        ///
+        /// @brief Check if signal meet the criteria and add this to ready logic
+        /// ist if it meets
+        ///
+        /// @param signal
+        ///
+        void check(SignalVariant &signal);
+
+        ///
+        /// @brief Construct a new Logic object
+        ///
+        /// @param signalType
+        /// @param actionType
+        /// @param script
+        ///
+        Logic(SignalType signalType,
+              ScriptType actionType,
+              ScriptVariant script)
+            : msignalType(signalType),
+              mscriptType(actionType),
+              mscript(script) {}
+
         ~Logic() {}
     };
 

@@ -71,7 +71,6 @@ namespace Core
         // but that sounds like a disgusting solution and im not about to break encapsulation.
         // If anyone has a better idea, feel free to implement it. Otherwise, this should be fine.
         // Thank you Josh for the comments here! I'll move it to Core, along with logic
-        static inline SpriteManager *mGameSprites;
 
     private:
         // Basic Entity variables

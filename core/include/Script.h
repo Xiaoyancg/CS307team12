@@ -13,10 +13,10 @@ namespace Core
     {
         ScriptMoveEntityConstantly // move entities in constant speed
     };
-    // *actions
+    // *Script
     class ScriptMoveEntityConstantly;
 
-    //* ---------------------------- Different actions --------------------------- */
+    //* ------------------ DIFFERENT  SCRIPT ----------------- *//
 
     class ScriptMoveEntityConstantly
     {

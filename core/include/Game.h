@@ -28,51 +28,101 @@
 namespace Core
 {
 
-    //* ------------------- GLOBAL VARIABLE ------------------ *//
+    struct GameState
+    {
+        std::vector<Logic *> *keyLogicList;
+        std::vector<Logic *> *mouseLogicList;
+        std::vector<Logic *> *timerLogicList;
+        std::vector<Logic *> *directLogicList;
+        std::vector<Logic *> *scriptList;
+        std::vector<Signal> *signalList;
+        int width = 0, height = 0;
+        // page pointer
+        Page *currPage = nullptr;
 
+        Entity *currCtrlEntity; // the current in display pagelist
+
+        // FIXME: why use int?
+        std::vector<int> inDisplayList;
+
+        // the render window of this Game
+        SDL_Window *window;
+
+        // The context of this Game
+        SDL_GLContext gl_context;
+
+        // The shaders, set by initShaders before entering the game loop
+        unsigned int shaderProgram;
+
+        /// True if program is running in editor, use framebuffer
+        /// False means in vm, render to window
+        bool editorMode;
+    };
+
+    struct GameResource
+    {
+        SpriteManager *spriteManager;
+
+        // contains all pages
+        std::vector<Page *> *pageList;
+    };
+
+    struct EditorParam
+    {
+        // texcbo from editor
+        GLuint *texcbo;
+        // framebuffer object
+        GLuint fbo;
+    };
+    extern struct GameState gstate;
+    extern struct GameResource gresource;
+    extern struct EditorParam geditorParam;
     // forward declaration
     class Game;
-
+    extern SpriteManager gGameSprites = SpriteManager::SpriteManager();
     // g stands for global variable
     extern std::vector<Logic *> *gkeyLogicList;
-    extern std::vector<Logic *> *mouseLogicList;
+    extern std::vector<Logic *> *gmouseLogicList;
     extern std::vector<Logic *> *gtimerLogicList;
     extern std::vector<Logic *> *gdirectLogicList;
     extern std::vector<Logic *> *gscriptList;
     // the signalList that game loop checks
     extern std::vector<Signal> signalList;
 
-    extern int gwidth, gheight;
-
-    // initContext in editor or vm, used by logic
-    extern Game *ggame;
-
     /// @brief The parchment game engine core component. The game runtime object
     /// takes the role of rendering, event handling, game data file loading and
     /// serializing, and running the game with one call.
-    ///
     /// @note game doesn't contain runtime states, the game state variable is in
     /// core as global variable
     class Game
     {
     public:
-        // PUBLIC VARIABLE
-        // moved to core global variable
-        //static int width;
-        //static int height;
+        //* ------------------------- CONSTRUCTOR ------------------------ *//
 
-        // =========================
-        // CONSTRUCTOR
+        // TODO: check empty page condition in editor mode and add new page
+        // function in editor
+        // Editor new
+        Game(std::string gameName, GLuint *texcbo)
+            : mgameName(gameName)
+        {
+            Core::geditorParam.texcbo = texcbo;
+            gstate.editorMode = true;
+        }
 
-        // Game ();
-        Game(GLuint *o);
-        Game(nlohmann::json &json);
-        Game(std::string gameName);
-        Game(nlohmann::json &json, GLuint *o);
+        // Editor open
+        Game(nlohmann::json &json, GLuint *texcbo)
+        {
+            this->parse(json);
+            Core::geditorParam.texcbo = texcbo;
+        }
 
-        // =========================
-        // ATTRIBUTES OPERATION (attributes mean non functionality related variables)
-        // Attributes are refering to additional information of an object. Properties are describing the characteristics of an object.
+        // VM
+        Game(nlohmann::json &json) { this->parse(json); }
+
+        //* ---------------- ATTRIBUTES OPERATION ---------------- *//
+        //  (attributes mean non functionality related variables)
+        // Attributes are refering to additional information of an object.
+        // Properties are describing the characteristics of an object.
 
         std::string getGameName() { return this->mgameName; }
         void setGameName(std::string gameName) { this->mgameName = gameName; }
@@ -89,16 +139,12 @@ namespace Core
         std::string getNote() { return this->note; }
         void setNote(std::string newNote) { this->note = newNote; }
 
-        // parse json to game data for both editor and vm
-        Game *parse(nlohmann::json &root);
-        // serialize the game data to json for usage in editor
-        nlohmann::json *serialize();
+        //* ----------------- PROPERTY OPERATION ----------------- *//
+        // ( Properties are the variables that may change the performance,
+        // like the size of the window or IDK )
 
-        // =========================
-        // PROPERTY OPERATION ( Properties are the variables that may change the performance, like the size of the window or IDK )
-
-        // =========================
-        // MEMBER OPERATION ( functions that targeting )
+        //* ------------------ MEMBER OPERATION ------------------ *//
+        // ( functions that targeting members variables )
 
         Page *addPage(Page *p);
         Page *createPage(std::string n);
@@ -117,8 +163,9 @@ namespace Core
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();
 
-        /* ----------------------------- STATE OPERATION ---------------------------- */
-        // ( the flags and pointers that describing the current state of performance )
+        //* ------------------- STATE OPERATION ------------------ *//
+        // ( the flags and pointers that describing the current state of
+        // performance )
 
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
@@ -133,13 +180,30 @@ namespace Core
         /// </summary>
         /// <param name="target">the target pagelist iterator</param>
         /// <returns>0 if fail</returns>
+
+        // TODO: depreciate iterator
         int moveCurrentPage(std::vector<Page *>::iterator target);
 
-        // =========================
-        // UTILITY OPERATION
+        //* ------------------ UTILITY OPERATION ----------------- *//
+
+        ///
+        /// @brief parse json to game data for both editor and vm
+        ///
+        /// @param root : nlohmann::json
+        /// @return Game*
+        ///
+        Game *parse(nlohmann::json &root);
+
+        ///
+        /// @brief serialize the game data to json for usage in editor
+        ///
+        /// @return nlohmann::json*
+        ///
+        nlohmann::json *serialize();
 
         // initContext SDL context
         void initContext();
+
         // init opengl related flag
         void initShader();
 
@@ -160,16 +224,8 @@ namespace Core
         void mainLoop();
 
     private:
-        // =========================
-        // UTILITY OPERATION
+        //* ------------------ UTILITY OPERATION ----------------- *//
 
-        // check the page list iterator not begin
-        bool _isBegin(std::vector<Page *>::iterator i);
-        // check the page list iterator not end
-        bool _isBeforeEnd(std::vector<Page *>::iterator i);
-
-        void setupSpriteRefs();
-        // ==========================
         // ATTRIBUTES VARIABLE
 
         std::string mgameName;
@@ -179,49 +235,12 @@ namespace Core
         std::string mLMTime;
         std::string note;
 
-        // ===========================
-        // STATE VARIABLES
-
-        Entity *currCtrlEntity;
-        bool useFramebuffer;
-
-        // page list iterator: current page iterator
-        std::vector<Page *>::iterator _currPitr;
-
-        // condition of game is rendering to editor
-        // if true use cbo
-        bool editorMode;
-
-        /* ---------------------------- MEMBER VARIABLES ---------------------------- */
-
-        // page pointer
-        Page *currPage = nullptr;
-
-        // texcbo from editor
-        GLuint *texcbo;
-        // framebuffer object
-        GLuint fbo;
-        // contains all pages
-        std::vector<Page *> pageList;
-
-        // the current in display pagelist
-        // FIXME: why use int?
-        std::vector<int> inDisplayList;
-
-        // the render window of this Game
-        SDL_Window *window;
-
-        // The context of this Game
-        SDL_GLContext gl_context;
-
-        // The shaders, set by initShaders before entering the game loop
-        unsigned int shaderProgram;
+        //* ------------------ MEMBER VARIABLES ------------------ *//
 
         // FIXME: to Core
         // Holds pointers to all the game's sprites and handles ID's properly
         // Use gameSprites.createSprite(filename); to create the sprite from the file
         // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'
         // Use gameSprites.deleteSprite(id); to delete the sprite with ID 'id'
-        SpriteManager mGameSprites;
     };
 }

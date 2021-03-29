@@ -2,12 +2,8 @@
 namespace Core
 {
 
-    // check if signal meet the criteria
-    // and add this to ready logic list if it meets
-
-    int Logic::check(SignalVariant signal)
+    void Logic::check(SignalVariant &signal)
     {
-
         switch (msignalType)
         {
         case SignalType::key:
@@ -20,7 +16,6 @@ namespace Core
         default:
             break;
         }
-        return 0;
     }
 
     // check if key signal meet the criteria
