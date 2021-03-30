@@ -14,7 +14,7 @@ namespace Core
             switch (signal.second)
             {
             case SignalType::key:
-                for (auto &&Logic : *(gstate.keyLogicList))
+                for (auto &&Logic : *(keyLogicList))
                 {
                     Logic->check(signal.first);
                 }

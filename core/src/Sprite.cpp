@@ -22,7 +22,9 @@ namespace Core
 		int channels;
 
 		// Load image into mImageData
-		unsigned char *mImageData = SOIL_load_image(filename.c_str(), &width, &height, &channels, SOIL_LOAD_AUTO);
+		unsigned char *mImageData = SOIL_load_image(filename.c_str(),
+													&width, &height,
+													&channels, SOIL_LOAD_AUTO);
 		mImageDimensions = glm::vec2(width, height);
 
 		if (mImageData)
@@ -49,11 +51,14 @@ namespace Core
 				break;
 			}
 			// Load mImageData into the currently bound texture (mTextureID)
-			glTexImage2D(GL_TEXTURE_2D, 0, channelType, mImageDimensions.x, mImageDimensions.x, 0, channelType, GL_UNSIGNED_BYTE, mImageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, channelType,
+						 mImageDimensions.x, mImageDimensions.x,
+						 0, channelType, GL_UNSIGNED_BYTE, mImageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
-
-			glBindTexture(GL_TEXTURE_2D, 0);  // Unbind the new sprite
-			SOIL_free_image_data(mImageData); // Delete image data after loading into OpenGL
+			// Unbind the new sprite
+			glBindTexture(GL_TEXTURE_2D, 0);
+			// Delete image data after loading into OpenGL
+			SOIL_free_image_data(mImageData);
 		}
 		else
 		{

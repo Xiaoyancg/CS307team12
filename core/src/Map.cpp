@@ -9,9 +9,10 @@ namespace Core
     extern struct GameState gstate;
 
     // Takes a scale, the number of tiles in the x and y direction
-    Map::Map(std::string name, glm::vec2 dimensions, int tileSize) : mMapDimensions(dimensions),
-                                                                     mTileSize(tileSize),
-                                                                     mAssociatedPage(nullptr)
+    Map::Map(std::string name, glm::vec2 dimensions, int tileSize)
+        : mMapDimensions(dimensions),
+          mTileSize(tileSize),
+          mAssociatedPage(nullptr)
     {
         // Create map
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
@@ -95,35 +96,43 @@ namespace Core
         return mMapName;
     }
 
-    // This will set the 4 corners of each tile of the map based on the dimensions and tilesize.
-    // Having tile coordinates pre-set allows for quick map rendering, with minimal calculations.
-    // These coordinates do not change often, only in the case of changing dimensions or tile size.
+    // This will set the 4 corners of each tile of the map based on the
+    // dimensions and tilesize. tile coordinates pre-set allows for quick map
+    // rendering, with minimal calculations. These coordinates do not change
+    // often, only in the case of changing dimensions or tile size.
     void Map::setTileCoords()
     {
-        // Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
+        // Calculate the smallest and greatest x and y (combinations of these
+        // make the 4 corners of the entity)
         // Starting at the top left corner
         // Find the amount of tiles to the left/right and top/bottom (in tiles)
         int halfXTiles = mMapDimensions.x / 2;
         int halfYTiles = mMapDimensions.y / 2;
 
-        // Find the amount of pixels to the left/right and top/bottom from the center of the map to the edge
+        // Find the amount of pixels to the left/right and top/bottom from the
+        // center of the map to the edge
         int halfXPixels = halfXTiles * mTileSize;
         int halfYPixels = halfYTiles * mTileSize;
 
         // Calculate the top-left corner of the centered map
-        int lowX = (gstate.width / 2) - halfXPixels;
+        int lowX = (width / 2) - halfXPixels;
         int highX = lowX + mTileSize;
-        int highY = (gstate.height / 2) + halfYPixels;
+        int highY = (height / 2) + halfYPixels;
         int lowY = highY - mTileSize;
 
-        int border = 1; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
-        int index = 0;  // An easy way to access the mTileArray without having to do any calculations
+        // The amount of space between tiles as they're drawn on the map (used
+        // for debugging right now)
+        int border = 1;
+        // An easy way to access the mTileArray without having to do any
+        // calculations
+        int index = 0;
         for (int row = mMapDimensions.y - 1; row >= 0; row--)
         {
             for (int col = 0; col < mMapDimensions.x; col++)
             {
-                // posCoords will be filled with the 4 position coordinates for each tile and will be
-                // given to Tile::setCoords() where it will be stored in a render-able buffer correctly
+                // posCoords will be filled with the 4 position coordinates for
+                // each tile and will be given to Tile::setCoords() where it
+                // will be stored in a render-able buffer correctly
                 int posCoords[8];
 
                 // P1
@@ -140,7 +149,8 @@ namespace Core
                 posCoords[6] = highX; // Bottom right x
                 posCoords[7] = lowY;  // Bottom right y
 
-                // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
+                // DRAW BORDER LINES ALONG MAP (this is just for testing bc all
+                // tiles are plain white right now)
                 // P1
                 posCoords[0] += border;
                 posCoords[1] -= border;
@@ -165,7 +175,7 @@ namespace Core
             }
 
             // Calculate the next tile in a new row
-            lowX = (gstate.width / 2) - halfXPixels;
+            lowX = (width / 2) - halfXPixels;
             ;
             highX = lowX + mTileSize;
             highY -= mTileSize;
@@ -173,16 +183,20 @@ namespace Core
         }
     }
 
-    // Takes a pointer to an array of integers, containing the spriteID for each tile in the Map
-    // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS Map::mMapDimensions
+    // Takes a pointer to an array of integers, containing the spriteID for each
+    // tile in the Map
+    // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS
+    // Map::mMapDimensions
     // This will have to take a depth parameter when Tile depth gets implemented
     void Map::setMapTileSpritesFromArray(int *spriteIDMap)
     {
-        mNumTiles = mMapDimensions.x * mMapDimensions.y; // Get the number of tiles in the map
+        // Get the number of tiles in the map
+        mNumTiles = mMapDimensions.x * mMapDimensions.y;
 
         for (int i = 0; i < mNumTiles; i++)
         {
-            mTileArray[i].setSpriteID(spriteIDMap[i]); // Copy the spriteID to the Map at tile 'i'
+            // Copy the spriteID to the Map at tile 'i'
+            mTileArray[i].setSpriteID(spriteIDMap[i]);
         }
     }
 }

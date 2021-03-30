@@ -58,7 +58,10 @@ namespace Core
 
 		std::vector<int> getEmptyIDV() { return this->memptyIDV; }
 		void pushEmptyIDV(int id) { this->memptyIDV.push_back(id); }
-		void setEmptyIDV(std::vector<int> emptyIDV) { this->memptyIDV = emptyIDV; }
+		void setEmptyIDV(std::vector<int> emptyIDV)
+		{
+			this->memptyIDV = emptyIDV;
+		}
 
 	private:
 		// The current sprite ID,

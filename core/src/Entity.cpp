@@ -75,11 +75,13 @@ namespace Core
 
     void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale)
     {
-        // Get the distances to the left/right and top/bottom of the entity from the center
+        // Get the distances to the left/right and top/bottom of the entity from
+        // the center
         int halfScaleWidth = scale.x / 2;
         int halfScaleHeight = scale.y / 2;
 
-        // Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
+        // Calculate the smallest and greatest x and y (combinations of these
+        // make the 4 corners of the entity)
         int lowX = location.x - halfScaleWidth;
         int highX = location.x + halfScaleWidth;
         int lowY = location.y - halfScaleHeight;
@@ -139,13 +141,16 @@ namespace Core
     void Entity::render()
     {
         glActiveTexture(GL_TEXTURE0);
-        // FIXME: get out of bound error when render game when there's no sprite file
-        if (mSpriteID != -1 && gresource.spriteManager->atID(mSpriteID))
+        if (mSpriteID != -1 && spriteManager->atID(mSpriteID))
         {
-            glBindTexture(GL_TEXTURE_2D, gresource.spriteManager->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
+            // Bind correct sprite
+            glBindTexture(GL_TEXTURE_2D,
+                          spriteManager->atID(mSpriteID)->getOpenGLTextureID());
         }
-        // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
-        glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
+        // Load the data of the 'coords' buffer into the currently bound array
+        // buffer, VBO
+        glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords),
+                     mCoords, GL_DYNAMIC_DRAW);
         // Draw the bound buffer (coords)
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

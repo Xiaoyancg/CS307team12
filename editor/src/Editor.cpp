@@ -269,7 +269,7 @@ static void ShowExampleAppMainMenuBar()
             // Get size of drawable space on the window, instead of the entire size of the window
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
-            glViewport(0, 0, Core::gstate.width, Core::gstate.height); // Set viewport to the Game dimensions
+            glViewport(0, 0, Core::width, Core::height); // Set viewport to the Game dimensions
 
             game->render(); // Render Game with new viewport size
 

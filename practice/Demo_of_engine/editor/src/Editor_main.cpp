@@ -9,6 +9,7 @@
 #include <SDL.h>
 #include <glad/glad.h>
 #include <SOIL.h>
+#include <unordered_map>
 
 // normal libraries
 #include <any>
@@ -17,9 +18,10 @@
 #include <fstream>
 #include <iostream>
 #include <stdio.h>
-
+#include <windows.h>
+#include <Psapi.h>
 // Our libraries
-#include "FileManager.h";
+#include "FileManager.h"
 
 class Base
 {
@@ -56,27 +58,28 @@ public:
     };
     int &geta() { return a; }
 };
+
+class onefunction
+{
+private:
+    int x;
+
+public:
+    void add() { x++; }
+};
+
+class twofunction
+{
+private:
+    int x = 0;
+
+public:
+    void add() { x++; }
+    void minus() { x--; }
+};
+
 int main(int argc, char **argv)
 {
-    bool t = true;
-    if (t)
-    {
-        myTop t;
-        Base base;
-        A a;
-        B b;
-        std::cout << "base size: " << sizeof(base) << "\nA size: " << sizeof(a) << "\nB size: " << sizeof(b) << "\nTop size: " << sizeof(t)
-                  << "\n t=" << t.t << std::endl;
-        tu mtu;
-        mtu.y = 1;
-        std::cout << "size is " << sizeof(mtu.y);
-        cu mcu;
-        int &x = mcu.geta();
-        x = 5;
-        std::cout << "should be 5: " << mcu.a << std::endl;
-
-        return 0;
-    }
 
     // set up SDL2
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)

@@ -31,57 +31,9 @@ namespace Core
 
     struct GameState
     {
-        std::vector<Logic *> *keyLogicList;
-        std::vector<Logic *> *mouseLogicList;
-        std::vector<Logic *> *timerLogicList;
-        std::vector<Logic *> *directLogicList;
-        std::vector<Logic *> *scriptList;
-        std::vector<Signal> *signalList;
-        SignalHandler signalHandler;
-
-        int width = 0, height = 0;
-        // page pointer
-        Page *currPage = nullptr;
-
-        Entity *currCtrlEntity; // the current in display pagelist
-
-        // FIXME: why use int?
-        std::vector<int> inDisplayList;
-
-        // the render window of this Game
-        SDL_Window *window;
-
-        // The context of this Game
-        SDL_GLContext gl_context;
-
-        // The shaders, set by initShaders before entering the game loop
-        unsigned int shaderProgram;
-
-        /// True if program is running in editor, use framebuffer
-        /// False means in vm, render to window
-        bool editorMode;
-    };
-
-    struct GameResource
-    {
-        SpriteManager *spriteManager;
-
-        // contains all pages
-        std::vector<Page *> *pageList;
-    };
-
-    struct EditorParam
-    {
-        // texcbo from editor
-        GLuint *texcbo;
-        // framebuffer object
-        GLuint fbo;
     };
     // forward declaration
     // g stands for global variable
-    extern struct GameState gstate;
-    extern struct GameResource gresource;
-    extern struct EditorParam geditorParam;
 
     /// @brief The parchment game engine core component. The game runtime object
     /// takes the role of rendering, event handling, game data file loading and
@@ -99,15 +51,15 @@ namespace Core
         Game(std::string gameName, GLuint *texcbo)
             : mgameName(gameName)
         {
-            Core::geditorParam.texcbo = texcbo;
-            gstate.editorMode = true;
+            texcbo = texcbo;
+            editorMode = true;
         }
 
         // Editor open
         Game(nlohmann::json &json, GLuint *texcbo)
         {
             this->parse(json);
-            Core::geditorParam.texcbo = texcbo;
+            texcbo = texcbo;
         }
 
         // VM
@@ -162,10 +114,8 @@ namespace Core
         // performance )
 
         // set the currpage pointer and iterator to target
-        void setCurrentPage(Page *p) { gstate.currPage = p; }
-        Page *getCurrPage() { return gstate.currPage; }
-        Entity *setCurrCtrlEntity(Entity *e) { gstate.currCtrlEntity = e; }
-        Entity *getCurrCtrlEntity() { return gstate.currCtrlEntity; }
+        void setCurrentPage(Page *p) { currPage = p; }
+        Page *getCurrPage() { return currPage; }
 
         /// <summary>
         /// Move current page pointer and iterator
@@ -218,9 +168,7 @@ namespace Core
         void mainLoop();
 
     private:
-        //* ------------------ UTILITY OPERATION ----------------- *//
-
-        // ATTRIBUTES VARIABLE
+        //* ----------------- ATTRIBUTES VARIABLE ---------------- *//
 
         std::string mgameName;
         std::string mauthor;
@@ -229,7 +177,44 @@ namespace Core
         std::string mLMTime;
         std::string note;
 
-        //* ------------------ MEMBER VARIABLES ------------------ *//
+        //* ------------------ RENDER VARIABLES ------------------ *//
+        // texcbo from editor
+        GLuint *texcbo;
+        // framebuffer object
+        GLuint fbo;
+        // The context of this Game
+        SDL_GLContext gl_context;
+        int width = 0, height = 0;
+        // the render window of this Game
+        SDL_Window *window;
+        /// True if program is running in editor, use framebuffer
+        /// False means in vm, render to window
+        bool editorMode;
+        // The shaders, set by initShaders before entering the game loop
+        unsigned int shaderProgram;
+
+        // use vector because the order doesn't matter
+        std::vector<Logic *> keyLogicList;
+        std::vector<Logic *> mouseLogicList;
+        std::vector<Logic *> timerLogicList;
+        std::vector<Logic *> directLogicList;
+        std::unordered_map<int, Signal> signalList;
+        std::unordered_map<int, Script> scriptList;
+        // current signals
+        std::vector<Signal> mcurrSignalList;
+
+        std::vector<int> inDisplayList;
+
+        //* ------------------ RESOURCE VARIABLE ----------------- *//
+
+        // only physical resource need manager: sprite and music
+        // conceptural resource will be managed by game
+        SpriteManager spriteManager;
+
+        // contains all pages
+        // use unordered_map for editor to easily add/delete pages without
+        // affecting other pages
+        std::unordered_map<int, Page *> mpageList;
 
         // FIXME: to Core
         // Holds pointers to all the game's sprites and handles ID's properly

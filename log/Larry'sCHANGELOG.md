@@ -49,6 +49,10 @@ All notable changes to this project will be documented in this file.
 - Don't use pointer too much, use it only when required.
 - the game is still oop but resource is not oop
   - MSDB
+- Dependency Injection is a way to achieve Inversion of Control, objected
+  oriented programming.
+- std libraries use heap.
+- Sometimes can't use forward declaration because we forward declaration can't tell compiler how big the type is.
 
 
 
@@ -87,6 +91,16 @@ All notable changes to this project will be documented in this file.
   - Do we really need a signal class?
   - wait a moment. I can let game execute the script can I?
     - Script is just some parameter that let game run
+- OOP
+  - Actually we can do oop, with DI
+    - Render with id in tile and entity 
+    - Let game handle script. 
+    - Let game handle resource. 
+- why use spriteManager: 
+    - to let entity handle rendering, we need to pass a reference of texture id to entity class, we can either pass a instance of data or a manager, manager is better.
+
+
+
 ### Added
 - practice/demo_of_ImGui_Docking
 - CMakeList new subdirectory demo_of_ImGui_Docking
@@ -125,6 +139,8 @@ All notable changes to this project will be documented in this file.
 - struct EditorParam in Game.h
 - gstate/gresource/geditorPara 
 - SpriteManager::memptyIDQ
+- practice/testCpp
+- base class for script, logic and signal
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *

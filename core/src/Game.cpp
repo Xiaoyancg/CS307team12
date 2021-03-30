@@ -15,8 +15,6 @@ namespace Core
 {
     //* ----------------------- Global Variables ----------------------- */
 
-    struct GameState gstate;
-    struct GameResource gresource;
     struct EditorParam geditorParam;
 
     // FIXME: move to core Each class that renders sprites needs a reference to
@@ -33,7 +31,7 @@ namespace Core
     // MEMBER OPERATION
     Page *Game::addPage(Page *p)
     {
-        gresource.pageList->push_back(p);
+        pageList->push_back(p);
         return p;
     }
     Page *Core::Game::createPage(std::string n)
@@ -58,7 +56,7 @@ namespace Core
     }
     std::vector<Page *> *Game::getPageList()
     {
-        return gresource.pageList;
+        return pageList;
     }
 
     void Game::deletePage(Page *dp)
@@ -66,13 +64,13 @@ namespace Core
         // TODO Use something like: std::vector<Page*>::iterator ptr =
         // find(pageList.begin(), pageList.end(), dp); if (ptr !=
         // pageList.end())
-        for (std::vector<Page *>::iterator ptr = gresource.pageList->begin();
-             ptr != gresource.pageList->end();
+        for (std::vector<Page *>::iterator ptr = pageList->begin();
+             ptr != pageList->end();
              ptr++)
         {
             if (*ptr == dp)
             {
-                gresource.pageList->erase(ptr);
+                pageList->erase(ptr);
                 delete (dp);
                 dp = nullptr;
                 break;
@@ -82,14 +80,14 @@ namespace Core
 
     void Game::deletePage(std::string s)
     {
-        for (std::vector<Page *>::iterator ptr = gresource.pageList->begin();
-             ptr != gresource.pageList->end();
+        for (std::vector<Page *>::iterator ptr = pageList->begin();
+             ptr != pageList->end();
              ptr++)
         {
             if (!(*ptr)->getName().compare(s))
             {
                 Page *p = *ptr;
-                gresource.pageList->erase(ptr);
+                pageList->erase(ptr);
                 delete (p);
                 p = nullptr;
                 break;
@@ -99,17 +97,17 @@ namespace Core
 
     void Game::deleteSprite(int id)
     {
-        gresource.spriteManager->deleteSprite(id);
+        spriteManager->deleteSprite(id);
     }
 
     Sprite *Game::getSpriteFromID(int id)
     {
-        return gresource.spriteManager->atID(id);
+        return spriteManager->atID(id);
     }
 
     std::unordered_map<int, Sprite *> Game::getSprites()
     {
-        return gresource.spriteManager->getSprites();
+        return spriteManager->getSprites();
     }
 
     //* ------------------ UTILITY OPERATION ----------------- *//
@@ -129,7 +127,7 @@ namespace Core
             auto pageVec = root.at("PageList").get<std::vector<nlohmann::json>>();
             for (nlohmann::json pageJson : pageVec)
             {
-                gresource.pageList->push_back(Page::parse(pageJson));
+                pageList->push_back(Page::parse(pageJson));
             }
         }
         catch (const std::exception &e)
@@ -137,24 +135,24 @@ namespace Core
             std::cerr << "error: " << e.what() << std::endl;
         }
 
-        gresource.spriteManager = new SpriteManager();
+        spriteManager = new SpriteManager();
 
         if (root.end() != root.find("SpriteList"))
         {
-            gresource.spriteManager->parse(root.at("SpriteList"));
+            spriteManager->parse(root.at("SpriteList"));
         }
 
         if (root.end() != root.find("SpriteEmptyIDVector"))
         {
-            gresource.spriteManager->setEmptyIDV(
+            spriteManager->setEmptyIDV(
                 root.at("SpriteEmptyIDVector").get<std::vector<int>>());
         }
         // parse should set current
         // but the info of current in json is not implemented yet
-        setCurrentPage(gresource.pageList->at(0));
+        setCurrentPage(pageList->at(0));
         // lack info of ctrlENtity
         // TODO:
-        gstate.currPage->setCtrlEntity(gstate.currPage->getEntityList().at(0));
+        currPage->setCtrlEntity(currPage->getEntityList().at(0));
         return this;
     }
 
@@ -170,7 +168,7 @@ namespace Core
         j["Note"] = getNote();
         // pages
         std::vector<nlohmann::json> pageVector;
-        for (Page *p : *(gresource.pageList))
+        for (Page *p : *(pageList))
         {
             nlohmann::json pj;
             pj["PageName"] = p->getName();
@@ -193,10 +191,10 @@ namespace Core
         // Sprites
         std::vector<nlohmann::json> spriteVector;
         std::unordered_map<int, Sprite *> spriteMap =
-            gresource.spriteManager->getSprites();
-        j["NumSprites"] = gresource.spriteManager->getNumSprites();
+            spriteManager->getSprites();
+        j["NumSprites"] = spriteManager->getNumSprites();
         // nlohmann::json only support vector array
-        j["SpriteEmptyIDVector"] = gresource.spriteManager->getEmptyIDV();
+        j["SpriteEmptyIDVector"] = spriteManager->getEmptyIDV();
         for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
         {
             Sprite &s = *(sit->second);
@@ -223,7 +221,7 @@ namespace Core
     void Game::initShader()
     {
         // Create viewport with the default w/h (same as the window size)
-        glViewport(0, 0, gstate.width, gstate.height);
+        glViewport(0, 0, width, height);
 
         // Source for the vertex shader
         const char *vertexSource = R"glsl(
@@ -293,21 +291,21 @@ namespace Core
         };
 
         // Create new shader program
-        gstate.shaderProgram = glCreateProgram();
+        shaderProgram = glCreateProgram();
 
         // Attach shaders to the new shader program
-        glAttachShader(gstate.shaderProgram, vertexShaderID);
-        glAttachShader(gstate.shaderProgram, fragmentShaderID);
+        glAttachShader(shaderProgram, vertexShaderID);
+        glAttachShader(shaderProgram, fragmentShaderID);
 
         // Links the attached shaders in the program to their correct shader processors
-        glLinkProgram(gstate.shaderProgram);
+        glLinkProgram(shaderProgram);
 
         // Delete the created shaders, now that they have already been linked
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
 
         // Use the newly created shader program!
-        glUseProgram(gstate.shaderProgram);
+        glUseProgram(shaderProgram);
 
         // Create Vertex Buffer Object and Vertex Array Object
         GLuint vbo, vao;
@@ -342,29 +340,29 @@ namespace Core
         // Enable the Vertex Object Array
         glBindVertexArray(vao);
 
-        glUniform1i(glGetUniformLocation(gstate.shaderProgram, "texture1"), 0); // Set texture uniform
+        glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
         // Set the scale based on the width and height
-        int scaleID = glGetUniformLocation(gstate.shaderProgram, "scale");
-        glUniform2f(scaleID, (float)2 / gstate.width, (float)2 / gstate.height);
+        int scaleID = glGetUniformLocation(shaderProgram, "scale");
+        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
         // if in editor mode
-        if (gstate.editorMode)
+        if (editorMode)
         {
-            glGenFramebuffers(1, &(geditorParam.fbo));
-            glBindFramebuffer(GL_FRAMEBUFFER, geditorParam.fbo);
+            glGenFramebuffers(1, &(fbo));
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
             // texbuffer is done in editor
             // unsigned int texcbo; // texture color buffer obj
             // glGenTextures ( 1, &texcbo );
-            glBindTexture(GL_TEXTURE_2D, *(geditorParam.texcbo));
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, gstate.width, gstate.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glBindTexture(GL_TEXTURE_2D, *(texcbo));
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glBindTexture(GL_TEXTURE_2D, 0);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                   GL_TEXTURE_2D, *(geditorParam.texcbo), 0);
+                                   GL_TEXTURE_2D, *(texcbo), 0);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
@@ -394,25 +392,25 @@ namespace Core
         SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
         // Create a new centered game window based on window_flags (1280x720 for now)
-        gstate.window = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, gstate.width, gstate.height, window_flags);
+        window = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 
         // Create the Game opengl context
-        gstate.gl_context = SDL_GL_CreateContext(gstate.window);
+        gl_context = SDL_GL_CreateContext(window);
 
         // Setup function pointers for OpenGL
         gladLoadGL();
 
         // Show the current context
-        SDL_GL_MakeCurrent(gstate.window, gstate.gl_context);
+        SDL_GL_MakeCurrent(window, gl_context);
     }
 
     ////void Game::handleInput(SDL_Event event)
     ////{
     ////    glm::vec2 loc;
     ////    glm::vec2 scale;
-    ////    if (setCurrCtrlEntity(gstate.currPage->getCtrlEntity()) != nullptr)
+    ////    if (setCurrCtrlEntity(currPage->getCtrlEntity()) != nullptr)
     ////    {
-    ////        loc = gstate.currCtrlEntity->getLocation();
+    ////        loc = currCtrlEntity->getLocation();
     ////        scale = currCtrlEntity->getScale();
     ////        float moveBy = 5;
     ////        int scaleBy = 3;
@@ -474,21 +472,21 @@ namespace Core
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
-        if (gstate.editorMode)
+        if (editorMode)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, geditorParam.fbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         }
         glClearColor(0.1, 0.2, 0.59, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (gstate.currPage != nullptr)
+        if (currPage != nullptr)
         {
             // TODO: enable bg color
             //glm::vec4 pageColor = currPage->GetBackgroundColor ();
             //glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
             glClear(GL_COLOR_BUFFER_BIT);
 
-            gstate.currPage->render();
+            currPage->render();
         }
         else
         {
@@ -514,8 +512,8 @@ namespace Core
     void Game::destroy()
     {
         // Take care of deleting SDL objects and cleanly exit
-        SDL_GL_DeleteContext(gstate.gl_context);
-        SDL_DestroyWindow(gstate.window);
+        SDL_GL_DeleteContext(gl_context);
+        SDL_DestroyWindow(window);
         SDL_Quit();
     }
 
@@ -535,7 +533,7 @@ namespace Core
                 {
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:;
-                    gstate.signalHandler.sendSignal(Signal(SignalVariant{KeySignal(event.key)}, SignalType::key));
+                    signalHandler.sendSignal(Signal(SignalVariant{KeySignal(event.key)}, SignalType::key));
                     break;
 
                 default:
@@ -555,22 +553,22 @@ namespace Core
                     if (event.window.event == SDL_WINDOWEVENT_RESIZED)
                     {
                         // Set the width to the resized width
-                        gstate.width = event.window.data1;
+                        width = event.window.data1;
                         // Set the height to the resized height
-                        gstate.height = event.window.data2;
+                        height = event.window.data2;
                         // Set the new window dimensions
-                        SDL_SetWindowSize(gstate.window, gstate.width, gstate.height);
+                        SDL_SetWindowSize(window, width, height);
 
                         // Set the new viewport size (this determines the size
                         // of the opengl -1 < pt < 1 coordinate system)
-                        glViewport(0, 0, gstate.width, gstate.height);
+                        glViewport(0, 0, width, height);
 
                         // Preserve dimensions of objects after resize
                         // Set the scale based on the width and height of the screen
-                        int scaleID = glGetUniformLocation(gstate.shaderProgram, "scale");
-                        glUniform2f(scaleID, (float)2 / gstate.width, (float)2 / gstate.height);
+                        int scaleID = glGetUniformLocation(shaderProgram, "scale");
+                        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
-                        SDL_GL_SwapWindow(gstate.window); // Show the resized window
+                        SDL_GL_SwapWindow(window); // Show the resized window
                     }
                     break;
                 }
@@ -579,7 +577,7 @@ namespace Core
             render();
 
             // Show the entities by bringing showing the back buffer
-            SDL_GL_SwapWindow(gstate.window);
+            SDL_GL_SwapWindow(window);
 
             // Error checking! This will only print out an error if one is detected each loop
             GLenum err(glGetError());

@@ -18,7 +18,22 @@ namespace Core
 
     //* ------------------ DIFFERENT  SCRIPT ----------------- *//
 
-    class ScriptMoveEntityConstantly
+    class ScriptBase
+    {
+    private:
+        ScriptType mtype;
+
+    public:
+        // every script has to have run
+        virtual void run() = 0;
+        ScriptType getType() { return this->mtype; }
+        void setType(ScriptType type) { this->mtype = type; }
+
+        ScriptBase(ScriptType type) : mtype(type) {}
+        ~ScriptBase() {}
+    };
+
+    class ScriptMoveEntityConstantly : ScriptBase
     {
     private:
         std::vector<Entity *> *mtargetList;
@@ -26,21 +41,26 @@ namespace Core
         glm::vec2 mdistance;
 
     public:
-        void setTargetList(std::vector<Entity *> *targetList) { mtargetList = targetList; }
-        void addTargetEntityToTargetList(Entity *e) { mtargetList->push_back(e); }
+        void setTargetList(std::vector<Entity *> *targetList)
+        {
+            mtargetList = targetList;
+        }
+        void addTarget(Entity *e) { mtargetList->push_back(e); }
         std::vector<Entity *> *getTargetList() { return mtargetList; }
-
         void setDistance(glm::vec2 &distance) { mdistance = distance; }
         glm::vec2 getDistance() { return mdistance; }
 
         void run();
 
-        ScriptMoveEntityConstantly(/* args */) {}
+        ScriptMoveEntityConstantly(ScriptType type) : ScriptBase(type) {}
         ~ScriptMoveEntityConstantly() {}
     };
 
-    // most of the time should use pointer of this type to speed up and save memory
-    typedef std::variant<ScriptMoveEntityConstantly> ScriptVariant;
+    // most of the time should use pointer of this type to speed up and save
+    // memory
+    typedef std::variant<
+        ScriptMoveEntityConstantly>
+        ScriptVariant;
 
     //// the mscript list main loop calls
     ////std::vector<ScriptVariant> actionList;

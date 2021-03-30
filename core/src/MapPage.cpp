@@ -42,14 +42,16 @@ namespace Core
 
                 // Bind the correct sprite if it exists
                 if (mMap->mTileArray[i].getSpriteID() != -1 &&
-                    gresource.spriteManager->atID(mMap->mTileArray[i].getSpriteID()))
+                    spriteManager->atID(mMap->mTileArray[i].getSpriteID()))
                 {
-                    glBindTexture(GL_TEXTURE_2D, gresource.spriteManager->atID(mMap->mTileArray[i].getSpriteID())->getOpenGLTextureID());
+                    glBindTexture(GL_TEXTURE_2D, spriteManager->atID(mMap->mTileArray[i].getSpriteID())->getOpenGLTextureID());
                 }
 
                 // Buffer and draw tile
-                // NOTE: Change the int multiplier whenever new data will be added to the shaders.
-                //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
+                // NOTE: Change the int multiplier whenever new data will be
+                // added to the shaders.
+                // Right now, there are 4 points (8 ints), with 4 texture points
+                // (8 ints) = 16 * sizeof(int)
                 glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), coords, GL_DYNAMIC_DRAW);
                 glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
