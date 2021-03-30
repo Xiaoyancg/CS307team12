@@ -16,21 +16,19 @@ namespace Core
 
     /// \brief the base logic class that contains the criteria to meet to evoke
     /// a certain script
-    ///
     /// \note A logic can be written to and load from json as object.
     /// will be stored in a unordered_map in LogicManager since it exists both
     /// conceptually and physically. Logic will have no clue of the game state.
     /// the only information it has are the signal and criteria. sending script
-    /// to script list is done by game to limit the DI in minimum.
+    /// to script list is done by Logic manager to limit the DI in minimum.
     class LogicBase
     {
     private:
-        // name starts with m for member
+        // name starts with m of member
         SignalType msignalType;
         ScriptType mscriptType;
 
         /// \brief Each logic will have a script pointer to get evoked
-        ///
         /// \note The reason why don't use id and an unordered_map for script is
         /// that the script usually contains customized variables.
         /// Also, normally the functions in class won't be compiled for each
@@ -88,6 +86,8 @@ namespace Core
     //* ------------------ DIFFERENT LOGICS ------------------ *//
 
     // anchor - Key logic
+
+    /// \brief Logic that check key code and key type(press or release)
     class KeyLogic : public LogicBase
     {
     private:

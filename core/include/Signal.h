@@ -6,7 +6,9 @@
 namespace Core
 {
 
-    // Event(signal and response) types
+    // anchor SingalType
+
+    /// \brief Event(signal and logic) types
     enum class SignalType
     {
         Key,   // key event use SDL_KeyboardEvent
@@ -14,12 +16,13 @@ namespace Core
         Timer
     };
 
-    // *classes
-    class KeySignal;
+    // anchor - signal base class
+    //* --------------------- SIGNAL BASE -------------------- *//
 
-    //* ------------------ DIFFERENT SIGNALS ----------------- *//
-
-    //* base signal class
+    /// \brief Contains the information needs to be checked in corresponding
+    /// logics.
+    /// \note Are user defined and will be stored in Json. use reference
+    /// mostly. Managed in an unordered_map in SignalManager
     class SignalBase
     {
     private:
@@ -40,27 +43,30 @@ namespace Core
         ~SignalBase() {}
     };
 
-    //* key signal
-    class KeySignal : Core::SignalBase
+    //* ------------------ DIFFERENT SIGNALS ----------------- *//
+
+    // anchor - key signal
+    /// \brief a SDL_KeyboardEvent signal
+    class KeySignal : public SignalBase
     {
     private:
-        // keyboard Event
+        /// \brief SDL keyboard Event
+        /// \note use instance because the event may disappear after sdl event
+        /// loop
         SDL_KeyboardEvent mevent;
 
     public:
-        KeySignal(SDL_KeyboardEvent event) : mevent(event) {}
-        ~KeySignal() {}
-
+        SDL_Keycode getKey() { return mevent.keysym.sym; }
         // get SDL key event type ( press or release )
         Uint32 getKeyType() { return mevent.type; }
-        SDL_Keycode getKey() { return mevent.keysym.sym; }
 
         KeySignal(SDL_KeyboardEvent event)
             : SignalBase(SignalType::Key), mevent(event) {}
         ~KeySignal() {}
     };
 
-    // *the signal variant type containing all signal classes
+    // anchor - signal variant type
+    // containing all signal classes
     typedef std::variant<
         KeySignal>
         SignalVariant;
