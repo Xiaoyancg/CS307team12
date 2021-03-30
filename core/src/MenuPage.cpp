@@ -1,6 +1,5 @@
 #include "MenuPage.h"
 
-
 namespace Core {
     // Sets mMenu to the Menu created by the user
     void MenuPage::setMenu(Menu* menu) {
