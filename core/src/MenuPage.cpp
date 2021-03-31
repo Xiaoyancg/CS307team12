@@ -1,6 +1,12 @@
 #include "MenuPage.h"
 
 namespace Core {
+    MenuPage::MenuPage(std::string s, Menu* menu) :
+        Page(s), mMenu(menu)
+    {
+        mFont = new Font();
+    }
+
     // Sets mMenu to the Menu created by the user
     void MenuPage::setMenu(Menu* menu) {
         // Set the new menu
@@ -23,6 +29,7 @@ namespace Core {
                 // If the text is not empty
                 if (entry->getText().compare("")) {
                     // TODO Draw text
+                    mFont->renderText("test", glm::ivec2(50, 50), 1, glm::vec3(1.0f, 0.0f, 1.0f));
                 }
 
                 // Get button callbacks

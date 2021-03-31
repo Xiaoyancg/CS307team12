@@ -1,6 +1,5 @@
 #include "Sprint1.h"
-#include "MenuPage.h"
-#include "Menu.h"
+
 
 namespace Core
 {

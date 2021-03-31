@@ -7,8 +7,8 @@ namespace Core
     {
         Game *game = s1Game();
         game->setGameName("s2Game");
-        game->initContext();
-        game->initShader();
+        //game->initContext();
+        //game->initShader();
         // FIXME: use relative directory. also remove from here
         std::vector<std::string> spriteList =
             searchAllFileWithExtension("./", ".png");
