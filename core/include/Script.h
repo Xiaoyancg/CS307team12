@@ -17,9 +17,10 @@ namespace Core
     /// knows the state and renderer knows the resources.
     class ScriptBase
     {
-    private:
+    protected:
         ScriptType mtype;
         std::string mscriptName;
+        PageManager *mpageManager_ptr;
 
     public:
         // type
@@ -35,8 +36,12 @@ namespace Core
         /// \brief Construct a new Script Base object
         /// \param type
         /// \param state_ref
-        ScriptBase(std::string &scriptName_ref, ScriptType type)
-            : mscriptName(scriptName_ref), mtype(type) {}
+        ScriptBase(PageManager *pageManager_ptr,
+                   std::string &scriptName_ref,
+                   ScriptType type)
+            : mpageManager_ptr(pageManager_ptr),
+              mscriptName(scriptName_ref),
+              mtype(type) {}
         ~ScriptBase() {}
     };
 
@@ -48,20 +53,23 @@ namespace Core
     private:
         /// \brief target list
         /// \note vector::push_back copy value, so have to use pointer
-        std::vector<Entity *> mtargetList;
-
+        std::vector<std::string> mtargetList;
+        std::string mtargetPage;
         /// \brief the constant movement
         glm::vec2 mmovement;
 
     public:
         // target list
-        void setTargetList(std::vector<Entity *> targetList)
+        void setTargetList(std::vector<std::string> targetList)
         {
             mtargetList = targetList;
         }
-        std::vector<Entity *> getTargetList() { return mtargetList; }
+        std::vector<std::string> getTargetList() { return mtargetList; }
         // target
-        void addTarget(Entity *entity_ptr) { mtargetList.push_back(entity_ptr); }
+        void addTarget(std::string &entity_ref)
+        {
+            mtargetList.push_back(entity_ref);
+        }
         // movement
         void setDistance(glm::vec2 &distance) { mmovement = distance; }
         glm::vec2 getDistance() { return mmovement; }
@@ -71,12 +79,19 @@ namespace Core
 
         /// \brief Construct a new Script Move Entity Constantly object
         /// \param state_ref game state
-        ScriptMoveEntityConstantly(std::string &scriptName_ref,
-                                   std::vector<Entity *> targetList,
-                                   glm::vec2 movement)
-            : ScriptBase(scriptName_ref, ScriptType::MoveEntitiesConstantly),
+        ScriptMoveEntityConstantly(
+            PageManager *pageManager_ptr,
+            std::string &scriptName_ref,
+            std::vector<std::string> targetList,
+            std::string &targetPage_ref,
+            glm::vec2 movement)
+            : ScriptBase(pageManager_ptr,
+                         scriptName_ref, ScriptType::MoveEntitiesConstantly),
               mtargetList(targetList),
-              mmovement(movement) {}
+              mtargetPage(targetPage_ref),
+              mmovement(movement)
+        {
+        }
         ~ScriptMoveEntityConstantly() {}
     };
 

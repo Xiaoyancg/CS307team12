@@ -75,9 +75,12 @@ namespace Core
 
         /// \brief Get the Pages list pointer
         /// \return std::unordered_map<std::string, Page>*
+        /// \note use pointer to speed up and save memory
         std::unordered_map<std::string, Page> *getPages() { return &mpages; }
+
         /// \brief Get the Display List pointer
         /// \return std::unordered_map<std::string, Page *>*
+        /// \note use pointer to speed up and save memory
         std::unordered_map<std::string, Page *> *getCurrPages()
         {
             return &mcurrPages;

@@ -56,6 +56,7 @@ All notable changes to this project will be documented in this file.
 - Sometimes can't use forward declaration because we forward declaration can't
   tell compiler how big the type is.
 - if switch page, have to remove all the signal or logic or script from the list
+- narrow the target in sprint 2
   
 
 
@@ -181,6 +182,7 @@ All notable changes to this project will be documented in this file.
 - remove signal manager
 - msprite to std::unordered_map<std::string, Sprite*>
 - make sprite only refer to string spriteName
+- use string as reference everywhere
 
 ### Removed
 - __plitr and __pl define in Game.h
