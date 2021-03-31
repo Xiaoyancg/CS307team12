@@ -24,19 +24,31 @@ namespace Core
 	class SpriteManager
 	{
 	public:
-		// Constructor just sets mCurrSpriteID to the initial value of 0
-		SpriteManager() : mCurrSpriteID(0) {}
+		//// Constructor just sets mCurrSpriteID to the initial value of 0
+		// empty constructor
+		SpriteManager() {}
+
+		/// \brief delete every sprite pointer
+		~SpriteManager()
+		{
+			for (auto spritepair : mSprites)
+				delete spritepair.second;
+		}
 
 		// Creates a new sprite based on the filename and returns the new
-		// sprite's ID based on mCurrSpriteID or the specified 'id'.
 		// If the requested 'id' is already taken, or mCurrSpriteID has already
 		// been taken, then the next closest ID will be found and used
-		int createSprite(std::string name, std::string filename, int id);
-		// this one is depreciated
-		int createSprite(std::string name, std::string filename);
 
-		// Delete the sprite with the given ID
-		void deleteSprite(int spriteID);
+		/// \brief Creates a new sprite at the correct location in mSprites
+		/// \param spriteName
+		/// \param filename
+		/// \return int 0 if success, 1 if the spriteName was taken.
+		int createSprite(std::string &spriteName_ref, std::string &filename_ref);
+
+		/// \brief Delete the sprite with the given ID
+		/// \param spriteName_ref
+		/// \return int 0 if success, 1 if doesn't exist sprite with the name
+		int deleteSprite(std::string &spriteName_ref);
 
 		// Unused for now, can be uncommented if needed
 		// This may never be used, but if you need the whole list of sprites
@@ -44,41 +56,26 @@ namespace Core
 		// This might be used to iterate through all sprites,
 		// but be warned that iteration with maps is in no specific order
 		// Leaving it commented until a use case for it comes up
-		std::unordered_map<int, Sprite *> getSprites() { return this->mSprites; }
+		std::unordered_map<std::string, Sprite *> getSprites()
+		{
+			return mSprites;
+		}
 
 		// Returns a pointer to the sprite with the requested ID
 		// (in constant time because we're using unordered_maps instead of vectors!)
-		Sprite *atID(int spriteID) { return mSprites[spriteID]; }
+		Sprite *atName(std::string &spriteName) { return mSprites[spriteName]; }
 
-		int getNumSprites() { return this->mnumSprites; }
-		void setNumSprites(int numSprite) { this->mnumSprites = numSprite; }
+		int getNumSprites() { return mSprites.size(); }
 
 		// parse json
 		int parse(nlohmann::json);
 
-		std::vector<int> getEmptyIDV() { return this->memptyIDV; }
-		void pushEmptyIDV(int id) { this->memptyIDV.push_back(id); }
-		void setEmptyIDV(std::vector<int> emptyIDV)
-		{
-			this->memptyIDV = emptyIDV;
-		}
-
 	private:
-		// The current sprite ID,
-		// which will be set to whatever sprite is created next
-		int mCurrSpriteID;
-
-		// stores the deleted id, will be used in create
-		std::vector<int> memptyIDV;
-
-		// total number of sprites
-		int mnumSprites;
-
 		// This is where sprites are stored, like an array based on their IDs
 		// If a sprite has ID=32, then a pointer to it is stored at mSprites[32]
-		std::unordered_map<int, Sprite *> mSprites;
+		std::unordered_map<std::string, Sprite *> mSprites;
 
-		// Used for debugging
+		// Private function used for debugging
 		void printSprites();
 	};
 }

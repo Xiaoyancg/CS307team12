@@ -1,9 +1,7 @@
-#include "SignalHandler.h"
-#include "Game.h"
-
+#include "LogicManager.h"
 namespace Core
 {
-    void SignalHandler::sendSignal(Signal signal)
+    void LogicHandler::sendSignal(Signal signal)
     {
         this->msignals.push_back(signal);
     }

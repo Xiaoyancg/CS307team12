@@ -8,24 +8,19 @@ namespace Core
 	class Sprite
 	{
 	public:
-		Sprite(std::string name, std::string filename, int spriteID);
-
 		Sprite(std::string name, std::string filename);
 
-		unsigned int getOpenGLTextureID();
-
-		glm::vec2 getDimensions();
-
-		std::string getName();
-		std::string getFileName();
-		int getSpriteID();
+		unsigned int getOpenGLTextureID() { return mTextureID; }
+		glm::vec2 getDimensions() { return mImageDimensions; }
+		std::string getName() { return mSpriteName; }
+		std::string getFileName() { return mFileName; }
 
 	private:
 		std::string mSpriteName;
 		std::string mFileName;
 		glm::vec2 mImageDimensions;
-		int mSpriteID;
 
-		unsigned int mTextureID; // Set by OpenGL
+		// Set by OpenGL
+		unsigned int mTextureID;
 	};
 }

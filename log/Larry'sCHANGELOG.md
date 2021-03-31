@@ -48,11 +48,14 @@ All notable changes to this project will be documented in this file.
 - Tried some inherit way, the best way is to use pointer and union
 - Don't use pointer too much, use it only when required.
 - the game is still oop but resource is not oop
-  - MSDB
+  - DBMS
 - Dependency Injection is a way to achieve Inversion of Control, objected
   oriented programming.
 - std libraries use heap.
-- Sometimes can't use forward declaration because we forward declaration can't tell compiler how big the type is.
+- Sometimes can't use forward declaration because we forward declaration can't
+  tell compiler how big the type is.
+- if switch page, have to remove all the signal or logic or script from the list
+  
 
 
 
@@ -141,6 +144,7 @@ All notable changes to this project will be documented in this file.
 - SpriteManager::memptyIDQ
 - practice/testCpp
 - base class for script, logic and signal
+- logic manager
 ### Fixed
 - typo
 - multiple warnings besides the type conversion and void *
@@ -173,6 +177,10 @@ All notable changes to this project will be documented in this file.
 - remove getLMT() in Game
 - moved every member variable in game to gstate/gresource/geditorParam
 - memptyIDQ -> memptyIDV
+- remove signal manager
+- msprite to std::unordered_map<std::string, Sprite*>
+- second
+- third
 
 
 ### Removed

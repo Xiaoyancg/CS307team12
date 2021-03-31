@@ -6,9 +6,15 @@
 namespace Core
 {
 
-    // anchor SingalType
-
+    /// anchor SingalType
     /// \brief Event(signal and logic) types
+    /// \note there are predefined signal and user defined signal
+    /// we can't just use user defined signal.
+    /// User defined signal is just an id of logic
+    /// if only use user defined signal, we have to parse every sdl event in
+    /// runtime instead of before compile.
+    /// same for logic, there are user defined logic which only compares id from
+    /// signal, and there are predefined logic to check the input signal.
     enum class SignalType
     {
         Key,   // key event use SDL_KeyboardEvent
@@ -69,6 +75,6 @@ namespace Core
     // containing all signal classes
     typedef std::variant<
         KeySignal>
-        SignalVariant;
+        Signal;
 
 }

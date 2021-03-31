@@ -1,87 +1,85 @@
 #pragma once
 #include <vector>
 #include <variant>
-#include "Entity.h"
+#include "Game.h"
 namespace Core
 {
-    // forwar declaration
-    enum class SignalType;
-    class Logic;
 
-    // mscript type
+    // anchor - script type enum class
     enum class ScriptType
     {
         ScriptMoveEntityConstantly // move entities in constant speed
     };
-    // *Script
-    class ScriptMoveEntityConstantly;
 
-    //* ------------------ DIFFERENT  SCRIPT ----------------- *//
-
+    /// anchor - Script Bass class
+    /// \brief script can change everything in the game
+    /// \note when construct, pass the reference of current game state. Script
+    /// knows the state and renderer knows the resources.
     class ScriptBase
     {
     private:
         ScriptType mtype;
+        /// \brief current game state, passed by constructor
+        //struct GameState mstate_ref;
 
     public:
-        // every script has to have run
-        virtual void run() = 0;
+        // type
         ScriptType getType() { return this->mtype; }
         void setType(ScriptType type) { this->mtype = type; }
 
-        ScriptBase(ScriptType type) : mtype(type) {}
+        // every script has to have run
+        virtual void run() = 0;
+
+        /// \brief Construct a new Script Base object
+        /// \param type
+        /// \param state_ref
+        ScriptBase(ScriptType type)
+            : mtype(type) {}
         ~ScriptBase() {}
     };
 
+    //* ------------------ DIFFERENT  SCRIPT ----------------- *//
+    // anchor - move entity constantly script
+    /// \brief move a list of entities by a vec2 once per run
     class ScriptMoveEntityConstantly : ScriptBase
     {
     private:
-        std::vector<Entity *> *mtargetList;
-        //MoveType mmoveT;
-        glm::vec2 mdistance;
+        /// \brief target list
+        /// \note vector::push_back copy value, so have to use pointer
+        std::vector<Entity *> mtargetList;
+
+        /// \brief the constant movement
+        glm::vec2 mmovement;
 
     public:
-        void setTargetList(std::vector<Entity *> *targetList)
+        // target list
+        void setTargetList(std::vector<Entity *> targetList)
         {
             mtargetList = targetList;
         }
-        void addTarget(Entity *e) { mtargetList->push_back(e); }
-        std::vector<Entity *> *getTargetList() { return mtargetList; }
-        void setDistance(glm::vec2 &distance) { mdistance = distance; }
-        glm::vec2 getDistance() { return mdistance; }
+        std::vector<Entity *> getTargetList() { return mtargetList; }
+        // target
+        void addTarget(Entity *entity_ptr) { mtargetList.push_back(entity_ptr); }
+        // movement
+        void setDistance(glm::vec2 &distance) { mmovement = distance; }
+        glm::vec2 getDistance() { return mmovement; }
 
+        /// \brief move all entities in the targget list use movement
         void run();
 
-        ScriptMoveEntityConstantly(ScriptType type) : ScriptBase(type) {}
+        /// \brief Construct a new Script Move Entity Constantly object
+        /// \param state_ref game state
+        ScriptMoveEntityConstantly(std::vector<Entity *> targetList,
+                                   glm::vec2 movement)
+            : ScriptBase(ScriptType::ScriptMoveEntityConstantly),
+              mtargetList(targetList),
+              mmovement(movement) {}
         ~ScriptMoveEntityConstantly() {}
     };
 
-    // most of the time should use pointer of this type to speed up and save
-    // memory
+    /// anchor - Script Variant
+    /// \brief contains all script classes
     typedef std::variant<
         ScriptMoveEntityConstantly>
-        ScriptVariant;
-
-    //// the mscript list main loop calls
-    ////std::vector<ScriptVariant> actionList;
-
-    //// ---------------------------- Entry Action ---------------------------- */
-
-    ////// the Action class for outside
-    ////class Action
-    ////{
-    ////private:
-    ////    ScriptType mtype;
-    ////    union
-    ////    {
-    ////        // name start with m for member
-    ////        ScriptMoveEntityConstantly mmec;
-    ////    };
-
-    ////public:
-    ////    void setType(ScriptType type) { mtype = type; }
-    ////    ScriptType getType() { return mtype; }
-    ////    Action(/* args */);
-    ////    ~Action();
-    ////};
+        Script;
 }

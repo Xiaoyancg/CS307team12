@@ -5,16 +5,11 @@
 
 namespace Core
 {
-	Sprite::Sprite(std::string name, std::string filename, int spriteID)
-		: Sprite::Sprite(name, filename)
+	Sprite::Sprite(std::string spriteName, std::string filename)
 	{
-		mSpriteID = spriteID;
-	}
-
-	Sprite::Sprite(std::string name, std::string filename)
-	{
-		mSpriteName = name;
+		mSpriteName = spriteName;
 		mFileName = filename;
+		// this will be 4294967295 since texture id is uint
 		mTextureID = -1;
 
 		int width;
@@ -64,29 +59,5 @@ namespace Core
 		{
 			printf("Sprite::Sprite > Image loading error!\n");
 		}
-	}
-
-	unsigned int Sprite::getOpenGLTextureID()
-	{
-		return mTextureID;
-	}
-
-	glm::vec2 Sprite::getDimensions()
-	{
-		return mImageDimensions;
-	}
-
-	std::string Sprite::getName()
-	{
-		return mSpriteName;
-	}
-
-	std::string Sprite::getFileName()
-	{
-		return this->mFileName;
-	}
-	int Sprite::getSpriteID()
-	{
-		return this->mSpriteID;
 	}
 }

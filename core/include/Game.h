@@ -13,27 +13,19 @@
 
 // Parchment header
 #include "Page.h"
+#include "PageManager.h"
+#include "Map.h"
 #include "Entity.h"
 #include "MapPage.h"
 #include "RenderTarget.h"
 #include "SpriteManager.h"
 #include "Logic.h"
-#include "SignalHandler.h"
 
 // page list iterator
 
-///
-/// @brief the package contains class game and global game variables
-///
-///
+/// @brief the package contains game class
 namespace Core
 {
-
-    struct GameState
-    {
-    };
-    // forward declaration
-    // g stands for global variable
 
     /// @brief The parchment game engine core component. The game runtime object
     /// takes the role of rendering, event handling, game data file loading and
@@ -43,7 +35,7 @@ namespace Core
     class Game
     {
     public:
-        //* ------------------------- CONSTRUCTOR ------------------------ *//
+        //* ----------------- ANCHOR CONSTRUCTOR ----------------- *//
 
         // TODO: check empty page condition in editor mode and add new page
         // function in editor
@@ -68,7 +60,8 @@ namespace Core
         // test
         Game() {}
 
-        //* ---------------- ATTRIBUTES OPERATION ---------------- *//
+        //* ------------- ANCHOR ATTRIBUTES OPERATION ------------ *//
+
         //  (attributes mean non functionality related variables)
         // Attributes are refering to additional information of an object.
         // Properties are describing the characteristics of an object.
@@ -88,13 +81,9 @@ namespace Core
         std::string getNote() { return this->note; }
         void setNote(std::string newNote) { this->note = newNote; }
 
-        //* ----------------- PROPERTY OPERATION ----------------- *//
-        // ( Properties are the variables that may change the performance,
-        // like the size of the window or IDK )
+        //* --------------- ANCHOR MEMBER OPERATION -------------- *//
 
-        //* ------------------ MEMBER OPERATION ------------------ *//
-        // ( functions that targeting members variables )
-
+        // these functions are for editors
         Page *addPage(Page *p);
         Page *createPage(std::string n);
         MapPage *createMapPage(std::string, Map *);
@@ -106,44 +95,26 @@ namespace Core
         int getNumPage();
 
         void deleteSprite(int);
-        Sprite *getSpriteFromID(int);
-        std::unordered_map<int, Sprite *> getSprites();
+        Sprite *getSpriteFromName(std::string &spriteName) { return mspriteManager.atName(spriteName); }
+        std::unordered_map<std::string, Sprite *> getSprites()
+        {
+            return mspriteManager.getSprites();
+        }
 
-        //* ------------------- STATE OPERATION ------------------ *//
-        // ( the flags and pointers that describing the current state of
-        // performance )
+        //* -------------- ANCHOR UTILITY OPERATION -------------- *//
 
-        // set the currpage pointer and iterator to target
-        void setCurrentPage(Page *p) { currPage = p; }
-        Page *getCurrPage() { return currPage; }
-
-        /// <summary>
-        /// Move current page pointer and iterator
-        /// to the target iterator in the pageList.
-        /// <para>Can be fail ( begin(), end() out of range)</para>
-        /// </summary>
-        /// <param name="target">the target pagelist iterator</param>
-        /// <returns>0 if fail</returns>
-
-        // TODO: depreciate iterator
-        int moveCurrentPage(std::vector<Page *>::iterator target);
-
-        //* ------------------ UTILITY OPERATION ----------------- *//
-
-        ///
-        /// @brief parse json to game data for both editor and vm
-        ///
-        /// @param root : nlohmann::json
-        /// @return Game*
-        ///
+        /// \brief parse json to game data for both editor and vm
+        /// \param root : nlohmann::json
+        /// \return Game*
         Game *parse(nlohmann::json &root);
 
-        ///
-        /// @brief serialize the game data to json for usage in editor
-        ///
-        /// @return nlohmann::json*
-        ///
+        /// \brief serialize the game data to json for usage in editor
+        /// \return nlohmann::json*
         nlohmann::json *serialize();
+
+        // main entry for vm, deals everything, call after constructed instance
+        // handle exit
+        void run();
 
         // initContext SDL context
         void initContext();
@@ -151,24 +122,20 @@ namespace Core
         // init opengl related flag
         void initShader();
 
-        void sdl_die(const char *err_msg);
-        void handleInput(SDL_Event event);
+        // the only game loop
+        void mainLoop();
 
         // render the all currpage with entities
         void render();
 
-        // main entry for vm, deals everything, call after constructed instance
-        // handle exit
-        void run();
+        // delete sdl variables
+        void sdl_die(const char *err_msg);
 
         // clean context
         void destroy();
 
-        // the only game loop
-        void mainLoop();
-
     private:
-        //* ----------------- ATTRIBUTES VARIABLE ---------------- *//
+        //* ------------- ANCHOR ATTRIBUTES VARIABLE ------------- *//
 
         std::string mgameName;
         std::string mauthor;
@@ -177,49 +144,35 @@ namespace Core
         std::string mLMTime;
         std::string note;
 
-        //* ------------------ RENDER VARIABLES ------------------ *//
+        //* --------------- ANCHOR RENDER VARIABLES -------------- *//
+
         // texcbo from editor
         GLuint *texcbo;
+
         // framebuffer object
         GLuint fbo;
+
         // The context of this Game
         SDL_GLContext gl_context;
+
+        // size of the window
         int width = 0, height = 0;
+
         // the render window of this Game
         SDL_Window *window;
+
         /// True if program is running in editor, use framebuffer
         /// False means in vm, render to window
         bool editorMode;
+
         // The shaders, set by initShaders before entering the game loop
         unsigned int shaderProgram;
 
-        // use vector because the order doesn't matter
-        std::vector<Logic *> keyLogicList;
-        std::vector<Logic *> mouseLogicList;
-        std::vector<Logic *> timerLogicList;
-        std::vector<Logic *> directLogicList;
-        std::unordered_map<int, Signal> signalList;
-        std::unordered_map<int, Script> scriptList;
-        // current signals
-        std::vector<Signal> mcurrSignalList;
+        //* ----------------- ANCHOR KAREN KILLER ---------------- *//
 
-        std::vector<int> inDisplayList;
-
-        //* ------------------ RESOURCE VARIABLE ----------------- *//
-
-        // only physical resource need manager: sprite and music
-        // conceptural resource will be managed by game
-        SpriteManager spriteManager;
-
-        // contains all pages
-        // use unordered_map for editor to easily add/delete pages without
-        // affecting other pages
-        std::unordered_map<int, Page *> mpageList;
-
-        // FIXME: to Core
-        // Holds pointers to all the game's sprites and handles ID's properly
-        // Use gameSprites.createSprite(filename); to create the sprite from the file
-        // Use gameSprites.atID(id); to get the pointer to the sprite with ID 'id'
-        // Use gameSprites.deleteSprite(id); to delete the sprite with ID 'id'
+        // conceptural and physical resource both use managers:
+        // Pages, Logic( signal, script, Logic ), sprite and music
+        SpriteManager mspriteManager;
+        PageManager mpageManager;
     };
 }

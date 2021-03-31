@@ -13,104 +13,6 @@
 
 namespace Core
 {
-    //* ----------------------- Global Variables ----------------------- */
-
-    struct EditorParam geditorParam;
-
-    // FIXME: move to core Each class that renders sprites needs a reference to
-    // the same SpriteManager as this class. Whenever a new class is added that
-    // renders sprites, its reference must be set here.
-
-    // =========================
-    // ATTRIBUTES OPERATION
-
-    // =========================
-    // PROPERTY OPERATION
-
-    // =========================
-    // MEMBER OPERATION
-    Page *Game::addPage(Page *p)
-    {
-        pageList->push_back(p);
-        return p;
-    }
-    Page *Core::Game::createPage(std::string n)
-    {
-        Page *p = new Page(n);
-        return addPage(p);
-    }
-    MapPage *Game::createMapPage()
-    {
-        MapPage *mp = new MapPage();
-        return (MapPage *)addPage(mp);
-    }
-    MapPage *Game::createMapPage(std::string n)
-    {
-        MapPage *mp = new MapPage(n);
-        return (MapPage *)addPage(mp);
-    }
-    MapPage *Game::createMapPage(std::string n, Map *m)
-    {
-        MapPage *mp = new MapPage(n, m);
-        return (MapPage *)addPage(mp);
-    }
-    std::vector<Page *> *Game::getPageList()
-    {
-        return pageList;
-    }
-
-    void Game::deletePage(Page *dp)
-    {
-        // TODO Use something like: std::vector<Page*>::iterator ptr =
-        // find(pageList.begin(), pageList.end(), dp); if (ptr !=
-        // pageList.end())
-        for (std::vector<Page *>::iterator ptr = pageList->begin();
-             ptr != pageList->end();
-             ptr++)
-        {
-            if (*ptr == dp)
-            {
-                pageList->erase(ptr);
-                delete (dp);
-                dp = nullptr;
-                break;
-            }
-        }
-    }
-
-    void Game::deletePage(std::string s)
-    {
-        for (std::vector<Page *>::iterator ptr = pageList->begin();
-             ptr != pageList->end();
-             ptr++)
-        {
-            if (!(*ptr)->getName().compare(s))
-            {
-                Page *p = *ptr;
-                pageList->erase(ptr);
-                delete (p);
-                p = nullptr;
-                break;
-            }
-        }
-    }
-
-    void Game::deleteSprite(int id)
-    {
-        spriteManager->deleteSprite(id);
-    }
-
-    Sprite *Game::getSpriteFromID(int id)
-    {
-        return spriteManager->atID(id);
-    }
-
-    std::unordered_map<int, Sprite *> Game::getSprites()
-    {
-        return spriteManager->getSprites();
-    }
-
-    //* ------------------ UTILITY OPERATION ----------------- *//
 
     Game *Game::parse(nlohmann::json &root)
     {
@@ -135,16 +37,16 @@ namespace Core
             std::cerr << "error: " << e.what() << std::endl;
         }
 
-        spriteManager = new SpriteManager();
+        mspriteManager = SpriteManager();
 
         if (root.end() != root.find("SpriteList"))
         {
-            spriteManager->parse(root.at("SpriteList"));
+            mspriteManager.parse(root.at("SpriteList"));
         }
 
         if (root.end() != root.find("SpriteEmptyIDVector"))
         {
-            spriteManager->setEmptyIDV(
+            mspriteManager.setEmptyIDV(
                 root.at("SpriteEmptyIDVector").get<std::vector<int>>());
         }
         // parse should set current
@@ -191,10 +93,10 @@ namespace Core
         // Sprites
         std::vector<nlohmann::json> spriteVector;
         std::unordered_map<int, Sprite *> spriteMap =
-            spriteManager->getSprites();
-        j["NumSprites"] = spriteManager->getNumSprites();
+            mspriteManager.getSprites();
+        j["NumSprites"] = mspriteManager.getNumSprites();
         // nlohmann::json only support vector array
-        j["SpriteEmptyIDVector"] = spriteManager->getEmptyIDV();
+        j["SpriteEmptyIDVector"] = mspriteManager.getEmptyIDV();
         for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
         {
             Sprite &s = *(sit->second);
@@ -404,72 +306,7 @@ namespace Core
         SDL_GL_MakeCurrent(window, gl_context);
     }
 
-    ////void Game::handleInput(SDL_Event event)
-    ////{
-    ////    glm::vec2 loc;
-    ////    glm::vec2 scale;
-    ////    if (setCurrCtrlEntity(currPage->getCtrlEntity()) != nullptr)
-    ////    {
-    ////        loc = currCtrlEntity->getLocation();
-    ////        scale = currCtrlEntity->getScale();
-    ////        float moveBy = 5;
-    ////        int scaleBy = 3;
-    ////        // Control entity movement and reshape
-    ////        switch (event.key.keysym.sym)
-    ////        {
-    ////        // Control Entity movement in the interactive demo
-    ////        // Handle left arrow key
-    ////        case SDLK_LEFT:
-    ////            currCtrlEntity->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
-    ////            break;
-    ////            // Handle right arrow key
-    ////        case SDLK_RIGHT:
-    ////            currCtrlEntity->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
-    ////            break;
-    ////            // Handle up arrow key
-    ////        case SDLK_UP:
-    ////            currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
-    ////            break;
-    ////            // Handle down arrow key
-    ////        case SDLK_DOWN:
-    ////            currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
-    ////            break;
-    ////            // Control Entity scaling in the interactive demo
-    ////        case SDLK_a: // a key is Scale up, for now
-    ////            currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
-    ////            break;
-    ////        case SDLK_z: // z key is Scale down, for now
-    ////            // Make sure not to scale into the negatives
-    ////            if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0)
-    ////            {
-    ////                currCtrlEntity->setScale(glm::vec2(scale.x - scaleBy, scale.y - scaleBy));
-    ////            }
-    ////            break;
-    ////        }
-    ////    }
-    ////    // Control pages switch.
-    ////    switch (event.key.keysym.sym)
-    ////    {
-    ////    // use 1 to look the previous page
-    ////    case SDLK_1:
-    ////        // have to check begin and end here
-    ////        if (!_isBegin(_currPitr))
-    ////        {
-    ////            moveCurrentPage(_currPitr - 1);
-    ////        }
-    ////        break;
-    ////    // use 2 to look the next page
-    ////    case SDLK_2:
-    ////        if (_isBeforeEnd(_currPitr))
-    ////        {
-    ////            moveCurrentPage(_currPitr + 1);
-    ////        }
-    ////        break;
-    ////    }
-    ////}
-
-    // only render graphics so can be used in editor
-    // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
+    // only render graphics so it can be used in editor
     void Game::render()
     {
         if (editorMode)
@@ -517,8 +354,7 @@ namespace Core
         SDL_Quit();
     }
 
-    /* -------------------------------- Game loop ------------------------------- */
-
+    // anchor - main loop
     void Game::mainLoop()
     {
 
@@ -533,7 +369,6 @@ namespace Core
                 {
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:;
-                    signalHandler.sendSignal(Signal(SignalVariant{KeySignal(event.key)}, SignalType::key));
                     break;
 
                 default:

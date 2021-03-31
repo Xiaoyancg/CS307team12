@@ -1,8 +1,7 @@
 #include "Logic.h"
-#include "Game.h"
 namespace Core
 {
-    bool KeyLogic::check(SignalVariant &signal_ref)
+    bool KeyLogic::check(Signal &signal_ref)
     {
 
         return (std::get<KeySignal>(signal_ref).getKey() == mkey &&

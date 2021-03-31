@@ -93,14 +93,15 @@ public:
     int get() { return x; }
 };
 
+int &return5()
+{
+    int x = 0;
+    x = x + 5;
+    return x;
+}
+
 int main(int argc, char **argv)
 {
-    PROCESS_MEMORY_COUNTERS memCounter;
-    BOOL result = K32GetProcessMemoryInfo(GetCurrentProcess(),
-                                          &memCounter,
-                                          sizeof(memCounter));
-    float MB0 = (float)memCounter.WorkingSetSize / 1000000.f;
-
     //    bool t = false;
     //if (t)
     //{
@@ -139,6 +140,11 @@ int main(int argc, char **argv)
     //<< "size of two function class: " << sizeof(two)
     //<< std::endl;
     //}
+    PROCESS_MEMORY_COUNTERS memCounter;
+    BOOL result = K32GetProcessMemoryInfo(GetCurrentProcess(),
+                                          &memCounter,
+                                          sizeof(memCounter));
+    float MB0 = (float)memCounter.WorkingSetSize / 1000000.f;
 
     twofunction two;
     two.add();
@@ -176,5 +182,13 @@ int main(int argc, char **argv)
         << "WorkingSetSize in MB2: "
         << MB2 - MB1 << std::endl;
 
+    int x = 0;
+    std::cout << "before: x = " << x;
+    x = return5();
+    x = x + 1;
+    std::cout << "after: x = " << x << std::endl;
+
+    unsigned y = -1;
+    std::cout << "unsigned y = " << y << std::endl;
     return 0;
 }

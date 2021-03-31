@@ -3,79 +3,47 @@
 namespace Core
 {
 
-	// Creates a new sprite at the correct location in mSprites
-	int SpriteManager::createSprite(std::string name, std::string filename)
+	int SpriteManager::createSprite(std::string &spriteName,
+									std::string &filename)
 	{
-		int id = mCurrSpriteID;
-		if (!memptyIDV.empty())
+		//// This will loop as long as it needs to until it finds the
+		//// closest
+		//// valid ID
+		// Check if sprite with id does not already exist
+		if (mSprites[spriteName] == nullptr)
 		{
-			id = memptyIDV.at(0);
-			memptyIDV.erase(memptyIDV.begin());
+			// init id for sprite
+			Sprite *newSprite = new Sprite(spriteName, filename);
+			mSprites[spriteName] = newSprite;
+			return 0; // Return ID of the new sprite
 		}
-
-		// This will loop as long as it needs to until it finds the closest
-		// valid ID
-		while (true)
+		// Otherwise, the specified sprite ID already exists, so check the
+		// next ID
+		else
 		{
-			// Check if sprite with id does not already exist
-			if (mSprites[id] == nullptr)
-			{
-				// init id for sprite
-				Sprite *newSprite = new Sprite(name, filename, id);
-				this->mSprites[id] = newSprite;
-				mCurrSpriteID = id + 1;
-				mnumSprites++;
-				return id; // Return ID of the new sprite
-			}
-			// Otherwise, the specified sprite ID already exists, so check the
-			// next ID
-			else
-			{
-				printf("ID %d already used :( Trying SpriteID: %d\n", id,
-					   id + 1);
-				id++;
-			}
+			printf("name %s already used :(\n", spriteName);
+			return 1;
 		}
 	}
 
-	// Creates a new sprite at the correct location in mSprites
-	int SpriteManager::createSprite(std::string name, std::string filename,
-									int id)
+	int SpriteManager::deleteSprite(std::string &spriteName_ref)
 	{
-		// This will loop as long as it needs to until it finds the closest
-		// valid ID
-		while (true)
+		// check if there exist such sprite
+		try
 		{
-			// Check if sprite with id does not already exist
-			if (mSprites[id] == nullptr)
-			{
-				// init id for sprite
-				Sprite *newSprite = new Sprite(name, filename, id);
-				this->mSprites[id] = newSprite;
-				this->mnumSprites++;
-				return id; // Return ID of the new sprite
-			}
-			// Otherwise, the specified sprite ID already exists, so check the
-			// next ID
-			else
-			{
-				printf("ID %d already used :( Trying SpriteID: %d\n", id,
-					   id + 1);
-				id++;
-			}
+			// free memory before erase
+			delete mSprites.at(spriteName_ref);
+			mSprites.erase(spriteName_ref);
+			return 0;
+		}
+		// no such sprite
+		catch (const std::exception &e)
+		{
+			// 1 for not found
+			return 1;
 		}
 	}
 
-	void SpriteManager::deleteSprite(int spriteID)
-	{
-		delete this->mSprites[spriteID];
-		memptyIDV.push_back(spriteID);
-		mSprites.erase(spriteID);
-		this->mnumSprites--;
-		//printSprites();
-	}
-
-	// Private function used for debugging
 	void SpriteManager::printSprites()
 	{
 		printf("SPRITES:\n");
@@ -93,8 +61,7 @@ namespace Core
 			{
 				createSprite(
 					sj.at("SpriteName").get<std::string>(),
-					sj.at("FileName").get<std::string>(),
-					sj.at("SpriteID").get<int>());
+					sj.at("FileName").get<std::string>());
 			}
 		}
 		catch (const std::exception &e)

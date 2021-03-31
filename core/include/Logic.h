@@ -1,5 +1,4 @@
 #pragma once
-#include <map>
 #include "Signal.h"
 #include "Script.h"
 
@@ -36,7 +35,7 @@ namespace Core
         /// without to concern the redundant memory.
         /// use reference. As the game stays, the instance will be stored in the
         /// unordered_map.
-        ScriptVariant mscript_ref;
+        Script mscript_ref;
 
         // true if the logic is paused in the list and shouldn't be check
         // didn't implemented yet 03/30
@@ -56,17 +55,17 @@ namespace Core
         void setScriptType(ScriptType actionType) { mscriptType = actionType; }
         ScriptType getScriptType() { return mscriptType; }
         // script
-        void setScriptPtr(ScriptVariant script_ref)
+        void setScriptPtr(Script script_ref)
         {
             mscript_ref = script_ref;
         }
-        ScriptVariant getScriptPtr() { return mscript_ref; }
+        Script getScriptPtr() { return mscript_ref; }
 
         /// \brief Check if signal meet the criteria
         ///
         /// \param signal passed by reference
         /// \return true if signal meets criteria
-        virtual bool check(SignalVariant &signal_ref) = 0;
+        virtual bool check(Signal &signal_ref) = 0;
 
         /// \brief Construct a new Logic Base object
         ///
@@ -76,7 +75,7 @@ namespace Core
         /// meets
         LogicBase(SignalType signalType,
                   ScriptType scriptType,
-                  ScriptVariant &script_ref)
+                  Script &script_ref)
             : msignalType(signalType),
               mscriptType(scriptType),
               mscript_ref(script_ref) {}
@@ -109,7 +108,7 @@ namespace Core
         ///
         /// \param signal reference, type is KeySignal
         /// \return true if the key is the right key and in the correct type
-        bool check(SignalVariant &signal_ref);
+        bool check(Signal &signal_ref);
 
         /// \brief Construct a new Key Logic object. Set key and keytype before
         /// check, detain in comments at virtual function
@@ -119,12 +118,12 @@ namespace Core
         /// \param script_ref
         KeyLogic(SignalType signalType,
                  ScriptType scriptType,
-                 ScriptVariant &script_ref)
+                 Script &script_ref)
             : LogicBase(signalType, scriptType, script_ref) {}
         ~KeyLogic() {}
     };
 
     // anchor - logic variant
     // containing all specific logic class type
-    typedef std::variant<KeyLogic> LogicVariant;
+    typedef std::variant<KeyLogic> Logic;
 }
