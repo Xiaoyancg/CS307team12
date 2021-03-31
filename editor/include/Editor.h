@@ -8,6 +8,7 @@
 #include <imfilebrowser.h>
 #include <stdio.h>
 #include <iostream>
+#include <stb_image_aug.h>
 
 int EditorMain ( int argc, char *argv[] );
 
