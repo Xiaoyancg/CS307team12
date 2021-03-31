@@ -100,6 +100,14 @@ int &return5()
     return x;
 }
 
+void makeit5(int &t)
+{
+    int x;
+    x = t;
+    x = 5;
+}
+#include <variant>
+
 int main(int argc, char **argv)
 {
     //    bool t = false;
@@ -190,5 +198,17 @@ int main(int argc, char **argv)
 
     unsigned y = -1;
     std::cout << "unsigned y = " << y << std::endl;
+
+    int aa = 7;
+    int &bb = aa;
+    bb++;
+    std::cout << "aa = " << aa << std::endl;
+    makeit5(aa);
+    std::cout << "aa = " << aa << std::endl;
+    std::variant<int, float, char, std::string> vt;
+    vt = std::string("hello");
+    std::string mystr;
+    std::visit([&](auto x) { mystr = x; }, vt);
+    std::cout << "after visit mystr get: " << mystr << std::endl;
     return 0;
 }

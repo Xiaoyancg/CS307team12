@@ -15,14 +15,18 @@ namespace Core
         std::unordered_map<std::string, Logic> mlogics;
 
         // current checking list of signals/ scripts/logics
-        std::unordered_map<std::string, Signal *> mcurrSignals;
+        // use instance is because signals can be either predefined and user
+        // defined. predefined signals has no copy in the msignals, can't pass
+        // reference. User defined are in msignals, but can't be delete if
+        // passing reference. so have to copy the instance.
+        std::unordered_map<std::string, Signal> mcurrSignals;
         std::unordered_map<std::string, Logic *> mcurrKeyLogics;
         // should be multiple current script list for different execute level,
         // so that the script can be executed in order to avoid conflicts.
         // now use only one
         std::unordered_map<std::string, Script *> mcurrEntityScripts;
 
-        PageManager mpageManager;
+        PageManager *mpageManager_ptr;
 
     public:
         /// \brief send signal pointer to current signal list
@@ -31,7 +35,7 @@ namespace Core
         /// \note use instance copy. Predefined signals have scope, user defined
         /// signals are stored in list, can't use pointer here because the
         /// signal can't be deleted. so only copy available
-        int sendSignal(Signal signal);
+        int sendSignal(SignalType, Signal &signal_ref);
 
         /// \brief check the signal with corresponding logic list
         /// \param signal_ref
@@ -40,6 +44,8 @@ namespace Core
         /// \brief traverse all current signal list
         void signalLoop();
 
+        //int sendScript(Script *);
+        int sendScript(ScriptType, Script *);
         /// \brief traverse the all current script list
         void scriptLoop();
 
@@ -55,10 +61,14 @@ namespace Core
         /// \param logicName
         /// \param signalType
         /// \param scriptType
-        /// \param script_ptr
-        /// \return int 0 success, 1 used name
-        int createLogic(std::string &logicName_ref, SignalType signalType,
-                        ScriptType scriptType, Script *script_ptr);
+        /// \param scriptName
+        /// \return int 0 success, 1 used name, 2 not found script
+        int createKeyLogic(std::string &logicName_ref,
+                           SignalType signalType,
+                           ScriptType scriptType,
+                           std::string &scriptName_ref,
+                           SDL_Keycode key,
+                           Uint32 keyType);
 
         // TODO find a better way
         /// \brief Create a Move Entities Constantly Script object and add it to
@@ -69,11 +79,13 @@ namespace Core
         /// \return int
         int createMoveEntitiesConstantlyScript(
             std::string &scriptName_ref,
-            std::vector<std::string> targetList, glm::vec2 movement);
+            std::vector<std::string> targetList,
+            std::string &targetPage_ref,
+            glm::vec2 &movement_ref);
 
         LogicManager() {}
-        LogicManager(PageManager &pageManager_ref)
-            : mpageManager(pageManager_ref) {}
+        LogicManager(PageManager *pageManager_ptr)
+            : mpageManager_ptr(pageManager_ptr) {}
         ~LogicManager() {}
     };
 

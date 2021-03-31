@@ -105,28 +105,29 @@ namespace Core
     public:
         // key code
         void setKey(SDL_KeyCode key) { mkey = key; }
-        SDL_KeyCode getKey() { return mkey; }
+        SDL_Keycode getKey() { return mkey; }
         // key type (press/release)
         void setKeyType(Uint32 type) { mkeyType = type; }
         Uint32 getKeyType() { return mkeyType; }
 
         /// \brief check if the key code and key type is met
-        ///
         /// \param signal reference, type is KeySignal
         /// \return true if the key is the right key and in the correct type
         bool check(Signal &signal_ref);
 
         /// \brief Construct a new Key Logic object. Set key and keytype before
         /// check, detain in comments at virtual function
-        ///
         /// \param signalType
         /// \param scriptType
         /// \param script_ref
         KeyLogic(std::string &logicName_ref,
                  SignalType signalType,
                  ScriptType scriptType,
-                 Script *script_ptr)
-            : LogicBase(logicName_ref, signalType, scriptType, script_ptr) {}
+                 Script *script_ptr,
+                 SDL_Keycode key,
+                 Uint32 keyType)
+            : LogicBase(logicName_ref, signalType, scriptType, script_ptr),
+              mkey(key), mkeyType(keyType) {}
         ~KeyLogic() {}
     };
 

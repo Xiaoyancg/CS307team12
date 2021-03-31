@@ -10,6 +10,12 @@ namespace Core
     {
         MoveEntitiesConstantly // move entities in constant speed
     };
+    enum class ScriptLevel
+    {
+        Entity,
+        Page,
+        Game
+    };
 
     /// anchor - Script Bass class
     /// \brief script can change everything in the game
@@ -21,6 +27,7 @@ namespace Core
         ScriptType mtype;
         std::string mscriptName;
         PageManager *mpageManager_ptr;
+        ScriptLevel mlevel;
 
     public:
         // type
@@ -29,7 +36,9 @@ namespace Core
         // name
         void setScriptName(std::string &scriptName_ref) { mscriptName = scriptName_ref; }
         std::string getScriptName() { return mscriptName; }
-
+        // level
+        void setLevel(ScriptLevel level) { mlevel = level; }
+        ScriptLevel getLevel() { return mlevel; }
         // every script has to have run
         virtual void run() = 0;
 
@@ -38,17 +47,18 @@ namespace Core
         /// \param state_ref
         ScriptBase(PageManager *pageManager_ptr,
                    std::string &scriptName_ref,
-                   ScriptType type)
+                   ScriptType type,
+                   ScriptLevel level)
             : mpageManager_ptr(pageManager_ptr),
               mscriptName(scriptName_ref),
-              mtype(type) {}
+              mtype(type), mlevel(level) {}
         ~ScriptBase() {}
     };
 
     //* ------------------ DIFFERENT  SCRIPT ----------------- *//
     // anchor - move entity constantly script
     /// \brief move a list of entities by a vec2 once per run
-    class ScriptMoveEntityConstantly : ScriptBase
+    class ScriptMoveEntityConstantly : public ScriptBase
     {
     private:
         /// \brief target list
@@ -86,7 +96,9 @@ namespace Core
             std::string &targetPage_ref,
             glm::vec2 movement)
             : ScriptBase(pageManager_ptr,
-                         scriptName_ref, ScriptType::MoveEntitiesConstantly),
+                         scriptName_ref,
+                         ScriptType::MoveEntitiesConstantly,
+                         ScriptLevel::Entity),
               mtargetList(targetList),
               mtargetPage(targetPage_ref),
               mmovement(movement)

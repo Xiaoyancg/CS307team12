@@ -57,6 +57,7 @@ All notable changes to this project will be documented in this file.
   tell compiler how big the type is.
 - if switch page, have to remove all the signal or logic or script from the list
 - narrow the target in sprint 2
+- rewrite variant to union
   
 
 
