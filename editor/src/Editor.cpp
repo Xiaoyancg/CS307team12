@@ -241,7 +241,7 @@ static void ShowExampleAppMainMenuBar()
      *  ========================
      */
 
-    // open save as popup
+     // open save as popup
     if (selection[SAVEAS])
     {
         ImGui::OpenPopup("Save As");
@@ -277,7 +277,7 @@ static void ShowExampleAppMainMenuBar()
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
@@ -287,48 +287,62 @@ static void ShowExampleAppMainMenuBar()
     //object tree
     if (selection[OBJECTTREE])
     {
+        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
             //entities node
-            if (ImGui::CollapsingHeader("Entities"))
+            if (ImGui::TreeNodeEx("Entities", node_flags, "Entities"))
             {
                 if (game != nullptr)
                 {
-                    std::vector<Core::Entity *> elist = currPage->getEntityList();
-                    ImGui::Indent();
-                    for (Core::Entity *e : elist)
+                    std::vector<Core::Entity*> elist = currPage->getEntityList();
+                    for (Core::Entity* e : elist)
                     {
-                        ImGui::Selectable(("%s", e->getName().c_str()));
+                        bool selected;
+                        if (ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
+                        {
+                            printf(e->getName().c_str());
+                        }
                     }
-                    ImGui::Unindent();
                 }
-                ImGui::Unindent();
+                ImGui::TreePop();
             }
             //maps node
-            if (ImGui::CollapsingHeader("Maps"))
+            if (ImGui::TreeNodeEx("Maps", node_flags, "Maps"))
             {
+                ImGui::TreePop();
             }
             //logic node
-            if (ImGui::CollapsingHeader("Logic"))
+            if (ImGui::TreeNodeEx("Logic", node_flags, "Logic"))
             {
+                ImGui::TreePop();
             }
             //pages node
-            if (ImGui::CollapsingHeader("Pages"))
+            if (ImGui::TreeNodeEx("Pages", node_flags, "Pages"))
             {
-                std::vector<Core::Page *> plist = *game->getPageList();
-                ImGui::Indent();
-                for (Core::Page *p : plist)
+                if (game != nullptr)
                 {
-                    ImGui::Selectable(("%s", p->getName().c_str()));
+                    std::vector<Core::Page*> plist = *game->getPageList();
+                    for (int i = 0; i < plist.size(); i++)
+                    {
+                        Core::Page* p = plist[i];
+                        bool selected;
+                        if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
+                        {
+                            printf(p->getName().c_str());
+                        }
+                    }
                 }
-                ImGui::Unindent();
+                ImGui::TreePop();
             }
-            if (ImGui::CollapsingHeader("Scripts"))
+            if (ImGui::TreeNodeEx("Scripts", node_flags, "Scripts"))
             {
+                ImGui::TreePop();
             }
-            if (ImGui::CollapsingHeader("Sprites"))
+            if (ImGui::TreeNodeEx("Sprites", node_flags, "Sprites"))
             {
+                ImGui::TreePop();
             }
         }
         ImGui::End();
@@ -337,18 +351,62 @@ static void ShowExampleAppMainMenuBar()
     //this isnt really a "selection", it opens by default
     if (selection[SPLASHSCREEN])
     {
-        int dwWidth = GetSystemMetrics(SM_CXSCREEN) / 2;
-        int dwHeight = GetSystemMetrics(SM_CYSCREEN) / 2;
-        ImGui::SetNextWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(500*1.5, 363*1.5), ImGuiCond_Appearing);
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-        if (ImGui::Begin("Parchment", &selection[SPLASHSCREEN]))
+        ImGui::SetNextWindowBgAlpha(0);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+        //ImGui::OpenPopup("Splash");
+        if (ImGui::Begin("Splash", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize))
         {
-            // Here we will implement a render window type thing I assume to hold the splash screen
-            ImGui::Text("Parchment Splash Screen");
+            // Load from file
+            int image_width = 0;
+            int image_height = 0;
+            unsigned char* image_data = stbi_load("../../../../resource/parchment_splash.png", &image_width, &image_height, NULL, 4);
+
+            if (image_data == NULL)
+            {
+                // Here we will implement a render window type thing I assume to hold the splash screen
+                ImGui::Text("Parchment Splash Screen Failed to Load");
+            }
+
+            else
+            {
+                // Create a OpenGL texture identifier
+                GLuint image_texture;
+                glGenTextures(1, &image_texture);
+                glBindTexture(GL_TEXTURE_2D, image_texture);
+
+                // Setup filtering parameters for display
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+
+                // Upload pixels into texture
+#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
+                glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+#endif
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+                stbi_image_free(image_data);
+
+                ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+
+                ImGui::Image((void*)(intptr_t)image_texture, canvas_size);
+            }
+            // CLOSE SPLASH ON CLICK OUTSIDE LIKE A POPUP BUT NOT BECAUSE FUCK ME I GUESS
+            if (!ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0))
+            {
+                selection[SPLASHSCREEN] = false;
+            }
+
+            ImGui::End();
         }
-        ImGui::End();
+        ImGui::PopStyleVar();
     }
+
+    
 
     // Entity editor
     if (selection[ENTITYEDITOR])
