@@ -60,7 +60,15 @@ namespace Core
             check(signalpair.second);
         }
     }
-
+    void LogicManager::scriptLoop()
+    {
+        // only have entity script list rn
+        for (auto scriptpair : mcurrEntityScripts)
+        {
+            std::visit([&](auto &&script) { script.run(); },
+                       *(scriptpair.second));
+        }
+    }
     //* ------------------- ANCHOR CREATION ------------------ *//
     int LogicManager::createMoveEntitiesConstantlyScript(
         std::string &scriptName_ref,
