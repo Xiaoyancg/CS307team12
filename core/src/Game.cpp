@@ -29,7 +29,7 @@ namespace Core
             auto pageVec = root.at("PageList").get<std::vector<nlohmann::json>>();
             for (nlohmann::json pageJson : pageVec)
             {
-                pageList->push_back(Page::parse(pageJson));
+                mpageManager.addPage(Page::parse(pageJson));
             }
         }
         catch (const std::exception &e)
@@ -44,17 +44,6 @@ namespace Core
             mspriteManager.parse(root.at("SpriteList"));
         }
 
-        if (root.end() != root.find("SpriteEmptyIDVector"))
-        {
-            mspriteManager.setEmptyIDV(
-                root.at("SpriteEmptyIDVector").get<std::vector<int>>());
-        }
-        // parse should set current
-        // but the info of current in json is not implemented yet
-        setCurrentPage(pageList->at(0));
-        // lack info of ctrlENtity
-        // TODO:
-        currPage->setCtrlEntity(currPage->getEntityList().at(0));
         return this;
     }
 
@@ -70,13 +59,13 @@ namespace Core
         j["Note"] = getNote();
         // pages
         std::vector<nlohmann::json> pageVector;
-        for (Page *p : *(pageList))
+        for (auto pagepair : mpageManager.getPages())
         {
             nlohmann::json pj;
-            pj["PageName"] = p->getName();
+            pj["PageName"] = pagepair.second->getName();
             // entities
             std::vector<nlohmann::json> entityVector;
-            for (Entity *e : p->getEntityList())
+            for (Entity *e : pagepair.second->getEntityList())
             {
                 nlohmann::json ej;
                 ej["EntityName"] = e->getName();
@@ -92,18 +81,16 @@ namespace Core
         j["PageList"] = pageVector;
         // Sprites
         std::vector<nlohmann::json> spriteVector;
-        std::unordered_map<int, Sprite *> spriteMap =
+        std::unordered_map<std::string, Sprite *> spriteMap =
             mspriteManager.getSprites();
         j["NumSprites"] = mspriteManager.getNumSprites();
         // nlohmann::json only support vector array
-        j["SpriteEmptyIDVector"] = mspriteManager.getEmptyIDV();
         for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
         {
             Sprite &s = *(sit->second);
             nlohmann::json sj;
             sj["SpriteName"] = s.getName();
             sj["FileName"] = s.getFileName();
-            sj["SpriteID"] = s.getSpriteID();
             spriteVector.push_back(sj);
         }
         j["SpriteList"] = spriteVector;

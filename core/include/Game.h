@@ -41,24 +41,27 @@ namespace Core
         // function in editor
         // Editor new
         Game(std::string gameName, GLuint *texcbo)
-            : mgameName(gameName)
+            : mgameName(gameName), mtexcbo(texcbo), meditorMode(true)
         {
-            texcbo = texcbo;
-            editorMode = true;
+            mpageManager = PageManager(mwidth, mheight);
         }
 
         // Editor open
-        Game(nlohmann::json &json, GLuint *texcbo)
+        Game(nlohmann::json &json, GLuint *texcbo) : mtexcbo(texcbo)
         {
-            this->parse(json);
-            texcbo = texcbo;
+            parse(json);
+            mpageManager = PageManager(mwidth, mheight);
         }
 
         // VM
-        Game(nlohmann::json &json) { this->parse(json); }
+        Game(nlohmann::json &json)
+        {
+            parse(json);
+            mpageManager = PageManager(mwidth, mheight);
+        }
 
         // test
-        Game() {}
+        Game() { mpageManager = PageManager(mwidth, mheight); }
 
         //* ------------- ANCHOR ATTRIBUTES OPERATION ------------ *//
 
@@ -67,7 +70,7 @@ namespace Core
         // Properties are describing the characteristics of an object.
 
         std::string getGameName() { return this->mgameName; }
-        void setGameName(std::string gameName) { this->mgameName = gameName; }
+        void setGameName(std::string gameName) { mgameName = gameName; }
 
         std::string getAuthor() { return this->mauthor; }
         void setAuthor(std::string author) { this->mauthor = author; }
@@ -78,22 +81,42 @@ namespace Core
         std::string getLMTime() { return this->mLMTime; }
         void setLMTime(std::string LMTTime) { this->mLMTime = LMTTime; }
 
-        std::string getNote() { return this->note; }
-        void setNote(std::string newNote) { this->note = newNote; }
+        std::string getNote() { return this->mnote; }
+        void setNote(std::string newNote) { this->mnote = newNote; }
 
         //* --------------- ANCHOR MEMBER OPERATION -------------- *//
 
         // these functions are for editors
         // *page
-        Page *addPage(Page *p);
-        Page *createPage(std::string n);
-        MapPage *createMapPage(std::string, Map *);
-        MapPage *createMapPage(std::string);
-        MapPage *createMapPage();
-        void deletePage(Page *);
-        void deletePage(std::string);
-        std::vector<Page *> *getPageList();
-        int getNumPage();
+        int addPage(Page *page) { return mpageManager.addPage(page); }
+        int createPage(std::string &pageName_ref)
+        {
+            return mpageManager.createPage(pageName_ref);
+        }
+        int createMapPage(std::string &pageName_ref, Map *map_ptr)
+        {
+            return mpageManager.createMapPage(pageName_ref, map_ptr);
+        }
+        int createMapPage(std::string &pageName_ref)
+        {
+            return mpageManager.createMapPage(pageName_ref);
+        }
+        int deletePage(Page *page_ptr)
+        {
+            return mpageManager.deletePage(page_ptr);
+        }
+        int deletePage(std::string &pageName_ref)
+        {
+            return mpageManager.deletePage(pageName_ref);
+        }
+        std::unordered_map<std::string, Page *> getPages()
+        {
+            return mpageManager.getPages();
+        }
+        std::unordered_map<std::string, Page *> getDisplayList()
+        {
+            return mpageManager.getDisplayList();
+        }
 
         // *sprite
         /// \brief delete a sprite by name
@@ -166,31 +189,31 @@ namespace Core
         std::string mversion;
         // last modified time
         std::string mLMTime;
-        std::string note;
+        std::string mnote;
 
         //* --------------- ANCHOR RENDER VARIABLES -------------- *//
 
         // texcbo from editor
-        GLuint *texcbo;
+        GLuint *mtexcbo;
 
         // framebuffer object
-        GLuint fbo;
+        GLuint mfbo;
 
         // The context of this Game
-        SDL_GLContext gl_context;
+        SDL_GLContext mgl_context;
 
         // size of the window
-        int width = 0, height = 0;
+        int mwidth = 800, mheight = 600;
 
         // the render window of this Game
-        SDL_Window *window;
+        SDL_Window *mwindow;
 
         /// True if program is running in editor, use framebuffer
         /// False means in vm, render to window
-        bool editorMode;
+        bool meditorMode = false;
 
         // The shaders, set by initShaders before entering the game loop
-        unsigned int shaderProgram;
+        unsigned int mshaderProgram;
 
         //* ----------------- ANCHOR KAREN KILLER ---------------- *//
 

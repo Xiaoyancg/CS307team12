@@ -1,6 +1,7 @@
 #include <unordered_map>
 #include <string>
 #include "Page.h"
+#include "MapPage.h"
 
 namespace Core
 {
@@ -14,81 +15,79 @@ namespace Core
         // use unordered_map for editor to easily add/delete pages without
         // affecting other pages
         std::unordered_map<std::string, Page *> mpages;
+        int mwidth, mheight;
 
     public:
-        Page *createPage(std::string n)
+        /// \brief add the page pointer to list
+        /// \param page
+        /// \return int 0 for success, 1 for used name
+        int addPage(Page *page);
+
+        /// \brief Create a Page object by name and add to page list
+        /// \param pageName
+        /// \return int 0 for success, 1 for used name
+        int createPage(std::string &pageName_ref)
         {
-            Page *p = new Page(n);
-            return addPage(p);
-        }
-        MapPage *createMapPage()
-        {
-            MapPage *mp = new MapPage();
-            return (MapPage *)addPage(mp);
-        }
-        MapPage *createMapPage(std::string n)
-        {
-            MapPage *mp = new MapPage(n);
-            return (MapPage *)addPage(mp);
-        }
-        MapPage *createMapPage(std::string n, Map *m)
-        {
-            MapPage *mp = new MapPage(n, m);
-            return (MapPage *)addPage(mp);
+            return addPage(new Page(pageName_ref));
         }
 
-        void deletePage(Page *dp)
+        int createMapPage(std::string &pageName_ref)
         {
-            // TODO Use something like: std::vector<Page*>::iterator ptr =
-            // find(pageList.begin(), pageList.end(), dp); if (ptr !=
-            // pageList.end())
-            for (std::vector<Page *>::iterator ptr = pageList->begin();
-                 ptr != pageList->end();
-                 ptr++)
-            {
-                if (*ptr == dp)
-                {
-                    pageList->erase(ptr);
-                    delete (dp);
-                    dp = nullptr;
-                    break;
-                }
-            }
+            return addPage(new MapPage(pageName_ref));
+        }
+        int createMapPage(std::string &pageName_ref)
+        {
+            return addPage(new MapPage(pageName_ref));
+        }
+        int createMapPage(std::string n, Map *m)
+        {
+            return addPage(new MapPage(n, m));
         }
 
-        void deletePage(std::string s)
+        int deletePage(Page *page_ptr)
         {
-            for (std::vector<Page *>::iterator ptr = pageList->begin();
-                 ptr != pageList->end();
-                 ptr++)
-            {
-                if (!(*ptr)->getName().compare(s))
-                {
-                    Page *p = *ptr;
-                    pageList->erase(ptr);
-                    delete (p);
-                    p = nullptr;
-                    break;
-                }
-            }
+            return deletePage(page_ptr->getName());
         }
 
-        void deleteSprite(int id)
-        {
-            spriteManager->deleteSprite(id);
-        }
+        /// \brief delete page by name
+        /// \param pageName_ref
+        /// \return int 0 success, 1 not found
+        int deletePage(std::string &pageName_ref);
 
         // set display page list
-        void setCurrentPage(std::unordered_map<int, Page *> displayList)
+        void setDisplayPageList(
+            std::unordered_map<std::string, Page *> &displayList)
         {
             mdisplayList = displayList;
         }
-        void addPageToDisplay(std::pair<int, Page *> page)
+
+        /// \brief add page to display by name
+        /// \param pageName_ref
+        /// \return int 0 success, 1 not found
+        int addPageToDisplay(std::string &pageName_ref);
+
+        /// \brief remove a page from displayList
+        /// \param pageName_ref
+        /// \return int 0 success, 1 not found
+        int removePageFromDisplay(std::string &pageName_ref);
+
+        std::unordered_map<std::string, Page *> getPages() { return mpages; }
+        std::unordered_map<std::string, Page *> getDisplayList()
         {
-            mdisplayList.insert(page);
+            return mdisplayList;
         }
-        void removePageFromDisplay(int pageID) { mdisplayList.erase(pageID); }
+
+        /// \brief Construct a new Page Manager object
+        /// \param width
+        /// \param height
+        PageManager(int &width, int &height) : mwidth(width), mheight(height) {}
         PageManager() {}
-        ~PageManager() {}
+        ~PageManager()
+        {
+            for (auto pagepair : mdisplayList)
+                delete pagepair.second;
+            for (auto pagepair : mpages)
+                delete pagepair.second;
+        }
     };
 }
