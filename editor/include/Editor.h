@@ -7,6 +7,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imfilebrowser.h>
 #include <stdio.h>
+#include <chrono>
 #include <iostream>
 #include <stb_image_aug.h>
 
