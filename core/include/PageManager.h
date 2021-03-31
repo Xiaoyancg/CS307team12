@@ -14,7 +14,9 @@ namespace Core
         // contains all pages
         // use unordered_map for editor to easily add/delete pages without
         // affecting other pages
-        std::unordered_map<std::string, Page *> mpages;
+        // use instance because this is the base storage of pages, no need to
+        // use pointer
+        std::unordered_map<std::string, Page> mpages;
         int mwidth, mheight;
 
     public:
@@ -55,7 +57,7 @@ namespace Core
         int deletePage(std::string &pageName_ref);
 
         // set display page list
-        void setDisplayPageList(
+        void setCurrPages(
             std::unordered_map<std::string, Page *> &displayList)
         {
             mcurrPages = displayList;
@@ -64,17 +66,21 @@ namespace Core
         /// \brief add page to display by name
         /// \param pageName_ref
         /// \return int 0 success, 1 not found
-        int addPageToDisplay(std::string &pageName_ref);
+        int addPageToCurrPages(std::string &pageName_ref);
 
         /// \brief remove a page from displayList
         /// \param pageName_ref
         /// \return int 0 success, 1 not found
-        int removePageFromDisplay(std::string &pageName_ref);
+        int removePageFromCurrPages(std::string &pageName_ref);
 
-        std::unordered_map<std::string, Page *> getPages() { return mpages; }
-        std::unordered_map<std::string, Page *> getDisplayList()
+        /// \brief Get the Pages list pointer
+        /// \return std::unordered_map<std::string, Page>*
+        std::unordered_map<std::string, Page> *getPages() { return &mpages; }
+        /// \brief Get the Display List pointer
+        /// \return std::unordered_map<std::string, Page *>*
+        std::unordered_map<std::string, Page *> *getCurrPages()
         {
-            return mcurrPages;
+            return &mcurrPages;
         }
 
         /// \brief Construct a new Page Manager object
@@ -84,10 +90,10 @@ namespace Core
         PageManager() {}
         ~PageManager()
         {
-            for (auto pagepair : mcurrPages)
-                delete pagepair.second;
-            for (auto pagepair : mpages)
-                delete pagepair.second;
+            ////            for (auto pagepair : mcurrPages)
+            ////                delete pagepair.second;
+            ////            for (auto pagepair : mpages)
+            ////                delete pagepair.second;
         }
     };
 }

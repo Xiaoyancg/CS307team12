@@ -23,6 +23,7 @@ namespace Core
     class LogicBase
     {
     private:
+        std::string mlogicName;
         // name starts with m of member
         SignalType msignalType;
         ScriptType mscriptType;
@@ -33,9 +34,9 @@ namespace Core
         /// Also, normally the functions in class won't be compiled for each
         /// instance. So we can have instane with functions and data
         /// without to concern the redundant memory.
-        /// use reference. As the game stays, the instance will be stored in the
+        /// use pointer. As the game stays, the instance will be stored in the
         /// unordered_map.
-        Script mscript_ref;
+        Script *mscript_ptr;
 
         // true if the logic is paused in the list and shouldn't be check
         // didn't implemented yet 03/30
@@ -55,11 +56,14 @@ namespace Core
         void setScriptType(ScriptType actionType) { mscriptType = actionType; }
         ScriptType getScriptType() { return mscriptType; }
         // script
-        void setScriptPtr(Script script_ref)
+        void setScriptPtr(Script *script_ptr)
         {
-            mscript_ref = script_ref;
+            mscript_ptr = script_ptr;
         }
-        Script getScriptPtr() { return mscript_ref; }
+        Script *getScriptPtr() { return mscript_ptr; }
+        // logicName
+        void setLogicName(std::string &logicName_ref) { mlogicName = logicName_ref; }
+        std::string getLogicName() { return mlogicName; }
 
         /// \brief Check if signal meet the criteria
         ///
@@ -73,12 +77,14 @@ namespace Core
         /// \param scriptType
         /// \param script_ref the target script to evoke if the specific criteria
         /// meets
-        LogicBase(SignalType signalType,
+        LogicBase(std::string &logicName_ref,
+                  SignalType signalType,
                   ScriptType scriptType,
-                  Script &script_ref)
-            : msignalType(signalType),
+                  Script *script_ptr)
+            : mlogicName(logicName_ref),
+              msignalType(signalType),
               mscriptType(scriptType),
-              mscript_ref(script_ref) {}
+              mscript_ptr(script_ptr) {}
         ~LogicBase() {}
     };
 
@@ -116,10 +122,11 @@ namespace Core
         /// \param signalType
         /// \param scriptType
         /// \param script_ref
-        KeyLogic(SignalType signalType,
+        KeyLogic(std::string &logicName_ref,
+                 SignalType signalType,
                  ScriptType scriptType,
-                 Script &script_ref)
-            : LogicBase(signalType, scriptType, script_ref) {}
+                 Script *script_ptr)
+            : LogicBase(logicName_ref, signalType, scriptType, script_ptr) {}
         ~KeyLogic() {}
     };
 

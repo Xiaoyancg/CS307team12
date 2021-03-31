@@ -34,6 +34,7 @@ namespace Core
     private:
         // signal type
         SignalType mtype;
+        std::string msignalName;
         // true if the signal should stay in checking list
         // default is false
         bool mpermanent = false;
@@ -42,10 +43,17 @@ namespace Core
         // type, signaltype
         SignalType getType() { return this->mtype; }
         int setType(SignalType type) { this->mtype = type; }
+        // name
+        void setSignalName(std::string &signalName_ref)
+        {
+            msignalName = signalName_ref;
+        }
+        std::string getSignalName() { return msignalName; }
         // permanent
         bool isPermanent() { return this->mpermanent; }
         int setPermanent(bool permanent) { this->mpermanent = permanent; }
-        SignalBase(SignalType type) : mtype(type) {}
+        SignalBase(std::string &signalName_ref, SignalType type)
+            : msignalName(signalName_ref), mtype(type) {}
         ~SignalBase() {}
     };
 
@@ -66,8 +74,8 @@ namespace Core
         // get SDL key event type ( press or release )
         Uint32 getKeyType() { return mevent.type; }
 
-        KeySignal(SDL_KeyboardEvent event)
-            : SignalBase(SignalType::Key), mevent(event) {}
+        KeySignal(std::string &signalName_ref, SDL_KeyboardEvent event)
+            : SignalBase(signalName_ref, SignalType::Key), mevent(event) {}
         ~KeySignal() {}
     };
 

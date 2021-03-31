@@ -84,6 +84,8 @@ namespace Core
         std::string getNote() { return this->mnote; }
         void setNote(std::string newNote) { this->mnote = newNote; }
 
+        int getWidth() { return mwidth; }
+        int getHeight() { return mheight; }
         //* --------------- ANCHOR MEMBER OPERATION -------------- *//
 
         // these functions are for editors
@@ -109,13 +111,13 @@ namespace Core
         {
             return mpageManager.deletePage(pageName_ref);
         }
-        std::unordered_map<std::string, Page *> getPages()
+        std::unordered_map<std::string, Page> *getPages()
         {
             return mpageManager.getPages();
         }
-        std::unordered_map<std::string, Page *> getDisplayList()
+        std::unordered_map<std::string, Page *> *getCurrPages()
         {
-            return mpageManager.getDisplayList();
+            return mpageManager.getCurrPages();
         }
 
         // *sprite
@@ -203,7 +205,7 @@ namespace Core
         SDL_GLContext mgl_context;
 
         // size of the window
-        int mwidth = 800, mheight = 600;
+        int mwidth = 1280, mheight = 720;
 
         // the render window of this Game
         SDL_Window *mwindow;

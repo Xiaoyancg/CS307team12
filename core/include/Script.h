@@ -5,10 +5,10 @@
 namespace Core
 {
 
-    // anchor - script type enum class
+    /// anchor - script type enum class
     enum class ScriptType
     {
-        ScriptMoveEntityConstantly // move entities in constant speed
+        MoveEntitiesConstantly // move entities in constant speed
     };
 
     /// anchor - Script Bass class
@@ -19,13 +19,15 @@ namespace Core
     {
     private:
         ScriptType mtype;
-        /// \brief current game state, passed by constructor
-        //struct GameState mstate_ref;
+        std::string mscriptName;
 
     public:
         // type
         ScriptType getType() { return this->mtype; }
         void setType(ScriptType type) { this->mtype = type; }
+        // name
+        void setScriptName(std::string &scriptName_ref) { mscriptName = scriptName_ref; }
+        std::string getScriptName() { return mscriptName; }
 
         // every script has to have run
         virtual void run() = 0;
@@ -33,8 +35,8 @@ namespace Core
         /// \brief Construct a new Script Base object
         /// \param type
         /// \param state_ref
-        ScriptBase(ScriptType type)
-            : mtype(type) {}
+        ScriptBase(std::string &scriptName_ref, ScriptType type)
+            : mscriptName(scriptName_ref), mtype(type) {}
         ~ScriptBase() {}
     };
 
@@ -69,9 +71,10 @@ namespace Core
 
         /// \brief Construct a new Script Move Entity Constantly object
         /// \param state_ref game state
-        ScriptMoveEntityConstantly(std::vector<Entity *> targetList,
+        ScriptMoveEntityConstantly(std::string &scriptName_ref,
+                                   std::vector<Entity *> targetList,
                                    glm::vec2 movement)
-            : ScriptBase(ScriptType::ScriptMoveEntityConstantly),
+            : ScriptBase(scriptName_ref, ScriptType::MoveEntitiesConstantly),
               mtargetList(targetList),
               mmovement(movement) {}
         ~ScriptMoveEntityConstantly() {}

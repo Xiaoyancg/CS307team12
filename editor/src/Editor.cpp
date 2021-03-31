@@ -157,7 +157,8 @@ int EditorMain(int argc, char *argv[])
                 }
                 if (game != nullptr)
                 {
-                    game->handleInput(evt);
+                    // FIXME
+                    //game->handleInput(evt);
                 }
             }
             if (evt.type == SDL_KEYUP)
@@ -269,7 +270,7 @@ static void ShowExampleAppMainMenuBar()
             // Get size of drawable space on the window, instead of the entire size of the window
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
-            glViewport(0, 0, Core::width, Core::height); // Set viewport to the Game dimensions
+            glViewport(0, 0, game->getWidth(), game->getHeight()); // Set viewport to the Game dimensions
 
             game->render(); // Render Game with new viewport size
 
@@ -323,10 +324,10 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (game != nullptr)
                 {
-                    std::vector<Core::Page *> plist = *game->getPageList();
-                    for (int i = 0; i < plist.size(); i++)
+
+                    for (auto pagepair : game->getPages())
                     {
-                        Core::Page *p = plist[i];
+                        Core::Page *p = pagepair.second;
                         bool selected;
                         if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
@@ -746,12 +747,12 @@ static void ShowExampleAppMainMenuBar()
             if (sprite_name[0] != 0)
             {
                 currentComponent = sprite_name;
-                game->createSprite(sprite_name, importDialog.GetSelected().string(), spriteID);
+                game->createSprite(std::string(sprite_name), importDialog.GetSelected().string());
             }
             else
             {
                 currentComponent = fileName;
-                game->createSprite(fileName, importDialog.GetSelected().string(), spriteID);
+                game->createSprite(fileName, importDialog.GetSelected().string());
             }
             importDialog.ClearSelected();
             memset(sprite_name, 0, 128);
