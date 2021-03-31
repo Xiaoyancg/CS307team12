@@ -2,7 +2,7 @@
 #include <string>
 #include "Page.h"
 
-namespac
+namespace Core
 {
     class PageManager
     {
@@ -13,14 +13,9 @@ namespac
         // contains all pages
         // use unordered_map for editor to easily add/delete pages without
         // affecting other pages
-        std::unordered_map<std::string, Page *> mpageList;
+        std::unordered_map<std::string, Page *> mpages;
 
     public:
-        Page *addPage(Page *p)
-        {
-            pageList->push_back(p);
-            return p;
-        }
         Page *createPage(std::string n)
         {
             Page *p = new Page(n);
