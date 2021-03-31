@@ -1,16 +1,16 @@
 #include "PageManager.h"
 namespace Core
 {
-    int PageManager::addPage(Page &page_ref)
+    int PageManager::addPage(Page *page_ptr)
     {
-        if (mpages.find(page_ref.getName()) != mpages.end())
+        if (mpages.find(page_ptr->getName()) != mpages.end())
         {
             // 1 for used name
             return 1;
         }
         else
         {
-            mpages[page_ref.getName()] = page_ref;
+            mpages[page_ptr->getName()] = *page_ptr;
             // 0 for success
             return 0;
         }
