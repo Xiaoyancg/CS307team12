@@ -43,7 +43,7 @@ namespace Core
 		/// \param spriteName
 		/// \param filename
 		/// \return int 0 if success, 1 if the spriteName was taken.
-		int createSprite(std::string &spriteName_ref, std::string &filename_ref);
+		int createSprite(std::string &spriteName_ref, std::string &fileName_ref);
 
 		/// \brief Delete the sprite with the given ID
 		/// \param spriteName_ref

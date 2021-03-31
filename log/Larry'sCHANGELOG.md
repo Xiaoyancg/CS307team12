@@ -23,6 +23,7 @@ All notable changes to this project will be documented in this file.
 - a resource class and a interface class for editor
 - Json 
 - include order
+- when no sprite, do something
 
 # Note:
 - use typedef

@@ -84,6 +84,7 @@ namespace Core
         //* --------------- ANCHOR MEMBER OPERATION -------------- *//
 
         // these functions are for editors
+        // *page
         Page *addPage(Page *p);
         Page *createPage(std::string n);
         MapPage *createMapPage(std::string, Map *);
@@ -94,11 +95,34 @@ namespace Core
         std::vector<Page *> *getPageList();
         int getNumPage();
 
-        void deleteSprite(int);
-        Sprite *getSpriteFromName(std::string &spriteName) { return mspriteManager.atName(spriteName); }
+        // *sprite
+        /// \brief delete a sprite by name
+        /// \param spriteName_ref
+        /// \return int 0 for success, 1 for not found
+        int deleteSprite(std::string &spriteName_ref)
+        {
+            return mspriteManager.deleteSprite(spriteName_ref);
+        }
+        Sprite *getSpriteByName(std::string &spriteName)
+        {
+            return mspriteManager.atName(spriteName);
+        }
+        /// \brief Get the Sprites, all sprites
+        /// \return std::unordered_map<std::string, Sprite *>
         std::unordered_map<std::string, Sprite *> getSprites()
         {
             return mspriteManager.getSprites();
+        }
+
+        /// \brief Create a Sprite object and add it to game
+        /// \param spriteName_ref
+        /// \param fileName_ref
+        /// \return int 0 success, 1 used name
+        int createSprite(std::string &spriteName_ref,
+                         std::string &fileName_ref)
+        {
+            return mspriteManager.createSprite(spriteName_ref,
+                                               fileName_ref);
         }
 
         //* -------------- ANCHOR UTILITY OPERATION -------------- *//
