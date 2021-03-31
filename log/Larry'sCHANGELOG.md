@@ -179,9 +179,7 @@ All notable changes to this project will be documented in this file.
 - memptyIDQ -> memptyIDV
 - remove signal manager
 - msprite to std::unordered_map<std::string, Sprite*>
-- second
-- third
-
+- make sprite only refer to string spriteName
 
 ### Removed
 - __plitr and __pl define in Game.h
