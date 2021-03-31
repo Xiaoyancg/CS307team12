@@ -23,7 +23,8 @@ namespace Core
         // Source for the vertex shader
         const char* vertexSource = R"glsl(
             #version 330 core
-            layout (location = 0) in vec4 pos;
+            layout (location = 0) in vec2 pos;
+            layout (location = 1) in vec2 textureCoords;
 
             out vec2 TexCoords;
 
@@ -32,7 +33,7 @@ namespace Core
             void main()
             {
                 gl_Position = vec4(scale * pos.xy - 1, 0.0, 1.0);
-                TexCoords = pos.zw;
+                TexCoords = textureCoords;
             }  
 	    )glsl";
 

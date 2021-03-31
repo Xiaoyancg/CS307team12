@@ -30,6 +30,10 @@ namespace Core {
                 if (entry->getText().compare("")) {
                     // TODO Draw text
                     mFont->renderText("test", glm::ivec2(50, 50), 1, glm::vec3(1.0f, 0.0f, 1.0f));
+                    mFont->renderText("haha", glm::ivec2(50, 100), 1, glm::vec3(1.0f, 0.26f, 0.0f));
+                    mFont->renderText("this is epic!", glm::ivec2(50, 150), 1, glm::vec3(0.5f, 0.2f, 0.0f));
+                    mFont->renderText("test", glm::ivec2(50, 200), 1, glm::vec3(1.0f, 0.3f, 1.0f));
+                    mFont->renderText("test", glm::ivec2(50, 250), 1, glm::vec3(0.8f, 0.0f, 0.15f));
                 }
 
                 // Get button callbacks
