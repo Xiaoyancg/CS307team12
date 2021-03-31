@@ -34,7 +34,7 @@ namespace Core
     {
         try
         {
-            mdisplayList.insert(
+            mcurrPages.insert(
                 std::pair<std::string, Page *>(pageName_ref,
                                                mpages.at(pageName_ref)));
             return 0;
@@ -49,8 +49,8 @@ namespace Core
     {
         try
         {
-            delete mdisplayList.at(pageName_ref);
-            mdisplayList.erase(pageName_ref);
+            delete mcurrPages.at(pageName_ref);
+            mcurrPages.erase(pageName_ref);
             return 0;
         }
         catch (const std::exception &e)

@@ -9,7 +9,7 @@ namespace Core
     {
     private:
         /// \brief the in dsiplay page list, use iterator to traverse
-        std::unordered_map<std::string, Page *> mdisplayList;
+        std::unordered_map<std::string, Page *> mcurrPages;
 
         // contains all pages
         // use unordered_map for editor to easily add/delete pages without
@@ -58,7 +58,7 @@ namespace Core
         void setDisplayPageList(
             std::unordered_map<std::string, Page *> &displayList)
         {
-            mdisplayList = displayList;
+            mcurrPages = displayList;
         }
 
         /// \brief add page to display by name
@@ -74,7 +74,7 @@ namespace Core
         std::unordered_map<std::string, Page *> getPages() { return mpages; }
         std::unordered_map<std::string, Page *> getDisplayList()
         {
-            return mdisplayList;
+            return mcurrPages;
         }
 
         /// \brief Construct a new Page Manager object
@@ -84,7 +84,7 @@ namespace Core
         PageManager() {}
         ~PageManager()
         {
-            for (auto pagepair : mdisplayList)
+            for (auto pagepair : mcurrPages)
                 delete pagepair.second;
             for (auto pagepair : mpages)
                 delete pagepair.second;

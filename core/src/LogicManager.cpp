@@ -1,11 +1,11 @@
 #include "LogicManager.h"
 namespace Core
 {
-    void LogicHandler::sendSignal(Signal signal)
+    void LogicManager::sendSignal(Signal signal)
     {
-        this->msignals.push_back(signal);
+        msignals.push_back(signal);
     }
-    void SignalHandler::check()
+    void LogicManager::check()
     {
         for (auto &&signal : msignals)
         {
