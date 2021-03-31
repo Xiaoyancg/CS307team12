@@ -79,18 +79,15 @@ namespace Core {
             glBindVertexArray(Font::VAO);
             glBindBuffer(GL_ARRAY_BUFFER, Font::VBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(int) * 16, NULL, GL_DYNAMIC_DRAW);
-            glVertexAttribPointer(0, 4, GL_INT, GL_FALSE, 4 * sizeof(int), 0);
-            //glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void*)(2 * sizeof(int)));
+            glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), 0);
+            glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void*)(2 * sizeof(int)));
             glEnableVertexAttribArray(0); // Enable attribute 0
-            //glEnableVertexAttribArray(1); // Enable attribute 1
-            //glBindBuffer(GL_ARRAY_BUFFER, 0);
-            //glBindVertexArray(0);
+            glEnableVertexAttribArray(1); // Enable attribute 1
 
+
+            // Needed to clean up background of each character
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
-
 
 
             // Create vertex and fragment shaders
@@ -157,15 +154,13 @@ namespace Core {
 
         glUniform3f(glGetUniformLocation(Font::textShaderProgram, "textColor"), color.x, color.y, color.z); // Set given color
 
-        // Set scale based on game's width/height
+        // Set scale based on game's width/height (used to translate between pixels and opengl coords)
         int scaleID = glGetUniformLocation(Font::textShaderProgram, "scale");
         glUniform2f(scaleID, (float)2 / Game::width, (float)2 / Game::height);
 
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(Font::VAO);
-        // update content of VBO memory
         glBindBuffer(GL_ARRAY_BUFFER, Font::VBO);
-        //printf("(%d, %d) %d (%f, %f, %f)\n", pos.x, pos.y, size, color.x, color.y, color.z);
 
         // iterate through all characters
         std::string::const_iterator c;
@@ -188,20 +183,8 @@ namespace Core {
 
             };
 
-            /*
-            for (int i = 0; i < 4; i++) {
-                for (int j = 0; j < 4; j++) {
-                    printf("%d ", vertices[i][j]);
-                }
-                printf("\n");
-            }
-            printf("\n");
-            */
-
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-
-
 
             //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
             glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), vertices, GL_DYNAMIC_DRAW);
@@ -213,7 +196,7 @@ namespace Core {
             pos.x += (ch.Advance >> 6) * size; // bitshift by 6 to get value in pixels (2^6 = 64)
         }
 
-        // Reset changed OpenGL bindings
+        // Restore changed OpenGL bindings
         glBindVertexArray(prevVAO);
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindBuffer(GL_ARRAY_BUFFER, prevVBO);
