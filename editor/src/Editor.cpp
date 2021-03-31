@@ -329,7 +329,8 @@ static void ShowExampleAppMainMenuBar()
                     {
                         Core::Page *p = pagepair.second;
                         bool selected;
-                        if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
+                        if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) &&
+                            ImGui::IsMouseDoubleClicked(0))
                         {
                             printf(p->getName().c_str());
                         }
@@ -581,7 +582,7 @@ static void ShowExampleAppMainMenuBar()
                 };
                 auto restore = [idx, savedPage]() {
                     Core::Page *newPage = new Core::Page(savedPage);
-                    game->getPageList()->insert(game->getPageList()->begin() + idx, newPage);
+                    game->addPage(newPage);
                 };
                 action();
                 //ENDUNDO
