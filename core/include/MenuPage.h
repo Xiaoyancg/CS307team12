@@ -20,11 +20,7 @@ namespace Core
             MenuPage(s, new Menu("No Menu name :("))
         { }
 
-        MenuPage::MenuPage(std::string s, Menu* menu) :
-            Page(s), mMenu(menu)
-        { 
-            mFont = new Font();
-        }
+        MenuPage::MenuPage(std::string s, Menu* menu);
 
 
         // Sets mMenu to the Menu created by the user

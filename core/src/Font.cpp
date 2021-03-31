@@ -1,5 +1,6 @@
 #include "Font.h"
 #include <glad/glad.h>
+#include "Game.h"
 
 // NOTE: Much of this code is from learnopengl.com/In-Practice/Text-Rendering, but repurposed
 //        into the Font class to better suit our needs
@@ -29,7 +30,7 @@ namespace Core {
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
-        // Load first 128 ASCII characters from .ttf into memory
+                                               // Load first 128 ASCII characters from .ttf into memory
         for (unsigned char c = 0; c < 128; c++)
         {
             // load character glyph 
@@ -65,7 +66,7 @@ namespace Core {
         FT_Done_FreeType(ft);
 
         // If the shaders haven't been setup already (meaning this is the first Font object created)
-        if (!Font::textShaderProgram) {
+        if (Font::textShaderProgram == -1) {
             // okay...
             // now all characters are ready to be used, but we need a fancy shader for rendering text.
             // This chunk of code is just to set up the shaders
@@ -77,11 +78,11 @@ namespace Core {
             glGenBuffers(1, &Font::VBO);
             glBindVertexArray(Font::VAO);
             glBindBuffer(GL_ARRAY_BUFFER, Font::VBO);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(int) * 4 * 4, NULL, GL_DYNAMIC_DRAW);
-            glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 2 * sizeof(int), 0);
-            glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 2 * sizeof(int), (void*)(2 * sizeof(int)));
+            glBufferData(GL_ARRAY_BUFFER, sizeof(int) * 16, NULL, GL_DYNAMIC_DRAW);
+            glVertexAttribPointer(0, 4, GL_INT, GL_FALSE, 4 * sizeof(int), 0);
+            //glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void*)(2 * sizeof(int)));
             glEnableVertexAttribArray(0); // Enable attribute 0
-            glEnableVertexAttribArray(1); // Enable attribute 1
+            //glEnableVertexAttribArray(1); // Enable attribute 1
             //glBindBuffer(GL_ARRAY_BUFFER, 0);
             //glBindVertexArray(0);
 
@@ -144,16 +145,27 @@ namespace Core {
         }
     }
 
-    void Font::renderText(std::string text, glm::vec2 pos, int size, glm::vec3 color) {
-        int prevVAO, prevShader;
+    void Font::renderText(std::string text, glm::ivec2 pos, int size, glm::vec3 color) {
+        // Preserve previous opengl bindings
+        int prevVAO, prevVBO, prevShader;
         glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
+        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &prevVBO);
         glGetIntegerv(GL_CURRENT_PROGRAM, &prevShader);
 
-        // activate corresponding render state	
+        // Use text shader
         glUseProgram(Font::textShaderProgram);
-        glUniform3f(glGetUniformLocation(Font::textShaderProgram, "textColor"), color.x, color.y, color.z);
+
+        glUniform3f(glGetUniformLocation(Font::textShaderProgram, "textColor"), color.x, color.y, color.z); // Set given color
+
+        // Set scale based on game's width/height
+        int scaleID = glGetUniformLocation(Font::textShaderProgram, "scale");
+        glUniform2f(scaleID, (float)2 / Game::width, (float)2 / Game::height);
+
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(Font::VAO);
+        // update content of VBO memory
+        glBindBuffer(GL_ARRAY_BUFFER, Font::VBO);
+        //printf("(%d, %d) %d (%f, %f, %f)\n", pos.x, pos.y, size, color.x, color.y, color.z);
 
         // iterate through all characters
         std::string::const_iterator c;
@@ -161,26 +173,42 @@ namespace Core {
         {
             Character ch = mCharacters[*c];
 
-            float xpos = pos.x + ch.Bearing.x * size;
-            float ypos = pos.y - (ch.Size.y - ch.Bearing.y) * size;
+            int xpos = pos.x + ch.Bearing.x * size;
+            int ypos = pos.y - (ch.Size.y - ch.Bearing.y) * size;
 
-            float w = ch.Size.x * size;
-            float h = ch.Size.y * size;
+            int w = ch.Size.x * size;
+            int h = ch.Size.y * size;
+
             // update VBO for each character
-            float vertices[4][4] = {
-                { xpos,     ypos + h,   0.0f, 0.0f },
-                { xpos,     ypos,       0.0f, 1.0f },
-                { xpos + w, ypos,       1.0f, 1.0f },
-                { xpos + w, ypos + h,   1.0f, 0.0f }
+            int vertices[4][4] = {
+                { xpos,     ypos,       0, 1 },
+                { xpos,     ypos + h,   0, 0 },
+                { xpos + w, ypos,       1, 1 },
+                { xpos + w, ypos + h,   1, 0 }
+
             };
+
+            /*
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    printf("%d ", vertices[i][j]);
+                }
+                printf("\n");
+            }
+            printf("\n");
+            */
+
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-            // update content of VBO memory
-            glBindBuffer(GL_ARRAY_BUFFER, Font::VBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+
+            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), vertices, GL_DYNAMIC_DRAW);
+
             // render quad
-            glDrawArrays(GL_TRIANGLES, 0, 4);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             pos.x += (ch.Advance >> 6) * size; // bitshift by 6 to get value in pixels (2^6 = 64)
         }
@@ -188,6 +216,7 @@ namespace Core {
         // Reset changed OpenGL bindings
         glBindVertexArray(prevVAO);
         glBindTexture(GL_TEXTURE_2D, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, prevVBO);
         glUseProgram(prevShader);
     }
 }

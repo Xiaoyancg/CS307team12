@@ -33,6 +33,12 @@ namespace Core
     {
         useFramebuffer = false;
         setupSpriteRefs();
+
+        // Initialize OpenGL and necessary SDL objects
+        initContext();
+
+        // Create the shaders
+        initShader();
     }
     // editor open
     Game::Game(nlohmann::json &json, GLuint *o)
@@ -48,6 +54,12 @@ namespace Core
         this->parse(json);
         useFramebuffer = false;
         setupSpriteRefs();
+
+        // Initialize OpenGL and necessary SDL objects
+        initContext();
+
+        // Create the shaders
+        initShader();
     }
 
     // editor new
@@ -671,11 +683,7 @@ namespace Core
 
     void Game::run()
     {
-        // Initialize OpenGL and necessary SDL objects
-        initContext();
 
-        // Create the shaders
-        initShader();
 
         mainLoop();
 

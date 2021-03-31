@@ -17,20 +17,22 @@ namespace Core
         Font();
 
         // Render the given text with the specified location and size
-        void renderText(std::string text, glm::vec2 pos, int size, glm::vec3 color);
+        void renderText(std::string text, glm::ivec2 pos, int size, glm::vec3 color);
 
     private:
         // Source for the vertex shader
         const char* vertexSource = R"glsl(
             #version 330 core
-            layout (location = 0) in vec2 pos;
-            layout (location = 1) in vec4 texcoords;
+            layout (location = 0) in vec4 pos;
+
             out vec2 TexCoords;
+
+		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
 
             void main()
             {
-                gl_Position = vec4(pos.xy, 0.0, 1.0);
-                TexCoords = texcoords;
+                gl_Position = vec4(scale * pos.xy - 1, 0.0, 1.0);
+                TexCoords = pos.zw;
             }  
 	    )glsl";
 
@@ -63,6 +65,6 @@ namespace Core
 
         // These are for rendering purposes
         inline static unsigned int VAO, VBO;
-        inline static unsigned int textShaderProgram;
+        inline static unsigned int textShaderProgram = -1;
     };
 }
