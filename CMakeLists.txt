@@ -75,6 +75,11 @@ set_property(TARGET soil PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${SOIL_DIR}/inc
 set_property(TARGET soil PROPERTY IMPORTED_LOCATION "${SOIL_DIR}/SOIL.lib")
 target_link_libraries(soil INTERFACE opengl32)
 
+set(FREETYPE_DIR "${PROJECT_SOURCE_DIR}/lib/Freetype")
+add_library(freetype STATIC IMPORTED)
+set_property(TARGET freetype PROPERTY IMPORTED_LOCATION "${FREETYPE_DIR}/freetype.lib")
+set_property(TARGET freetype PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${FREETYPE_DIR}/include")
+
 add_subdirectory(lib/json)
 
 # set output locations to one place
