@@ -325,9 +325,9 @@ static void ShowExampleAppMainMenuBar()
                 if (game != nullptr)
                 {
 
-                    for (auto pagepair : game->getPages())
+                    for (auto pagepair : *game->getPages())
                     {
-                        Core::Page *p = pagepair.second;
+                        Core::Page *p = &pagepair.second;
                         bool selected;
                         if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) &&
                             ImGui::IsMouseDoubleClicked(0))
@@ -563,37 +563,29 @@ static void ShowExampleAppMainMenuBar()
             ImGui::SameLine();
             if (ImGui::Button("Delete This Page"))
             {
-                size_t original = game->getPageList()->size();
                 //UNDO
                 std::string pname = page_name;
-                int idx = 0;
-                auto &pList = *game->getPageList();
-                for (int i = 0; i < pList.size(); i++)
+                Core::Page *savedPage = game->getPage(pname);
+                // if it's nullptr, the a page doesn't exist
+                if (savedPage != nullptr)
                 {
-                    if (pList[i]->getName() == page_name)
-                    {
-                        idx = i;
-                        break;
-                    }
-                }
-                Core::Page savedPage = *pList[idx];
-                auto action = [pname]() {
-                    game->deletePage(pname);
-                };
-                auto restore = [idx, savedPage]() {
-                    Core::Page *newPage = new Core::Page(savedPage);
-                    game->addPage(newPage);
-                };
-                action();
-                //ENDUNDO
-                if (game->getPageList()->size() < original)
-                {
+
+                    auto action = [pname]() {
+                        game->deletePage(pname);
+                    };
+                    auto restore = [savedPage]() {
+                        Core::Page *newPage = new Core::Page(*savedPage);
+                        game->addPage(newPage);
+                    };
+                    action();
+                    //ENDUNDO
                     delete_success = true;
                     pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(page_name, 0, 128);
                 }
             }
+
             if (ImGui::Button("Show Page Information"))
             {
                 page_info = true;
@@ -612,11 +604,11 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Page Name:");
             ImGui::SameLine();
             ImGui::Text(currPage->getName().c_str());
-            std::vector<Core::Page *> plist = *game->getPageList();
             ImGui::Text("Page Names: ");
-            for (Core::Page *p : plist)
+            for (auto &&pagepair : *game->getPages())
             {
-                ImGui::Text(p->getName().c_str());
+                Core::Page *page = &pagepair.second;
+                ImGui::Text(page->getName().c_str());
             }
             ImGui::EndPopup();
         }
@@ -729,7 +721,7 @@ static void ShowExampleAppMainMenuBar()
                     if (value)
                     {
                         // Show the current sprite name
-                        std::string sprite_info = std::to_string(key).append(": ").append(value->getName());
+                        std::string sprite_info = std::string(key).append(": ").append(value->getName());
                         ImGui::Text(sprite_info.c_str());
                     }
                 }
@@ -798,8 +790,9 @@ static void ShowExampleAppMainMenuBar()
                 int savedDim1 = dim1;
                 int savedDim2 = dim2;
                 auto action = [&new_map, &map_page, mname, savedDim1, savedDim2]() {
-                    new_map = new Core::Map(mname, glm::vec2(savedDim1, savedDim2), 64);
-                    map_page = game->createMapPage(mname, new_map);
+                    new_map = new Core::Map(mname, glm::vec2(savedDim1, savedDim2), 64, 1280, 720);
+                    game->createMapPage(mname, new_map);
+                    map_page = static_cast<Core::MapPage *>(game->getPage(map_name));
                     new_map->setName(mname);
                     new_map->setDimensions(glm::vec2(savedDim1, savedDim2));
                 };
@@ -818,8 +811,9 @@ static void ShowExampleAppMainMenuBar()
                 memset(map_name, 0, 128);
                 dim1 = 0;
                 dim2 = 0;
-                new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64);
-                map_page = game->createMapPage(map_name, new_map);
+                new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64, 1280, 720);
+                game->createMapPage(map_name, new_map);
+                map_page = static_cast<Core::MapPage *>(game->getPage(map_name));
                 new_map->setName(map_name);
                 new_map->setDimensions(glm::vec2(dim1, dim2));
                 delete_success = true;

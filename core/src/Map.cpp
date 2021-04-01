@@ -9,10 +9,11 @@ namespace Core
     extern struct GameState gstate;
 
     // Takes a scale, the number of tiles in the x and y direction
-    Map::Map(std::string name, glm::vec2 dimensions, int tileSize)
+    Map::Map(std::string name, glm::vec2 dimensions, int tileSize, int width, int height)
         : mMapDimensions(dimensions),
           mTileSize(tileSize),
-          mAssociatedPage(nullptr)
+          mAssociatedPage(nullptr),
+          mwidth(width), mheight(height)
     {
         // Create map
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
@@ -115,9 +116,9 @@ namespace Core
         int halfYPixels = halfYTiles * mTileSize;
 
         // Calculate the top-left corner of the centered map
-        int lowX = (width / 2) - halfXPixels;
+        int lowX = (mwidth / 2) - halfXPixels;
         int highX = lowX + mTileSize;
-        int highY = (height / 2) + halfYPixels;
+        int highY = (mheight / 2) + halfYPixels;
         int lowY = highY - mTileSize;
 
         // The amount of space between tiles as they're drawn on the map (used
@@ -175,7 +176,7 @@ namespace Core
             }
 
             // Calculate the next tile in a new row
-            lowX = (width / 2) - halfXPixels;
+            lowX = (mwidth / 2) - halfXPixels;
             ;
             highX = lowX + mTileSize;
             highY -= mTileSize;

@@ -33,22 +33,34 @@ namespace Core
             return addPage(new Page(pageName_ref));
         }
 
-        int createMapPage(std::string &pageName_ref)
+        int createMapPage(std::string &pageName_ref, SpriteManager *s)
         {
-            return addPage(new MapPage(pageName_ref));
+            return addPage(new MapPage(pageName_ref, s));
         }
-        int createMapPage(std::string &pageName_ref)
+        int createMapPage(std::string n, Map *m, SpriteManager *s)
         {
-            return addPage(new MapPage(pageName_ref));
-        }
-        int createMapPage(std::string n, Map *m)
-        {
-            return addPage(new MapPage(n, m));
+            return addPage(new MapPage(n, m,s));
         }
 
         int deletePage(Page *page_ptr)
         {
             return deletePage(page_ptr->getName());
+        }
+
+        /// \brief Get the Page object pointer
+        ///
+        /// \param pageName
+        /// \return Page*
+        Page *getPage(std::string &pageName)
+        {
+            try
+            {
+                return &mpages.at(pageName);
+            }
+            catch (const std::exception &e)
+            {
+                return nullptr;
+            }
         }
 
         /// \brief delete page by name

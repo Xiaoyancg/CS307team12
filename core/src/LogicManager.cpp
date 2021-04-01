@@ -19,9 +19,8 @@ namespace Core
         switch (type)
         {
         case ScriptType::MoveEntitiesConstantly:
-            ScriptMoveEntityConstantly &mec =
-                std::get<ScriptMoveEntityConstantly>(*script_ptr);
-            mcurrEntityScripts[mec.getScriptName()] = script_ptr;
+            mcurrEntityScripts[std::get<ScriptMoveEntityConstantly>(*script_ptr)
+                                   .getScriptName()] = script_ptr;
             break;
 
         default:

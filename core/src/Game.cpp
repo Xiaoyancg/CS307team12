@@ -29,7 +29,7 @@ namespace Core
             auto pageVec = root.at("PageList").get<std::vector<nlohmann::json>>();
             for (nlohmann::json pageJson : pageVec)
             {
-                mpageManager.addPage(Page::parse(pageJson));
+                mpageManager.addPage(Page::parse(pageJson, &mspriteManager));
             }
         }
         catch (const std::exception &e)
@@ -59,20 +59,20 @@ namespace Core
         j["Note"] = getNote();
         // pages
         std::vector<nlohmann::json> pageVector;
-        for (auto pagepair : mpageManager.getPages())
+        for (auto &pagepair : *mpageManager.getPages())
         {
             nlohmann::json pj;
-            pj["PageName"] = pagepair.second->getName();
+            pj["PageName"] = pagepair.second.getName();
             // entities
             std::vector<nlohmann::json> entityVector;
-            for (Entity *e : pagepair.second->getEntityList())
+            for (Entity *e : pagepair.second.getEntityList())
             {
                 nlohmann::json ej;
                 ej["EntityName"] = e->getName();
                 ej["location"] = {e->getLocation().x, e->getLocation().y};
                 ej["scale"] = {e->getScale().x, e->getScale().y};
                 ej["rotation"] = e->getRotation();
-                ej["spriteID"] = e->getSpriteID();
+                ej["spriteName"] = e->getSpriteName();
                 entityVector.push_back(ej);
             }
             pj["EntityList"] = entityVector;
@@ -110,7 +110,7 @@ namespace Core
     void Game::initShader()
     {
         // Create viewport with the default w/h (same as the window size)
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, mwidth, mheight);
 
         // Source for the vertex shader
         const char *vertexSource = R"glsl(
@@ -180,21 +180,21 @@ namespace Core
         };
 
         // Create new shader program
-        shaderProgram = glCreateProgram();
+        mshaderProgram = glCreateProgram();
 
         // Attach shaders to the new shader program
-        glAttachShader(shaderProgram, vertexShaderID);
-        glAttachShader(shaderProgram, fragmentShaderID);
+        glAttachShader(mshaderProgram, vertexShaderID);
+        glAttachShader(mshaderProgram, fragmentShaderID);
 
         // Links the attached shaders in the program to their correct shader processors
-        glLinkProgram(shaderProgram);
+        glLinkProgram(mshaderProgram);
 
         // Delete the created shaders, now that they have already been linked
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
 
         // Use the newly created shader program!
-        glUseProgram(shaderProgram);
+        glUseProgram(mshaderProgram);
 
         // Create Vertex Buffer Object and Vertex Array Object
         GLuint vbo, vao;
@@ -229,29 +229,29 @@ namespace Core
         // Enable the Vertex Object Array
         glBindVertexArray(vao);
 
-        glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
+        glUniform1i(glGetUniformLocation(mshaderProgram, "texture1"), 0); // Set texture uniform
 
         // Set the scale based on the width and height
-        int scaleID = glGetUniformLocation(shaderProgram, "scale");
-        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
+        int scaleID = glGetUniformLocation(mshaderProgram, "scale");
+        glUniform2f(scaleID, (float)2 / mwidth, (float)2 / mheight);
 
         // if in editor mode
-        if (editorMode)
+        if (meditorMode)
         {
-            glGenFramebuffers(1, &(fbo));
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            glGenFramebuffers(1, &(mfbo));
+            glBindFramebuffer(GL_FRAMEBUFFER, mfbo);
 
             // texbuffer is done in editor
             // unsigned int texcbo; // texture color buffer obj
             // glGenTextures ( 1, &texcbo );
-            glBindTexture(GL_TEXTURE_2D, *(texcbo));
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glBindTexture(GL_TEXTURE_2D, *(mtexcbo));
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mwidth, mheight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glBindTexture(GL_TEXTURE_2D, 0);
 
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                   GL_TEXTURE_2D, *(texcbo), 0);
+                                   GL_TEXTURE_2D, *(mtexcbo), 0);
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
@@ -281,36 +281,36 @@ namespace Core
         SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
         // Create a new centered game window based on window_flags (1280x720 for now)
-        window = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
+        mwindow = SDL_CreateWindow("Game Core", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mwidth, mheight, window_flags);
 
         // Create the Game opengl context
-        gl_context = SDL_GL_CreateContext(window);
+        mgl_context = SDL_GL_CreateContext(mwindow);
 
         // Setup function pointers for OpenGL
         gladLoadGL();
 
         // Show the current context
-        SDL_GL_MakeCurrent(window, gl_context);
+        SDL_GL_MakeCurrent(mwindow, mgl_context);
     }
 
     // only render graphics so it can be used in editor
     void Game::render()
     {
-        if (editorMode)
+        if (meditorMode)
         {
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, mfbo);
         }
         glClearColor(0.1, 0.2, 0.59, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (currPage != nullptr)
+        if (mpageManager.getCurrPages()->size() != 0)
         {
             // TODO: enable bg color
             //glm::vec4 pageColor = currPage->GetBackgroundColor ();
             //glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
             glClear(GL_COLOR_BUFFER_BIT);
 
-            currPage->render();
+            getCurrPage()->render();
         }
         else
         {
@@ -336,8 +336,8 @@ namespace Core
     void Game::destroy()
     {
         // Take care of deleting SDL objects and cleanly exit
-        SDL_GL_DeleteContext(gl_context);
-        SDL_DestroyWindow(window);
+        SDL_GL_DeleteContext(mgl_context);
+        SDL_DestroyWindow(mwindow);
         SDL_Quit();
     }
 
@@ -375,22 +375,22 @@ namespace Core
                     if (event.window.event == SDL_WINDOWEVENT_RESIZED)
                     {
                         // Set the width to the resized width
-                        width = event.window.data1;
+                        mwidth = event.window.data1;
                         // Set the height to the resized height
-                        height = event.window.data2;
+                        mheight = event.window.data2;
                         // Set the new window dimensions
-                        SDL_SetWindowSize(window, width, height);
+                        SDL_SetWindowSize(mwindow, mwidth, mheight);
 
                         // Set the new viewport size (this determines the size
                         // of the opengl -1 < pt < 1 coordinate system)
-                        glViewport(0, 0, width, height);
+                        glViewport(0, 0, mwidth, mheight);
 
                         // Preserve dimensions of objects after resize
                         // Set the scale based on the width and height of the screen
-                        int scaleID = glGetUniformLocation(shaderProgram, "scale");
-                        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
+                        int scaleID = glGetUniformLocation(mshaderProgram, "scale");
+                        glUniform2f(scaleID, (float)2 / mwidth, (float)2 / mheight);
 
-                        SDL_GL_SwapWindow(window); // Show the resized window
+                        SDL_GL_SwapWindow(mwindow); // Show the resized window
                     }
                     break;
                 }
@@ -399,7 +399,7 @@ namespace Core
             render();
 
             // Show the entities by bringing showing the back buffer
-            SDL_GL_SwapWindow(window);
+            SDL_GL_SwapWindow(mwindow);
 
             // Error checking! This will only print out an error if one is detected each loop
             GLenum err(glGetError());

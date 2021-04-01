@@ -15,9 +15,9 @@ namespace Core
         // 'scale' is the (width, height) of the Entity in pixels
         // 'rotation' is the rotation of the entity
         // spriteID is unimplemented, but will reference a specific loaded sprite
-        Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
+        Entity(std::string entityName, glm::vec2 location, glm::vec2 scale, double rotation, std::string spriteName, SpriteManager *spriteManager_ptr);
 
-        Entity(std::string);
+        Entity(std::string entityName, SpriteManager *SpriteManager_ptr);
         // Calculate the coordinates of the corners based on location and scale
         // This will set 'mCoords'
         void calculateCoords(glm::vec2 location, glm::vec2 scale);
@@ -26,7 +26,7 @@ namespace Core
         // Assumes the shaders have already been setup
         void render();
 
-        static Entity *parse(nlohmann::json &root);
+        static Entity *parse(nlohmann::json &root, SpriteManager *);
         nlohmann::json serialize();
 
         // =========================
@@ -40,7 +40,7 @@ namespace Core
         // =========================
         // PROPERTY OPERATION
 
-        void setProperty(glm::vec2, glm::vec2, double, int);
+        void setProperty(glm::vec2, glm::vec2, double, std::string);
 
         // Set mLocation
         void setLocation(glm::vec2 location);
@@ -55,8 +55,8 @@ namespace Core
         void setRotation(double);
         double getRotation();
 
-        void setSpriteID(int);
-        int getSpriteID();
+        void setSpriteName(std::string spriteName) { mspriteName = spriteName; }
+        std::string getSpriteName() { return mspriteName; }
 
         // =========================
         // MEMBER OPERATION
@@ -79,9 +79,11 @@ namespace Core
         glm::vec2 mScale;    // (x width, y height)
         double mRotation;
         int mCoords[16]; // Stores 4 pairs of (x, y) int coordinates (8 total), one for each corner of the entity
-
+        SpriteManager *mspriteManager_ptr;
         // Sprite ID used to index sprites loaded into memory from the Game class
         // This isn't used yet though, I'm just adding it for later
-        int mSpriteID;
+        //int mSpriteID;
+        // new version, use string as keys
+        std::string mspriteName;
     };
 }

@@ -10,7 +10,7 @@ namespace Core
 	{
 	public:
 		// Takes a scale, the number of tiles in the x and y direction
-		Map(std::string name, glm::vec2 scale, int tileSize);
+		Map(std::string name, glm::vec2 scale, int tileSize, int width, int height);
 		~Map();
 
 		// Creates a
@@ -37,6 +37,7 @@ namespace Core
 		friend class MapPage;
 
 	private:
+		int mwidth, mheight;
 		// Set tile coordinates
 		// (so we don't have to recalculate with each update)
 		void setTileCoords();

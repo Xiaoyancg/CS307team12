@@ -91,25 +91,25 @@ namespace Core
         // these functions are for editors
         // *page
         int addPage(Page *page) { return mpageManager.addPage(page); }
-        int createPage(std::string &pageName_ref)
+        int createPage(std::string pageName)
         {
-            return mpageManager.createPage(pageName_ref);
+            return mpageManager.createPage(pageName);
         }
-        int createMapPage(std::string &pageName_ref, Map *map_ptr)
+        int createMapPage(std::string pageName, Map *map_ptr)
         {
-            return mpageManager.createMapPage(pageName_ref, map_ptr);
+            return mpageManager.createMapPage(pageName, map_ptr, &mspriteManager);
         }
-        int createMapPage(std::string &pageName_ref)
+        int createMapPage(std::string pageName)
         {
-            return mpageManager.createMapPage(pageName_ref);
+            return mpageManager.createMapPage(pageName, &mspriteManager);
         }
         int deletePage(Page *page_ptr)
         {
             return mpageManager.deletePage(page_ptr);
         }
-        int deletePage(std::string &pageName_ref)
+        int deletePage(std::string pageName)
         {
-            return mpageManager.deletePage(pageName_ref);
+            return mpageManager.deletePage(pageName);
         }
         std::unordered_map<std::string, Page> *getPages()
         {
@@ -119,16 +119,47 @@ namespace Core
         {
             return mpageManager.getCurrPages();
         }
+        MapPage *getMapPage(std::string pageName)
+        {
+            return static_cast<MapPage *>(mpageManager.getPage(pageName));
+        }
+        // STUB return the first current page here
+        Page *getCurrPage()
+        {
+            Page *p = nullptr;
+            for (auto pagepair : *mpageManager.getCurrPages())
+            {
+                p = pagepair.second;
+            }
+            return p;
+        }
+        /// \brief Create a Entity object, didn't add to any page
+        /// \note automatically add spriteManager
+        /// \param entityName
+        /// \return Entity*
+        Entity *createEntity(std::string entityName)
+        {
+            return new Entity(entityName, &mspriteManager);
+        }
+        // STUB set one current page
+        int setCurrPage(Page *page)
+        {
+            mpageManager.getCurrPages()->insert(
+                std::pair<std::string, Page *>(page->getName(),
+                                               page));
+            return 0;
+        }
+        Page *getPage(std::string pageName) { return mpageManager.getPage(pageName); }
 
         // *sprite
         /// \brief delete a sprite by name
         /// \param spriteName_ref
         /// \return int 0 for success, 1 for not found
-        int deleteSprite(std::string &spriteName_ref)
+        int deleteSprite(std::string spriteName_ref)
         {
             return mspriteManager.deleteSprite(spriteName_ref);
         }
-        Sprite *getSpriteByName(std::string &spriteName)
+        Sprite *getSpriteByName(std::string spriteName)
         {
             return mspriteManager.atName(spriteName);
         }
@@ -143,8 +174,8 @@ namespace Core
         /// \param spriteName_ref
         /// \param fileName_ref
         /// \return int 0 success, 1 used name
-        int createSprite(std::string &spriteName_ref,
-                         std::string &fileName_ref)
+        int createSprite(std::string spriteName_ref,
+                         std::string fileName_ref)
         {
             return mspriteManager.createSprite(spriteName_ref,
                                                fileName_ref);

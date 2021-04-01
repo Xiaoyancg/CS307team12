@@ -12,12 +12,13 @@ namespace Core
     extern struct EditorParam geditorParam;
 
     // Constructor of the game class
-    Entity::Entity(std::string s, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID)
+    Entity::Entity(std::string s, glm::vec2 location, glm::vec2 scale, double rotation, std::string spriteName, SpriteManager *spriteManager_ptr)
         : mEntityName(s),
           mLocation(location),
           mScale(scale),
           mRotation(rotation),
-          mSpriteID(spriteID)
+          mspriteName(spriteName),
+          mspriteManager_ptr(spriteManager_ptr)
     {
         // All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
         calculateCoords(location, scale);
@@ -39,12 +40,12 @@ namespace Core
     }
     // =========================
     // PROPERTY OPERATION
-    void Entity::setProperty(glm::vec2 l, glm::vec2 s, double r, int sid)
+    void Entity::setProperty(glm::vec2 l, glm::vec2 s, double r, std::string spriteName)
     {
         this->mLocation = l;
         this->mScale = s;
         this->mRotation = r;
-        this->mSpriteID = sid;
+        this->mspriteName = spriteName;
         calculateCoords(mLocation, mScale);
     }
     // =========================
@@ -61,17 +62,17 @@ namespace Core
     {
         this->mRotation = d;
     }
-    void Entity::setSpriteID(int i)
-    {
-        this->mSpriteID = i;
-    }
-    int Entity::getSpriteID()
-    {
-        return this->mSpriteID;
-    }
+    //void Entity::setSpriteID(int i)
+    //{
+    //    this->mSpriteID = i;
+    //}
+    //int Entity::getSpriteID()
+    //{
+    //    return this->mSpriteID;
+    //}
 
-    Entity::Entity(std::string s)
-        : mEntityName(s) {}
+    Entity::Entity(std::string s, SpriteManager *spriteManager_ptr)
+        : mEntityName(s), mspriteManager_ptr(spriteManager_ptr) {}
 
     void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale)
     {
@@ -141,11 +142,10 @@ namespace Core
     void Entity::render()
     {
         glActiveTexture(GL_TEXTURE0);
-        if (mSpriteID != -1 && spriteManager->atID(mSpriteID))
+        if (mspriteName.size() != 0 && mspriteManager_ptr)
         {
             // Bind correct sprite
-            glBindTexture(GL_TEXTURE_2D,
-                          spriteManager->atID(mSpriteID)->getOpenGLTextureID());
+            glBindTexture(GL_TEXTURE_2D, mspriteManager_ptr->atName(mspriteName)->getOpenGLTextureID());
         }
         // Load the data of the 'coords' buffer into the currently bound array
         // buffer, VBO
@@ -163,9 +163,9 @@ namespace Core
 
     using json = nlohmann::json;
 
-    Entity *Entity::parse(json &root)
+    Entity *Entity::parse(json &root, SpriteManager *s)
     {
-        Entity *entity = new Entity(root.at("EntityName").get<std::string>());
+        Entity *entity = new Entity(root.at("EntityName").get<std::string>(), s);
 
         std::vector<json> locVec = root.at("location").get<std::vector<json>>();
         entity->setLocation(glm::vec2(
@@ -177,7 +177,7 @@ namespace Core
             scaleVec[1].get<float>()));
 
         entity->setRotation(root.at("rotation").get<double>());
-        entity->setSpriteID(root.at("spriteID").get<int>());
+        entity->setSpriteName(root.at("spriteName").get<std::string>());
 
         return entity;
     }

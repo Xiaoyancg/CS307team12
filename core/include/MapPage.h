@@ -10,17 +10,17 @@ namespace Core
     {
     public:
         // Needs the current window to make a new opengl context, in the Page constructor
-        MapPage::MapPage() : MapPage("No MapPage name :(", new Map("No Map name :(", glm::vec2(0, 0), 0))
+        MapPage::MapPage(SpriteManager *spriteManager_ptr) : MapPage("No MapPage name :(", new Map("No Map name :(", glm::vec2(0, 0), 0, 1280, 720), spriteManager_ptr)
         {
         }
 
-        MapPage::MapPage(std::string s) : MapPage(s, new Map("No Map name :(", glm::vec2(0, 0), 0))
+        MapPage::MapPage(std::string s, SpriteManager *spriteManager_ptr) : MapPage(s, new Map("No Map name :(", glm::vec2(0, 0), 0, 1280, 720), spriteManager_ptr)
         {
         }
 
         // Users can specify a map if it's already created
         // Users can specify a map if it's already created
-        MapPage::MapPage(std::string s, Map *map) : Page(s), mMap(nullptr)
+        MapPage::MapPage(std::string s, Map *map, SpriteManager *spriteManager_ptr) : Page(s), mMap(nullptr), mspriteManager_ptr(spriteManager_ptr)
         {
             setMap(map);
             SetBackgroundColor(0.1f, 0.9f, 0.59f, 1.0f);
@@ -47,5 +47,6 @@ namespace Core
     private:
         // The map!
         Map *mMap;
+        SpriteManager *mspriteManager_ptr;
     };
 }

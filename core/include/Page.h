@@ -19,6 +19,7 @@ namespace Core
     {
 
     public:
+        Page();
         Page(std::string name);
 
         // Render the given page on the current context
@@ -30,7 +31,7 @@ namespace Core
         std::vector<Entity *> &getEntityList();
         virtual void render();
 
-        static Page *parse(nlohmann::json &root);
+        static Page *parse(nlohmann::json &root, SpriteManager *s);
         nlohmann::json serialize();
 
         Entity *addEntity(Entity *);

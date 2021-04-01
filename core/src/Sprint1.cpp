@@ -48,28 +48,29 @@ namespace Core
             2, 4, 1, 3,
             3, 1, 4, 2};
 
-        Map *map1 = new Map("Map 1 woohoo!", glm::vec2(4, 4), 64);
+        Map *map1 = new Map("Map 1 woohoo!", glm::vec2(4, 4), 64, 1280, 720);
         map1->setMapTileSpritesFromArray(spriteMap); // Doesn't do anything right now, but will once sprite rendering is implemented!
-        Map *map2 = new Map("Map 2 ahhh!", glm::vec2(16, 16), 32);
+        Map *map2 = new Map("Map 2 ahhh!", glm::vec2(16, 16), 32, 1280, 720);
 
         // Here are the 2 ways to make MapPages with set maps
-        mapPage1 = game->createMapPage("MapPage 4x4 64px", map1);
-        mapPage2 = game->createMapPage("MapPage 16x16 32px");
+        game->createMapPage("MapPage 4x4 64px", map1);
+        game->createMapPage("MapPage 16x16 32px");
+        mapPage2 = game->getMapPage("MapPage 16x16 32px");
         mapPage2->setMap(map2); // Sets empty map page 2's map
 
         // Creating a map with only a name, no dimensions (0 x 0) or tile size
         mapPage3 = game->createMapPage("yee"); // Should be a blank screen
 
         // Creating a map with no name, dimensions (0 x 0), or tile size
-        mapPage4 = game->createMapPage();
+        //mapPage4 = game->createMapPage();
 
-        // Set the properties of the empty mapPage4
-        Map *map4 = mapPage4->getMap();
-        mapPage4->getMap()->setTileSize(32);
-        map4->setDimensions(glm::vec2(7, 3));
+        //// Set the properties of the empty mapPage4
+        //Map *map4 = mapPage4->getMap();
+        //mapPage4->getMap()->setTileSize(32);
+        //map4->setDimensions(glm::vec2(7, 3));
 
         // very important
-        game->setCurrentPage(entityPage);
+        game->setCurrPage(entityPage);
         return game;
     }
 }

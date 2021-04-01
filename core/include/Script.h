@@ -109,7 +109,5 @@ namespace Core
 
     /// anchor - Script Variant
     /// \brief contains all script classes
-    typedef std::variant<
-        ScriptMoveEntityConstantly>
-        Script;
+    typedef std::variant<ScriptMoveEntityConstantly> Script;
 }

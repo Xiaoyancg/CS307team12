@@ -98,13 +98,13 @@ namespace Core
     private:
         // based on SDL key event
         // key code
-        SDL_KeyCode mkey;
+        SDL_Keycode mkey;
         // press or release key type
         Uint32 mkeyType;
 
     public:
         // key code
-        void setKey(SDL_KeyCode key) { mkey = key; }
+        void setKey(SDL_Keycode key) { mkey = key; }
         SDL_Keycode getKey() { return mkey; }
         // key type (press/release)
         void setKeyType(Uint32 type) { mkeyType = type; }
