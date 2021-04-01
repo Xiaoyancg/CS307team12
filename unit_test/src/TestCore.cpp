@@ -4,50 +4,50 @@
 
 #include "VMTool.h"
 #include "Game.h"
-#include "Sprint1.h"
+#include "Sprint2.h"
 #include "Sprite.h"
+#include "GameVM.h"
 #include "gtest/gtest.h"
 unsigned int pageError = 1;
 unsigned int coreError = 1;
 unsigned int entityError = 1;
 bool enableTest = true;
 
-TEST(PRODUCE_GDATA, s1)
+TEST(TEST_CORE, U2_0)
 {
-    Core::Game *game = Core::s1Game();
-    WriteFile("s1game.gdata", game->serialize()->dump(2));
-}
-TEST(TEST_CORE, game)
-{
-    int argc = 2;
-    char *argv[2];
-    argv[0] = "core";
-    argv[1] = "test";
-    Core::Game g("test");
-    //g.coreMain ( argc, argv );
-    //FIXME EXPECT_EQ(coreError, GL_NO_ERROR);
+    Core::s2Game();
+    EXPECT_EQ(coreError, GL_NO_ERROR);
 }
 
-TEST(TEST_CORE, page)
+TEST(TEST_CORE, U2_1)
 {
-    int argc = 2;
-    char *argv[2];
-    argv[0] = "core";
-    argv[1] = "test";
-    Core::Game g("test");
-    //g.coreMain ( argc, argv );
-    //FIXME EXPECT_EQ(pageError, GL_NO_ERROR);
+    Core::Game *g = Core::s1Game();
+    g->run();
+    EXPECT_EQ(pageError, GL_NO_ERROR);
 }
 
-TEST(TEST_CORE, entity)
+TEST(TEST_CORE, U2_2)
 {
-    int argc = 2;
-    char *argv[2];
-    argv[0] = "core";
-    argv[1] = "test";
-    Core::Game g("test");
-    //g.coreMain ( argc, argv );
-    //FIXME EXPECT_EQ(entityError, GL_NO_ERROR);
+    Core::s2Game();
+    EXPECT_EQ(entityError, GL_NO_ERROR);
+}
+
+TEST(TEST_CORE, U3_0)
+{
+    GameVMMain();
+    EXPECT_EQ(coreError, GL_NO_ERROR);
+}
+
+TEST(TEST_CORE, U3_1)
+{
+    GameVMMain();
+    EXPECT_EQ(pageError, GL_NO_ERROR);
+}
+
+TEST(TEST_CORE, U3_2)
+{
+    GameVMMain();
+    EXPECT_EQ(entityError, GL_NO_ERROR);
 }
 
 TEST(TEST_GAME, Game_SetgetName)
@@ -67,6 +67,7 @@ TEST(TEMPTEST, supertemp)
     WriteFile("wulala.gdata", j->dump(2));
 }
 
+// user story 1
 TEST(TEST_CORE, Serialize)
 {
     Core::Game g("test_gameName");
@@ -121,6 +122,7 @@ TEST(TEST_CORE, Serialize)
     EXPECT_EQ(*actual, expected);
 }
 
+// user story 1
 TEST(TEST_CORE, Parse)
 {
     nlohmann::json expected = R"(

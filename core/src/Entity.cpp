@@ -134,7 +134,6 @@ namespace Core
     void Entity::render()
     {
         glActiveTexture(GL_TEXTURE0);
-        // FIXME: get out of bound error when render game when there's no sprite file
         if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
         {
             glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
