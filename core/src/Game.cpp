@@ -631,6 +631,12 @@ namespace Core
                 moveCurrentPage(_currPitr + 1);
             }
             break;
+        case SDLK_f:
+            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../core/res/comicsansmsgras.ttf"));
+            break;
+        case SDLK_g:
+            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../core/res/comicz.ttf"));
+            break;
         }
     }
 

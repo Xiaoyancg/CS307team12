@@ -7,7 +7,7 @@
 
 namespace Core {
 
-    Font::Font() {
+    Font::Font(std::string filepath) {
         // Init FreeType
         FT_Library ft;
         if (FT_Init_FreeType(&ft))
@@ -19,7 +19,7 @@ namespace Core {
         // Load font from file
         // This is path is temporary
         FT_Face face;
-        if (FT_New_Face(ft, "../../../../core/res/comicz.ttf", 0, &face))
+        if (FT_New_Face(ft, filepath.c_str(), 0, &face))
         {
             printf("ERROR::FREETYPE: Failed to load font\n");
             return;
@@ -206,27 +206,23 @@ namespace Core {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindBuffer(GL_ARRAY_BUFFER, prevVBO);
         glUseProgram(prevShader);
-        printf("render width : %d\n", maxX - minX);
+        //printf("render width : %d\n", maxX - minX);
 
         return maxX - minX;
     }
 
     int Font::calcTextWidth(std::string text, float size) {
         int textWidth = 0;
-        printf("before %s\n", text.c_str());
         // iterate through all characters
         std::string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)
         {
-            printf(">in\n");
             Character ch = mCharacters[*c];
-            printf("ok");
             int xpos = ch.Bearing.x * size;
             int w = ch.Size.x * size;
 
             textWidth = xpos + w;
         }
-        printf("out\ntext width : %d\n", textWidth);
         return textWidth;
     }
 }
