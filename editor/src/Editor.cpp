@@ -46,7 +46,7 @@ std::string currentComponent = "No Component Selected";
 // ===============================
 // Main function
 
-int EditorMain(int argc, char *argv[])
+int EditorMain()
 {
     // Set Up SDL2
     SDL_Init(SDL_INIT_VIDEO);
@@ -348,7 +348,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::End();
     }
 
-    //this isnt really a "selection", it opens by default
+    //this isn't really a "selection", it opens by default
     if (selection[SPLASHSCREEN])
     {
         ImGui::SetNextWindowSize(ImVec2(500 * 1.5, 400 * 1.5), ImGuiCond_Appearing);
@@ -368,6 +368,9 @@ static void ShowExampleAppMainMenuBar()
 
             if (image_data == NULL)
             {
+#ifdef __TEST_EDITOR
+                splashImageFail = true;
+#endif
                 // Here we will implement a render window type thing I assume to hold the splash screen
                 ImGui::Text("Parchment Splash Screen Failed to Load");
             }
@@ -410,6 +413,9 @@ static void ShowExampleAppMainMenuBar()
             }
 
             ImGui::End();
+#ifdef __TEST_EDITOR
+
+#endif
         }
         ImGui::PopStyleVar();
     }
