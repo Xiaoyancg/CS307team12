@@ -337,11 +337,6 @@ static void ShowExampleAppMainMenuBar()
                 }
                 ImGui::TreePop();
             }
-            //maps node
-            if (ImGui::TreeNodeEx("Maps", node_flags, "Maps"))
-            {
-                ImGui::TreePop();
-            }
             //logic node
             if (ImGui::TreeNodeEx("Logic", node_flags, "Logic"))
             {
@@ -402,7 +397,7 @@ static void ShowExampleAppMainMenuBar()
 #ifdef __TEST_EDITOR
                 splashImageFail = true;
 #endif
-                // Here we will implement a fail safe
+                // Fail safe
                 ImGui::Text("Parchment Splash Screen Failed to Load");
             }
 
