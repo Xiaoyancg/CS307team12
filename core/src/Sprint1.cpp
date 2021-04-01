@@ -75,8 +75,8 @@ namespace Core
         menu->createMenuEntry("text ahhh", 48, (void*)123, nullptr);
         menu->createMenuEntry("", 62, (void*)123, (void*)123);
         menu->createMenuEntry("oooooo  oo o oooo oo o", 32, (void*)123, (void*)123);
-        menu->createMenuEntry("aha", 128, (void*)123, nullptr);
-        menu->createMenuEntry("text asdf", 62, (void*)123, (void*)123);
+        menu->createMenuEntry("aha", 100, (void*)123, nullptr);
+        menu->createMenuEntry("text asdf", 62, 0, (void*)123);
         menu->createMenuEntry("", 62, (void*)123, nullptr);
         menu->createMenuEntry("POG !!!!", 62, (void*)123, nullptr);
         MenuPage* mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);

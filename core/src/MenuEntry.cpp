@@ -109,7 +109,7 @@ namespace Core {
 		// If the text is not empty
 		if (mText.compare("")) {
 			// Draw text
-			mFont->renderText(mText, mTextPos, mSize, glm::vec3(1.0f, 0.0f, 1.0f));
+			mFont->renderText(mText, mTextPos, mSize, glm::vec3(1.0f, 1.0f, 1.0f));
 		}
 
 		if (mButton1.callback) {
@@ -118,14 +118,14 @@ namespace Core {
 
 			// render quad
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		}
 
-		if (mButton2.callback) {
-			//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
-			glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), mButton2.coords, GL_DYNAMIC_DRAW);
+			if (mButton2.callback) {
+				//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
+				glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), mButton2.coords, GL_DYNAMIC_DRAW);
 
-			// render quad
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+				// render quad
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			}
 		}
 	}
 }
