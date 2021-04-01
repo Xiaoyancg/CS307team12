@@ -10,3 +10,6 @@ extern bool dobreak;
 extern std::string menuError;
 
 extern bool isSaveAsOpen;
+
+extern unsigned int splasherror;
+extern bool splashImageFail;
