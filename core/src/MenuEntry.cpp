@@ -1,12 +1,12 @@
 #pragma once
+#include <glad/glad.h>
 #include "Menu.h"
 
 namespace Core {
 
-	Menu::MenuEntry::MenuEntry(std::string text, Font*& font, float size, void* b1, void* b2) :
+	Menu::MenuEntry::MenuEntry(std::string text, Font*& font, int size, void* b1, void* b2) :
 		mText(text),
-		mFont(font),
-		mSize(size)
+		mFont(font)
 	{
 		printf("New MenuEntry: %s\n", text.c_str());
 		//int textWidth = mFont->calcTextWidth(text, size);
@@ -26,28 +26,28 @@ namespace Core {
 
 		// BUTTON 2
 		mButton2.callback = b2;
-		mButton1.coords[2] = 0;
-		mButton1.coords[3] = 1;
-		mButton1.coords[6] = 0;
-		mButton1.coords[7] = 0;
-		mButton1.coords[10] = 1;
-		mButton1.coords[11] = 1;
-		mButton1.coords[14] = 1;
-		mButton1.coords[15] = 0;
+		mButton2.coords[2] = 0;
+		mButton2.coords[3] = 1;
+		mButton2.coords[6] = 0;
+		mButton2.coords[7] = 0;
+		mButton2.coords[10] = 1;
+		mButton2.coords[11] = 1;
+		mButton2.coords[14] = 1;
+		mButton2.coords[15] = 0;
 
 		// Font size is set to 48 by default, so if the user specifies:
 		// size <48 font size will shrink
 		// size 48 font size will not change
 		// size >48 font size will grow
 		// NOTE: Fonts will look goofy if you try to make them too large, because it's like upscaling a 'low-res' image
-		mSize = size / 48;
+		mSize = (float) size / 48.0f;
 	};
 
 	std::string Menu::MenuEntry::getText() {
 		return mText;
 	}
-	float Menu::MenuEntry::getSize() {
-		return mSize;
+	int Menu::MenuEntry::getSize() {
+		return mSize * 48; // Multiplied by default font size (48) to get size in pixels 
 	}
 	void* Menu::MenuEntry::getButton1Callback() {
 		return mButton1.callback;
@@ -83,6 +83,22 @@ namespace Core {
 		button->coords[9] = coords[5];
 		button->coords[12] = coords[6];
 		button->coords[13] = coords[7];
+
+		/*for (int i = 0; i < 16; i++) {
+			printf("%d ", button->coords[i]);
+			if (i == 3 || i == 7 || i == 11 || i == 15) {
+				printf("\n");
+			}
+		}*/
+	}
+
+	int Menu::MenuEntry::getTextWidth() {
+		printf("with size: %f\n", mSize);
+		return mFont->calcTextWidth(mText, mSize);
+	}
+
+	int Menu::MenuEntry::getTextHeight() {
+		return mFont->calcTextHeight(mText, mSize);
 	}
 
 	void Menu::MenuEntry::debugPrint() {
@@ -97,11 +113,19 @@ namespace Core {
 		}
 
 		if (mButton1.callback) {
-			printf("b1 has callback\n");
+			//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
+			glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), mButton1.coords, GL_DYNAMIC_DRAW);
+
+			// render quad
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 
 		if (mButton2.callback) {
-			printf("b2 has callback\n");
+			//glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
+			glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), mButton2.coords, GL_DYNAMIC_DRAW);
+
+			// render quad
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		}
 	}
 }

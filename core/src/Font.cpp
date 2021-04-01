@@ -218,11 +218,27 @@ namespace Core {
         for (c = text.begin(); c != text.end(); c++)
         {
             Character ch = mCharacters[*c];
-            int xpos = ch.Bearing.x * size;
             int w = ch.Size.x * size;
-
-            textWidth = xpos + w;
+            //textWidth += w;
+            //textWidth += (ch.Bearing.x * size) + w;
+            textWidth += (ch.Advance >> 6) * size;
         }
+        printf("width %d\n", textWidth);
         return textWidth;
+    }
+
+    int Font::calcTextHeight(std::string text, float size) {
+        int maxHeight = 0;
+
+        // iterate through all characters
+        std::string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++)
+        {
+            Character ch = mCharacters[*c];
+            int h = ch.Size.y * size;
+
+            maxHeight = h > maxHeight ? h : maxHeight;
+        }
+        return maxHeight;
     }
 }

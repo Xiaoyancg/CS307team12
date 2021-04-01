@@ -21,6 +21,7 @@ namespace Core
         int renderText(std::string text, glm::ivec2 pos, float size, glm::vec3 color);
 
         int calcTextWidth(std::string text, float size);
+        int calcTextHeight(std::string text, float size);
 
     private:
         // Source for the vertex shader
