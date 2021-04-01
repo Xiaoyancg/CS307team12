@@ -347,7 +347,7 @@ namespace Core
 		    void main()
 		    {
 		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
-                TexCoord = vec2(textureCoords.x,  textureCoords.y);
+                TexCoord = vec2(textureCoords.x,  1-textureCoords.y);
 		    }
 	    )glsl";
 

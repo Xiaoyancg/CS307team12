@@ -49,7 +49,7 @@ namespace Core
 				break;
 			}
 			// Load mImageData into the currently bound texture (mTextureID)
-			glTexImage2D(GL_TEXTURE_2D, 0, channelType, mImageDimensions.x, mImageDimensions.x, 0, channelType, GL_UNSIGNED_BYTE, mImageData);
+			glTexImage2D(GL_TEXTURE_2D, 0, channelType, mImageDimensions.x, mImageDimensions.y, 0, channelType, GL_UNSIGNED_BYTE, mImageData);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			glBindTexture(GL_TEXTURE_2D, 0);  // Unbind the new sprite
