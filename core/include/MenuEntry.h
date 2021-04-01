@@ -1,23 +1,33 @@
+/*
 #pragma once
+#include <glm/glm.hpp>
 #include <string>
+#include "Font.h"
+#include "Menu.h"
 
-// MenuEntry class
+// MenuEntry class (nested class of Menu)
 namespace Core
 {
-	class MenuEntry
+	class Menu::MenuEntry
 	{
 	public:
-		MenuEntry(std::string text, float size, void* b1, void* b2);
+		Menu::MenuEntry(std::string text, float size, void* b1, void* b2);
 
 		std::string getText();
 		float getSize();
 		void* getButton1Callback();
 		void* getButton2Callback();
 
+		void setTextPos(int x, int y);
+		void setButtonCoords(int btn, int* coords);
+
 		void debugPrint();
+
+		void render();
 
 	private:
 		std::string mText;
+		glm::ivec2 mTextPos; // The lower left corner of the text
 		float mSize;
 
 		struct Button {
@@ -27,5 +37,10 @@ namespace Core
 
 		struct Button mButton1;
 		struct Button mButton2;
+
+		Font* mFont;
+
+		void render();
 	};
 }
+*/

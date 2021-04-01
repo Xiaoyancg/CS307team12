@@ -213,19 +213,20 @@ namespace Core {
 
     int Font::calcTextWidth(std::string text, float size) {
         int textWidth = 0;
-
+        printf("before %s\n", text.c_str());
         // iterate through all characters
         std::string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++)
         {
+            printf(">in\n");
             Character ch = mCharacters[*c];
-
+            printf("ok");
             int xpos = ch.Bearing.x * size;
             int w = ch.Size.x * size;
 
             textWidth = xpos + w;
         }
-        printf("text width : %d\n", textWidth);
+        printf("out\ntext width : %d\n", textWidth);
         return textWidth;
     }
 }
