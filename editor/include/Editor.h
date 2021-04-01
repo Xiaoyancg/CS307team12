@@ -7,10 +7,11 @@
 #include <imgui_impl_opengl3.h>
 #include <imfilebrowser.h>
 #include <stdio.h>
+#include <chrono>
 #include <iostream>
 #include <stb_image_aug.h>
 
-int EditorMain ( int argc, char *argv[] );
+int EditorMain();
 
 enum SelectionEnum
 {
@@ -26,7 +27,7 @@ enum SelectionEnum
 	SPRITEEDITOR,
 	SCRIPTEDITOR,
 	SPLASHSCREEN,
-	
+
 	// LEAVE THIS AT THE END OF THE LIST OR ELSE THIS IS A THREAT
 	COUNT,
 };

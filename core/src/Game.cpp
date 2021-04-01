@@ -108,7 +108,7 @@ namespace Core
         this->lMTime = time;
     }
 
-    void Game::SetLMTime()
+    void Game::setLMTime()
     {
         time_t rawtime;
         struct tm *timeinfo = new struct tm();
@@ -245,7 +245,7 @@ namespace Core
         this->setNote(root.at("Note").get<std::string>());
         try
         {
-            auto pageVec = root.at("PageList").get<std::vector<nlohmann::json>>();
+            auto pageVec = root.at("pageList").get<std::vector<nlohmann::json>>();
             for (nlohmann::json pageJson : pageVec)
             {
                 this->pageList.push_back(Page::parse(pageJson));
@@ -255,12 +255,10 @@ namespace Core
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
-        // I didn't attend the meeting.
-        // It's my punishment
-        mGameSprites = SpriteManager::SpriteManager();
+        //mGameSprites = SpriteManager::SpriteManager();
 
-        if (root.end() != root.find("SpriteList"))
-            mGameSprites.parse(root.at("SpriteList"));
+        //if (root.end() != root.find("spriteList"))
+        //    mGameSprites.parse(root.at("spriteList"));
 
         // parse should set current
         // but the info of current in json is not implemented yet
@@ -299,26 +297,24 @@ namespace Core
                 ej["spriteID"] = e->getSpriteID();
                 entityVector.push_back(ej);
             }
-            pj["EntityList"] = entityVector;
+            pj["entityList"] = entityVector;
             pageVector.push_back(pj);
         }
-        j["PageList"] = pageVector;
+        j["pageList"] = pageVector;
 
         // Sprites
-        std::vector<nlohmann::json> spriteVector;
-        // I didn't attend the meeting. I have sinned.
-        // The only save is to iterate an unordered_map
-        std::unordered_map<int, Sprite *> spriteMap = mGameSprites.getSprites();
-        for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
-        {
-            Sprite &s = *(sit->second);
-            nlohmann::json sj;
-            sj["SpriteName"] = s.getName();
-            sj["FileName"] = s.getFileName();
-            sj["SpriteID"] = s.getSpriteID();
-            spriteVector.push_back(sj);
-        }
-        j["SpriteList"] = spriteVector;
+        // TODO: std::vector<nlohmann::json> spriteVector;
+        //std::unordered_map<int, Sprite *> spriteMap = mGameSprites.getSprites();
+        //for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
+        //{
+        //    Sprite &s = *(sit->second);
+        //    nlohmann::json sj;
+        //    sj["SpriteName"] = s.getName();
+        //    sj["FileName"] = s.getFileName();
+        //    sj["SpriteID"] = s.getSpriteID();
+        //    spriteVector.push_back(sj);
+        //}
+        //j["SpriteList"] = spriteVector;
 
         return new nlohmann::json(j);
     }

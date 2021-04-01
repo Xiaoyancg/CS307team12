@@ -4,6 +4,7 @@
 #include "Game.h"
 #ifdef __TEST_EDITOR
 #include <TestEditor.h>
+#include "Sprint1.h"
 #endif // __TEST_EDITOR
 
 static void ShowExampleAppMainMenuBar();
@@ -24,7 +25,6 @@ GLuint *texcbo = nullptr;
 
 // Game object
 Core::Game *game = nullptr;
-
 // Current page pointer
 Core::Page *currPage = nullptr;
 
@@ -46,8 +46,12 @@ std::string currentComponent = "No Component Selected";
 // ===============================
 // Main function
 
-int EditorMain(int argc, char *argv[])
+int EditorMain()
 {
+#ifdef __TEST_EDITOR
+    game = Core::s1Game();
+    currPage = game->getCurrPage();
+#endif
     // Set Up SDL2
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -178,6 +182,12 @@ int EditorMain(int argc, char *argv[])
             // turn the main viewport into a docking one to allow for docking
             ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
             ShowExampleAppMainMenuBar();
+#ifdef __TEST_EDITOR
+            if (testbool)
+            {
+                return 0;
+            }
+#endif
         }
 
         if (showDemoWindow)
@@ -229,7 +239,7 @@ int EditorMain(int argc, char *argv[])
 static void ShowExampleAppMainMenuBar()
 {
 #ifdef __TEST_EDITOR
-    selection[SAVEAS] = true;
+    selection[SAVEAS] = testbool;
 #endif // __TEST_EDITOR
 
     //deletion flag if an entity, map, or page is deleted
@@ -241,7 +251,7 @@ static void ShowExampleAppMainMenuBar()
      *  ========================
      */
 
-     // open save as popup
+    // open save as popup
     if (selection[SAVEAS])
     {
         ImGui::OpenPopup("Save As");
@@ -277,13 +287,15 @@ static void ShowExampleAppMainMenuBar()
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
         }
     }
-
+#ifdef __TEST_EDITOR
+    selection[OBJECTTREE] = testbool;
+#endif
     //object tree
     if (selection[OBJECTTREE])
     {
@@ -291,15 +303,31 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
+#ifdef __TEST_EDITOR
+            treeclicked = true;
+#endif
             //entities node
-            if (ImGui::TreeNodeEx("Entities", node_flags, "Entities"))
+            if (ImGui::TreeNodeEx("Entities", node_flags, "Entities")
+#ifdef __TEST_EDITOR
+                || testbool
+#endif
+            )
+
             {
                 if (game != nullptr)
                 {
-                    std::vector<Core::Entity*> elist = currPage->getEntityList();
-                    for (Core::Entity* e : elist)
+                    std::vector<Core::Entity *> elist = currPage->getEntityList();
+                    for (Core::Entity *e : elist)
                     {
                         bool selected;
+#ifdef __TEST_EDITOR
+                        if (testtree)
+                        {
+                            entityclicked = !ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick);
+                            running = false;
+                            return;
+                        }
+#endif
                         if (ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
                             printf(e->getName().c_str());
@@ -323,11 +351,12 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (game != nullptr)
                 {
-                    std::vector<Core::Page*> plist = *game->getPageList();
+                    std::vector<Core::Page *> plist = *game->getPageList();
                     for (int i = 0; i < plist.size(); i++)
                     {
-                        Core::Page* p = plist[i];
+                        Core::Page *p = plist[i];
                         bool selected;
+
                         if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
                             printf(p->getName().c_str());
@@ -348,25 +377,29 @@ static void ShowExampleAppMainMenuBar()
         ImGui::End();
     }
 
-    //this isnt really a "selection", it opens by default
+    //this isn't really a "selection", it opens by default
     if (selection[SPLASHSCREEN])
     {
-        ImGui::SetNextWindowSize(ImVec2(500*1.5, 363*1.5), ImGuiCond_Appearing);
+        ImGui::SetNextWindowSize(ImVec2(500 * 1.5, 400 * 1.5), ImGuiCond_Appearing);
+        //ImGui::SetNextWindowContentSize(ImVec2(500*1.5, 360*1.5));
         ImVec2 center = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowBgAlpha(0);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
         //ImGui::OpenPopup("Splash");
-        if (ImGui::Begin("Splash", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize))
+        if (ImGui::Begin("Splash", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar))
         {
             // Load from file
             int image_width = 0;
             int image_height = 0;
-            unsigned char* image_data = stbi_load("../../../../resource/parchment_splash.png", &image_width, &image_height, NULL, 4);
+            unsigned char *image_data = stbi_load("./parchment_splash.png", &image_width, &image_height, NULL, 4);
 
             if (image_data == NULL)
             {
+#ifdef __TEST_EDITOR
+                splashImageFail = true;
+#endif
                 // Here we will implement a render window type thing I assume to hold the splash screen
                 ImGui::Text("Parchment Splash Screen Failed to Load");
             }
@@ -391,9 +424,16 @@ static void ShowExampleAppMainMenuBar()
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
                 stbi_image_free(image_data);
 
-                ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+                //ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+                ImVec2 canvas_size = ImVec2(500 * 1.5, 363 * 1.5);
+                ImGui::Image((void *)(intptr_t)image_texture, canvas_size);
 
-                ImGui::Image((void*)(intptr_t)image_texture, canvas_size);
+                // Display Parchment version and current date-time
+                ImGui::Text("Parchment Editor v0.20");
+                ImGui::SameLine(ImGui::GetWindowWidth() - 180);
+                auto time = std::chrono::system_clock::now();
+                std::time_t current_time = std::chrono::system_clock::to_time_t(time);
+                ImGui::Text(std::ctime(&current_time));
             }
             // CLOSE SPLASH ON CLICK OUTSIDE LIKE A POPUP BUT NOT BECAUSE FUCK ME I GUESS
             if (!ImGui::IsWindowHovered() && ImGui::IsMouseClicked(0))
@@ -402,11 +442,12 @@ static void ShowExampleAppMainMenuBar()
             }
 
             ImGui::End();
+#ifdef __TEST_EDITOR
+
+#endif
         }
         ImGui::PopStyleVar();
     }
-
-    
 
     // Entity editor
     if (selection[ENTITYEDITOR])
@@ -426,7 +467,7 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Create New Entity"))
             {
                 //UNDO
-                Core::Page* p = currPage;
+                Core::Page *p = currPage;
                 std::string e = entity_name;
                 auto action = [p, e]() {
                     p->createEntity(e);
@@ -445,11 +486,11 @@ static void ShowExampleAppMainMenuBar()
             {
                 size_t original = game->getCurrPage()->getEntityList().size();
                 //UNDO
-                Core::Page* p = currPage;
+                Core::Page *p = currPage;
                 std::string e = entity_name;
                 int idx = -1;
                 bool isCtrlEntity = false;
-                auto& eList = currPage->getEntityList();
+                auto &eList = currPage->getEntityList();
                 for (int i = 0; i < eList.size(); i++)
                 {
                     if (eList[i]->getName() == entity_name)
@@ -467,9 +508,10 @@ static void ShowExampleAppMainMenuBar()
                     p->deleteEntity(e);
                 };
                 auto restore = [idx, p, savedEntity, isCtrlEntity]() {
-                    Core::Entity* newEntity = new Core::Entity(savedEntity);
+                    Core::Entity *newEntity = new Core::Entity(savedEntity);
                     p->getEntityList().insert(p->getEntityList().begin() + idx, newEntity);
-                    if (isCtrlEntity) {
+                    if (isCtrlEntity)
+                    {
                         p->setCtrlEntity(newEntity);
                     }
                 };
@@ -566,7 +608,7 @@ static void ShowExampleAppMainMenuBar()
                 //UNDO
                 std::string pname = page_name;
                 int idx = 0;
-                auto& pList = *game->getPageList();
+                auto &pList = *game->getPageList();
                 for (int i = 0; i < pList.size(); i++)
                 {
                     if (pList[i]->getName() == page_name)
@@ -580,7 +622,7 @@ static void ShowExampleAppMainMenuBar()
                     game->deletePage(pname);
                 };
                 auto restore = [idx, savedPage]() {
-                    Core::Page* newPage = new Core::Page(savedPage);
+                    Core::Page *newPage = new Core::Page(savedPage);
                     game->getPageList()->insert(game->getPageList()->begin() + idx, newPage);
                 };
                 action();

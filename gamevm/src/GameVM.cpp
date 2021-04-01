@@ -4,7 +4,7 @@
 #include "Game.h"
 #include "Timer.h"
 volatile unsigned sink = 0;
-int GameVMMain(int argc, char *argv[])
+int GameVMMain()
 {
 
     std::string gdatastring = ReadFile(searchFileWithExtension("./", ".gdata"));
