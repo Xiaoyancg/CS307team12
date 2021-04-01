@@ -22,23 +22,30 @@ namespace Core {
     void MenuPage::render() {
         // Make sure the menu exists
         if (mMenu) {
+            int SPACING = 20;
+            int ypos = Game::height;
+
             // Loop through all menu entries in the menu
             for (MenuEntry* entry : mMenu->mMenuEntries) {
                 // Render the current menu entry
+                int xpos = 50;
+                ypos -= (entry->getSize() * 48);
+
 
                 // If the text is not empty
                 if (entry->getText().compare("")) {
-                    // TODO Draw text
-                    mFont->renderText("test", glm::ivec2(50, 50), 1, glm::vec3(1.0f, 0.0f, 1.0f));
-                    mFont->renderText("haha", glm::ivec2(50, 100), 1, glm::vec3(1.0f, 0.26f, 0.0f));
-                    mFont->renderText("this is epic!", glm::ivec2(50, 150), 1, glm::vec3(0.5f, 0.2f, 0.0f));
-                    mFont->renderText("test", glm::ivec2(50, 200), 1, glm::vec3(1.0f, 0.3f, 1.0f));
-                    mFont->renderText("test", glm::ivec2(50, 250), 1, glm::vec3(0.8f, 0.0f, 0.15f));
+                    // Draw text
+                    // Add return value to xpos, because renderText returns the number of pixels the text is wide. 
+                    xpos += mFont->renderText(entry->getText(), glm::ivec2(xpos, ypos), entry->getSize(), glm::vec3(1.0f, 0.0f, 1.0f));
+                    xpos += SPACING;
+                    xpos += mFont->renderText("ooooh", glm::ivec2(xpos, ypos), entry->getSize(), glm::vec3(0.0f, 0.0f, 1.0f));
+                    xpos += SPACING;
+                    xpos += mFont->renderText("aaaah", glm::ivec2(xpos, ypos), entry->getSize(), glm::vec3(1.0f, 0.0f, 0.0f));
                 }
 
                 // Get button callbacks
-                void* cb1 = entry->getButtonCallback1();
-                void* cb2 = entry->getButtonCallback2();
+                void* cb1 = entry->getButton1Callback();
+                void* cb2 = entry->getButton2Callback();
 
                 // If both buttons exist
                 if (cb1 && cb2) {
