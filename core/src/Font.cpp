@@ -223,7 +223,6 @@ namespace Core {
             //textWidth += (ch.Bearing.x * size) + w;
             textWidth += (ch.Advance >> 6) * size;
         }
-        printf("width %d\n", textWidth);
         return textWidth;
     }
 
