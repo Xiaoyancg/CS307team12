@@ -182,17 +182,11 @@ int EditorMain()
                 // Left mouse click
                 int x, y;
                 if (evt.button.button == SDL_BUTTON_LEFT) {
-                    ;
+                    // TEMP
+                    /*
                     SDL_GetMouseState(&x, &y);
                     printf("Click at (%d, %d)\n", x, y);
-                    printf("Cursor at (%f, %f)\n", ImGui::GetCursorScreenPos().x, ImGui::GetCursorScreenPos().y);
-
-                    ImVec2 pos = ImGui::GetCursorPos();
-                    ImVec2 start_pos = ImGui::GetCursorStartPos();
-                    ImVec2 abs_pos = ImGui::GetCursorScreenPos();
-                    ImVec2 window_pos = ImGui::GetWindowPos();
-                    printf("pos (%.0f,%.0f) startpos (%.0f,%.0f) pos+win_pos (%.0f,%.0f) abs_pos (%.0f,%.0f)\n",
-                        pos.x, pos.y, start_pos.x, start_pos.y, pos.x + window_pos.x, pos.y + window_pos.y, abs_pos.x, abs_pos.y);
+                    */
                 }
             }
         }
@@ -806,13 +800,19 @@ static void ShowExampleAppMainMenuBar()
             if (sprite_name[0] != 0)
             {
                 currentComponent = sprite_name;
-                game->createSprite(sprite_name, importDialog.GetSelected().string(), spriteID);
             }
             else
             {
                 currentComponent = fileName;
-                game->createSprite(fileName, importDialog.GetSelected().string(), spriteID);
             }
+
+            if (spriteID >= 0) {
+                game->createSprite(currentComponent, importDialog.GetSelected().string(), spriteID);
+            }
+            else {
+                game->createSprite(currentComponent, importDialog.GetSelected().string());
+            }
+
             importDialog.ClearSelected();
             memset(sprite_name, 0, 128);
             memset(spriteIDInput, 0, 128);

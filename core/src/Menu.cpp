@@ -8,7 +8,7 @@ namespace Core
     Menu::Menu(std::string name) : 
         mMenuName(name)
     { 
-        mFont = new Font("../../../../core/res/comicz.ttf");
+        mFont = new Font("../../../../resource/comicz.ttf");
     }
 
     void Menu::setName(std::string name) {

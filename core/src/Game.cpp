@@ -627,12 +627,15 @@ namespace Core
                 moveCurrentPage(_currPitr + 1);
             }
             break;
+            /*
+            // Theses are here to test switching fonts
         case SDLK_f:
-            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../core/res/comicsansmsgras.ttf"));
+            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
             break;
         case SDLK_g:
-            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../core/res/comicz.ttf"));
+            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
             break;
+            */
         }
     }
 
