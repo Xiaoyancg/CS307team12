@@ -255,12 +255,10 @@ namespace Core
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
-        // I didn't attend the meeting.
-        // It's my punishment
-        mGameSprites = SpriteManager::SpriteManager();
+        //mGameSprites = SpriteManager::SpriteManager();
 
-        if (root.end() != root.find("spriteList"))
-            mGameSprites.parse(root.at("spriteList"));
+        //if (root.end() != root.find("spriteList"))
+        //    mGameSprites.parse(root.at("spriteList"));
 
         // parse should set current
         // but the info of current in json is not implemented yet
@@ -306,8 +304,6 @@ namespace Core
 
         // Sprites
         // TODO: std::vector<nlohmann::json> spriteVector;
-        // I didn't attend the meeting. I have sinned.
-        // The only save is to iterate an unordered_map
         //std::unordered_map<int, Sprite *> spriteMap = mGameSprites.getSprites();
         //for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
         //{

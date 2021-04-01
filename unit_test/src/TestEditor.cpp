@@ -7,7 +7,11 @@ bool isSaveAsOpen;
 bool dobreak = true;
 unsigned int splasherror;
 bool splashImageFail = false;
-
+bool clicked = false;
+bool testbool = false;
+bool treeclicked = false;
+bool testtree;
+bool entityclicked = false;
 TEST(TEST_EDITOR, U4_0)
 {
     EditorMain();
@@ -19,7 +23,22 @@ TEST(TEST_EDITOR, U4_1)
     EditorMain();
     EXPECT_FALSE(splashImageFail);
 }
-
+TEST(TEST_EDITOR, U5_0)
+{
+    testtree = true;
+    testbool = true;
+    EditorMain();
+    testbool = false;
+    EXPECT_TRUE(entityclicked);
+}
+TEST(TEST_EDITOR, U5_1)
+{
+    testtree = true;
+    testbool = true;
+    EditorMain();
+    testbool = false;
+    EXPECT_TRUE(treeclicked);
+}
 TEST(TEST_EDITOR, SDLInit)
 {
     EditorMain();
@@ -34,8 +53,8 @@ TEST(TEST_EDITOR, OpenGLInit)
 
 TEST(TEST_EDITOR, SAVE_AS)
 {
-
-    //dobreak = false;
+    testbool = true;
     EditorMain();
+    testbool = false;
     EXPECT_TRUE(isSaveAsOpen);
 }

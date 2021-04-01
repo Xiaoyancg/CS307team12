@@ -4,6 +4,7 @@
 #include "Game.h"
 #ifdef __TEST_EDITOR
 #include <TestEditor.h>
+#include "Sprint1.h"
 #endif // __TEST_EDITOR
 
 static void ShowExampleAppMainMenuBar();
@@ -24,7 +25,6 @@ GLuint *texcbo = nullptr;
 
 // Game object
 Core::Game *game = nullptr;
-
 // Current page pointer
 Core::Page *currPage = nullptr;
 
@@ -48,6 +48,10 @@ std::string currentComponent = "No Component Selected";
 
 int EditorMain()
 {
+#ifdef __TEST_EDITOR
+    game = Core::s1Game();
+    currPage = game->getCurrPage();
+#endif
     // Set Up SDL2
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -178,6 +182,12 @@ int EditorMain()
             // turn the main viewport into a docking one to allow for docking
             ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
             ShowExampleAppMainMenuBar();
+#ifdef __TEST_EDITOR
+            if (testbool)
+            {
+                return 0;
+            }
+#endif
         }
 
         if (showDemoWindow)
@@ -229,7 +239,7 @@ int EditorMain()
 static void ShowExampleAppMainMenuBar()
 {
 #ifdef __TEST_EDITOR
-    selection[SAVEAS] = true;
+    selection[SAVEAS] = testbool;
 #endif // __TEST_EDITOR
 
     //deletion flag if an entity, map, or page is deleted
@@ -283,7 +293,9 @@ static void ShowExampleAppMainMenuBar()
             ImGui::PopStyleVar();
         }
     }
-
+#ifdef __TEST_EDITOR
+    selection[OBJECTTREE] = testbool;
+#endif
     //object tree
     if (selection[OBJECTTREE])
     {
@@ -291,8 +303,16 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
+#ifdef __TEST_EDITOR
+            treeclicked = true;
+#endif
             //entities node
-            if (ImGui::TreeNodeEx("Entities", node_flags, "Entities"))
+            if (ImGui::TreeNodeEx("Entities", node_flags, "Entities")
+#ifdef __TEST_EDITOR
+                || testbool
+#endif
+            )
+
             {
                 if (game != nullptr)
                 {
@@ -300,6 +320,14 @@ static void ShowExampleAppMainMenuBar()
                     for (Core::Entity *e : elist)
                     {
                         bool selected;
+#ifdef __TEST_EDITOR
+                        if (testtree)
+                        {
+                            entityclicked = !ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick);
+                            running = false;
+                            return;
+                        }
+#endif
                         if (ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
                             printf(e->getName().c_str());
@@ -328,6 +356,7 @@ static void ShowExampleAppMainMenuBar()
                     {
                         Core::Page *p = plist[i];
                         bool selected;
+
                         if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
                             printf(p->getName().c_str());
