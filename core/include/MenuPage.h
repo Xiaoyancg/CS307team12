@@ -2,8 +2,6 @@
 #include "Page.h"
 #include "Sprite.h"
 #include "Menu.h"
-#include "Font.h"
-#include "Game.h" // for Game::width and Game::height
 #include <string>
 
 namespace Core
@@ -39,7 +37,5 @@ namespace Core
         // These 2 sprites are used on increment/decrement buttons of MenuEntry objects
         static Sprite* mSpriteInc;
         static Sprite* mSpriteDec;
-
-        Font* mFont;
     };
 }

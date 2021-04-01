@@ -1,13 +1,16 @@
 #pragma once
-#include <string>
 #include "Menu.h"
+
 
 namespace Core
 {
     // Takes a scale, the number of tiles in the x and y direction
     Menu::Menu(std::string name) : 
-        mMenuName(name)
-    { }
+        mMenuName(name),
+        mRowSize(48)
+    { 
+        mFont = new Font();
+    }
 
 
     void Menu::setName(std::string name) {
@@ -17,21 +20,32 @@ namespace Core
         return mMenuName;
     }
 
-    void Menu::setRowSize(int size) {
-        mRowSize = size;
-    }
-
     // A MenuEntry consists of some text, and two buttons at most.
     // If a button function pointer is null, then that button will not be created or rendered
-    MenuEntry* Menu::createMenuEntry(std::string entryText, float size, void* buttonFunc1) {
-        MenuEntry* me = new MenuEntry(entryText, size, buttonFunc1, nullptr);
+    void Menu::createMenuEntry(std::string entryText, float size, void* buttonFunc1) {
+        MenuEntry* me = new MenuEntry(entryText, mFont, size, buttonFunc1, nullptr);
+        setMenuEntryCoords();
         mMenuEntries.push_back(me);
-        return me;
     }
-    MenuEntry* Menu::createMenuEntry(std::string entryText, float size, void* buttonFunc1, void* buttonFunc2) {
-        MenuEntry* me = new MenuEntry(entryText, size, buttonFunc1, buttonFunc2);
+    void Menu::createMenuEntry(std::string entryText, float size, void* buttonFunc1, void* buttonFunc2) {
+        MenuEntry* me = new MenuEntry(entryText, mFont, size, buttonFunc1, buttonFunc2);
+        setMenuEntryCoords();
         mMenuEntries.push_back(me);
+    }
 
-        return me;
+    // This will calculate the coordinates of both buttons in each entry of this Menu.
+    // We have to calculate these to render and do collision detection with the mouse (eventually)
+    void Menu::setMenuEntryCoords() {
+        printf("Setting button coords...TODO\n");
+        int coords[8];
+
+    }
+
+
+    void Menu::render() {
+        // Loop through and render all menu entries in the menu
+        for (MenuEntry* entry : mMenuEntries) {
+            entry->render();
+        }
     }
 }

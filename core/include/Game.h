@@ -22,7 +22,6 @@
 #include "Logic.h"
 #include "Action.h"
 #include "MenuPage.h"
-#include "Menu.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
