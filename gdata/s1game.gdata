@@ -4,9 +4,9 @@
   "GameName": "empty",
   "LastModifiedTime": "",
   "Note": "",
-  "PageList": [
+  "pageList": [
     {
-      "EntityList": [
+      "entityList": [
         {
           "EntityName": "interactive",
           "location": [
