@@ -3,6 +3,7 @@
 #include "Sprite.h"
 #include "Menu.h"
 #include "Font.h"
+#include "Game.h" // for Game::width and Game::height
 #include <string>
 
 namespace Core

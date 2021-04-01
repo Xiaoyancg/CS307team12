@@ -17,7 +17,10 @@ namespace Core
         Font();
 
         // Render the given text with the specified location and size
-        void renderText(std::string text, glm::ivec2 pos, int size, glm::vec3 color);
+        // Returns the number of pixels wide the text is
+        int renderText(std::string text, glm::ivec2 pos, float size, glm::vec3 color);
+
+        int calcTextWidth(std::string text, float size);
 
     private:
         // Source for the vertex shader

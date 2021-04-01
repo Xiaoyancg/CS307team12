@@ -23,13 +23,13 @@ namespace Core
 
     // A MenuEntry consists of some text, and two buttons at most.
     // If a button function pointer is null, then that button will not be created or rendered
-    MenuEntry* Menu::createMenuEntry(std::string entryText, void* buttonFunc1) {
-        MenuEntry* me = new MenuEntry(entryText, buttonFunc1, nullptr);
+    MenuEntry* Menu::createMenuEntry(std::string entryText, float size, void* buttonFunc1) {
+        MenuEntry* me = new MenuEntry(entryText, size, buttonFunc1, nullptr);
         mMenuEntries.push_back(me);
         return me;
     }
-    MenuEntry* Menu::createMenuEntry(std::string entryText, void* buttonFunc1, void* buttonFunc2) {
-        MenuEntry* me = new MenuEntry(entryText, buttonFunc1, buttonFunc2);
+    MenuEntry* Menu::createMenuEntry(std::string entryText, float size, void* buttonFunc1, void* buttonFunc2) {
+        MenuEntry* me = new MenuEntry(entryText, size, buttonFunc1, buttonFunc2);
         mMenuEntries.push_back(me);
 
         return me;

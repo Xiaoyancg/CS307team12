@@ -142,7 +142,7 @@ namespace Core {
         }
     }
 
-    void Font::renderText(std::string text, glm::ivec2 pos, int size, glm::vec3 color) {
+    int Font::renderText(std::string text, glm::ivec2 pos, float size, glm::vec3 color) {
         // Preserve previous opengl bindings
         int prevVAO, prevVBO, prevShader;
         glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
@@ -161,6 +161,9 @@ namespace Core {
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(Font::VAO);
         glBindBuffer(GL_ARRAY_BUFFER, Font::VBO);
+
+        int minX = pos.x;
+        int maxX = 0;
 
         // iterate through all characters
         std::string::const_iterator c;
@@ -194,6 +197,8 @@ namespace Core {
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             pos.x += (ch.Advance >> 6) * size; // bitshift by 6 to get value in pixels (2^6 = 64)
+
+            maxX = xpos + w;
         }
 
         // Restore changed OpenGL bindings
@@ -201,5 +206,26 @@ namespace Core {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindBuffer(GL_ARRAY_BUFFER, prevVBO);
         glUseProgram(prevShader);
+        printf("render width : %d\n", maxX - minX);
+
+        return maxX - minX;
+    }
+
+    int Font::calcTextWidth(std::string text, float size) {
+        int textWidth = 0;
+
+        // iterate through all characters
+        std::string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++)
+        {
+            Character ch = mCharacters[*c];
+
+            int xpos = ch.Bearing.x * size;
+            int w = ch.Size.x * size;
+
+            textWidth = xpos + w;
+        }
+        printf("text width : %d\n", textWidth);
+        return textWidth;
     }
 }

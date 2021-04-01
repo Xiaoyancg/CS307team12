@@ -72,9 +72,10 @@ namespace Core
 
         // MENU PAGE TEST //////////////////////
         Menu* menu = new Menu("example menu");
-        menu->createMenuEntry("text ahhh", nullptr, nullptr);
-        menu->createMenuEntry("", nullptr, nullptr);
-        menu->createMenuEntry("text asdf", nullptr, nullptr);
+        menu->createMenuEntry("text ahhh", 48, nullptr, nullptr);
+        menu->createMenuEntry("oooooo  oo o oooo oo o", 32, nullptr, nullptr);
+        menu->createMenuEntry("aha", 128, nullptr, nullptr);
+        menu->createMenuEntry("text asdf", 62, nullptr, nullptr);
         MenuPage* mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
         /////////////////////////////////////////
 
