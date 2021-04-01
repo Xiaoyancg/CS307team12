@@ -9,15 +9,18 @@ namespace Core
         mMenuName(name),
         mRowSize(48)
     { 
-        mFont = new Font();
+        mFont = new Font("../../../../core/res/comicz.ttf");
     }
-
 
     void Menu::setName(std::string name) {
         mMenuName = name;
     }
     std::string Menu::getName() {
         return mMenuName;
+    }
+
+    void Menu::setFont(Font* newFont) {
+        mFont = newFont;
     }
 
     // A MenuEntry consists of some text, and two buttons at most.

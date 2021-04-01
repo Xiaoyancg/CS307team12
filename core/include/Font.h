@@ -14,7 +14,7 @@ namespace Core
     class Font
     {
     public:
-        Font();
+        Font(std::string filepath);
 
         // Render the given text with the specified location and size
         // Returns the number of pixels wide the text is

@@ -19,6 +19,7 @@ namespace Core
 
 		void setName(std::string);
 		std::string getName();
+		void setFont(Font *);
 
 
 		// A MenuEntry consists of some text, and two buttons at most.
@@ -65,7 +66,11 @@ namespace Core
 			struct Button mButton1;
 			struct Button mButton2;
 
-			Font*& mFont; // This gets set to whatever this Menu's mFont is.
+			// Okay yes this is scary but it gives some really cool dynamic Font changing functionality...
+			// MenuEntry::mFont gets set to the address of this Menu::mFont.
+			// This means we can change the Menu's font once (with Menu::setFont), and the change will be reflected in
+			// every MenuEntry associated with this Menu automatically.
+			Font*& mFont; 
 		};
 
 		Font* mFont;
