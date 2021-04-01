@@ -331,6 +331,7 @@ static void ShowExampleAppMainMenuBar()
                         if (ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
                             printf(e->getName().c_str());
+                            selection[ENTITYEDITOR] = true;
                         }
                     }
                 }
@@ -360,6 +361,7 @@ static void ShowExampleAppMainMenuBar()
                         if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
                             printf(p->getName().c_str());
+                            selection[PAGEEDITOR] = true;
                         }
                     }
                 }
@@ -400,7 +402,7 @@ static void ShowExampleAppMainMenuBar()
 #ifdef __TEST_EDITOR
                 splashImageFail = true;
 #endif
-                // Here we will implement a render window type thing I assume to hold the splash screen
+                // Here we will implement a fail safe
                 ImGui::Text("Parchment Splash Screen Failed to Load");
             }
 
