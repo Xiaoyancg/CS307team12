@@ -64,7 +64,7 @@ namespace Core
         void setVersion(std::string newVersion);
 
         std::string getLMTime();
-        void SetLMTime();
+        void setLMTime();
         void setLMTime(std::string time);
 
         std::string getNote();
