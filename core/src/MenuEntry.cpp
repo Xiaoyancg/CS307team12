@@ -8,9 +8,6 @@ namespace Core {
 		mText(text),
 		mFont(font)
 	{
-		printf("New MenuEntry: %s\n", text.c_str());
-		//int textWidth = mFont->calcTextWidth(text, size);
-
 		// Set button callbacks and texture coordinates (we skip the position coords right now,
 		// they will be set by Menu later.)
 		// BUTTON 1
@@ -93,7 +90,6 @@ namespace Core {
 	}
 
 	int Menu::MenuEntry::getTextWidth() {
-		printf("with size: %f\n", mSize);
 		return mFont->calcTextWidth(mText, mSize);
 	}
 
