@@ -35,7 +35,7 @@ namespace Core
         // Returns mMap
         Map* getMap();
 
-        void initShaders (); // Shader function for the map tiles, may be temporary
+        //void initShaders (); // Shader function for the map tiles, may be temporary
 
         // Render the current map!
         void render ();

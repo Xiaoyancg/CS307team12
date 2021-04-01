@@ -33,6 +33,12 @@ namespace Core
     {
         useFramebuffer = false;
         setupSpriteRefs();
+
+        // Initialize OpenGL and necessary SDL objects
+        initContext();
+
+        // Create the shaders
+        initShader();
     }
     // editor open
     Game::Game(nlohmann::json &json, GLuint *o)
@@ -48,6 +54,12 @@ namespace Core
         this->parse(json);
         useFramebuffer = false;
         setupSpriteRefs();
+
+        // Initialize OpenGL and necessary SDL objects
+        initContext();
+
+        // Create the shaders
+        initShader();
     }
 
     // editor new
@@ -163,6 +175,18 @@ namespace Core
     {
         MapPage *mp = new MapPage(n, m);
         return (MapPage *)addPage(mp);
+    }
+    MenuPage* Game::createMenuPage(std::string name, Menu* menu) {
+        MenuPage* mp = new MenuPage(name, menu);
+        return (MenuPage*)addPage(mp);
+    }
+    MenuPage* Game::createMenuPage(std::string name) {
+        MenuPage* mp = new MenuPage(name);
+        return (MenuPage*)addPage(mp);
+    }
+    MenuPage* Game::createMenuPage() {
+        MenuPage* mp = new MenuPage();
+        return (MenuPage*)addPage(mp);
     }
     std::vector<Page *> *Game::getPageList()
     {
@@ -603,6 +627,12 @@ namespace Core
                 moveCurrentPage(_currPitr + 1);
             }
             break;
+        case SDLK_f:
+            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../core/res/comicsansmsgras.ttf"));
+            break;
+        case SDLK_g:
+            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../core/res/comicz.ttf"));
+            break;
         }
     }
 
@@ -655,11 +685,7 @@ namespace Core
 
     void Game::run()
     {
-        // Initialize OpenGL and necessary SDL objects
-        initContext();
 
-        // Create the shaders
-        initShader();
 
         mainLoop();
 

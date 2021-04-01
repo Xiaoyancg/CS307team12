@@ -21,6 +21,7 @@
 #include "Signal.h"
 #include "Logic.h"
 #include "Action.h"
+#include "MenuPage.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
@@ -87,6 +88,9 @@ namespace Core
         MapPage *createMapPage(std::string, Map *);
         MapPage *createMapPage(std::string);
         MapPage *createMapPage();
+        MenuPage* createMenuPage(std::string, Menu*);
+        MenuPage* createMenuPage(std::string);
+        MenuPage* createMenuPage();
         void deletePage(Page *);
         void deletePage(std::string);
         std::vector<Page *> *getPageList();
