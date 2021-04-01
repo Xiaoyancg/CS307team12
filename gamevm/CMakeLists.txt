@@ -16,3 +16,8 @@ add_custom_command (TARGET gamevm POST_BUILD
     $<TARGET_FILE:sdl> $<TARGET_FILE_DIR:gamevm>
 )
 
+add_custom_command (TARGET gamevm POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/gdata
+    $<TARGET_FILE_DIR:editor>
+)
