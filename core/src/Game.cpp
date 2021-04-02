@@ -51,15 +51,15 @@ namespace Core
     }
 
     Game::Game(nlohmann::json &json)
-    { // Initialize OpenGL and necessary SDL objects
+    {
+        useFramebuffer = false;
+        // Initialize OpenGL and necessary SDL objects
         initContext();
 
         // Create the shaders
-        initShader() this->parse(json);
-        useFramebuffer = false;
+        initShader();
+        this->parse(json);
         onGameCreation();
-
-        ;
     }
 
     // editor new
