@@ -52,6 +52,8 @@ std::vector<std::string> currentComponent;
 
 static void HelpMarker(const char *desc);
 
+ImVec2 default_size = ImVec2(600, 400);
+
 // ===============================
 // Main function
 
@@ -299,7 +301,7 @@ static void ShowExampleAppMainMenuBar()
         if (game != nullptr)
         {
             // set the windows default size
-            ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
             // the game view window itself
@@ -330,7 +332,7 @@ static void ShowExampleAppMainMenuBar()
         if (currMap != nullptr)
         {
             // set the windows default size
-            ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
             // the game view window itself
@@ -359,7 +361,7 @@ static void ShowExampleAppMainMenuBar()
     if (selection[OBJECTTREE])
     {
         ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
 #ifdef __TEST_EDITOR
@@ -381,14 +383,6 @@ static void ShowExampleAppMainMenuBar()
                     std::vector<Core::Entity *> elist = currPage->getEntityList();
                     for (Core::Entity *e : elist)
                     {
-#ifdef __TEST_EDITOR
-                        if (testtree)
-                        {
-                            entityclicked = !ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick);
-                            running = false;
-                            return;
-                        }
-#endif
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
                         const bool is_selected = (selection_mask & (1 << index)) != 0;
                         if (is_selected)
@@ -573,7 +567,7 @@ static void ShowExampleAppMainMenuBar()
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(default_size, ImGuiCond_Always);
 
         static char entity_name[128] = "";
         bool entity_info = false;
@@ -790,7 +784,7 @@ static void ShowExampleAppMainMenuBar()
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
 
         static char page_name[128] = "";
         static char chosen_type[128] = "";
@@ -924,7 +918,7 @@ static void ShowExampleAppMainMenuBar()
     if (selection[SCRIPTEDITOR])
     {
         // set the windows default size
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
 
         static char script_name[128] = "";
         bool script_info = false;
@@ -956,7 +950,7 @@ static void ShowExampleAppMainMenuBar()
     if (selection[SPRITEEDITOR])
     {
         // set the windows default size
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
 
         // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given,
         //       and will find and return the next usable ID if none is explicitly requested on Sprite creation.
@@ -1080,7 +1074,7 @@ static void ShowExampleAppMainMenuBar()
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
 
         // map editor
         if (ImGui::Begin("Map Editor", &selection[MAPEDITOR]))
