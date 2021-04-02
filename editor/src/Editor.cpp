@@ -503,6 +503,8 @@ static void ShowExampleAppMainMenuBar()
     }
 
     // Entity editor
+    static int x_pos;
+    static int y_pos;
     if (selection[ENTITYEDITOR])
     {
         // possibly implement a new function here for readability purposes
@@ -518,48 +520,12 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Enter Entity Name:");
             ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
 
-            ImGui::Text(currentComponent[CUR_ENTITY].c_str());
-            ImGui::Text("Select Entity:");
-            char **entities_list = (char **)malloc(sizeof(char *) * currPage->getEntityList().size());
-            static int current_entity = 0;
-            if (ImGui::BeginListBox("", ImVec2(200, currPage->getEntityList().size() * ImGui::GetTextLineHeightWithSpacing())))
-            {
-                // Set default selected entity to be the first in the entity list
-                if (currentComponent[CUR_ENTITY] == "No Component Selected" && currPage->getEntityList().size() > 0)
-                {
-                    currentComponent[CUR_ENTITY] = currPage->getEntityList()[0]->getName();
-                }
-
-                for (int n = 0; n < currPage->getEntityList().size(); n++)
-                {
-                    std::string ent_name = currPage->getEntityList()[n]->getName().c_str();
-                    entities_list[n] = (char *)malloc(ent_name.length() + 1);
-                    strncpy(entities_list[n], (char *)currPage->getEntityList()[n]->getName().c_str(), ent_name.length());
-                    entities_list[n][ent_name.length()] = '\0';
-
-                    const bool is_selected = (current_entity == n);
-                    if (ImGui::Selectable(entities_list[n], is_selected))
-                    {
-                        current_entity = n;
-                        currentComponent[CUR_ENTITY] = ent_name;
-                    }
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
-
-                    free(entities_list[n]);
-                }
-
-                ImGui::EndListBox();
-            }
-
             if (ImGui::Button("Create New Entity"))
             {
                 if (strlen(entity_name) != 0)
                 {
                     //UNDO
-                    Core::Page *p = currPage;
+                    Core::Page* p = currPage;
                     std::string e = entity_name;
                     auto action = [p, e]() {
                         p->createEntity(e);
@@ -578,13 +544,14 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Delete This Entity") && currentComponent[CUR_ENTITY] != "No Component Selected")
             {
                 memcpy(entity_name, currentComponent[CUR_ENTITY].c_str(), currentComponent[CUR_ENTITY].size() + 1);
+                printf("Deleting entity: %s\n", entity_name);
                 size_t original = game->getCurrPage()->getEntityList().size();
                 //UNDO
-                Core::Page *p = currPage;
+                Core::Page* p = currPage;
                 std::string e = entity_name;
                 int idx = -1;
                 bool isCtrlEntity = false;
-                auto &eList = currPage->getEntityList();
+                auto& eList = currPage->getEntityList();
                 for (int i = 0; i < eList.size(); i++)
                 {
                     if (eList[i]->getName() == entity_name)
@@ -602,7 +569,7 @@ static void ShowExampleAppMainMenuBar()
                     p->deleteEntity(e);
                 };
                 auto restore = [idx, p, savedEntity, isCtrlEntity]() {
-                    Core::Entity *newEntity = new Core::Entity(savedEntity);
+                    Core::Entity* newEntity = new Core::Entity(savedEntity);
                     p->getEntityList().insert(p->getEntityList().begin() + idx, newEntity);
                     if (isCtrlEntity)
                     {
@@ -626,12 +593,49 @@ static void ShowExampleAppMainMenuBar()
                     memset(entity_name, 0, 128);
                 }
             }
+            ImGui::Text("");
+            ImGui::Text(currentComponent[CUR_ENTITY].c_str());
+            ImGui::Text("Select Entity:");
+            char** entities_list = (char**)malloc(sizeof(char*) * currPage->getEntityList().size());
+            static int current_entity = 0;
+            if (ImGui::BeginListBox("", ImVec2(200, currPage->getEntityList().size() * ImGui::GetTextLineHeightWithSpacing())))
+            {
+                // Set default selected entity to be the first in the entity list
+                if (currentComponent[CUR_ENTITY] == "No Component Selected" && currPage->getEntityList().size() > 0)
+                {
+                    currentComponent[CUR_ENTITY] = currPage->getEntityList()[0]->getName();
+                }
+
+                for (int n = 0; n < currPage->getEntityList().size(); n++)
+                {
+                    std::string ent_name = currPage->getEntityList()[n]->getName().c_str();
+                    entities_list[n] = (char*)malloc(ent_name.length() + 1);
+                    strncpy(entities_list[n], (char*)currPage->getEntityList()[n]->getName().c_str(), ent_name.length());
+                    entities_list[n][ent_name.length()] = '\0';
+
+                    const bool is_selected = (current_entity == n);
+                    if (ImGui::Selectable(entities_list[n], is_selected))
+                    {
+                        current_entity = n;
+                        currentComponent[CUR_ENTITY] = ent_name;
+                        printf("%s\n", currentComponent[CUR_ENTITY].c_str());
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+
+                    free(entities_list[n]);
+                }
+
+                ImGui::EndListBox();
+            }
 
             if (ImGui::Button("Change Name"))
             {
                 if (currentComponent[CUR_ENTITY] != "No Component Selected")
                 {
-                    for (Core::Entity *e : currPage->getEntityList())
+                    for (Core::Entity* e : currPage->getEntityList())
                     {
                         if (e->getName() == currentComponent[CUR_ENTITY])
                         {
@@ -649,6 +653,42 @@ static void ShowExampleAppMainMenuBar()
             {
                 entity_info = true;
             }
+
+            Core::Entity* moved_ent = NULL;
+            ImGui::Text("");
+            ImGui::Text("X Pos:");
+            ImGui::PushItemWidth(80);
+            ImGui::SameLine();
+            ImGui::InputInt("##1", &x_pos);
+            ImGui::Text("Y Pos:");
+            ImGui::SameLine();
+            ImGui::InputInt("##2", &y_pos);
+            if (ImGui::Button("Change Entity Position"))
+            {
+                //400 is an arbitrary #, i wasnt sure at what point the entity will be moved offscreen
+                if (x_pos >= 0 && x_pos <= 400 && y_pos >= 0 && y_pos <= 400)
+                {
+                    for (Core::Entity* e : currPage->getEntityList())
+                    {
+                        if (e->getName() == currentComponent[CUR_ENTITY])
+                        {
+                            e->setLocation(glm::vec2(x_pos, y_pos));
+                            moved_ent = e;
+                            break;
+                        }
+                    }
+                    if (moved_ent != NULL) 
+                    {
+                        moved_ent->render();
+                    }
+                }                 
+                else
+                {
+                    x_pos = 0;
+                    y_pos = 0;
+                }
+            }
+
             free(entities_list);
         }
 
@@ -661,9 +701,9 @@ static void ShowExampleAppMainMenuBar()
         // Entity information popup
         if (ImGui::BeginPopup("Entity Information"))
         {
-            std::vector<Core::Entity *> elist = currPage->getEntityList();
+            std::vector<Core::Entity*> elist = currPage->getEntityList();
             ImGui::Text("Entity List: ");
-            for (Core::Entity *e : elist)
+            for (Core::Entity* e : elist)
             {
                 ImGui::Text(e->getName().c_str());
             }
