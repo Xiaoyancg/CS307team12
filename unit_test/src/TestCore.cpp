@@ -91,35 +91,37 @@ TEST(TEST_CORE, Serialize)
     g.getPageList()->push_back(page);
 
     nlohmann::json *actual = g.serialize();
-    nlohmann::json expected = R"(
-        {
-            "FileType": "Parchment Game Data",
-            "GameName": "test_gameName",
-            "Author": "test_author",
-            "Version": "test_version",
-            "LastModifiedTime": "test_lmtime",
-            "Note": "test_note",
-            "pageList": [
-                {
-                    "PageName": "test_pageName",
-                    "entityList": [
-                        {
-                            "EntityName": "test_entityName",
-                            "spriteID": 999,
-                            "location": [ 1.0, 2.0 ],
-                            "scale": [ 1.0, 1.0 ],
-                            "rotation": 360.0
-                        }
-                    ]
-                }
-            ]
-        }
-    )"_json;
+    nlohmann::json expected2 = R"(
+        {"Author":"test_author","FileType":"Parchment Game Data","GameName":"test_gameName","LastModifiedTime":"test_lmtime","Note":"test_note","Version":"test_version","pageList":[{"PageName":"test_pageName","entityList":[{"EntityName":"test_entityName","control":true,"location":[1.0,2.0],"rotation":360.0,"scale":[1.0,1.0],"spriteID":999}],"isMenu":false}]})"_json;
+    //    nlohmann::json expected = R"(
+    //        {
+    //            "FileType": "Parchment Game Data",
+    //            "GameName": "test_gameName",
+    //            "Author": "test_author",
+    //            "Version": "test_version",
+    //            "LastModifiedTime": "test_lmtime",
+    //            "Note": "test_note",
+    //            "pageList": [
+    //                {
+    //                    "PageName": "test_pageName",
+    //                    "entityList": [
+    //                        {
+    //                            "EntityName": "test_entityName",
+    //                            "spriteID": 999,
+    //                            "location": [ 1.0, 2.0 ],
+    //                            "scale": [ 1.0, 1.0 ],
+    //                            "rotation": 360.0
+    //                        }
+    //                    ]
+    //                }
+    //            ]
+    //        }
+    //    )"_json;
 
     std::cout << *actual << std::endl;
-    std::cout << expected << std::endl;
+    std::cout << expected2 << std::endl;
 
-    EXPECT_EQ(*actual, expected);
+    EXPECT_EQ(*actual, expected2);
 }
 
 // user story 1
@@ -149,8 +151,9 @@ TEST(TEST_CORE, Parse)
             ]
         }
     )"_json;
-
-    Core::Game *game = new Core::Game(expected);
+    nlohmann::json expected2 = R"(
+        {"Author":"test_author","FileType":"Parchment Game Data","GameName":"test_gameName","LastModifiedTime":"test_lmttime","Note":"test_note","Version":"test_version","pageList":[{"PageName":"test_pageName","entityList":[{"EntityName":"test_entityName","control":true,"location":[1.0,2.0],"rotation":360.0,"scale":[1.0,1.0],"spriteID":999}],"isMenu":false}]})"_json;
+    Core::Game *game = new Core::Game(expected2);
 
     EXPECT_EQ(game->getGameName(), "test_gameName");
     EXPECT_EQ(game->getAuthor(), "test_author");
@@ -166,9 +169,9 @@ TEST(TEST_CORE, Parse)
     EXPECT_EQ(entities.size(), 1);
     EXPECT_EQ(entities[0]->getName(), "test_entityName");
     EXPECT_EQ(entities[0]->getSpriteID(), 999);
-    EXPECT_EQ(entities[0]->getLocation(), glm::vec2(0.5, 0.5));
-    EXPECT_EQ(entities[0]->getScale(), glm::vec2(1.0, 2.0));
-    EXPECT_EQ(entities[0]->getRotation(), 1.0);
+    EXPECT_EQ(entities[0]->getLocation(), glm::vec2(1.0, 2.0));
+    EXPECT_EQ(entities[0]->getScale(), glm::vec2(1.0, 1.0));
+    EXPECT_EQ(entities[0]->getRotation(), 360.0);
 }
 
 TEST(TEST_CORE, LoadNonexistantImage)
