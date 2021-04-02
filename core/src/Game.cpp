@@ -51,16 +51,15 @@ namespace Core
     }
 
     Game::Game(nlohmann::json &json)
-    {
-        this->parse(json);
-        useFramebuffer = false;
-        onGameCreation();
-
-        // Initialize OpenGL and necessary SDL objects
+    { // Initialize OpenGL and necessary SDL objects
         initContext();
 
         // Create the shaders
-        initShader();
+        initShader() this->parse(json);
+        useFramebuffer = false;
+        onGameCreation();
+
+        ;
     }
 
     // editor new
@@ -80,10 +79,12 @@ namespace Core
     void Game::onGameCreation()
     {
         // Set default MapPage
-        if (useFramebuffer) {
+        if (useFramebuffer)
+        {
             mGameMapPage = new MapPage(maptexcbo);
         }
-        else {
+        else
+        {
             mGameMapPage = new MapPage("Default MapPage");
         }
         Entity::mGameSprites = &mGameSprites;
@@ -184,26 +185,32 @@ namespace Core
         MapPage *mp = new MapPage(n, m);
         return (MapPage *)addPage(mp);
     }
-    Map* Game::createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize) {
-        if (mGameMapPage) {
+    Map *Game::createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize)
+    {
+        if (mGameMapPage)
+        {
             return mGameMapPage->addMap(new Map(name, glm::vec2(cols, rows), tilesize));
         }
         return nullptr;
     }
-    void Game::deleteDefaultMapPageCurrentMap() {
+    void Game::deleteDefaultMapPageCurrentMap()
+    {
         mGameMapPage->deleteCurrMap();
     }
-    MenuPage* Game::createMenuPage(std::string name, Menu* menu) {
-        MenuPage* mp = new MenuPage(name, menu);
-        return (MenuPage*)addPage(mp);
+    MenuPage *Game::createMenuPage(std::string name, Menu *menu)
+    {
+        MenuPage *mp = new MenuPage(name, menu);
+        return (MenuPage *)addPage(mp);
     }
-    MenuPage* Game::createMenuPage(std::string name) {
-        MenuPage* mp = new MenuPage(name);
-        return (MenuPage*)addPage(mp);
+    MenuPage *Game::createMenuPage(std::string name)
+    {
+        MenuPage *mp = new MenuPage(name);
+        return (MenuPage *)addPage(mp);
     }
-    MenuPage* Game::createMenuPage() {
-        MenuPage* mp = new MenuPage();
-        return (MenuPage*)addPage(mp);
+    MenuPage *Game::createMenuPage()
+    {
+        MenuPage *mp = new MenuPage();
+        return (MenuPage *)addPage(mp);
     }
     std::vector<Page *> *Game::getPageList()
     {
@@ -271,16 +278,18 @@ namespace Core
         return mGameSprites.getSprites();
     }
 
-    std::vector<Map*> Game::getDefaultMapPageMaps() {
+    std::vector<Map *> Game::getDefaultMapPageMaps()
+    {
         return mGameMapPage->getMaps();
     }
 
-    MapPage* Game::getDefaultMapPage() {
+    MapPage *Game::getDefaultMapPage()
+    {
         return mGameMapPage;
     }
 
-
-    void Game::renderDefaultMapPage() {
+    void Game::renderDefaultMapPage()
+    {
         mGameMapPage->renderOnFramebuffer();
     }
 
@@ -317,15 +326,15 @@ namespace Core
         // but the info of current in json is not implemented yet
         setCurrentPage(this->pageList.at(0));
         setCurrCtrlEntity(getCurrPage()->getCtrlEntity());
-        
+
         return this;
     }
 
     nlohmann::json *Game::serialize()
     {
         // TODO: bg color ? I don't think that's necessary
-        nlohmann::json* ret = new nlohmann::json;
-        nlohmann::json& j = *ret;
+        nlohmann::json *ret = new nlohmann::json;
+        nlohmann::json &j = *ret;
         j["FileType"] = "Parchment Game Data";
         j["GameName"] = getGameName();
         j["Author"] = getAuthor();
@@ -348,7 +357,7 @@ namespace Core
             {
                 pj["isMenu"] = false;
             }
-             
+
             // entities
             std::vector<nlohmann::json> entityVector;
             for (Entity *e : p->getEntityList())
@@ -359,7 +368,8 @@ namespace Core
                 ej["scale"] = {e->getScale().x, e->getScale().y};
                 ej["rotation"] = e->getRotation();
                 ej["spriteID"] = e->getSpriteID();
-                if (e->isControlledEntity()) {
+                if (e->isControlledEntity())
+                {
                     ej["control"] = true;
                 }
                 entityVector.push_back(ej);
@@ -380,7 +390,8 @@ namespace Core
             sj["SpriteID"] = s.getSpriteID();
             spriteVector.push_back(sj);
         }
-        if (spriteVector.size() > 0) {
+        if (spriteVector.size() > 0)
+        {
             j["spriteList"] = spriteVector;
         }
 
@@ -732,7 +743,6 @@ namespace Core
 
     void Game::run()
     {
-
 
         mainLoop();
 
