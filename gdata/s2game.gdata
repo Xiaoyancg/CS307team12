@@ -78,32 +78,32 @@
   ],
   "spriteList": [
     {
-      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\1.png",
+      "FileName": "1.png",
       "SpriteID": 0,
       "SpriteName": "1.png"
     },
     {
-      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\oh_yeah_woo_yeah.png",
+      "FileName": "oh_yeah_woo_yeah.png",
       "SpriteID": 2,
       "SpriteName": "oh_yeah_woo_yeah.png"
     },
     {
-      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\test_image_1.png",
+      "FileName": "test_image_1.png",
       "SpriteID": 3,
       "SpriteName": "test_image_1.png"
     },
     {
-      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\test_image_2.png",
+      "FileName": "test_image_2.png",
       "SpriteID": 4,
       "SpriteName": "test_image_2.png"
     },
     {
-      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\2.png",
+      "FileName": "2.png",
       "SpriteID": 1,
       "SpriteName": "2.png"
     },
     {
-      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\test_image_3.png",
+      "FileName": "test_image_3.png",
       "SpriteID": 5,
       "SpriteName": "test_image_3.png"
     }

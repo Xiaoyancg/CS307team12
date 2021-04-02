@@ -15,7 +15,7 @@ namespace Core
 	{
 		mSpriteName = name;
 		mFileName = filename;
-		mTextureID = -1;
+		mTextureID;
 
 		int width;
 		int height;
