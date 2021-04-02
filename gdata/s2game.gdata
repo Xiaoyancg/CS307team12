@@ -1,1 +1,111 @@
-{"Author":"team12","FileType":"Parchment Game Data","GameName":"test","LastModifiedTime":"","Note":"this is the test file","Version":"0.2","pageList":[{"PageName":"entityPage","entityList":[{"EntityName":"interactive","location":[1250.0,500.0],"rotation":0.0,"scale":[64.0,64.0],"spriteID":0},{"EntityName":"shortWide","location":[700.0,300.0],"rotation":0.0,"scale":[64.0,32.0],"spriteID":2},{"EntityName":"veryShortWide","location":[400.0,600.0],"rotation":0.0,"scale":[128.0,16.0],"spriteID":3},{"EntityName":"origin","control":true,"location":[100.0,600.0],"rotation":0.0,"scale":[128.0,128.0],"spriteID":4}],"isMenu":false},{"PageName":"1","entityList":[],"isMenu":false},{"PageName":"2","entityList":[],"isMenu":false}],"spriteList":[{"FileName":"1.png","SpriteID":0,"SpriteName":"1.png"},{"FileName":"oh_yeah_woo_yeah.png","SpriteID":2,"SpriteName":"oh_yeah_woo_yeah.png"},{"FileName":"test_image_1.png","SpriteID":3,"SpriteName":"test_image_1.png"},{"FileName":"test_image_2.png","SpriteID":4,"SpriteName":"test_image_2.png"},{"FileName":"2.png","SpriteID":1,"SpriteName":"2.png"},{"FileName":"test_image_3.png","SpriteID":5,"SpriteName":"test_image_3.png"}]}
+{
+  "Author": "team12",
+  "FileType": "Parchment Game Data",
+  "GameName": "test",
+  "LastModifiedTime": "",
+  "Note": "this is the test file",
+  "Version": "0.2",
+  "pageList": [
+    {
+      "PageName": "entityPage",
+      "entityList": [
+        {
+          "EntityName": "interactive",
+          "location": [
+            1250.0,
+            500.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            64.0
+          ],
+          "spriteID": 0
+        },
+        {
+          "EntityName": "shortWide",
+          "location": [
+            700.0,
+            300.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            32.0
+          ],
+          "spriteID": 2
+        },
+        {
+          "EntityName": "veryShortWide",
+          "location": [
+            400.0,
+            600.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            16.0
+          ],
+          "spriteID": 3
+        },
+        {
+          "EntityName": "origin",
+          "control": true,
+          "location": [
+            100.0,
+            600.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            128.0
+          ],
+          "spriteID": 4
+        }
+      ],
+      "isMenu": false
+    },
+    {
+      "PageName": "1",
+      "entityList": [],
+      "isMenu": false
+    },
+    {
+      "PageName": "2",
+      "entityList": [],
+      "isMenu": false
+    }
+  ],
+  "spriteList": [
+    {
+      "FileName": "1.png",
+      "SpriteID": 0,
+      "SpriteName": "1.png"
+    },
+    {
+      "FileName": "oh_yeah_woo_yeah.png",
+      "SpriteID": 2,
+      "SpriteName": "oh_yeah_woo_yeah.png"
+    },
+    {
+      "FileName": "test_image_1.png",
+      "SpriteID": 3,
+      "SpriteName": "test_image_1.png"
+    },
+    {
+      "FileName": "test_image_2.png",
+      "SpriteID": 4,
+      "SpriteName": "test_image_2.png"
+    },
+    {
+      "FileName": "2.png",
+      "SpriteID": 1,
+      "SpriteName": "2.png"
+    },
+    {
+      "FileName": "test_image_3.png",
+      "SpriteID": 5,
+      "SpriteName": "test_image_3.png"
+    }
+  ]
+}
