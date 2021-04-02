@@ -1,6 +1,5 @@
 #include "Sprint1.h"
 
-
 namespace Core
 {
     Game *s1Game()
@@ -30,9 +29,6 @@ namespace Core
             entityPage->createEntity("interactive", glm::vec2(50, 50),
                                      glm::vec2(64, 64), 0, 0);
         entityPage->setCtrlEntity(entityInteractive);
-        entityTallThin =
-            entityPage->createEntity("interactive", glm::vec2(200, 200),
-                                     glm::vec2(32, 64), 0, 0);
         entityShortWide =
             entityPage->createEntity("shortWide", glm::vec2(500, 500),
                                      glm::vec2(64, 32), 0, 0);
@@ -71,15 +67,15 @@ namespace Core
         map4->setDimensions(glm::vec2(7, 3));
 
         // MENU PAGE TEST //////////////////////
-        Menu* menu = new Menu("example menu");
-        menu->createMenuEntry("text ahhh", 48, (void*)123, nullptr);
-        menu->createMenuEntry("", 62, (void*)123, (void*)123);
-        menu->createMenuEntry("oooooo  oo o oooo oo o", 32, (void*)123, (void*)123);
-        menu->createMenuEntry("aha", 100, (void*)123, nullptr);
-        menu->createMenuEntry("text asdf", 62, 0, (void*)123);
-        menu->createMenuEntry("", 62, (void*)123, nullptr);
-        menu->createMenuEntry("POG !!!!", 62, (void*)123, nullptr);
-        MenuPage* mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
+        Menu *menu = new Menu("example menu");
+        menu->createMenuEntry("text ahhh", 48, (void *)123, nullptr);
+        menu->createMenuEntry("", 62, (void *)123, (void *)123);
+        menu->createMenuEntry("oooooo  oo o oooo oo o", 32, (void *)123, (void *)123);
+        menu->createMenuEntry("aha", 100, (void *)123, nullptr);
+        menu->createMenuEntry("text asdf", 62, 0, (void *)123);
+        menu->createMenuEntry("", 62, (void *)123, nullptr);
+        menu->createMenuEntry("POG !!!!", 62, (void *)123, nullptr);
+        MenuPage *mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
         /////////////////////////////////////////
 
         // very important
