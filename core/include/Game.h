@@ -88,7 +88,7 @@ namespace Core
         MapPage *createMapPage(std::string, Map *);
         MapPage *createMapPage(std::string);
         MapPage *createMapPage();
-        Map* createMapOnDefaultMapPage(int cols, int rows, int tilesize);
+        Map* createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize);
         void deleteDefaultMapPageCurrentMap();
         MenuPage* createMenuPage(std::string, Menu*);
         MenuPage* createMenuPage(std::string);
