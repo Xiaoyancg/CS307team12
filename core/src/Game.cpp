@@ -318,9 +318,12 @@ namespace Core
         // parse should set current
         // but the info of current in json is not implemented yet
         setCurrentPage(this->pageList.at(0));
-        // lack info of ctrlENtity
+        // lack info of ctrlEntity
         // TODO:
-        currPage->setCtrlEntity(currPage->getEntityList().at(0));
+        if (currPage->getEntityList().size() > 0)
+        {
+            currPage->setCtrlEntity(currPage->getEntityList().at(0));
+        }
         return this;
     }
 
