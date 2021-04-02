@@ -652,6 +652,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         static char page_name[128] = "";
+        static char chosen_type[128] = "";
         bool page_info = false;
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
@@ -679,19 +680,39 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (strlen(page_name) != 0)
                 {
-                    //UNDO
-                    std::string pname = page_name;
-                    auto action = [pname]() {
-                        game->createPage(pname);
-                    };
-                    auto restore = [pname]() {
-                        game->deletePage(pname);
-                    };
-                    pushAction(action, restore);
-                    action();
-                    //ENDUNDO
-                    // memset to clear the buffer after use
-                    memset(page_name, 0, 128);
+                    printf("%s", page_options[current_item]);
+                    if (strcmp(page_options[current_item], "Menu") == 0)
+                    {
+                        //UNDO
+                        std::string pname = page_name;
+                        auto action = [pname]() {
+                            game->createMenuPage(pname);
+                        };
+                        auto restore = [pname]() {
+                            game->deletePage(pname);
+                        };
+                        pushAction(action, restore);
+                        action();
+                        //ENDUNDO
+                        // memset to clear the buffer after use
+                        memset(page_name, 0, 128);
+                    }
+                    else
+                    {
+                        //UNDO
+                        std::string pname = page_name;
+                        auto action = [pname]() {
+                            game->createPage(pname);
+                        };
+                        auto restore = [pname]() {
+                            game->deletePage(pname);
+                        };
+                        pushAction(action, restore);
+                        action();
+                        //ENDUNDO
+                        // memset to clear the buffer after use
+                        memset(page_name, 0, 128);
+                    }
                 }
             }
             ImGui::SameLine();
