@@ -1289,7 +1289,7 @@ static void ShowExampleAppMainMenuBar()
                     if (isSaved)
                     {
                         nlohmann::json *content = game->serialize();
-                        WriteFile(dir, (content->dump()));
+                        WriteFile(dir, (content->dump(2)));
                         // pointer deletion
                         delete (content);
                         selection[SAVEPOPUP] = true;
