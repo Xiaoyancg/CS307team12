@@ -1050,12 +1050,35 @@ static void ShowExampleAppMainMenuBar()
             {
                 ImGui::Text("Map Name:");
                 ImGui::SameLine();
-                ImGui::Text(currMap->getName().c_str());
+                if (currMap != nullptr)
+                {
+                    ImGui::Text(currMap->getName().c_str());
+                }
+                else
+                {
+                    ImGui::Text("no map selected");
+                }
                 ImGui::Text("Dimensions:");
                 ImGui::SameLine();
-                glm::ivec2 dims = currMap->getDimensions();
+                glm::ivec2 dims;
+                if (currMap != nullptr)
+                {
+                    dims = currMap->getDimensions();
+                }
+                else
+                {
+                    dims = glm::ivec2(0, 0);
+                }
                 ImGui::Text("%i Columns x %i Rows", dims.x, dims.y);
-                ImGui::Text("Tile size: %i", currMap->getTileSize());
+
+                if (currMap != nullptr)
+                {
+                    ImGui::Text("Tile size: %i", currMap->getTileSize());
+                }
+                else
+                {
+                    ImGui::Text("Tile size: 0");
+                }
                 ImGui::EndPopup();
             }
         }
