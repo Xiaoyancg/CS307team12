@@ -361,7 +361,7 @@ static void ShowExampleAppMainMenuBar()
     if (selection[OBJECTTREE])
     {
         ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_Always);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
 #ifdef __TEST_EDITOR
@@ -377,15 +377,14 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (game != nullptr)
                 {
-                    static int selection_mask = (1 << -1);
+                    static int selected = -1;
                     int node_clicked = -1;
                     int index = 0;
                     std::vector<Core::Entity *> elist = currPage->getEntityList();
                     for (Core::Entity *e : elist)
                     {
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                        const bool is_selected = (selection_mask & (1 << index)) != 0;
-                        if (is_selected)
+                        if (index == selected)
                             node_flags |= ImGuiTreeNodeFlags_Selected;
                         ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, e->getName().c_str());
                         if (ImGui::IsItemClicked())
@@ -401,7 +400,7 @@ static void ShowExampleAppMainMenuBar()
                     }
                     if (node_clicked != -1)
                     {
-                        selection_mask = (1 << node_clicked);
+                        selected = node_clicked;
                     }
                 }
                 ImGui::TreePop();
@@ -416,7 +415,7 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (game != nullptr)
                 {
-                    static int selection_mask = (1 << -1);
+                    static int selected = -1;
                     int node_clicked = -1;
                     int index = 0;
                     std::vector<Core::Page *> plist = *game->getPageList();
@@ -425,8 +424,7 @@ static void ShowExampleAppMainMenuBar()
                         Core::Page *p = plist[i];
 
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                        const bool is_selected = (selection_mask & (1 << index)) != 0;
-                        if (is_selected)
+                        if (index == selected)
                             node_flags |= ImGuiTreeNodeFlags_Selected;
                         ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, p->getName().c_str());
                         if (ImGui::IsItemClicked())
@@ -442,7 +440,7 @@ static void ShowExampleAppMainMenuBar()
                     }
                     if (node_clicked != -1)
                     {
-                        selection_mask = (1 << node_clicked);
+                        selected = node_clicked;
                     }
                 }
                 ImGui::TreePop();
@@ -455,14 +453,13 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (game != nullptr)
                 {
-                    static int selection_mask = (1 << -1);
+                    static int selected = -1;
                     int node_clicked = -1;
                     int index = 0;
                     for (auto &[key, value] : game->getSprites())
                     {
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                        const bool is_selected = (selection_mask & (1 << index)) != 0;
-                        if (is_selected)
+                        if (index == selected)
                             node_flags |= ImGuiTreeNodeFlags_Selected;
                         ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, value->getName().c_str());
                         if (ImGui::IsItemClicked())
@@ -478,7 +475,7 @@ static void ShowExampleAppMainMenuBar()
                     }
                     if (node_clicked != -1)
                     {
-                        selection_mask = (1 << node_clicked);
+                        selected = node_clicked;
                     }
                 }
                 ImGui::TreePop();
@@ -567,7 +564,7 @@ static void ShowExampleAppMainMenuBar()
         // possibly implement a new function here for readability purposes
 
         // set the windows default size
-        ImGui::SetNextWindowSize(default_size, ImGuiCond_Always);
+        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
 
         static char entity_name[128] = "";
         bool entity_info = false;
