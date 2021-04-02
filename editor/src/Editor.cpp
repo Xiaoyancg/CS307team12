@@ -18,7 +18,7 @@ ImGui::FileBrowser importDialog;
 // Global Variable
 
 // bool array to track the selections made on main menu bar
-static bool selection[COUNT];
+static bool selection[SELECT_COUNT];
 
 // main texture color buffer object
 GLuint *texcbo = nullptr;
@@ -45,7 +45,8 @@ bool isSaved = false;
 bool ctrl_pressed = false;
 
 // currently selected game component
-std::string currentComponent = "No Component Selected";
+std::vector<std::string> currentComponent;
+//std::string currentComponent = "No Component Selected";
 
 // ===============================
 // Main function
@@ -128,6 +129,12 @@ int EditorMain()
     // clear_color is a RGBA color, Red Green Blue and alpha. read more:https://en.wikipedia.org/wiki/RGBA_color_model
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    // Initialize current components to none selected
+    for (int i = 0; i < COMP_COUNT; i++)
+    {
+        currentComponent.push_back("No Component Selected");
+    }
 
     //set the default splash screen state to open
     selection[SPLASHSCREEN] = true;
@@ -376,7 +383,7 @@ static void ShowExampleAppMainMenuBar()
                         {
                             printf(e->getName().c_str());
                             selection[ENTITYEDITOR] = true;
-                            currentComponent = e->getName();
+                            currentComponent[CUR_ENTITY] = e->getName();
                         }
                     }
                 }
@@ -507,16 +514,16 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Enter Entity Name:");
             ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
 
-            ImGui::Text(currentComponent.c_str());
+            ImGui::Text(currentComponent[CUR_ENTITY].c_str());
             ImGui::Text("Select Entity:");
             char** entities_list = (char**)malloc(sizeof(char*) * currPage->getEntityList().size());
             static int current_entity = 0;
             if (ImGui::BeginListBox("", ImVec2(200, currPage->getEntityList().size() * ImGui::GetTextLineHeightWithSpacing())))
             {
                 // Set default selected entity to be the first in the entity list
-                if (currentComponent == "No Component Selected" && currPage->getEntityList().size() > 0)
+                if (currentComponent[CUR_ENTITY] == "No Component Selected" && currPage->getEntityList().size() > 0)
                 {
-                    currentComponent = currPage->getEntityList()[0]->getName();
+                    currentComponent[CUR_ENTITY] = currPage->getEntityList()[0]->getName();
                 }
 
                 for (int n = 0; n < currPage->getEntityList().size(); n++)
@@ -530,8 +537,8 @@ static void ShowExampleAppMainMenuBar()
                     if (ImGui::Selectable(entities_list[n], is_selected))
                     {
                         current_entity = n;
-                        currentComponent = ent_name;
-                        printf("%s\n", currentComponent.c_str());
+                        currentComponent[CUR_ENTITY] = ent_name;
+                        printf("%s\n", currentComponent[CUR_ENTITY].c_str());
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -546,25 +553,28 @@ static void ShowExampleAppMainMenuBar()
 
             if (ImGui::Button("Create New Entity"))
             {
-                //UNDO
-                Core::Page *p = currPage;
-                std::string e = entity_name;
-                auto action = [p, e]() {
-                    p->createEntity(e);
-                };
-                auto restore = [p, e]() {
-                    p->deleteEntity(e);
-                };
-                pushAction(action, restore);
-                action();
-                //ENDUNDO
-                // memset to clear the buffer after use
-                memset(entity_name, 0, 128);
+                if (strlen(entity_name) != 0)
+                {
+                    //UNDO
+                    Core::Page* p = currPage;
+                    std::string e = entity_name;
+                    auto action = [p, e]() {
+                        p->createEntity(e);
+                    };
+                    auto restore = [p, e]() {
+                        p->deleteEntity(e);
+                    };
+                    pushAction(action, restore);
+                    action();
+                    //ENDUNDO
+                    // memset to clear the buffer after use
+                    memset(entity_name, 0, 128);
+                }
             }
             ImGui::SameLine();
-            if (ImGui::Button("Delete This Entity") && currentComponent != "No Component Selected")
+            if (ImGui::Button("Delete This Entity") && currentComponent[CUR_ENTITY] != "No Component Selected")
             {
-                memcpy(entity_name, currentComponent.c_str(), currentComponent.size() + 1);
+                memcpy(entity_name, currentComponent[CUR_ENTITY].c_str(), currentComponent[CUR_ENTITY].size() + 1);
                 printf("Deleting entity: %s\n", entity_name);
                 size_t original = game->getCurrPage()->getEntityList().size();
                 //UNDO
@@ -602,9 +612,9 @@ static void ShowExampleAppMainMenuBar()
                 if (idx > -1)
                 {
                     action();
-                    currentComponent = idx < currPage->getEntityList().size() ?
-                                       currPage->getEntityList()[idx]->getName() :
-                                       currPage->getEntityList()[idx - 1]->getName();
+                    currentComponent[CUR_ENTITY] = idx < currPage->getEntityList().size() ?
+                                                   currPage->getEntityList()[idx]->getName() :
+                                                   currPage->getEntityList()[idx - 1]->getName();
                 }
                 //ENDUNDO
 
@@ -614,11 +624,27 @@ static void ShowExampleAppMainMenuBar()
                     pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(entity_name, 0, 128);
-                }
-
-                
-                
+                }  
             }
+
+            if (ImGui::Button("Change Name"))
+            {
+                if (currentComponent[CUR_ENTITY] != "No Component Selected")
+                { 
+                    for (Core::Entity* e : currPage->getEntityList())
+                    {
+                        if (e->getName() == currentComponent[CUR_ENTITY])
+                        {
+                            e->setName(entity_name);
+                            currentComponent[CUR_ENTITY] = entity_name;
+                        }
+                    }
+                }
+               
+                // memset to clear the buffer after use
+                memset(entity_name, 0, 128);
+            }
+            ImGui::SameLine();
             if (ImGui::Button("Show Entity Information"))
             {
                 entity_info = true;
@@ -636,7 +662,7 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::BeginPopup("Entity Information"))
         {
             std::vector<Core::Entity *> elist = currPage->getEntityList();
-            ImGui::Text("Entity Names: ");
+            ImGui::Text("Entity List: ");
             for (Core::Entity *e : elist)
             {
                 ImGui::Text(e->getName().c_str());
@@ -656,6 +682,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         static char page_name[128] = "";
+        static char chosen_type[128] = "";
         bool page_info = false;
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
@@ -681,19 +708,42 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::Button("Create New Page"))
             {
-                //UNDO
-                std::string pname = page_name;
-                auto action = [pname]() {
-                    game->createPage(pname);
-                };
-                auto restore = [pname]() {
-                    game->deletePage(pname);
-                };
-                pushAction(action, restore);
-                action();
-                //ENDUNDO
-                // memset to clear the buffer after use
-                memset(page_name, 0, 128);
+                if (strlen(page_name) != 0)
+                {
+                    printf("%s", page_options[current_item]);
+                    if (strcmp(page_options[current_item], "Menu") == 0)
+                    {
+                        //UNDO
+                        std::string pname = page_name;
+                        auto action = [pname]() {
+                            game->createMenuPage(pname);
+                        };
+                        auto restore = [pname]() {
+                            game->deletePage(pname);
+                        };
+                        pushAction(action, restore);
+                        action();
+                        //ENDUNDO
+                        // memset to clear the buffer after use
+                        memset(page_name, 0, 128);
+                    }
+                    else
+                    {
+                        //UNDO
+                        std::string pname = page_name;
+                        auto action = [pname]() {
+                            game->createPage(pname);
+                        };
+                        auto restore = [pname]() {
+                            game->deletePage(pname);
+                        };
+                        pushAction(action, restore);
+                        action();
+                        //ENDUNDO
+                        // memset to clear the buffer after use
+                        memset(page_name, 0, 128);
+                    }
+                }
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Page"))
@@ -748,7 +798,8 @@ static void ShowExampleAppMainMenuBar()
             ImGui::SameLine();
             ImGui::Text(currPage->getName().c_str());
             std::vector<Core::Page *> plist = *game->getPageList();
-            ImGui::Text("Page Names: ");
+            ImGui::Text("");
+            ImGui::Text("Page List: ");
             for (Core::Page *p : plist)
             {
                 ImGui::Text(p->getName().c_str());
@@ -815,7 +866,7 @@ static void ShowExampleAppMainMenuBar()
 
             ImGui::Text("Set Sprite ID:");
             ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
-            ImGui::Text(currentComponent.c_str());
+            ImGui::Text(currentComponent[CUR_SPRITE].c_str());
             if (ImGui::Button("Import Sprite"))
             {
                 importDialog = ImGui::FileBrowser(
@@ -850,7 +901,7 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::BeginPopup("Sprite Information"))
         {
             // Sprite name, dimensions, ID?
-            if (currentComponent == "No Component Selected")
+            if (currentComponent[CUR_SPRITE] == "No Component Selected")
             {
                 ImGui::Text("Current Sprite Name: None");
             }
@@ -882,18 +933,18 @@ static void ShowExampleAppMainMenuBar()
 
             if (sprite_name[0] != 0)
             {
-                currentComponent = sprite_name;
+                currentComponent[CUR_SPRITE] = sprite_name;
             }
             else
             {
-                currentComponent = fileName;
+                currentComponent[CUR_SPRITE] = fileName;
             }
 
             if (spriteID >= 0) {
-                game->createSprite(currentComponent, importDialog.GetSelected().string(), spriteID);
+                game->createSprite(currentComponent[CUR_SPRITE], importDialog.GetSelected().string(), spriteID);
             }
             else {
-                game->createSprite(currentComponent, importDialog.GetSelected().string());
+                game->createSprite(currentComponent[CUR_SPRITE], importDialog.GetSelected().string());
             }
 
             importDialog.ClearSelected();
@@ -1100,11 +1151,11 @@ static void ShowExampleAppMainMenuBar()
             // Edit menu
             if (ImGui::BeginMenu("Edit"))
             {
-                if (ImGui::MenuItem("Undo"))
+                if (ImGui::MenuItem("Undo", "Ctrl+Z"))
                 {
                     undo();
                 }
-                if (ImGui::MenuItem("Redo"))
+                if (ImGui::MenuItem("Redo", "Ctrl+Y"))
                 {
                     redo();
                 }
