@@ -1,9 +1,9 @@
 {
-  "Author": "",
+  "Author": "team12",
   "FileType": "Parchment Game Data",
-  "GameName": "empty",
+  "GameName": "test",
   "LastModifiedTime": "",
-  "Note": "",
+  "Note": "this is the test file",
   "pageList": [
     {
       "entityList": [
@@ -74,5 +74,5 @@
       "isMenu": false
     }
   ],
-  "Version": ""
+  "Version": "0.2"
 }
