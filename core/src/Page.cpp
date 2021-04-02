@@ -146,6 +146,10 @@ namespace Core
             page->entityList.push_back(Entity::parse(entityJson));
         }
 
+        // Doing nothing with this as of now, just parsing
+        // TODO: Have a MenuPage be created when this boolean is true
+        root.at("isMenu").get<bool>();
+
         return page;
     }
 }
