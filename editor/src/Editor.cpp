@@ -174,7 +174,7 @@ int EditorMain()
                 }
                 if (game != nullptr)
                 {
-                    //game->handleInput(evt);
+                    game->handleInput(evt);
                 }
             }
             if (evt.type == SDL_KEYUP)
@@ -424,6 +424,14 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::TreeNodeEx("Sprites", node_flags, "Sprites"))
             {
+                for (auto &[key, value] : game->getSprites())
+                {
+                    bool selected;
+                    if (ImGui::Selectable(value->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
+                    {
+                        selection[SPRITEEDITOR] = true;
+                    }
+                }
                 ImGui::TreePop();
             }
         }

@@ -143,7 +143,11 @@ namespace Core
         auto entityVec = root.at("entityList").get<std::vector<json>>();
         for (json entityJson : entityVec)
         {
-            page->entityList.push_back(Entity::parse(entityJson));
+            Entity* ent = Entity::parse(entityJson);
+            if (ent->isControlledEntity()) {
+                page->setCtrlEntity(ent);
+            }
+            page->entityList.push_back(ent);
         }
 
         // Doing nothing with this as of now, just parsing

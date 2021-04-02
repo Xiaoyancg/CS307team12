@@ -86,7 +86,6 @@ namespace Core
         else {
             mGameMapPage = new MapPage("Default MapPage");
         }
-        mGameSprites = SpriteManager::SpriteManager();
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
     }
@@ -290,9 +289,6 @@ namespace Core
 
     Game *Game::parse(nlohmann::json &root)
     {
-        nlohmann::json j = nlohmann::json{{"name", "hello"}};
-        auto k = j.at("name");
-
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
         this->setAuthor(root.at("Author").get<std::string>());
         this->setVersion(root.at("Version").get<std::string>());
@@ -310,27 +306,26 @@ namespace Core
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
-        //mGameSprites = SpriteManager::SpriteManager();
+        mGameSprites = SpriteManager::SpriteManager();
 
-        //if (root.end() != root.find("spriteList"))
-        //    mGameSprites.parse(root.at("spriteList"));
+        if (root.contains("spriteList"))
+        {
+            mGameSprites.parse(root.at("spriteList"));
+        }
 
         // parse should set current
         // but the info of current in json is not implemented yet
         setCurrentPage(this->pageList.at(0));
-        // lack info of ctrlEntity
-        // TODO:
-        if (currPage->getEntityList().size() > 0)
-        {
-            currPage->setCtrlEntity(currPage->getEntityList().at(0));
-        }
+        setCurrCtrlEntity(getCurrPage()->getCtrlEntity());
+        
         return this;
     }
 
     nlohmann::json *Game::serialize()
     {
         // TODO: bg color ? I don't think that's necessary
-        nlohmann::json j;
+        nlohmann::json* ret = new nlohmann::json;
+        nlohmann::json& j = *ret;
         j["FileType"] = "Parchment Game Data";
         j["GameName"] = getGameName();
         j["Author"] = getAuthor();
@@ -364,6 +359,9 @@ namespace Core
                 ej["scale"] = {e->getScale().x, e->getScale().y};
                 ej["rotation"] = e->getRotation();
                 ej["spriteID"] = e->getSpriteID();
+                if (e->isControlledEntity()) {
+                    ej["control"] = true;
+                }
                 entityVector.push_back(ej);
             }
             pj["entityList"] = entityVector;
@@ -372,20 +370,21 @@ namespace Core
         j["pageList"] = pageVector;
 
         // Sprites
-        // TODO: std::vector<nlohmann::json> spriteVector;
-        //std::unordered_map<int, Sprite *> spriteMap = mGameSprites.getSprites();
-        //for (auto sit = spriteMap.begin(); sit != spriteMap.end(); ++sit)
-        //{
-        //    Sprite &s = *(sit->second);
-        //    nlohmann::json sj;
-        //    sj["SpriteName"] = s.getName();
-        //    sj["FileName"] = s.getFileName();
-        //    sj["SpriteID"] = s.getSpriteID();
-        //    spriteVector.push_back(sj);
-        //}
-        //j["SpriteList"] = spriteVector;
+        std::vector<nlohmann::json> spriteVector;
+        for (auto &[key, value] : mGameSprites.getSprites())
+        {
+            Sprite &s = *value;
+            nlohmann::json sj;
+            sj["SpriteName"] = s.getName();
+            sj["FileName"] = s.getFileName();
+            sj["SpriteID"] = s.getSpriteID();
+            spriteVector.push_back(sj);
+        }
+        if (spriteVector.size() > 0) {
+            j["spriteList"] = spriteVector;
+        }
 
-        return new nlohmann::json(j);
+        return ret;
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit

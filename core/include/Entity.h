@@ -58,6 +58,9 @@ namespace Core
         void setSpriteID(int);
         int getSpriteID();
 
+        bool isControlledEntity();
+        void setControlledEntity(bool value);
+
         // =========================
         // MEMBER OPERATION
 
@@ -84,5 +87,7 @@ namespace Core
         // Sprite ID used to index sprites loaded into memory from the Game class
         // This isn't used yet though, I'm just adding it for later
         int mSpriteID;
+
+        bool mControlledEntity;
     };
 }

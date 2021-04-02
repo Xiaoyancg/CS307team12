@@ -131,6 +131,16 @@ namespace Core
         return mScale;
     }
 
+    bool Entity::isControlledEntity()
+    {
+        return mControlledEntity;
+    }
+
+    void Entity::setControlledEntity(bool value)
+    {
+        mControlledEntity = value;
+    }
+
     void Entity::render()
     {
         glActiveTexture(GL_TEXTURE0);
@@ -167,6 +177,12 @@ namespace Core
 
         entity->setRotation(root.at("rotation").get<double>());
         entity->setSpriteID(root.at("spriteID").get<int>());
+        if (root.contains("control") && root.at("control").get<bool>() == true)
+        {
+            entity->setControlledEntity(true);
+        } else {
+            entity->setControlledEntity(false);
+        }
 
         return entity;
     }
