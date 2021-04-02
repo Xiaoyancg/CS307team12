@@ -185,10 +185,12 @@ int EditorMain()
                 }
             }
             // Handle mouse clicks
-            if (evt.type == SDL_MOUSEBUTTONDOWN) {
+            if (evt.type == SDL_MOUSEBUTTONDOWN)
+            {
                 // Left mouse click
                 int x, y;
-                if (evt.button.button == SDL_BUTTON_LEFT) {
+                if (evt.button.button == SDL_BUTTON_LEFT)
+                {
                     // TEMP
                     /*
                     SDL_GetMouseState(&x, &y);
@@ -519,7 +521,7 @@ static void ShowExampleAppMainMenuBar()
 
             ImGui::Text(currentComponent[CUR_ENTITY].c_str());
             ImGui::Text("Select Entity:");
-            char** entities_list = (char**)malloc(sizeof(char*) * currPage->getEntityList().size());
+            char **entities_list = (char **)malloc(sizeof(char *) * currPage->getEntityList().size());
             static int current_entity = 0;
             if (ImGui::BeginListBox("", ImVec2(200, currPage->getEntityList().size() * ImGui::GetTextLineHeightWithSpacing())))
             {
@@ -532,8 +534,8 @@ static void ShowExampleAppMainMenuBar()
                 for (int n = 0; n < currPage->getEntityList().size(); n++)
                 {
                     std::string ent_name = currPage->getEntityList()[n]->getName().c_str();
-                    entities_list[n] = (char*)malloc(ent_name.length() + 1);
-                    strncpy(entities_list[n], (char*)currPage->getEntityList()[n]->getName().c_str(), ent_name.length());
+                    entities_list[n] = (char *)malloc(ent_name.length() + 1);
+                    strncpy(entities_list[n], (char *)currPage->getEntityList()[n]->getName().c_str(), ent_name.length());
                     entities_list[n][ent_name.length()] = '\0';
 
                     const bool is_selected = (current_entity == n);
@@ -559,7 +561,7 @@ static void ShowExampleAppMainMenuBar()
                 if (strlen(entity_name) != 0)
                 {
                     //UNDO
-                    Core::Page* p = currPage;
+                    Core::Page *p = currPage;
                     std::string e = entity_name;
                     auto action = [p, e]() {
                         p->createEntity(e);
@@ -615,9 +617,7 @@ static void ShowExampleAppMainMenuBar()
                 if (idx > -1)
                 {
                     action();
-                    currentComponent[CUR_ENTITY] = idx < currPage->getEntityList().size() ?
-                                                   currPage->getEntityList()[idx]->getName() :
-                                                   currPage->getEntityList()[idx - 1]->getName();
+                    currentComponent[CUR_ENTITY] = idx < currPage->getEntityList().size() ? currPage->getEntityList()[idx]->getName() : currPage->getEntityList()[idx - 1]->getName();
                 }
                 //ENDUNDO
 
@@ -627,14 +627,14 @@ static void ShowExampleAppMainMenuBar()
                     pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(entity_name, 0, 128);
-                }  
+                }
             }
 
             if (ImGui::Button("Change Name"))
             {
                 if (currentComponent[CUR_ENTITY] != "No Component Selected")
-                { 
-                    for (Core::Entity* e : currPage->getEntityList())
+                {
+                    for (Core::Entity *e : currPage->getEntityList())
                     {
                         if (e->getName() == currentComponent[CUR_ENTITY])
                         {
@@ -643,7 +643,7 @@ static void ShowExampleAppMainMenuBar()
                         }
                     }
                 }
-               
+
                 // memset to clear the buffer after use
                 memset(entity_name, 0, 128);
             }
@@ -943,10 +943,12 @@ static void ShowExampleAppMainMenuBar()
                 currentComponent[CUR_SPRITE] = fileName;
             }
 
-            if (spriteID >= 0) {
+            if (spriteID >= 0)
+            {
                 game->createSprite(currentComponent[CUR_SPRITE], importDialog.GetSelected().string(), spriteID);
             }
-            else {
+            else
+            {
                 game->createSprite(currentComponent[CUR_SPRITE], importDialog.GetSelected().string());
             }
 
@@ -1117,6 +1119,7 @@ static void ShowExampleAppMainMenuBar()
                 currPage = game->getCurrPage();
                 game->initShader();
                 selection[GAMEVIEW] = true;
+                currentComponent[CUR_ENTITY] = "No Component Selected";
                 // When user new project, it won't save
                 // User should call save manually
                 // selection[SAVEAS] = true;
