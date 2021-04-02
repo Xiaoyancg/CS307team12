@@ -27,7 +27,9 @@ GLuint *maptexcbo = nullptr; // This is the framebuffer for the MapView
 
 // Game object
 Core::Game *game = nullptr;
-
+// the bool used to enable/ disable control handler
+// check in game view
+bool onGame = false;
 // Current Map
 Core::Map *currMap = nullptr;
 
@@ -178,7 +180,8 @@ int EditorMain()
                 }
                 if (game != nullptr)
                 {
-                    //game->handleInput(evt);
+                    if (onGame)
+                        game->handleInput(evt);
                 }
             }
             if (evt.type == SDL_KEYUP)
@@ -306,6 +309,12 @@ static void ShowExampleAppMainMenuBar()
 
             // the game view window itself
             ImGui::Begin("Game View", &selection[GAMEVIEW]);
+            if (ImGui::IsWindowFocused(0))
+            {
+                onGame = true;
+            }
+            else
+                onGame = false;
 
             //ImVec2 dims = ImGui::GetWindowSize();
 
@@ -751,7 +760,7 @@ static void ShowExampleAppMainMenuBar()
                             pushAction(action, restore);
                             action();
                             //END UNDO
-                            
+
                             break;
                         }
                     }
