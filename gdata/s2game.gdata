@@ -1,10 +1,10 @@
 {
-  "Author": "",
+  "Author": "team12",
   "FileType": "Parchment Game Data",
-  "GameName": "empty",
+  "GameName": "test",
   "LastModifiedTime": "",
-  "Note": "",
-  "Version": "",
+  "Note": "this is the test file",
+  "Version": "0.2",
   "pageList": [
     {
       "PageName": "entityPage",
