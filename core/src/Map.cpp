@@ -34,7 +34,7 @@ namespace Core
         // If the map is deleted while being used in a MapPage
         if (mAssociatedPage != nullptr)
         {
-            mAssociatedPage->setMap(nullptr);
+            mAssociatedPage->addMap(nullptr);
         }
     }
 
@@ -180,6 +180,29 @@ namespace Core
         for (int i = 0; i < mNumTiles; i++)
         {
             mTileArray[i].setSpriteID(spriteIDMap[i]); // Copy the spriteID to the Map at tile 'i'
+        }
+    }
+
+    void Map::render() {
+        // Traverse all tiles in the Map
+        for (int i = 0; i < getNumTiles(); i++)
+        {
+            // Render each tile of the map!
+            int* coords = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+
+            // Bind the correct sprite if it exists
+            if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
+                glBindTexture(GL_TEXTURE_2D, MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
+            }
+
+            // Buffer and draw tile
+            // NOTE: Change the int multiplier whenever new data will be added to the shaders.
+            //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), coords, GL_DYNAMIC_DRAW);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Unbind the current sprite
+            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 }
