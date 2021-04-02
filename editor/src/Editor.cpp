@@ -655,6 +655,7 @@ static void ShowExampleAppMainMenuBar()
                 entity_info = true;
             }
 
+            //get x pos and y pos for entity's new location
             Core::Entity* moved_ent = NULL;
             ImGui::Text("");
             ImGui::Text("X Pos:");
@@ -666,17 +667,21 @@ static void ShowExampleAppMainMenuBar()
             ImGui::InputInt("##2", &y_pos);
             if (ImGui::Button("Change Entity Position"))
             {
+                //these are totally arbitrary #s to try to ensure entities cant be rendered outside the game view window when at max size
+                //should probably change to use monitor display settings later on
                 if (x_pos >= 0 && x_pos <= 1250 && y_pos >= 0 && y_pos <= 700)
                 {
                     for (Core::Entity* e : currPage->getEntityList())
                     {
                         if (e->getName() == currentComponent[CUR_ENTITY])
                         {
+                            //set location as specified by user
                             e->setLocation(glm::vec2(x_pos, y_pos));
                             moved_ent = e;
                             break;
                         }
                     }
+                    //render the new entity location
                     if (moved_ent != NULL) 
                     {
                         moved_ent->render();
@@ -1057,16 +1062,18 @@ static void ShowExampleAppMainMenuBar()
                 //creates a map with 0x0 dimensions and an empty name
                 /*
                 memset(map_name, 0, 128);
-                dim1 = 0;
-                dim2 = 0;
                 new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64);
                 map_page = game->createMapPage(map_name, new_map);
                 new_map->setName(map_name);
                 new_map->setDimensions(glm::vec2(dim1, dim2));
                 delete_success = true;
                 */
+                dim1 = 0;
+                dim2 = 0;
+                tileSize = 0;
                 game->deleteDefaultMapPageCurrentMap();
                 currMap = nullptr;
+                delete_success = true;
             }
             if (ImGui::Button("Show Map Information "))
             {
