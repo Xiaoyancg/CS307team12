@@ -596,6 +596,25 @@ static void ShowExampleAppMainMenuBar()
                 
                 
             }
+
+            if (ImGui::Button("Change Name"))
+            {
+                if (currentComponent[CUR_ENTITY] != "No Component Selected")
+                { 
+                    for (Core::Entity* e : currPage->getEntityList())
+                    {
+                        if (e->getName() == currentComponent[CUR_ENTITY])
+                        {
+                            e->setName(entity_name);
+                            currentComponent[CUR_ENTITY] = entity_name;
+                        }
+                    }
+                }
+               
+                // memset to clear the buffer after use
+                memset(entity_name, 0, 128);
+            }
+            ImGui::SameLine();
             if (ImGui::Button("Show Entity Information"))
             {
                 entity_info = true;
