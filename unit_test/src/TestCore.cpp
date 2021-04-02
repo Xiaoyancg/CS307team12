@@ -177,15 +177,15 @@ TEST(TEST_CORE, LoadNonexistantImage)
     EXPECT_EQ(nonexistantSprite.getOpenGLTextureID(), -1);
 }
 
-TEST(TEST_CORE, ImplTestImageExists)
-{
-    EXPECT_TRUE(std::filesystem::exists("test_image.png"));
-}
-
-TEST(TEST_CORE, LoadImage)
-{
-    Core::Sprite sprite("name", "test_image.png");
-    EXPECT_EQ(sprite.getDimensions().x, 256);
-    EXPECT_EQ(sprite.getDimensions().y, 256);
-    EXPECT_NE(sprite.getOpenGLTextureID(), -1);
-}
+//TEST(TEST_CORE, ImplTestImageExists)
+//{
+//    EXPECT_TRUE(std::filesystem::exists("test_image.png"));
+//}
+//
+//TEST(TEST_CORE, LoadImage)
+//{
+//    Core::Sprite sprite("name", "test_image.png");
+//    EXPECT_EQ(sprite.getDimensions().x, 256);
+//    EXPECT_EQ(sprite.getDimensions().y, 256);
+//    EXPECT_NE(sprite.getOpenGLTextureID(), -1);
+//}

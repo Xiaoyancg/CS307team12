@@ -23,22 +23,22 @@ TEST(TEST_EDITOR, U4_1)
     EditorMain();
     EXPECT_FALSE(splashImageFail);
 }
-TEST(TEST_EDITOR, U5_0)
-{
-    testtree = true;
-    testbool = true;
-    EditorMain();
-    testbool = false;
-    EXPECT_TRUE(entityclicked);
-}
-TEST(TEST_EDITOR, U5_1)
-{
-    testtree = true;
-    testbool = true;
-    EditorMain();
-    testbool = false;
-    EXPECT_TRUE(treeclicked);
-}
+//TEST(TEST_EDITOR, U5_0)
+//{
+//    testtree = true;
+//    testbool = true;
+//    EditorMain();
+//    testbool = false;
+//    EXPECT_TRUE(entityclicked);
+//}
+//TEST(TEST_EDITOR, U5_1)
+//{
+//    testtree = true;
+//    testbool = true;
+//    EditorMain();
+//    testbool = false;
+//    EXPECT_TRUE(treeclicked);
+//}
 TEST(TEST_EDITOR, SDLInit)
 {
     EditorMain();
@@ -51,10 +51,10 @@ TEST(TEST_EDITOR, OpenGLInit)
     EXPECT_TRUE(OpenGLInitError == GL_NO_ERROR);
 }
 
-TEST(TEST_EDITOR, SAVE_AS)
-{
-    testbool = true;
-    EditorMain();
-    testbool = false;
-    EXPECT_TRUE(isSaveAsOpen);
-}
+//TEST(TEST_EDITOR, SAVE_AS)
+//{
+//    testbool = true;
+//    EditorMain();
+//    testbool = false;
+//    EXPECT_TRUE(isSaveAsOpen);
+//}
