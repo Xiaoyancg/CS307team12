@@ -382,12 +382,6 @@ static void ShowExampleAppMainMenuBar()
                     for (Core::Entity *e : elist)
                     {
 #ifdef __TEST_EDITOR
-                        if (testtree)
-                        {
-                            entityclicked = !ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick);
-                            running = false;
-                            return;
-                        }
 #endif
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
                         const bool is_selected = (selection_mask & (1 << index)) != 0;
@@ -1040,6 +1034,7 @@ static void ShowExampleAppMainMenuBar()
         {
             // extract just the file name from the selected path
             std::string fileName = importDialog.GetSelected().string().substr(importDialog.GetSelected().string().find_last_of('\\', std::string::npos) + 1, std::string::npos);
+            std::string filePath = std::filesystem::relative(importDialog.GetSelected()).string();
 
             if (sprite_name[0] != 0)
             {
@@ -1052,11 +1047,11 @@ static void ShowExampleAppMainMenuBar()
 
             if (spriteID >= 0)
             {
-                game->createSprite(currentComponent[CUR_SPRITE], importDialog.GetSelected().string(), spriteID);
+                game->createSprite(currentComponent[CUR_SPRITE], filePath, spriteID);
             }
             else
             {
-                game->createSprite(currentComponent[CUR_SPRITE], importDialog.GetSelected().string());
+                game->createSprite(currentComponent[CUR_SPRITE], filePath);
             }
 
             importDialog.ClearSelected();
