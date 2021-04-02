@@ -2,6 +2,7 @@
 #pragma warning(disable : 5033)
 #include <glm/glm.hpp>
 #include <Tile.h>
+//#include <MapPage.h>
 
 // Map class
 namespace Core
@@ -33,6 +34,8 @@ namespace Core
 
 		void setName(std::string);
 		std::string getName();
+
+		void render();
 
 		friend class MapPage;
 

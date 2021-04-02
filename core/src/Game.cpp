@@ -32,7 +32,7 @@ namespace Core
     Game::Game(std::string gameName) : gameName(gameName)
     {
         useFramebuffer = false;
-        setupSpriteRefs();
+        onGameCreation();
 
         // Initialize OpenGL and necessary SDL objects
         initContext();
@@ -41,19 +41,20 @@ namespace Core
         initShader();
     }
     // editor open
-    Game::Game(nlohmann::json &json, GLuint *o)
+    Game::Game(nlohmann::json &json, GLuint *o, GLuint *mapcbo)
     {
         this->parse(json);
         texcbo = o;
+        maptexcbo = mapcbo;
         useFramebuffer = true;
-        setupSpriteRefs();
+        onGameCreation();
     }
 
     Game::Game(nlohmann::json &json)
     {
         this->parse(json);
         useFramebuffer = false;
-        setupSpriteRefs();
+        onGameCreation();
 
         // Initialize OpenGL and necessary SDL objects
         initContext();
@@ -63,20 +64,28 @@ namespace Core
     }
 
     // editor new
-    Game::Game(GLuint *o)
+    Game::Game(GLuint *o, GLuint *mapcbo)
     {
         texcbo = o;
+        maptexcbo = mapcbo;
         useFramebuffer = true;
         this->gameName = "editortestname";
         this->setCurrentPage(this->createPage("emptyPage"));
-        setupSpriteRefs();
+        onGameCreation();
     }
 
     // FIXME: move to core
     // Each class that renders sprites needs a reference to the same SpriteManager as this class.
     // Whenever a new class is added that renders sprites, its reference must be set here.
-    void Game::setupSpriteRefs()
+    void Game::onGameCreation()
     {
+        // Set default MapPage
+        if (useFramebuffer) {
+            mGameMapPage = new MapPage(maptexcbo);
+        }
+        else {
+            mGameMapPage = new MapPage("Default MapPage");
+        }
         mGameSprites = SpriteManager::SpriteManager();
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
@@ -176,6 +185,15 @@ namespace Core
         MapPage *mp = new MapPage(n, m);
         return (MapPage *)addPage(mp);
     }
+    Map* Game::createMapOnDefaultMapPage(int cols, int rows, int tilesize) {
+        if (mGameMapPage) {
+            return mGameMapPage->addMap(new Map("Created by Parchment Editor", glm::vec2(cols, rows), tilesize));
+        }
+        return nullptr;
+    }
+    void Game::deleteDefaultMapPageCurrentMap() {
+        mGameMapPage->deleteCurrMap();
+    }
     MenuPage* Game::createMenuPage(std::string name, Menu* menu) {
         MenuPage* mp = new MenuPage(name, menu);
         return (MenuPage*)addPage(mp);
@@ -252,6 +270,19 @@ namespace Core
     std::unordered_map<int, Sprite *> Game::getSprites()
     {
         return mGameSprites.getSprites();
+    }
+
+    std::vector<Map*> Game::getDefaultMapPageMaps() {
+        return mGameMapPage->getMaps();
+    }
+
+    MapPage* Game::getDefaultMapPage() {
+        return mGameMapPage;
+    }
+
+
+    void Game::renderDefaultMapPage() {
+        mGameMapPage->renderOnFramebuffer();
     }
 
     // =========================

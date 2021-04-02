@@ -47,13 +47,13 @@ namespace Core
             3, 1, 4, 2};
 
         Map *map1 = new Map("Map 1 woohoo!", glm::vec2(4, 4), 64);
-        map1->setMapTileSpritesFromArray(spriteMap); // Doesn't do anything right now, but will once sprite rendering is implemented!
+        map1->setMapTileSpritesFromArray(spriteMap);
         Map *map2 = new Map("Map 2 ahhh!", glm::vec2(16, 16), 32);
 
         // Here are the 2 ways to make MapPages with set maps
         mapPage1 = game->createMapPage("MapPage 4x4 64px", map1);
         mapPage2 = game->createMapPage("MapPage 16x16 32px");
-        mapPage2->setMap(map2); // Sets empty map page 2's map
+        mapPage2->addMap(map2); // Sets empty map page 2's map
 
         // Creating a map with only a name, no dimensions (0 x 0) or tile size
         mapPage3 = game->createMapPage("yee"); // Should be a blank screen
@@ -62,12 +62,15 @@ namespace Core
         mapPage4 = game->createMapPage();
 
         // Set the properties of the empty mapPage4
-        Map *map4 = mapPage4->getMap();
-        mapPage4->getMap()->setTileSize(32);
+        Map *map4 = mapPage4->getCurrMap();
+        mapPage4->getCurrMap()->setTileSize(32);
         map4->setDimensions(glm::vec2(7, 3));
 
         // MENU PAGE TEST //////////////////////
         Menu *menu = new Menu("example menu");
+        // First argument is a name for the menu entry (which gets displayed)
+        // Second argument is the size of the text
+        // Third and fourth are for callback addresses for 1 or 2 buttons, depending on what is not null
         menu->createMenuEntry("text ahhh", 48, (void *)123, nullptr);
         menu->createMenuEntry("", 62, (void *)123, (void *)123);
         menu->createMenuEntry("oooooo  oo o oooo oo o", 32, (void *)123, (void *)123);

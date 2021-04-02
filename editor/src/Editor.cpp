@@ -21,10 +21,16 @@ ImGui::FileBrowser importDialog;
 static bool selection[SELECT_COUNT];
 
 // main texture color buffer object
+// Game gets rendered onto this, and this is used as an Image with ImGUI
 GLuint *texcbo = nullptr;
+GLuint* maptexcbo = nullptr; // This is the framebuffer for the MapView
 
 // Game object
 Core::Game *game = nullptr;
+
+// Current Map
+Core::Map* currMap = nullptr;
+
 // Current page pointer
 Core::Page *currPage = nullptr;
 
@@ -274,7 +280,7 @@ static void ShowExampleAppMainMenuBar()
      *  ========================
      */
 
-    // open save as popup
+     // open save as popup
     if (selection[SAVEAS])
     {
         ImGui::OpenPopup("Save As");
@@ -310,11 +316,38 @@ static void ShowExampleAppMainMenuBar()
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
         }
+    }
+    if (selection[MAPVIEW]) {
+        // possibly implement a new function here for readability purposes
+        if (currMap != nullptr)
+        {
+            // set the windows default size
+            ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+            // the game view window itself
+            ImGui::Begin("Map View", &selection[MAPVIEW]);
+
+            // Get size of drawable space on the window, instead of the entire size of the window
+            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+            glm::ivec2 dims = currMap->getDimensions();
+            int tileSize = currMap->getTileSize();
+            //glViewport(0, 0, dims.x * tileSize, dims.y * tileSize);
+            glViewport(0, 0, 1000, 1000);
+
+            game->renderDefaultMapPage(); // Render Game with new viewport size
+
+            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
+            ImGui::Image((void*)(*maptexcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            ImGui::End();
+            ImGui::PopStyleVar();
+    }
     }
 #ifdef __TEST_EDITOR
     selection[OBJECTTREE] = testbool;
@@ -652,6 +685,7 @@ static void ShowExampleAppMainMenuBar()
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
         static char page_name[128] = "";
+        static char chosen_type[128] = "";
         bool page_info = false;
         if (ImGui::Begin("Page Editor", &selection[PAGEEDITOR]))
         {
@@ -679,19 +713,39 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (strlen(page_name) != 0)
                 {
-                    //UNDO
-                    std::string pname = page_name;
-                    auto action = [pname]() {
-                        game->createPage(pname);
-                    };
-                    auto restore = [pname]() {
-                        game->deletePage(pname);
-                    };
-                    pushAction(action, restore);
-                    action();
-                    //ENDUNDO
-                    // memset to clear the buffer after use
-                    memset(page_name, 0, 128);
+                    printf("%s", page_options[current_item]);
+                    if (strcmp(page_options[current_item], "Menu") == 0)
+                    {
+                        //UNDO
+                        std::string pname = page_name;
+                        auto action = [pname]() {
+                            game->createMenuPage(pname);
+                        };
+                        auto restore = [pname]() {
+                            game->deletePage(pname);
+                        };
+                        pushAction(action, restore);
+                        action();
+                        //ENDUNDO
+                        // memset to clear the buffer after use
+                        memset(page_name, 0, 128);
+                    }
+                    else
+                    {
+                        //UNDO
+                        std::string pname = page_name;
+                        auto action = [pname]() {
+                            game->createPage(pname);
+                        };
+                        auto restore = [pname]() {
+                            game->deletePage(pname);
+                        };
+                        pushAction(action, restore);
+                        action();
+                        //ENDUNDO
+                        // memset to clear the buffer after use
+                        memset(page_name, 0, 128);
+                    }
                 }
             }
             ImGui::SameLine();
@@ -910,6 +964,7 @@ static void ShowExampleAppMainMenuBar()
     static char map_name[128] = "";
     static int dim1 = 0;
     static int dim2 = 0;
+    static int tileSize = 0;
     bool map_info = false;
     Core::MapPage *map_page = NULL;
     Core::Map *new_map = NULL;
@@ -933,6 +988,9 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Columns: ");
             ImGui::SameLine();
             ImGui::SliderInt("##2", &dim2, 0, 50);
+            ImGui::Text("Tile size: ");
+            ImGui::SameLine();
+            ImGui::SliderInt("##3", &tileSize, 0, 128);
             if (ImGui::Button("Create New Map"))
             {
                 //creates a new map with map_name specified by user and dimensions as specified by user
@@ -953,11 +1011,16 @@ static void ShowExampleAppMainMenuBar()
                 action();
                 //ENDUNDO
                 //TODO: render new map
+                // SETUP THE MAP CBO IF NEEDED
+                currMap = game->createMapOnDefaultMapPage(dim2, dim1, tileSize);
+                selection[MAPVIEW] = true;
+                    
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
             {
                 //creates a map with 0x0 dimensions and an empty name
+                /*
                 memset(map_name, 0, 128);
                 dim1 = 0;
                 dim2 = 0;
@@ -966,6 +1029,9 @@ static void ShowExampleAppMainMenuBar()
                 new_map->setName(map_name);
                 new_map->setDimensions(glm::vec2(dim1, dim2));
                 delete_success = true;
+                */
+                game->deleteDefaultMapPageCurrentMap();
+                currMap = nullptr;
             }
             if (ImGui::Button("Show Map Information "))
             {
@@ -1044,7 +1110,9 @@ static void ShowExampleAppMainMenuBar()
             {
                 texcbo = new GLuint();
                 glGenTextures(1, texcbo);
-                game = new Core::Game(texcbo);
+                maptexcbo = new GLuint();
+                glGenTextures(1, maptexcbo);
+                game = new Core::Game(texcbo, maptexcbo);
                 currPage = game->getCurrPage();
                 game->initShader();
                 selection[GAMEVIEW] = true;
@@ -1162,7 +1230,9 @@ static void ShowExampleAppMainMenuBar()
         dir = openDialog.GetSelected().string();
         texcbo = new GLuint();
         glGenTextures(1, texcbo);
-        game = new Core::Game(*j, texcbo);
+        maptexcbo = new GLuint();
+        glGenTextures(1, maptexcbo);
+        game = new Core::Game(*j, texcbo, maptexcbo);
         // pointer deletion
         delete (j);
         gameName = game->getGameName();
