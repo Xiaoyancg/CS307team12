@@ -34,7 +34,7 @@ namespace Core
         // If the map is deleted while being used in a MapPage
         if (mAssociatedPage != nullptr)
         {
-            mAssociatedPage->setMap(nullptr);
+            mAssociatedPage->addMap(nullptr);
         }
     }
 
@@ -193,7 +193,6 @@ namespace Core
             // Bind the correct sprite if it exists
             if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
                 glBindTexture(GL_TEXTURE_2D, MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
-                printf("hee hee %d\n", MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
             }
 
             // Buffer and draw tile
