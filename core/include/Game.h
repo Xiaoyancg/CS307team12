@@ -46,10 +46,10 @@ namespace Core
         // CONSTRUCTOR
 
         // Game ();
-        Game(GLuint *o);
+        Game(GLuint *texcbo, GLuint *maptexcbo);
         Game(nlohmann::json &json);
         Game(std::string gameName);
-        Game(nlohmann::json &json, GLuint *o);
+        Game(nlohmann::json &json, GLuint *texcbo, GLuint *maptexcbo);
 
         // =========================
         // ATTRIBUTES OPERATION (attributes mean non functionality related variables)
@@ -88,6 +88,8 @@ namespace Core
         MapPage *createMapPage(std::string, Map *);
         MapPage *createMapPage(std::string);
         MapPage *createMapPage();
+        Map* createMapOnDefaultMapPage(int cols, int rows, int tilesize);
+        void deleteDefaultMapPageCurrentMap();
         MenuPage* createMenuPage(std::string, Menu*);
         MenuPage* createMenuPage(std::string);
         MenuPage* createMenuPage();
@@ -102,6 +104,11 @@ namespace Core
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();
+
+        // Map operations
+        std::vector<Map*> getDefaultMapPageMaps();
+        MapPage* getDefaultMapPage();
+        void renderDefaultMapPage();
 
         /* ----------------------------- STATE OPERATION ---------------------------- */
         // ( the flags and pointers that describing the current state of performance )
@@ -154,7 +161,7 @@ namespace Core
         // check the page list iterator not end
         bool _isBeforeEnd(PLitr i);
 
-        void setupSpriteRefs();
+        void onGameCreation();
         // ==========================
         // ATTRIBUTES VARIABLE
 
@@ -184,11 +191,14 @@ namespace Core
         Page *currPage = nullptr;
 
         // texcbo from editor
-        GLuint *texcbo;
+        GLuint *texcbo, *maptexcbo;
         // framebuffer object
         GLuint fbo;
         // contains all pages
         std::vector<Page *> pageList;
+
+        // Each game needs at least one MapPage, so heres a pointer to the default one
+        MapPage* mGameMapPage;
 
         // the current in display pagelist
         // FIXME: why use int?

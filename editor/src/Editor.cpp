@@ -21,7 +21,9 @@ ImGui::FileBrowser importDialog;
 static bool selection[SELECT_COUNT];
 
 // main texture color buffer object
+// Game gets rendered onto this, and this is used as an Image with ImGUI
 GLuint *texcbo = nullptr;
+GLuint* maptexcbo = nullptr; // This is the framebuffer for the MapView
 
 // Game object
 Core::Game *game = nullptr;
@@ -333,12 +335,13 @@ static void ShowExampleAppMainMenuBar()
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
             glm::ivec2 dims = currMap->getDimensions();
             int tileSize = currMap->getTileSize();
-            glViewport(0, 0, dims.x * tileSize, dims.y * tileSize); // Set viewport to the Game dimensions
+            //glViewport(0, 0, dims.x * tileSize, dims.y * tileSize);
+            glViewport(0, 0, 1000, 1000);
 
-            currMap->render(); // Render Game with new viewport size
+            game->renderDefaultMapPage(); // Render Game with new viewport size
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void*)(*maptexcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
@@ -959,6 +962,7 @@ static void ShowExampleAppMainMenuBar()
     static char map_name[128] = "";
     static int dim1 = 0;
     static int dim2 = 0;
+    static int tileSize = 0;
     bool map_info = false;
     Core::MapPage *map_page = NULL;
     Core::Map *new_map = NULL;
@@ -982,6 +986,9 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Columns: ");
             ImGui::SameLine();
             ImGui::SliderInt("##2", &dim2, 0, 50);
+            ImGui::Text("Tile size: ");
+            ImGui::SameLine();
+            ImGui::SliderInt("##3", &tileSize, 0, 128);
             if (ImGui::Button("Create New Map"))
             {
                 //creates a new map with map_name specified by user and dimensions as specified by user
@@ -1002,11 +1009,16 @@ static void ShowExampleAppMainMenuBar()
                 action();
                 //ENDUNDO
                 //TODO: render new map
+                // SETUP THE MAP CBO IF NEEDED
+                currMap = game->createMapOnDefaultMapPage(dim2, dim1, tileSize);
+                selection[MAPVIEW] = true;
+                    
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
             {
                 //creates a map with 0x0 dimensions and an empty name
+                /*
                 memset(map_name, 0, 128);
                 dim1 = 0;
                 dim2 = 0;
@@ -1015,6 +1027,9 @@ static void ShowExampleAppMainMenuBar()
                 new_map->setName(map_name);
                 new_map->setDimensions(glm::vec2(dim1, dim2));
                 delete_success = true;
+                */
+                game->deleteDefaultMapPageCurrentMap();
+                currMap = nullptr;
             }
             if (ImGui::Button("Show Map Information "))
             {
@@ -1093,7 +1108,9 @@ static void ShowExampleAppMainMenuBar()
             {
                 texcbo = new GLuint();
                 glGenTextures(1, texcbo);
-                game = new Core::Game(texcbo);
+                maptexcbo = new GLuint();
+                glGenTextures(1, maptexcbo);
+                game = new Core::Game(texcbo, maptexcbo);
                 currPage = game->getCurrPage();
                 game->initShader();
                 selection[GAMEVIEW] = true;
@@ -1210,7 +1227,9 @@ static void ShowExampleAppMainMenuBar()
         dir = openDialog.GetSelected().string();
         texcbo = new GLuint();
         glGenTextures(1, texcbo);
-        game = new Core::Game(*j, texcbo);
+        maptexcbo = new GLuint();
+        glGenTextures(1, maptexcbo);
+        game = new Core::Game(*j, texcbo, maptexcbo);
         // pointer deletion
         delete (j);
         gameName = game->getGameName();
