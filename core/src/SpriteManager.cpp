@@ -90,7 +90,8 @@ namespace Core
 	{
 		try
 		{
-			for (nlohmann::json sj : j)
+			auto jSpriteList = j.get<std::vector<nlohmann::json>>();
+			for (nlohmann::json& sj : jSpriteList)
 			{
 				createSprite(
 					sj.at("SpriteName").get<std::string>(),

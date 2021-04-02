@@ -1,0 +1,111 @@
+{
+  "Author": "",
+  "FileType": "Parchment Game Data",
+  "GameName": "empty",
+  "LastModifiedTime": "",
+  "Note": "",
+  "Version": "",
+  "pageList": [
+    {
+      "PageName": "entityPage",
+      "entityList": [
+        {
+          "EntityName": "interactive",
+          "location": [
+            50.0,
+            50.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            64.0
+          ],
+          "spriteID": 0
+        },
+        {
+          "EntityName": "shortWide",
+          "location": [
+            500.0,
+            500.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            32.0
+          ],
+          "spriteID": 2
+        },
+        {
+          "EntityName": "veryShortWide",
+          "location": [
+            640.0,
+            100.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            16.0
+          ],
+          "spriteID": 3
+        },
+        {
+          "EntityName": "origin",
+          "location": [
+            1000.0,
+            300.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            128.0
+          ],
+          "spriteID": 4,
+          "control": true
+        }
+      ],
+      "isMenu": false
+    },
+    {
+      "PageName": "1",
+      "entityList": [],
+      "isMenu": false
+    },
+    {
+      "PageName": "2",
+      "entityList": [],
+      "isMenu": false
+    }
+  ],
+  "spriteList": [
+    {
+      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\1.png",
+      "SpriteID": 0,
+      "SpriteName": "1.png"
+    },
+    {
+      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\oh_yeah_woo_yeah.png",
+      "SpriteID": 2,
+      "SpriteName": "oh_yeah_woo_yeah.png"
+    },
+    {
+      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\test_image_1.png",
+      "SpriteID": 3,
+      "SpriteName": "test_image_1.png"
+    },
+    {
+      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\test_image_2.png",
+      "SpriteID": 4,
+      "SpriteName": "test_image_2.png"
+    },
+    {
+      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\2.png",
+      "SpriteID": 1,
+      "SpriteName": "2.png"
+    },
+    {
+      "FileName": "C:\\devenv\\workingtree\\Parchment\\build\\myexe\\Debug\\test_image_3.png",
+      "SpriteID": 5,
+      "SpriteName": "test_image_3.png"
+    }
+  ]
+}

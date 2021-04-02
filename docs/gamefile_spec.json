@@ -1,23 +1,38 @@
 {
   "FileType": "Parchment Game Data",
-  "GameName": "example name",
-  "Author": "example author",
-  "Version": "exmaple version",
-  "LastModifiedTime": "exmple Date Time",
-  "Note": "exmaple Note",
+  "GameName": "test-name",
+  "Author": "test-author",
+  "Version": "test-version",
+  "LastModifiedTime": "test-datetime",
+  "Note": "test-note",
 
-  "PageList": [
+  "pageList": [
     {
-      "Name": "exmaple Page",
-      "EntityList": [
+      "Name": "test-page01",
+      "entityList": [
         {
-          "Name": "example Entity Name",
-          "Entity ID": 1,
+          "Name": "test-entity01",
+          "spriteID": 1,
           "location": [ 0.5, 0.5 ],
-          "scale": [ 1.0, 2.0 ],
-          "rotation": 1.0,
+          "scale": [ 1.0, 1.0 ],
+          "rotation": 0.0,
+          "control": true
+        },
+        {
+          "Name": "test-entity02",
+          "spriteID": 2,
+          "location": [ 1.0, 2.0 ],
+          "scale": [ 1.0, 1.0 ],
+          "rotation": 0.0
         }
       ]
+    }
+  ],
+  "SpriteList": [
+    {
+      "SpriteName": "test-sprite01",
+      "FileName": "path/to/sprite01",
+      "SpriteID": 1
     }
   ]
 }
