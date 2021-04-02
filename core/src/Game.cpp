@@ -65,8 +65,8 @@ namespace Core
     // editor new
     Game::Game(GLuint *o, GLuint *mapcbo)
     {
-        texcbo = o;
-        maptexcbo = mapcbo;
+        texcbo = o
+            maptexcbo = mapcbo;
         useFramebuffer = true;
         this->gameName = "editortestname";
         this->setCurrentPage(this->createPage("emptyPage"));
