@@ -8,7 +8,8 @@ namespace Core
     // Takes a scale, the number of tiles in the x and y direction
     Map::Map(std::string name, glm::vec2 dimensions, int tileSize) : mMapDimensions(dimensions),
                                                                      mTileSize(tileSize),
-                                                                     mAssociatedPage(nullptr)
+                                                                     mAssociatedPage(nullptr),
+                                                                     mMapName(name)
     {
         // Create map
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
