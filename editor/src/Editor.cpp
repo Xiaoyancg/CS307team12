@@ -523,20 +523,23 @@ static void ShowExampleAppMainMenuBar()
 
             if (ImGui::Button("Create New Entity"))
             {
-                //UNDO
-                Core::Page *p = currPage;
-                std::string e = entity_name;
-                auto action = [p, e]() {
-                    p->createEntity(e);
-                };
-                auto restore = [p, e]() {
-                    p->deleteEntity(e);
-                };
-                pushAction(action, restore);
-                action();
-                //ENDUNDO
-                // memset to clear the buffer after use
-                memset(entity_name, 0, 128);
+                if (strlen(entity_name) != 0)
+                {
+                    //UNDO
+                    Core::Page* p = currPage;
+                    std::string e = entity_name;
+                    auto action = [p, e]() {
+                        p->createEntity(e);
+                    };
+                    auto restore = [p, e]() {
+                        p->deleteEntity(e);
+                    };
+                    pushAction(action, restore);
+                    action();
+                    //ENDUNDO
+                    // memset to clear the buffer after use
+                    memset(entity_name, 0, 128);
+                }
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Entity") && currentComponent[CUR_ENTITY] != "No Component Selected")
@@ -591,10 +594,7 @@ static void ShowExampleAppMainMenuBar()
                     pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(entity_name, 0, 128);
-                }
-
-                
-                
+                }  
             }
 
             if (ImGui::Button("Change Name"))
@@ -632,7 +632,7 @@ static void ShowExampleAppMainMenuBar()
         if (ImGui::BeginPopup("Entity Information"))
         {
             std::vector<Core::Entity *> elist = currPage->getEntityList();
-            ImGui::Text("Entity Names: ");
+            ImGui::Text("Entity List: ");
             for (Core::Entity *e : elist)
             {
                 ImGui::Text(e->getName().c_str());
@@ -677,19 +677,22 @@ static void ShowExampleAppMainMenuBar()
             }
             if (ImGui::Button("Create New Page"))
             {
-                //UNDO
-                std::string pname = page_name;
-                auto action = [pname]() {
-                    game->createPage(pname);
-                };
-                auto restore = [pname]() {
-                    game->deletePage(pname);
-                };
-                pushAction(action, restore);
-                action();
-                //ENDUNDO
-                // memset to clear the buffer after use
-                memset(page_name, 0, 128);
+                if (strlen(page_name) != 0)
+                {
+                    //UNDO
+                    std::string pname = page_name;
+                    auto action = [pname]() {
+                        game->createPage(pname);
+                    };
+                    auto restore = [pname]() {
+                        game->deletePage(pname);
+                    };
+                    pushAction(action, restore);
+                    action();
+                    //ENDUNDO
+                    // memset to clear the buffer after use
+                    memset(page_name, 0, 128);
+                }
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Page"))
@@ -744,7 +747,8 @@ static void ShowExampleAppMainMenuBar()
             ImGui::SameLine();
             ImGui::Text(currPage->getName().c_str());
             std::vector<Core::Page *> plist = *game->getPageList();
-            ImGui::Text("Page Names: ");
+            ImGui::Text("");
+            ImGui::Text("Page List: ");
             for (Core::Page *p : plist)
             {
                 ImGui::Text(p->getName().c_str());
@@ -1096,11 +1100,11 @@ static void ShowExampleAppMainMenuBar()
             // Edit menu
             if (ImGui::BeginMenu("Edit"))
             {
-                if (ImGui::MenuItem("Undo"))
+                if (ImGui::MenuItem("Undo", "Ctrl+Z"))
                 {
                     undo();
                 }
-                if (ImGui::MenuItem("Redo"))
+                if (ImGui::MenuItem("Redo", "Ctrl+Y"))
                 {
                     redo();
                 }
