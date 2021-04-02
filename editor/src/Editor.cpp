@@ -662,7 +662,7 @@ static void ShowExampleAppMainMenuBar()
             ImGui::Text("Select Entity:");
             char **entities_list = (char **)malloc(sizeof(char *) * currPage->getEntityList().size());
             static int current_entity = 0;
-            if (ImGui::BeginListBox("", ImVec2(200, 10 * ImGui::GetTextLineHeightWithSpacing())))
+            if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 // Set default selected entity to be the first in the entity list
                 if (currentComponent[CUR_ENTITY] == "No Component Selected" && currPage->getEntityList().size() > 0)
