@@ -23,13 +23,13 @@ static bool selection[SELECT_COUNT];
 // main texture color buffer object
 // Game gets rendered onto this, and this is used as an Image with ImGUI
 GLuint *texcbo = nullptr;
-GLuint* maptexcbo = nullptr; // This is the framebuffer for the MapView
+GLuint *maptexcbo = nullptr; // This is the framebuffer for the MapView
 
 // Game object
 Core::Game *game = nullptr;
 
 // Current Map
-Core::Map* currMap = nullptr;
+Core::Map *currMap = nullptr;
 
 // Current page pointer
 Core::Page *currPage = nullptr;
@@ -174,7 +174,7 @@ int EditorMain()
                 }
                 if (game != nullptr)
                 {
-                    game->handleInput(evt);
+                    //game->handleInput(evt);
                 }
             }
             if (evt.type == SDL_KEYUP)
@@ -280,7 +280,7 @@ static void ShowExampleAppMainMenuBar()
      *  ========================
      */
 
-     // open save as popup
+    // open save as popup
     if (selection[SAVEAS])
     {
         ImGui::OpenPopup("Save As");
@@ -316,13 +316,14 @@ static void ShowExampleAppMainMenuBar()
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void*)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
         }
     }
-    if (selection[MAPVIEW]) {
+    if (selection[MAPVIEW])
+    {
         // possibly implement a new function here for readability purposes
         if (currMap != nullptr)
         {
@@ -343,11 +344,11 @@ static void ShowExampleAppMainMenuBar()
             game->renderDefaultMapPage(); // Render Game with new viewport size
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void*)(*maptexcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void *)(*maptexcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
-    }
+        }
     }
 #ifdef __TEST_EDITOR
     selection[OBJECTTREE] = testbool;
@@ -1015,7 +1016,6 @@ static void ShowExampleAppMainMenuBar()
                 currMap = game->createMapOnDefaultMapPage(map_name, dim2, dim1, tileSize);
                 memset(map_name, 0, 128);
                 selection[MAPVIEW] = true;
-                    
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
