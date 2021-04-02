@@ -60,15 +60,18 @@
           "spriteID": 4
         }
       ],
-      "PageName": "entityPage"
+      "PageName": "entityPage",
+      "isMenu": false
     },
     {
-      "EntityList": [],
-      "PageName": "1"
+      "PageName": "1",
+      "entityList": [],
+      "isMenu": false
     },
     {
-      "EntityList": [],
-      "PageName": "2"
+      "PageName": "2",
+      "entityList": [],
+      "isMenu": false
     }
   ],
   "Version": ""
