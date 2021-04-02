@@ -383,11 +383,6 @@ static void ShowExampleAppMainMenuBar()
                     std::vector<Core::Entity *> elist = currPage->getEntityList();
                     for (Core::Entity *e : elist)
                     {
-<<<<<<< HEAD
-#ifdef __TEST_EDITOR
-#endif
-=======
->>>>>>> c6d8290b6c5cd9bfb818aef2a1e4261145ca3db0
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
                         const bool is_selected = (selection_mask & (1 << index)) != 0;
                         if (is_selected)
@@ -742,8 +737,21 @@ static void ShowExampleAppMainMenuBar()
                         if (e->getName() == currentComponent[CUR_ENTITY])
                         {
                             //set location as specified by user
-                            e->setLocation(glm::vec2(x_pos, y_pos));
-                            moved_ent = e;
+                            //UNDO
+                            auto pos = glm::vec2(x_pos, y_pos);
+                            auto currentPos = e->getLocation();
+                            auto action = [e, pos, &moved_ent]() {
+                                e->setLocation(pos);
+                                moved_ent = e;
+                            };
+                            auto restore = [e, currentPos, &moved_ent]() {
+                                e->setLocation(currentPos);
+                                moved_ent = e;
+                            };
+                            pushAction(action, restore);
+                            action();
+                            //END UNDO
+                            
                             break;
                         }
                     }
