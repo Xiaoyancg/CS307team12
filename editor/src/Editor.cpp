@@ -386,7 +386,6 @@ static void ShowExampleAppMainMenuBar()
 #endif
                         if (ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
-                            printf(e->getName().c_str());
                             selection[ENTITYEDITOR] = true;
                             currentComponent[CUR_ENTITY] = e->getName();
                         }
@@ -412,7 +411,6 @@ static void ShowExampleAppMainMenuBar()
 
                         if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
                         {
-                            printf(p->getName().c_str());
                             selection[PAGEEDITOR] = true;
                         }
                     }
@@ -543,7 +541,6 @@ static void ShowExampleAppMainMenuBar()
                     {
                         current_entity = n;
                         currentComponent[CUR_ENTITY] = ent_name;
-                        printf("%s\n", currentComponent[CUR_ENTITY].c_str());
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -580,7 +577,6 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::Button("Delete This Entity") && currentComponent[CUR_ENTITY] != "No Component Selected")
             {
                 memcpy(entity_name, currentComponent[CUR_ENTITY].c_str(), currentComponent[CUR_ENTITY].size() + 1);
-                printf("Deleting entity: %s\n", entity_name);
                 size_t original = game->getCurrPage()->getEntityList().size();
                 //UNDO
                 Core::Page *p = currPage;
@@ -713,7 +709,6 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (strlen(page_name) != 0)
                 {
-                    printf("%s", page_options[current_item]);
                     if (strcmp(page_options[current_item], "Menu") == 0)
                     {
                         //UNDO
