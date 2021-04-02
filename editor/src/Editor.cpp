@@ -50,7 +50,7 @@ bool ctrl_pressed = false;
 std::vector<std::string> currentComponent;
 //std::string currentComponent = "No Component Selected";
 
-static void HelpMarker(const char* desc);
+static void HelpMarker(const char *desc);
 
 // ===============================
 // Main function
@@ -176,7 +176,7 @@ int EditorMain()
                 }
                 if (game != nullptr)
                 {
-                    game->handleInput(evt);
+                    //game->handleInput(evt);
                 }
             }
             if (evt.type == SDL_KEYUP)
@@ -434,7 +434,7 @@ static void ShowExampleAppMainMenuBar()
                         const bool is_selected = (selection_mask & (1 << index)) != 0;
                         if (is_selected)
                             node_flags |= ImGuiTreeNodeFlags_Selected;
-                        ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, p->getName().c_str());
+                        ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, p->getName().c_str());
                         if (ImGui::IsItemClicked())
                         {
                             node_clicked = index;
@@ -464,13 +464,13 @@ static void ShowExampleAppMainMenuBar()
                     static int selection_mask = (1 << -1);
                     int node_clicked = -1;
                     int index = 0;
-                    for (auto& [key, value] : game->getSprites())
+                    for (auto &[key, value] : game->getSprites())
                     {
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
                         const bool is_selected = (selection_mask & (1 << index)) != 0;
                         if (is_selected)
                             node_flags |= ImGuiTreeNodeFlags_Selected;
-                        ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, value->getName().c_str());
+                        ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, value->getName().c_str());
                         if (ImGui::IsItemClicked())
                         {
                             node_clicked = index;
@@ -590,7 +590,7 @@ static void ShowExampleAppMainMenuBar()
                 if (strlen(entity_name) != 0)
                 {
                     //UNDO
-                    Core::Page* p = currPage;
+                    Core::Page *p = currPage;
                     std::string e = entity_name;
                     auto action = [p, e]() {
                         p->createEntity(e);
@@ -612,11 +612,11 @@ static void ShowExampleAppMainMenuBar()
                 printf("Deleting entity: %s\n", entity_name);
                 size_t original = game->getCurrPage()->getEntityList().size();
                 //UNDO
-                Core::Page* p = currPage;
+                Core::Page *p = currPage;
                 std::string e = entity_name;
                 int idx = -1;
                 bool isCtrlEntity = false;
-                auto& eList = currPage->getEntityList();
+                auto &eList = currPage->getEntityList();
                 for (int i = 0; i < eList.size(); i++)
                 {
                     if (eList[i]->getName() == entity_name)
@@ -634,7 +634,7 @@ static void ShowExampleAppMainMenuBar()
                     p->deleteEntity(e);
                 };
                 auto restore = [idx, p, savedEntity, isCtrlEntity]() {
-                    Core::Entity* newEntity = new Core::Entity(savedEntity);
+                    Core::Entity *newEntity = new Core::Entity(savedEntity);
                     p->getEntityList().insert(p->getEntityList().begin() + idx, newEntity);
                     if (isCtrlEntity)
                     {
@@ -660,7 +660,7 @@ static void ShowExampleAppMainMenuBar()
             }
             ImGui::Text("");
             ImGui::Text("Select Entity:");
-            char** entities_list = (char**)malloc(sizeof(char*) * currPage->getEntityList().size());
+            char **entities_list = (char **)malloc(sizeof(char *) * currPage->getEntityList().size());
             static int current_entity = 0;
             if (ImGui::BeginListBox("", ImVec2(200, currPage->getEntityList().size() * ImGui::GetTextLineHeightWithSpacing())))
             {
@@ -673,8 +673,8 @@ static void ShowExampleAppMainMenuBar()
                 for (int n = 0; n < currPage->getEntityList().size(); n++)
                 {
                     std::string ent_name = currPage->getEntityList()[n]->getName().c_str();
-                    entities_list[n] = (char*)malloc(ent_name.length() + 1);
-                    strncpy(entities_list[n], (char*)currPage->getEntityList()[n]->getName().c_str(), ent_name.length());
+                    entities_list[n] = (char *)malloc(ent_name.length() + 1);
+                    strncpy(entities_list[n], (char *)currPage->getEntityList()[n]->getName().c_str(), ent_name.length());
                     entities_list[n][ent_name.length()] = '\0';
 
                     const bool is_selected = (current_entity == n);
@@ -699,7 +699,7 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (currentComponent[CUR_ENTITY] != "No Component Selected")
                 {
-                    for (Core::Entity* e : currPage->getEntityList())
+                    for (Core::Entity *e : currPage->getEntityList())
                     {
                         if (e->getName() == currentComponent[CUR_ENTITY])
                         {
@@ -719,7 +719,7 @@ static void ShowExampleAppMainMenuBar()
             }
 
             //get x pos and y pos for entity's new location
-            Core::Entity* moved_ent = NULL;
+            Core::Entity *moved_ent = NULL;
             ImGui::Text("");
             ImGui::Text("X Pos:");
             ImGui::PushItemWidth(80);
@@ -738,7 +738,7 @@ static void ShowExampleAppMainMenuBar()
                 //should probably change to use monitor display settings later on
                 if (x_pos >= 0 && x_pos <= 1250 && y_pos >= 0 && y_pos <= 700)
                 {
-                    for (Core::Entity* e : currPage->getEntityList())
+                    for (Core::Entity *e : currPage->getEntityList())
                     {
                         if (e->getName() == currentComponent[CUR_ENTITY])
                         {
@@ -749,11 +749,11 @@ static void ShowExampleAppMainMenuBar()
                         }
                     }
                     //render the new entity location
-                    if (moved_ent != NULL) 
+                    if (moved_ent != NULL)
                     {
                         moved_ent->render();
                     }
-                }                 
+                }
                 else
                 {
                     x_pos = 0;
@@ -772,9 +772,9 @@ static void ShowExampleAppMainMenuBar()
         // Entity information popup
         if (ImGui::BeginPopup("Entity Information"))
         {
-            std::vector<Core::Entity*> elist = currPage->getEntityList();
+            std::vector<Core::Entity *> elist = currPage->getEntityList();
             ImGui::Text("Entity List: ");
-            for (Core::Entity* e : elist)
+            for (Core::Entity *e : elist)
             {
                 ImGui::Text(e->getName().c_str());
             }
@@ -1453,7 +1453,7 @@ static void ShowExampleAppMainMenuBar()
     }
 }
 
-static void HelpMarker(const char* desc)
+static void HelpMarker(const char *desc)
 {
     ImGui::TextDisabled("(?)");
     if (ImGui::IsItemHovered())
