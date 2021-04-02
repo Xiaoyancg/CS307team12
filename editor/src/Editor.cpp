@@ -130,12 +130,6 @@ int EditorMain()
 
     while (running)
     {
-        // Draw ImGui windows
-        // Start the dear Imgui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL2_NewFrame(window);
-        ImGui::NewFrame();
-
         SDL_Event evt;
         while (SDL_PollEvent(&evt))
         {
@@ -190,6 +184,12 @@ int EditorMain()
                 }
             }
         }
+
+        // Draw ImGui windows
+        // Start the dear Imgui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame(window);
+        ImGui::NewFrame();
 
         if (!showDemoWindow)
         {
@@ -346,6 +346,7 @@ static void ShowExampleAppMainMenuBar()
                         {
                             printf(e->getName().c_str());
                             selection[ENTITYEDITOR] = true;
+                            currentComponent = e->getName();
                         }
                     }
                 }
