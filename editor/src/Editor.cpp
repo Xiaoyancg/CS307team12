@@ -50,6 +50,8 @@ bool ctrl_pressed = false;
 std::vector<std::string> currentComponent;
 //std::string currentComponent = "No Component Selected";
 
+static void HelpMarker(const char* desc);
+
 // ===============================
 // Main function
 
@@ -356,7 +358,7 @@ static void ShowExampleAppMainMenuBar()
     //object tree
     if (selection[OBJECTTREE])
     {
-        ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
+        ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
         ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
@@ -364,7 +366,7 @@ static void ShowExampleAppMainMenuBar()
             treeclicked = true;
 #endif
             //entities node
-            if (ImGui::TreeNodeEx("Entities", node_flags, "Entities")
+            if (ImGui::TreeNodeEx("Entities", base_flags, "Entities")
 #ifdef __TEST_EDITOR
                 || testbool
 #endif
@@ -373,10 +375,12 @@ static void ShowExampleAppMainMenuBar()
             {
                 if (game != nullptr)
                 {
+                    static int selection_mask = (1 << -1);
+                    int node_clicked = -1;
+                    int index = 0;
                     std::vector<Core::Entity *> elist = currPage->getEntityList();
                     for (Core::Entity *e : elist)
                     {
-                        bool selected;
 #ifdef __TEST_EDITOR
                         if (testtree)
                         {
@@ -385,51 +389,102 @@ static void ShowExampleAppMainMenuBar()
                             return;
                         }
 #endif
-                        if (ImGui::Selectable(e->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
+                        ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+                        const bool is_selected = (selection_mask & (1 << index)) != 0;
+                        if (is_selected)
+                            node_flags |= ImGuiTreeNodeFlags_Selected;
+                        ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, e->getName().c_str());
+                        if (ImGui::IsItemClicked())
+                        {
+                            node_clicked = index;
+                        }
+                        if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
                         {
                             selection[ENTITYEDITOR] = true;
                             currentComponent[CUR_ENTITY] = e->getName();
                         }
+                        index++;
+                    }
+                    if (node_clicked != -1)
+                    {
+                        selection_mask = (1 << node_clicked);
                     }
                 }
                 ImGui::TreePop();
             }
             //logic node
-            if (ImGui::TreeNodeEx("Logic", node_flags, "Logic"))
+            /*if (ImGui::TreeNodeEx("Logic", base_flags, "Logic"))
             {
                 ImGui::TreePop();
-            }
+            }*/
             //pages node
-            if (ImGui::TreeNodeEx("Pages", node_flags, "Pages"))
+            if (ImGui::TreeNodeEx("Pages", base_flags, "Pages"))
             {
                 if (game != nullptr)
                 {
+                    static int selection_mask = (1 << -1);
+                    int node_clicked = -1;
+                    int index = 0;
                     std::vector<Core::Page *> plist = *game->getPageList();
                     for (int i = 0; i < plist.size(); i++)
                     {
                         Core::Page *p = plist[i];
-                        bool selected;
 
-                        if (ImGui::Selectable(p->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
+                        ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+                        const bool is_selected = (selection_mask & (1 << index)) != 0;
+                        if (is_selected)
+                            node_flags |= ImGuiTreeNodeFlags_Selected;
+                        ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, p->getName().c_str());
+                        if (ImGui::IsItemClicked())
+                        {
+                            node_clicked = index;
+                        }
+                        if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
                         {
                             selection[PAGEEDITOR] = true;
+                            currentComponent[CUR_PAGE] = p->getName();
                         }
+                        index++;
+                    }
+                    if (node_clicked != -1)
+                    {
+                        selection_mask = (1 << node_clicked);
                     }
                 }
                 ImGui::TreePop();
             }
-            if (ImGui::TreeNodeEx("Scripts", node_flags, "Scripts"))
+            /*if (ImGui::TreeNodeEx("Scripts", base_flags, "Scripts"))
             {
                 ImGui::TreePop();
-            }
-            if (ImGui::TreeNodeEx("Sprites", node_flags, "Sprites"))
+            }*/
+            if (ImGui::TreeNodeEx("Sprites", base_flags, "Sprites"))
             {
-                for (auto &[key, value] : game->getSprites())
+                if (game != nullptr)
                 {
-                    bool selected;
-                    if (ImGui::Selectable(value->getName().c_str(), &selected, ImGuiSelectableFlags_AllowDoubleClick) && ImGui::IsMouseDoubleClicked(0))
+                    static int selection_mask = (1 << -1);
+                    int node_clicked = -1;
+                    int index = 0;
+                    for (auto& [key, value] : game->getSprites())
                     {
-                        selection[SPRITEEDITOR] = true;
+                        ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+                        const bool is_selected = (selection_mask & (1 << index)) != 0;
+                        if (is_selected)
+                            node_flags |= ImGuiTreeNodeFlags_Selected;
+                        ImGui::TreeNodeEx((void*)(intptr_t)index, node_flags, value->getName().c_str());
+                        if (ImGui::IsItemClicked())
+                        {
+                            node_clicked = index;
+                        }
+                        if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
+                        {
+                            selection[SPRITEEDITOR] = true;
+                            currentComponent[CUR_SCRIPT] = value->getName();
+                        }
+                        index++;
+                    }
+                    if (node_clicked != -1)
+                    {
+                        selection_mask = (1 << node_clicked);
                     }
                 }
                 ImGui::TreePop();
@@ -670,9 +725,13 @@ static void ShowExampleAppMainMenuBar()
             ImGui::PushItemWidth(80);
             ImGui::SameLine();
             ImGui::InputInt("##1", &x_pos);
+            ImGui::SameLine();
+            HelpMarker("Choose a value between [0,1250]");
             ImGui::Text("Y Pos:");
             ImGui::SameLine();
             ImGui::InputInt("##2", &y_pos);
+            ImGui::SameLine();
+            HelpMarker("Choose a value between [0,700]");
             if (ImGui::Button("Change Entity Position"))
             {
                 //these are totally arbitrary #s to try to ensure entities cant be rendered outside the game view window when at max size
@@ -1391,5 +1450,18 @@ static void ShowExampleAppMainMenuBar()
     {
         ImGui::Text("Deletion successful!");
         ImGui::EndPopup();
+    }
+}
+
+static void HelpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered())
+    {
+        ImGui::BeginTooltip();
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
     }
 }
