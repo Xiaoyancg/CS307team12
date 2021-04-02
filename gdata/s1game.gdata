@@ -21,19 +21,6 @@
           "spriteID": 0
         },
         {
-          "EntityName": "interactive",
-          "location": [
-            200.0,
-            200.0
-          ],
-          "rotation": 0.0,
-          "scale": [
-            32.0,
-            64.0
-          ],
-          "spriteID": 1
-        },
-        {
           "EntityName": "shortWide",
           "location": [
             500.0,

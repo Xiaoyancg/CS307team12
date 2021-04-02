@@ -185,9 +185,9 @@ namespace Core
         MapPage *mp = new MapPage(n, m);
         return (MapPage *)addPage(mp);
     }
-    Map* Game::createMapOnDefaultMapPage(int cols, int rows, int tilesize) {
+    Map* Game::createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize) {
         if (mGameMapPage) {
-            return mGameMapPage->addMap(new Map("Created by Parchment Editor", glm::vec2(cols, rows), tilesize));
+            return mGameMapPage->addMap(new Map(name, glm::vec2(cols, rows), tilesize));
         }
         return nullptr;
     }
