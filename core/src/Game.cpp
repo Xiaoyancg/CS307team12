@@ -340,6 +340,17 @@ namespace Core
         {
             nlohmann::json pj;
             pj["PageName"] = p->getName();
+
+            // Determine if Page is a MenuPage. Kinda jank implementation
+            if (!strcmp(typeid(*p).name(), "class Core::MenuPage"))
+            {
+                pj["isMenu"] = true;
+            }
+            else
+            {
+                pj["isMenu"] = false;
+            }
+             
             // entities
             std::vector<nlohmann::json> entityVector;
             for (Entity *e : p->getEntityList())
