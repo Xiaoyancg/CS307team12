@@ -518,6 +518,8 @@ static void ShowExampleAppMainMenuBar()
         {
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
+            ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 260);
+            ImGui::Text("Current Entity: %s", currentComponent[CUR_ENTITY].c_str());
             ImGui::InputText(" ", entity_name, IM_ARRAYSIZE(entity_name));
 
             if (ImGui::Button("Create New Entity"))
@@ -594,7 +596,6 @@ static void ShowExampleAppMainMenuBar()
                 }
             }
             ImGui::Text("");
-            ImGui::Text(currentComponent[CUR_ENTITY].c_str());
             ImGui::Text("Select Entity:");
             char** entities_list = (char**)malloc(sizeof(char*) * currPage->getEntityList().size());
             static int current_entity = 0;
@@ -665,8 +666,7 @@ static void ShowExampleAppMainMenuBar()
             ImGui::InputInt("##2", &y_pos);
             if (ImGui::Button("Change Entity Position"))
             {
-                //400 is an arbitrary #, i wasnt sure at what point the entity will be moved offscreen
-                if (x_pos >= 0 && x_pos <= 400 && y_pos >= 0 && y_pos <= 400)
+                if (x_pos >= 0 && x_pos <= 1250 && y_pos >= 0 && y_pos <= 700)
                 {
                     for (Core::Entity* e : currPage->getEntityList())
                     {
@@ -688,7 +688,6 @@ static void ShowExampleAppMainMenuBar()
                     y_pos = 0;
                 }
             }
-
             free(entities_list);
         }
 
