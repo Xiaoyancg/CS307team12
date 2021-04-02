@@ -1010,7 +1010,8 @@ static void ShowExampleAppMainMenuBar()
                 //ENDUNDO
                 //TODO: render new map
                 // SETUP THE MAP CBO IF NEEDED
-                currMap = game->createMapOnDefaultMapPage(dim2, dim1, tileSize);
+                currMap = game->createMapOnDefaultMapPage(map_name, dim2, dim1, tileSize);
+                memset(map_name, 0, 128);
                 selection[MAPVIEW] = true;
                     
             }
@@ -1047,10 +1048,12 @@ static void ShowExampleAppMainMenuBar()
             {
                 ImGui::Text("Map Name:");
                 ImGui::SameLine();
-                ImGui::Text(map_name);
+                ImGui::Text(currMap->getName().c_str());
                 ImGui::Text("Dimensions:");
                 ImGui::SameLine();
-                ImGui::Text("%i Rows x %i Columns", dim1, dim2);
+                glm::ivec2 dims = currMap->getDimensions();
+                ImGui::Text("%i Columns x %i Rows", dims.x, dims.y);
+                ImGui::Text("Tile size: %i", currMap->getTileSize());
                 ImGui::EndPopup();
             }
         }
