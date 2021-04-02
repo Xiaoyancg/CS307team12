@@ -59,12 +59,12 @@ namespace Core
         mapPage3 = game->createMapPage("yee"); // Should be a blank screen
 
         // Creating a map with no name, dimensions (0 x 0), or tile size
-        mapPage4 = game->createMapPage();
+        // mapPage4 = game->createMapPage();
 
-        // Set the properties of the empty mapPage4
-        Map *map4 = mapPage4->getCurrMap();
-        mapPage4->getCurrMap()->setTileSize(32);
-        map4->setDimensions(glm::vec2(7, 3));
+        // // Set the properties of the empty mapPage4
+        // Map *map4 = mapPage4->getCurrMap();
+        // mapPage4->getCurrMap()->setTileSize(32);
+        // map4->setDimensions(glm::vec2(7, 3));
 
         // MENU PAGE TEST //////////////////////
         Menu *menu = new Menu("example menu");
