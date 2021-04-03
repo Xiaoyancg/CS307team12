@@ -15,6 +15,7 @@
 
 #include "GameWindow.h"
 #include "MapWindow.h"
+#include "ObjectTreeWindow.h"
 
 #include "Game.h"
 #include "UndoRedo.h"
@@ -23,7 +24,6 @@
 #include "TestEditor.h"
 #include "Sprint1.h"
 #endif // __TEST_EDITOR
-
 
 enum SelectionEnum
 {
@@ -72,16 +72,32 @@ public:
 	void ShowMainMenuBar();
 	void HelpMarker(const char *desc);
 
-	Core::Game* getGamePtr() {
+	Core::Game *getGamePtr()
+	{
 		return game;
 	}
-	Core::Map* getCurrentMap() {
+	std::vector<EditorWindow*>& getWindowList() {
+		return windowList;
+	}
+	std::vector<std::string>& getCurrentComponentList() {
+		return currentComponent;
+	}
+
+	Core::Page *getCurrentPage()
+	{
+		return currPage;
+	}
+	Core::Map *getCurrentMap()
+	{
 		return currMap;
 	}
-	GLuint* getTexCBO() {
+
+	GLuint *getTexCBO()
+	{
 		return texcbo;
 	}
-	GLuint* getMapTexCBO() {
+	GLuint *getMapTexCBO()
+	{
 		return maptexcbo;
 	}
 
@@ -94,9 +110,7 @@ private:
 	ImGuiIO *io;
 
 	// WINDOWS
-	GameWindow* gameWindow;
-	MapWindow* mapWindow;
-
+	std::vector<EditorWindow*> windowList;
 
 	ImGui::FileBrowser saveDialog;
 	ImGui::FileBrowser openDialog;
@@ -112,7 +126,7 @@ private:
 	GLuint *maptexcbo = nullptr; // This is the framebuffer for the MapView
 	// the bool used to enable/ disable control handler
 	// check in game view
-	
+
 	// Current Map
 	Core::Map *currMap = nullptr;
 

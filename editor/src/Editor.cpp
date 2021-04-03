@@ -87,8 +87,10 @@ void Editor::cleanupGraphics()
 }
 
 void Editor::createWindows() {
-    gameWindow = new GameWindow(this, default_size);
-    mapWindow = new MapWindow(this, default_size);
+    windowList.resize(SELECT_COUNT);
+    windowList[GAMEVIEW] = new GameWindow(this, default_size);
+    windowList[MAPVIEW] = new MapWindow(this, default_size);
+    windowList[OBJECTTREE] = new ObjectTreeWindow(this, default_size);
 }
 
 void Editor::processInput()
@@ -124,7 +126,7 @@ void Editor::processInput()
             }
             if (game != nullptr)
             {
-                if (gameWindow->isFocused())
+                if (windowList[GAMEVIEW]->isFocused())
                     game->handleInput(evt);
             }
         }
@@ -194,8 +196,11 @@ void Editor::run()
         // turn the main viewport into a docking one to allow for docking
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         ShowMainMenuBar();
-        gameWindow->draw();
-        mapWindow->draw();
+        for (auto window : windowList) {
+            if (window != nullptr) {
+                window->draw();
+            }
+        }
 
 #ifdef __TEST_EDITOR
         if (testbool)
@@ -261,134 +266,8 @@ void Editor::ShowMainMenuBar()
     }
 
 #ifdef __TEST_EDITOR
-    selection[OBJECTTREE] = testbool;
+    windowList[OBJECTTREE]->setVisible(true);
 #endif
-    //object tree
-    if (selection[OBJECTTREE])
-    {
-        ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
-        if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
-        {
-#ifdef __TEST_EDITOR
-            treeclicked = true;
-#endif
-            //entities node
-            if (ImGui::TreeNodeEx("Entities", base_flags, "Entities")
-#ifdef __TEST_EDITOR
-                || testbool
-#endif
-            )
-
-            {
-                if (game != nullptr)
-                {
-                    static int selected = -1;
-                    int node_clicked = -1;
-                    int index = 0;
-                    std::vector<Core::Entity *> elist = currPage->getEntityList();
-                    for (Core::Entity *e : elist)
-                    {
-                        ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                        if (index == selected)
-                            node_flags |= ImGuiTreeNodeFlags_Selected;
-                        ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, e->getName().c_str());
-                        if (ImGui::IsItemClicked())
-                        {
-                            node_clicked = index;
-                        }
-                        if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
-                        {
-                            selection[ENTITYEDITOR] = true;
-                            currentComponent[CUR_ENTITY] = e->getName();
-                        }
-                        index++;
-                    }
-                    if (node_clicked != -1)
-                    {
-                        selected = node_clicked;
-                    }
-                }
-                ImGui::TreePop();
-            }
-            //logic node
-            /*if (ImGui::TreeNodeEx("Logic", base_flags, "Logic"))
-            {
-                ImGui::TreePop();
-            }*/
-            //pages node
-            if (ImGui::TreeNodeEx("Pages", base_flags, "Pages"))
-            {
-                if (game != nullptr)
-                {
-                    static int selected = -1;
-                    int node_clicked = -1;
-                    int index = 0;
-                    std::vector<Core::Page *> plist = *game->getPageList();
-                    for (int i = 0; i < plist.size(); i++)
-                    {
-                        Core::Page *p = plist[i];
-
-                        ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                        if (index == selected)
-                            node_flags |= ImGuiTreeNodeFlags_Selected;
-                        ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, p->getName().c_str());
-                        if (ImGui::IsItemClicked())
-                        {
-                            node_clicked = index;
-                        }
-                        if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
-                        {
-                            selection[PAGEEDITOR] = true;
-                            currentComponent[CUR_PAGE] = p->getName();
-                        }
-                        index++;
-                    }
-                    if (node_clicked != -1)
-                    {
-                        selected = node_clicked;
-                    }
-                }
-                ImGui::TreePop();
-            }
-            /*if (ImGui::TreeNodeEx("Scripts", base_flags, "Scripts"))
-            {
-                ImGui::TreePop();
-            }*/
-            if (ImGui::TreeNodeEx("Sprites", base_flags, "Sprites"))
-            {
-                if (game != nullptr)
-                {
-                    static int selected = -1;
-                    int node_clicked = -1;
-                    int index = 0;
-                    for (auto &[key, value] : game->getSprites())
-                    {
-                        ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-                        if (index == selected)
-                            node_flags |= ImGuiTreeNodeFlags_Selected;
-                        ImGui::TreeNodeEx((void *)(intptr_t)index, node_flags, value->getName().c_str());
-                        if (ImGui::IsItemClicked())
-                        {
-                            node_clicked = index;
-                        }
-                        if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
-                        {
-                            selection[SPRITEEDITOR] = true;
-                            currentComponent[CUR_SCRIPT] = value->getName();
-                        }
-                        index++;
-                    }
-                    if (node_clicked != -1)
-                    {
-                        selected = node_clicked;
-                    }
-                }
-                ImGui::TreePop();
-            }
-        }
-        ImGui::End();
-    }
 
     //this isn't really a "selection", it opens by default
     if (selection[SPLASHSCREEN])
@@ -1032,7 +911,7 @@ void Editor::ShowMainMenuBar()
                 // SETUP THE MAP CBO IF NEEDED
                 currMap = game->createMapOnDefaultMapPage(map_name, dim2, dim1, tileSize);
                 memset(map_name, 0, 128);
-                mapWindow->setVisible(true);
+                windowList[MAPVIEW]->setVisible(true);
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
@@ -1160,7 +1039,7 @@ void Editor::ShowMainMenuBar()
                 game = new Core::Game(texcbo, maptexcbo);
                 currPage = game->getCurrPage();
                 game->initShader();
-                gameWindow->setVisible(true);
+                windowList[GAMEVIEW]->setVisible(true);
                 currentComponent[CUR_ENTITY] = "No Component Selected";
                 // When user new project, it won't save
                 // User should call save manually
@@ -1230,8 +1109,8 @@ void Editor::ShowMainMenuBar()
             //view menu
             if (ImGui::BeginMenu("View"))
             {
-                ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
-                ImGui::MenuItem("Game View", "", gameWindow->getVisiblePtr());
+                ImGui::MenuItem("Object Tree", "", windowList[OBJECTTREE]->getVisiblePtr());
+                ImGui::MenuItem("Game View", "", windowList[GAMEVIEW]->getVisiblePtr());
                 ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
                 ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
                 ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
@@ -1283,7 +1162,7 @@ void Editor::ShowMainMenuBar()
         gameName = game->getGameName();
         currPage = game->getCurrPage();
         game->initShader();
-        gameWindow->setVisible(true);
+        windowList[GAMEVIEW]->setVisible(true);
         isSaved = true;
 
         openDialog.ClearSelected();
