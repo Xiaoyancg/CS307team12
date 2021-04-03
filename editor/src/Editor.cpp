@@ -3,6 +3,7 @@
 #include "GameWindow.h"
 #include "MapWindow.h"
 #include "ObjectTreeWindow.h"
+#include "EntityEditorWindow.h"
 #include "SplashWindow.h"
 
 
@@ -96,6 +97,7 @@ void Editor::createWindows() {
     windowList[GAMEVIEW] = new GameWindow(this, default_size);
     windowList[MAPVIEW] = new MapWindow(this, default_size);
     windowList[OBJECTTREE] = new ObjectTreeWindow(this, default_size);
+    windowList[ENTITYEDITOR] = new EntityEditorWindow(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
 }
 
@@ -811,7 +813,7 @@ void Editor::ShowMainMenuBar()
             {
                 ImGui::MenuItem("Object Tree", "", windowList[OBJECTTREE]->getVisiblePtr());
                 ImGui::MenuItem("Game View", "", windowList[GAMEVIEW]->getVisiblePtr());
-                ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
+                ImGui::MenuItem("Entity Editor", "", windowList[ENTITYEDITOR]->getVisiblePtr());
                 ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
                 ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
                 ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
