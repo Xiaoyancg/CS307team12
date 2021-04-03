@@ -1,8 +1,10 @@
 #pragma once
 
 #include <imgui.h>
-class Editor;
 
+
+#define DEFAULT_CONSTRUCTOR(name) name(Editor* editor, ImVec2 size) : EditorWindow(editor, size) {}
+class Editor;
 
 class EditorWindow {
 public:

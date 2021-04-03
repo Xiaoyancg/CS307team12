@@ -5,6 +5,6 @@
 
 class GameWindow : public EditorWindow {
 public:
-    GameWindow(Editor* editor, ImVec2 size) : EditorWindow(editor, size) {}
+    DEFAULT_CONSTRUCTOR(GameWindow)
     void draw();
 };

@@ -2,11 +2,9 @@
 
 #include "Editor.h"
 
-
-
 void GameWindow::draw()
 {
-    if (isVisible())
+    if (visible)
     {
         // possibly implement a new function here for readability purposes
         if (editor->getGamePtr() != nullptr)
