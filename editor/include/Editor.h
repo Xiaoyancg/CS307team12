@@ -70,7 +70,10 @@ public:
 	void processInput();
 
 	void ShowMainMenuBar();
-	void HelpMarker(const char *desc);
+
+	void markDeleteSuccess() {
+		delete_success = true;
+	}
 
 	Core::Game *getGamePtr()
 	{
@@ -119,6 +122,9 @@ private:
 
 	// bool array to track the selections made on main menu bar
 	bool selection[SELECT_COUNT];
+
+    //deletion flag if an entity, map, or page is deleted
+	bool delete_success = false;
 
 	// main texture color buffer object
 	// Game gets rendered onto this, and this is used as an Image with ImGUI
