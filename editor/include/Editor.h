@@ -6,16 +6,13 @@
 
 #include <SDL.h>
 #include <glad/glad.h>
-#include <stb_image_aug.h>
 
 #include <imgui.h>
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 #include <imfilebrowser.h>
 
-#include "GameWindow.h"
-#include "MapWindow.h"
-#include "ObjectTreeWindow.h"
+#include "EditorWindow.h"
 
 #include "Game.h"
 #include "UndoRedo.h"
