@@ -65,6 +65,7 @@ public:
 	void cleanupGraphics();
 	void createWindows();
 	void processInput();
+	void drawPopups();
 
 	void ShowMainMenuBar();
 

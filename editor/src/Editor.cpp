@@ -209,6 +209,7 @@ void Editor::run()
                 window->draw();
             }
         }
+        drawPopups();
 
 #ifdef __TEST_EDITOR
         if (testbool)
@@ -246,6 +247,67 @@ void Editor::run()
     }
 
     cleanupGraphics();
+}
+
+void Editor::drawPopups() {
+    // Delete project popup
+    if (ImGui::BeginPopup("Delete Project"))
+    {
+        ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
+        if (ImGui::Button("Yes"))
+        {
+            delDialog = ImGui::FileBrowser(
+                ImGuiFileBrowserFlags_NoTitleBar);
+            delDialog.Open();
+        }
+        ImGui::EndPopup();
+    }
+
+    // Save as project popup
+    static char name[128] = "";
+    if (ImGui::BeginPopup("Save As"))
+    {
+        ImGui::Text("Enter the name of your project.");
+        ImGui::InputText("", name, IM_ARRAYSIZE(name));
+        if (ImGui::Button("Save"))
+        {
+            // init file browser ( update info every time it was opened)
+            saveDialog = ImGui::FileBrowser(
+                ImGuiFileBrowserFlags_NoTitleBar |
+                ImGuiFileBrowserFlags_SelectDirectory |
+                ImGuiFileBrowserFlags_CreateNewDir);
+            saveDialog.Open();
+
+            if (!saveDialog.IsOpened())
+            {
+                gameName = std::string(name);
+                // memset to clear the buffer after use
+                memset(name, 0, 128);
+            }
+        }
+        ImGui::EndPopup();
+    }
+
+    // Successful save popup
+    if (ImGui::BeginPopup("Saved Successfully"))
+    {
+        ImGui::Text("Project saved successfully!");
+        ImGui::EndPopup();
+    }
+
+    // Successful Project deletion popup
+    if (ImGui::BeginPopup("Deleted Successfully"))
+    {
+        ImGui::Text("Project deleted successfully!");
+        ImGui::EndPopup();
+    }
+
+    // Successful deletion popup
+    if (ImGui::BeginPopup("Delete Successful"))
+    {
+        ImGui::Text("Deletion successful!");
+        ImGui::EndPopup();
+    }
 }
 
 void Editor::ShowMainMenuBar()
@@ -877,70 +939,5 @@ void Editor::ShowMainMenuBar()
         DeleteFile(delDialog.GetSelected().string().c_str());
         delDialog.ClearSelected();
         selection[DELETEPOPUP] = true;
-    }
-
-    /*
-     *  ========================
-     *  POPUPS
-     *  ========================
-     */
-
-    // Delete project popup
-    if (ImGui::BeginPopup("Delete Project"))
-    {
-        ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
-        if (ImGui::Button("Yes"))
-        {
-            delDialog = ImGui::FileBrowser(
-                ImGuiFileBrowserFlags_NoTitleBar);
-            delDialog.Open();
-        }
-        ImGui::EndPopup();
-    }
-
-    // Save as project popup
-    static char name[128] = "";
-    if (ImGui::BeginPopup("Save As"))
-    {
-        ImGui::Text("Enter the name of your project.");
-        ImGui::InputText("", name, IM_ARRAYSIZE(name));
-        if (ImGui::Button("Save"))
-        {
-            // init file browser ( update info every time it was opened)
-            saveDialog = ImGui::FileBrowser(
-                ImGuiFileBrowserFlags_NoTitleBar |
-                ImGuiFileBrowserFlags_SelectDirectory |
-                ImGuiFileBrowserFlags_CreateNewDir);
-            saveDialog.Open();
-
-            if (!saveDialog.IsOpened())
-            {
-                gameName = std::string(name);
-                // memset to clear the buffer after use
-                memset(name, 0, 128);
-            }
-        }
-        ImGui::EndPopup();
-    }
-
-    // Successful save popup
-    if (ImGui::BeginPopup("Saved Successfully"))
-    {
-        ImGui::Text("Project saved successfully!");
-        ImGui::EndPopup();
-    }
-
-    // Successful Project deletion popup
-    if (ImGui::BeginPopup("Deleted Successfully"))
-    {
-        ImGui::Text("Project deleted successfully!");
-        ImGui::EndPopup();
-    }
-
-    // Successful deletion popup
-    if (ImGui::BeginPopup("Delete Successful"))
-    {
-        ImGui::Text("Deletion successful!");
-        ImGui::EndPopup();
     }
 }
