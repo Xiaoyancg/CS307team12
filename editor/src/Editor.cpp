@@ -1,70 +1,12 @@
-#include "UndoRedo.h"
-#include <Editor.h>
-#include <VMTool.h>
-#include "Game.h"
-#ifdef __TEST_EDITOR
-#include <TestEditor.h>
-#include "Sprint1.h"
-#endif // __TEST_EDITOR
+#include "Editor.h"
 
-static void ShowExampleAppMainMenuBar();
-bool running = true;
-ImGui::FileBrowser saveDialog;
-ImGui::FileBrowser openDialog;
-ImGui::FileBrowser delDialog;
-ImGui::FileBrowser importDialog;
 
-// ====================================
-// Global Variable
+Editor::Editor() {
+    memset(selection, 0, sizeof(selection));
+}
 
-// bool array to track the selections made on main menu bar
-static bool selection[SELECT_COUNT];
-
-// main texture color buffer object
-// Game gets rendered onto this, and this is used as an Image with ImGUI
-GLuint *texcbo = nullptr;
-GLuint *maptexcbo = nullptr; // This is the framebuffer for the MapView
-
-// Game object
-Core::Game *game = nullptr;
-// the bool used to enable/ disable control handler
-// check in game view
-bool onGame = false;
-// Current Map
-Core::Map *currMap = nullptr;
-
-// Current page pointer
-Core::Page *currPage = nullptr;
-
-// project directory
-std::string dir = "";
-
-// Game Name
-std::string gameName = "empty";
-
-// is game saved before (for save)
-bool isSaved = false;
-
-// is control key pressed
-bool ctrl_pressed = false;
-
-// currently selected game component
-std::vector<std::string> currentComponent;
-//std::string currentComponent = "No Component Selected";
-
-static void HelpMarker(const char *desc);
-
-ImVec2 default_size = ImVec2(600, 400);
-
-// ===============================
-// Main function
-
-int EditorMain()
+void Editor::initializeGraphics()
 {
-#ifdef __TEST_EDITOR
-    game = Core::s1Game();
-    currPage = game->getCurrPage();
-#endif
     // Set Up SDL2
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -83,16 +25,16 @@ int EditorMain()
     SDL_WindowFlags window_flags =
         (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI);
     // create a window for opengl. opengl can't create a window. we use sdl to create window
-    SDL_Window *window = SDL_CreateWindow(
+    this->sdlWindow = SDL_CreateWindow(
         "Parchment",                                    // Main Window Title
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, // CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
         1280, 720,                                      // CURRENTLY OVERRIDDEN BY THE MAXIMIZED FLAG
         window_flags                                    // flags of sdl windows
     );
     // create a gl context for further rendering in the window(should be a opengl sdl window). and make it current
-    SDL_GLContext gl_context = SDL_GL_CreateContext(window);
+    this->gl_context = SDL_GL_CreateContext(sdlWindow);
     // set up the opengl context for rendering in to an opengl window
-    SDL_GL_MakeCurrent(window, gl_context);
+    SDL_GL_MakeCurrent(sdlWindow, gl_context);
 
 #ifdef __TEST_EDITOR
     SDLInitError = std::string(SDL_GetError());
@@ -110,27 +52,118 @@ int EditorMain()
     // can't find document of ImGui::CreateContext. Just use it anyway
     ImGui::CreateContext();
     // ImGuiIO: Communicate most settings and inputs/outputs to Dear ImGui using this structure.
-    ImGuiIO &io = ImGui::GetIO();
-    io.WantCaptureMouse = true;
-    io.WantCaptureKeyboard = true;
+    io = &ImGui::GetIO();
+    io->WantCaptureMouse = true;
+    io->WantCaptureKeyboard = true;
     // resize from window edge flag
-    io.ConfigWindowsResizeFromEdges = true;
+    io->ConfigWindowsResizeFromEdges = true;
     // multiple viewports flag
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io->ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     // docking flag
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     // keep docking bound to shift
-    io.ConfigDockingWithShift = true;
+    io->ConfigDockingWithShift = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
 
     // Setup Platform/Renderer backends
     // these two functions are from imgui_impl_*.h it's in the backend folder in imgui-master
-    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+    ImGui_ImplSDL2_InitForOpenGL(sdlWindow, gl_context);
     ImGui_ImplOpenGL3_Init();
+}
 
-    bool showDemoWindow = false;
+void Editor::cleanupGraphics()
+{
+    // IMGUI Clean Up
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
+    // SDL Clean Up
+    SDL_GL_DeleteContext(gl_context);
+    SDL_DestroyWindow(sdlWindow);
+    SDL_Quit();
+}
+
+void Editor::createWindows() {
+    gameWindow = new GameWindow(this, default_size);
+    mapWindow = new MapWindow(this, default_size);
+}
+
+void Editor::processInput()
+{
+    SDL_Event evt;
+    while (SDL_PollEvent(&evt))
+    {
+        ImGui_ImplSDL2_ProcessEvent(&evt);
+        if (evt.type == SDL_QUIT)
+        {
+            running = false;
+        }
+        if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID(sdlWindow))
+        {
+            running = false;
+        }
+        if (evt.type == SDL_KEYDOWN)
+        {
+            if (evt.key.keysym.sym == SDLK_LCTRL)
+            {
+                ctrl_pressed = true;
+            }
+            if (ctrl_pressed)
+            {
+                if (evt.key.keysym.sym == SDLK_z)
+                {
+                    undo();
+                }
+                if (evt.key.keysym.sym == SDLK_y)
+                {
+                    redo();
+                }
+            }
+            if (game != nullptr)
+            {
+                if (gameWindow->isFocused())
+                    game->handleInput(evt);
+            }
+        }
+        if (evt.type == SDL_KEYUP)
+        {
+            if (evt.key.keysym.sym == SDLK_LCTRL)
+            {
+                ctrl_pressed = false;
+            }
+        }
+        // Handle mouse clicks
+        if (evt.type == SDL_MOUSEBUTTONDOWN)
+        {
+            // Left mouse click
+            int x, y;
+            if (evt.button.button == SDL_BUTTON_LEFT)
+            {
+                // TEMP
+                /*
+                    SDL_GetMouseState(&x, &y);
+                    printf("Click at (%d, %d)\n", x, y);
+                    */
+            }
+        }
+    }
+}
+
+// ===============================
+// Main function
+
+void Editor::run()
+{
+#ifdef __TEST_EDITOR
+    game = Core::s1Game();
+    currPage = game->getCurrPage();
+#endif
+    initializeGraphics();
+    createWindows();
+
     // clear color, opengl use clear color to clear the context for the next drawing
     // if we don't clear the context, when you move the imgui window, it's trace will be left on the context.
     // Also, for the convenience, we use the vector class from ImGui. ImVec4.
@@ -147,94 +180,34 @@ int EditorMain()
     //set the default splash screen state to open
     selection[SPLASHSCREEN] = true;
 
+    running = true;
     while (running)
     {
-        SDL_Event evt;
-        while (SDL_PollEvent(&evt))
-        {
-            ImGui_ImplSDL2_ProcessEvent(&evt);
-            if (evt.type == SDL_QUIT)
-            {
-                running = false;
-            }
-            if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_CLOSE && evt.window.windowID == SDL_GetWindowID(window))
-            {
-                running = false;
-            }
-            if (evt.type == SDL_KEYDOWN)
-            {
-                if (evt.key.keysym.sym == SDLK_LCTRL)
-                {
-                    ctrl_pressed = true;
-                }
-                if (ctrl_pressed)
-                {
-                    if (evt.key.keysym.sym == SDLK_z)
-                    {
-                        undo();
-                    }
-                    if (evt.key.keysym.sym == SDLK_y)
-                    {
-                        redo();
-                    }
-                }
-                if (game != nullptr)
-                {
-                    if (onGame)
-                        game->handleInput(evt);
-                }
-            }
-            if (evt.type == SDL_KEYUP)
-            {
-                if (evt.key.keysym.sym == SDLK_LCTRL)
-                {
-                    ctrl_pressed = false;
-                }
-            }
-            // Handle mouse clicks
-            if (evt.type == SDL_MOUSEBUTTONDOWN)
-            {
-                // Left mouse click
-                int x, y;
-                if (evt.button.button == SDL_BUTTON_LEFT)
-                {
-                    // TEMP
-                    /*
-                    SDL_GetMouseState(&x, &y);
-                    printf("Click at (%d, %d)\n", x, y);
-                    */
-                }
-            }
-        }
+        processInput();
 
         // Draw ImGui windows
         // Start the dear Imgui frame
         ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplSDL2_NewFrame(window);
+        ImGui_ImplSDL2_NewFrame(this->sdlWindow);
         ImGui::NewFrame();
 
-        if (!showDemoWindow)
-        {
-            // turn the main viewport into a docking one to allow for docking
-            ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-            ShowExampleAppMainMenuBar();
-#ifdef __TEST_EDITOR
-            if (testbool)
-            {
-                return 0;
-            }
-#endif
-        }
+        // turn the main viewport into a docking one to allow for docking
+        ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+        ShowMainMenuBar();
+        gameWindow->draw();
+        mapWindow->draw();
 
-        if (showDemoWindow)
+#ifdef __TEST_EDITOR
+        if (testbool)
         {
-            ImGui::ShowDemoWindow(&showDemoWindow);
+            return;
         }
+#endif
 
         // this command does not render that imgui window, we need to use opengl to render imgui
         ImGui::Render();
         // render the ImGui windows
-        glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+        glViewport(0, 0, (int)io->DisplaySize.x, (int)io->DisplaySize.y);
         // use the clear color we passed to opengl before to clear the context
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -242,7 +215,7 @@ int EditorMain()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // Update and Render additional Platform Windows
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        if (io->ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             SDL_Window *backup_current_window = SDL_GL_GetCurrentWindow();
             SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
@@ -251,7 +224,7 @@ int EditorMain()
             SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
         }
         // what we just draw just stored in the buffer, we need to switch the display and the buffer to show what we just drawn.
-        SDL_GL_SwapWindow(window);
+        SDL_GL_SwapWindow(sdlWindow);
 
 #ifdef __TEST_EDITOR
         if (dobreak)
@@ -259,20 +232,10 @@ int EditorMain()
 #endif // __TEST_EDITOR
     }
 
-    // IMGUI Clean Up
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
-
-    // SDL Clean Up
-    SDL_GL_DeleteContext(gl_context);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    return 0;
+    cleanupGraphics();
 }
 
-static void ShowExampleAppMainMenuBar()
+void Editor::ShowMainMenuBar()
 {
 #ifdef __TEST_EDITOR
     selection[SAVEAS] = testbool;
@@ -297,72 +260,6 @@ static void ShowExampleAppMainMenuBar()
         selection[SAVEAS] = false;
     }
 
-    // Game view
-    if (selection[GAMEVIEW])
-    {
-        // possibly implement a new function here for readability purposes
-        if (game != nullptr)
-        {
-            // set the windows default size
-            ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-
-            // the game view window itself
-            ImGui::Begin("Game View", &selection[GAMEVIEW]);
-            if (ImGui::IsWindowFocused(0))
-            {
-                onGame = true;
-            }
-            else
-                onGame = false;
-
-            //ImVec2 dims = ImGui::GetWindowSize();
-
-            // Get size of drawable space on the window, instead of the entire size of the window
-            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-
-            glViewport(0, 0, game->width, game->height); // Set viewport to the Game dimensions
-
-            game->render(); // Render Game with new viewport size
-
-            //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
-            //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
-
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void *)(*texcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
-
-            ImGui::End();
-            ImGui::PopStyleVar();
-        }
-    }
-    if (selection[MAPVIEW])
-    {
-        // possibly implement a new function here for readability purposes
-        if (currMap != nullptr)
-        {
-            // set the windows default size
-            ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-
-            // the game view window itself
-            ImGui::Begin("Map View", &selection[MAPVIEW]);
-
-            // Get size of drawable space on the window, instead of the entire size of the window
-            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-            glm::ivec2 dims = currMap->getDimensions();
-            int tileSize = currMap->getTileSize();
-            //glViewport(0, 0, dims.x * tileSize, dims.y * tileSize);
-            glViewport(0, 0, 1000, 1000);
-
-            game->renderDefaultMapPage(); // Render Game with new viewport size
-
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void *)(*maptexcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
-
-            ImGui::End();
-            ImGui::PopStyleVar();
-        }
-    }
 #ifdef __TEST_EDITOR
     selection[OBJECTTREE] = testbool;
 #endif
@@ -370,7 +267,7 @@ static void ShowExampleAppMainMenuBar()
     if (selection[OBJECTTREE])
     {
         ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-        ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
 #ifdef __TEST_EDITOR
@@ -838,10 +735,10 @@ static void ShowExampleAppMainMenuBar()
                     {
                         //UNDO
                         std::string pname = page_name;
-                        auto action = [pname]() {
+                        auto action = [this, pname]() {
                             game->createMenuPage(pname);
                         };
-                        auto restore = [pname]() {
+                        auto restore = [this, pname]() {
                             game->deletePage(pname);
                         };
                         pushAction(action, restore);
@@ -854,10 +751,10 @@ static void ShowExampleAppMainMenuBar()
                     {
                         //UNDO
                         std::string pname = page_name;
-                        auto action = [pname]() {
+                        auto action = [this, pname]() {
                             game->createPage(pname);
                         };
-                        auto restore = [pname]() {
+                        auto restore = [this, pname]() {
                             game->deletePage(pname);
                         };
                         pushAction(action, restore);
@@ -885,10 +782,10 @@ static void ShowExampleAppMainMenuBar()
                     }
                 }
                 Core::Page savedPage = *pList[idx];
-                auto action = [pname]() {
+                auto action = [this, pname]() {
                     game->deletePage(pname);
                 };
-                auto restore = [idx, savedPage]() {
+                auto restore = [this, idx, savedPage]() {
                     Core::Page *newPage = new Core::Page(savedPage);
                     game->getPageList()->insert(game->getPageList()->begin() + idx, newPage);
                 };
@@ -1119,13 +1016,13 @@ static void ShowExampleAppMainMenuBar()
                 std::string mname = map_name;
                 int savedDim1 = dim1;
                 int savedDim2 = dim2;
-                auto action = [&new_map, &map_page, mname, savedDim1, savedDim2]() {
+                auto action = [this, &new_map, &map_page, mname, savedDim1, savedDim2]() {
                     new_map = new Core::Map(mname, glm::vec2(savedDim1, savedDim2), 64);
                     map_page = game->createMapPage(mname, new_map);
                     new_map->setName(mname);
                     new_map->setDimensions(glm::vec2(savedDim1, savedDim2));
                 };
-                auto restore = [mname]() {
+                auto restore = [this, mname]() {
                     game->deletePage(mname);
                 };
                 pushAction(action, restore);
@@ -1135,7 +1032,7 @@ static void ShowExampleAppMainMenuBar()
                 // SETUP THE MAP CBO IF NEEDED
                 currMap = game->createMapOnDefaultMapPage(map_name, dim2, dim1, tileSize);
                 memset(map_name, 0, 128);
-                selection[MAPVIEW] = true;
+                mapWindow->setVisible(true);
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete This Map"))
@@ -1263,7 +1160,7 @@ static void ShowExampleAppMainMenuBar()
                 game = new Core::Game(texcbo, maptexcbo);
                 currPage = game->getCurrPage();
                 game->initShader();
-                selection[GAMEVIEW] = true;
+                gameWindow->setVisible(true);
                 currentComponent[CUR_ENTITY] = "No Component Selected";
                 // When user new project, it won't save
                 // User should call save manually
@@ -1334,7 +1231,7 @@ static void ShowExampleAppMainMenuBar()
             if (ImGui::BeginMenu("View"))
             {
                 ImGui::MenuItem("Object Tree", "", &selection[OBJECTTREE]);
-                ImGui::MenuItem("Game View", "", &selection[GAMEVIEW]);
+                ImGui::MenuItem("Game View", "", gameWindow->getVisiblePtr());
                 ImGui::MenuItem("Entity Editor", "", &selection[ENTITYEDITOR]);
                 ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
                 ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
@@ -1386,7 +1283,7 @@ static void ShowExampleAppMainMenuBar()
         gameName = game->getGameName();
         currPage = game->getCurrPage();
         game->initShader();
-        selection[GAMEVIEW] = true;
+        gameWindow->setVisible(true);
         isSaved = true;
 
         openDialog.ClearSelected();
@@ -1467,7 +1364,7 @@ static void ShowExampleAppMainMenuBar()
     }
 }
 
-static void HelpMarker(const char *desc)
+void Editor::HelpMarker(const char *desc)
 {
     ImGui::TextDisabled("(?)");
     if (ImGui::IsItemHovered())
