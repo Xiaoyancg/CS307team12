@@ -6,6 +6,11 @@
 namespace Core
 {
 
+    //* ---------------- ANCHOR LOGIC MANAGER ---------------- *//
+
+    /// \brief the Logic Manager handle the storage and execution of signals,
+    /// logics and scripts all in one go
+    ///
     class LogicManager
     {
     private:
@@ -27,13 +32,17 @@ namespace Core
         ///
         void checkSignals();
 
-        std::vector<Signal> getSignals()
+        /// \brief Get all Signal pointers in vector
+        ///
+        /// \return std::vector<Signal *>
+        std::vector<Signal *> getSignals()
         {
             std::vector<Signal *> r;
-            for (auto signalpair : _signals)
+            for (auto &signalpair : _signals)
             {
                 r.push_back(&signalpair.second);
             }
+            return r;
         }
 
         /// \brief load all signals, logics and scripts to the corresponding
@@ -47,7 +56,7 @@ namespace Core
         /// TODO add api
         void createSignal();
 
-        LogicManager(/* args */)
+        LogicManager()
         {
         }
         ~LogicManager() {}
