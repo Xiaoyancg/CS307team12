@@ -11,6 +11,7 @@ namespace Core
     {
     private:
         /// \brief the ID
+        /// no signal ID for system defined signal
         ///
         int _signalID;
 
@@ -23,7 +24,16 @@ namespace Core
         void setSignalID(int signalID) { _signalID = signalID; }
         SignalType getSignalType() { return _type; }
         void setSignalType(SignalType type) { _type = type; }
-        BaseSignal(/* args */) {}
+
+        /// \brief Construct a new Base Signal object for system-defined signal
+        ///
+        BaseSignal() : _signalID(-1) {}
+
+        /// \brief Construct a new Base Signal object for parse function
+        ///
+        /// \param signalID
+        BaseSignal(int signalID) : _signalID(signalID) {}
+
         ~BaseSignal() {}
     };
 
@@ -46,7 +56,8 @@ namespace Core
             _targetScriptID = targetScriptID;
         }
         CustomSignal() {}
-        CustomSignal(int targetScriptID) : _targetScriptID(targetScriptID) {}
+        CustomSignal(int signalID, int targetScriptID)
+            : BaseSignal(signalID), _targetScriptID(targetScriptID) {}
         ~CustomSignal() {}
     };
 
