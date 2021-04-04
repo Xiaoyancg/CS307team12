@@ -13,26 +13,27 @@ namespace Core
         /// \brief the ID
         /// no signal ID for system defined signal
         ///
-        int _signalID;
+        int _ID;
 
         /// \brief the type of this signal
         ///
         SignalType _type;
 
     public:
-        int getSignalID() { return _signalID; }
-        void setSignalID(int signalID) { _signalID = signalID; }
+        int getSignalID() { return _ID; }
+        void setSignalID(int signalID) { _ID = signalID; }
         SignalType getSignalType() { return _type; }
         void setSignalType(SignalType type) { _type = type; }
 
         /// \brief Construct a new Base Signal object for system-defined signal
         ///
-        BaseSignal() : _signalID(-1) {}
+        ///
+        BaseSignal() : _ID(-1) {}
 
         /// \brief Construct a new Base Signal object for parse function
         ///
         /// \param signalID
-        BaseSignal(int signalID) : _signalID(signalID) {}
+        BaseSignal(int signalID) : _ID(signalID) {}
 
         ~BaseSignal() {}
     };
