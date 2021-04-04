@@ -15,14 +15,6 @@
 namespace Core
 {
 
-    std::vector<Logic *> *keyLogicList;
-    std::vector<Logic *> *mouseLogicList;
-    std::vector<Logic *> *timerLogicList;
-    std::vector<Logic *> *directLogicList;
-    std::vector<Logic *> *readyLogicList;
-    // the signalList that game loop checks
-    std::vector<Signal> signalList;
-
     int Game::width = 1280;
     int Game::height = 720;
 
@@ -348,7 +340,7 @@ namespace Core
             nlohmann::json pj;
             pj["PageName"] = p->getName();
 
-            // Determine if Page is a MenuPage. Kinda jank implementation
+            // Determine if Page is a MenuPage. Kinda junk implementation
             if (!strcmp(typeid(*p).name(), "class Core::MenuPage"))
             {
                 pj["isMenu"] = true;

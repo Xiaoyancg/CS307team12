@@ -120,7 +120,7 @@ int EditorMain()
     // docking flag
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     // keep docking bound to shift
-    io.ConfigDockingWithShift = true;
+    //io.ConfigDockingWithShift = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
@@ -370,7 +370,7 @@ static void ShowExampleAppMainMenuBar()
     if (selection[OBJECTTREE])
     {
         ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-        ImGui::SetNextWindowSize(ImVec2(200,200), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
         if (ImGui::Begin("Object Tree", &selection[OBJECTTREE]))
         {
 #ifdef __TEST_EDITOR

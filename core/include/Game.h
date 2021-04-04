@@ -18,9 +18,6 @@
 #include "MapPage.h"
 #include "RenderTarget.h"
 #include "SpriteManager.h"
-#include "Signal.h"
-#include "Logic.h"
-#include "Action.h"
 #include "MenuPage.h"
 
 // page list iterator
@@ -88,11 +85,11 @@ namespace Core
         MapPage *createMapPage(std::string, Map *);
         MapPage *createMapPage(std::string);
         MapPage *createMapPage();
-        Map* createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize);
+        Map *createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize);
         void deleteDefaultMapPageCurrentMap();
-        MenuPage* createMenuPage(std::string, Menu*);
-        MenuPage* createMenuPage(std::string);
-        MenuPage* createMenuPage();
+        MenuPage *createMenuPage(std::string, Menu *);
+        MenuPage *createMenuPage(std::string);
+        MenuPage *createMenuPage();
         void deletePage(Page *);
         void deletePage(std::string);
         std::vector<Page *> *getPageList();
@@ -106,8 +103,8 @@ namespace Core
         std::unordered_map<int, Sprite *> getSprites();
 
         // Map operations
-        std::vector<Map*> getDefaultMapPageMaps();
-        MapPage* getDefaultMapPage();
+        std::vector<Map *> getDefaultMapPageMaps();
+        MapPage *getDefaultMapPage();
         void renderDefaultMapPage();
 
         /* ----------------------------- STATE OPERATION ---------------------------- */
@@ -198,7 +195,7 @@ namespace Core
         std::vector<Page *> pageList;
 
         // Each game needs at least one MapPage, so heres a pointer to the default one
-        MapPage* mGameMapPage;
+        MapPage *mGameMapPage;
 
         // the current in display pagelist
         // FIXME: why use int?
