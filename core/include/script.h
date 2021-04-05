@@ -5,31 +5,33 @@ namespace Core
 {
     enum class ScriptType
     {
-        MoveEntityConstantly,  // 0
-        MoveEntitiesConstantly // 1
+        Custom = 0,
+        CustomList = 1,
+        MoveEntityConstantly = 2,
+        MoveEntitiesConstantly = 3,
+
     };
 
-    /// \brief There will only be user defined script
+    /////// \brief There will only be user defined script
+    ///////
+    ////class BaseScript
+    ////{
+    ////private:
+    ////    int _ID;
+    ////    ScriptType _type;
+    ////public:
+    ////    int getScriptID() { return _ID; }
+    ////    void setScriptID(int scriptID) { _ID = scriptID; }
+    ////    ScriptType getScriptType() { return _type; }
+    ////    void setScriptType(ScriptType type) { _type = type; }
+    ////    virtual void run() = 0;
+    ////    BaseScript() : _ID(-1) {}
+    ////    ~BaseScript() {}
+    ////};
+
+    /// \brief move one target Entity to a vec2 direction
     ///
-    class BaseScript
-    {
-    private:
-        int _ID;
-        ScriptType _type;
-
-    public:
-        int getScriptID() { return _ID; }
-        void setScriptID(int scriptID) { _ID = scriptID; }
-        ScriptType getScriptType() { return _type; }
-        void setScriptType(ScriptType type) { _type = type; }
-
-        virtual void run() = 0;
-
-        BaseScript() : _ID(-1) {}
-        ~BaseScript() {}
-    };
-
-    class MoveEntityConstantlyScript : public BaseScript
+    class MveEntityConstantlyScript
     {
     private:
         int _targetEntityID;
@@ -59,9 +61,29 @@ namespace Core
         ~MoveEntitiesConstantlyScript();
     };
 
-    union Script
+    union ScriptUnion
     {
         MoveEntityConstantlyScript mec;
         MoveEntitiesConstantlyScript mesc;
+        Script() = default;
+        Script(const Script &) = default;
+        Script(MoveEntityConstantly mec) : mec(mec) {}
+        Script(MoveEntitiesConstantlyScript mesc) : mesc(mesc) {}
+        ~Script() = default;
     };
+
+    class script
+    {
+    private:
+        int _scriptId;
+        ScriptType _scriptType;
+        ScriptUnion _script;
+
+    public:
+        script() : script() {}
+        script(int scriptId, ScriptType scriptType, ScriptUnion script)
+            : _scriptId(scriptId), _scriptType(scriptType), _script(script) {}
+        ~script() = default
+    };
+
 }
