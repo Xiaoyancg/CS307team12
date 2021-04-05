@@ -27,18 +27,12 @@ namespace Core
     public:
         /// \brief send the signal to current signal list
         ///
-        void sendSignal(Signal signal)
-        {
-            _currSignals.push_back(signal);
-        }
+        void sendSignal(Signal signal);
 
         /// \brief Get the pointer of the signals storage
         ///
         /// \return std::vector<Signal> *
-        std::vector<Signal> *getSignals()
-        {
-            return &_signals;
-        }
+        std::vector<Signal> *getSignals();
 
         /// \brief traverse the current signal list and call the corresponding
         /// logic
@@ -61,10 +55,8 @@ namespace Core
         ///
         Signal *createSignal();
 
-        LogicManager()
-        {
-        }
-        ~LogicManager() {}
+        LogicManager();
+        ~LogicManager();
     };
 
 }
