@@ -3,7 +3,7 @@
 
 namespace Core
 {
-    CustomSignal CustomSignal::parse(nlohmann::json root)
+    SignalCustom SignalCustom::parse(nlohmann::json root)
     {
         int targetScript = root.at("targetScript").get<int>();
     }

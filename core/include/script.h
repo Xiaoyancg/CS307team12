@@ -6,69 +6,91 @@ namespace Core
     enum class ScriptType
     {
         Custom = 0,
-        CustomList = 1,
-        MoveEntityConstantly = 2,
-        MoveEntitiesConstantly = 3,
+        MoveConstantly = 1,
 
     };
 
-    /////// \brief There will only be user defined script
-    ///////
-    ////class BaseScript
-    ////{
-    ////private:
-    ////    int _ID;
-    ////    ScriptType _type;
-    ////public:
-    ////    int getScriptID() { return _ID; }
-    ////    void setScriptID(int scriptID) { _ID = scriptID; }
-    ////    ScriptType getScriptType() { return _type; }
-    ////    void setScriptType(ScriptType type) { _type = type; }
-    ////    virtual void run() = 0;
-    ////    BaseScript() : _ID(-1) {}
-    ////    ~BaseScript() {}
-    ////};
+    //* ----------------- ANCHOR SCRIPT TYPES ---------------- *//
 
-    /// \brief move one target Entity to a vec2 direction
-    ///
-    class MveEntityConstantlyScript
+    class ScriptCustom
     {
     private:
-        int _targetEntityID;
-        glm::vec2 _movement;
+        std::vector<int> _targetSignalList;
+        std::vector<int> _targetLogicList;
+        std::vector<int> _targetScriptList;
 
     public:
-        int getTargetEntityID() { return _targetEntityID; }
-        void setTargetEntityID(int targetEntityID)
+        std::vector<int> getTargetSignalList() { return _targetSignalList; }
+        std::vector<int> getTargetLogicList() { return _targetLogicList; }
+        std::vector<int> getTargetScriptList() { return _targetScriptList; }
+        void setTargetSignalList(std::vector<int> targetSignalList)
         {
-            _targetEntityID = targetEntityID;
+            _targetSignalList = targetSignalList;
+        }
+        void setTargetLogicList(std::vector<int> targetLogicList)
+        {
+            _targetLogicList = targetLogicList;
+        }
+        void setTargetScriptList(std::vector<int> targetScriptList)
+        {
+            _targetScriptList = targetScriptList;
+        }
+
+        ScriptCustom() : ScriptCustom(std::vector<int>(),
+                                      std::vector<int>(),
+                                      std::vector<int>()) {}
+
+        ScriptCustom(std::vector<int> targetSignalList,
+                     std::vector<int> targetLogicList,
+                     std::vector<int> targetScriptList)
+            : _targetLogicList(targetLogicList),
+              _targetScriptList(targetScriptList),
+              _targetSignalList(targetSignalList) {}
+        ~ScriptCustom() = default;
+    };
+
+    class ScriptMoveConstantly
+    {
+    private:
+        glm::vec2 _movement;
+        std::vector<int> _targetEntityList;
+        int _targetPage;
+
+    public:
+        int getTargetPage() { return _targetPage; }
+        void setTargetPage(int targetPage) { _targetPage = targetPage; }
+        std::vector<int> getTargetEntityList() { return _targetEntityList; }
+        void setTargetEntityList(std::vector<int> targetEntityList)
+        {
+            _targetEntityList = targetEntityList;
         }
         glm::vec2 getMovement() { return _movement; }
         void setMovement(glm::vec2 movement) { _movement = movement; }
-        void run();
-        MoveEntityConstantlyScript() {}
-        ~MoveEntityConstantlyScript() {}
+
+        ScriptMoveEntitiesConstantly()
+            : ScriptMoveEntitiesConstantly(-1,
+                                           std::vector<int>(),
+                                           glm::vec2(0, 0)) {}
+        ScriptMoveEntitiesConstantly(int targetPage,
+                                     std::vector<int> targetEntityList,
+                                     glm::vec2 movement)
+            : _movement(movement),
+              _targetEntityList(targetEntityList),
+              _targetPage(targetPage) {}
+        ~ScriptMoveConstantly() = default;
     };
 
-    class MoveEntitiesConstantlyScript : public MoveEntityConstantlyScript
-    {
-    private:
-        std::vector<int> _targetEntityIDList;
-
-    public:
-        void run();
-        MoveEntitiesConstantlyScript();
-        ~MoveEntitiesConstantlyScript();
-    };
+    //* -------------------- ANCHOR SCRIPT ------------------- *//
 
     union ScriptUnion
     {
-        MoveEntityConstantlyScript mec;
-        MoveEntitiesConstantlyScript mesc;
-        Script() = default;
-        Script(const Script &) = default;
-        Script(MoveEntityConstantly mec) : mec(mec) {}
-        Script(MoveEntitiesConstantlyScript mesc) : mesc(mesc) {}
+        ScriptCustom scriptCustom;
+        ScriptMoveConstantly scriptConstantly;
+        ScriptUnion() : ScriptUnion(ScriptCustom()) {}
+        ScriptUnion(const Script &) = default;
+        ScriptUnion(ScriptCustom scriptCustom) : scriptCustom(scriptCustom) {}
+        ScriptUnion(ScriptMoveConstantly scriptMoveConstantly)
+            : scriptConstantly(scriptMoveConstantly) {}
         ~Script() = default;
     };
 
@@ -80,9 +102,19 @@ namespace Core
         ScriptUnion _script;
 
     public:
-        script() : script() {}
+        int getScriptId() { return _scriptId; }
+        void setScriptId(int scriptId) { _scriptId = scriptId; }
+        ScriptType getScriptType() { return _scriptType; }
+        void setScriptType(ScriptType scriptType) { _scriptType = scriptType; }
+        ScriptUnion getScript(){return Script}
+
+        script() : script(-1, ScriptType::Custom, ScriptUnion())
+        {
+        }
+
         script(int scriptId, ScriptType scriptType, ScriptUnion script)
             : _scriptId(scriptId), _scriptType(scriptType), _script(script) {}
+
         ~script() = default
     };
 
