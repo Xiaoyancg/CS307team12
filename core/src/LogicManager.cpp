@@ -3,20 +3,59 @@
 namespace Core
 {
 
-    void LogicManager::sendSignal(Signal signal)
+    //* ----------------------- SIGNAL ----------------------- *//
+
+    Signal *LogicManager::createSignal()
     {
-        _currSignals.push_back(signal);
+        _signalList.push_back(Signal());
+        return &(_signalList.at(_signalList.size() - 1));
     }
     std::vector<Signal> *LogicManager::getSignals()
     {
-        return &_signals;
+        return &_signalList;
     }
+    void LogicManager::sendSignal(Signal signal)
+    {
+        _currSignalList.push_back(signal);
+    }
+    void LogicManager::sendSignal(int signalId)
+    {
+        for (auto &signal : _signalList)
+        {
+            if (signal.getSignalId() == signalId)
+            {
+                sendSignal(signal);
+            }
+        }
+    }
+
+    //* ----------------------- SCRIPT ----------------------- *//
+
+    Script *LogicManager::createScript()
+    {
+        _scriptList.push_back(Script());
+        return &(_scriptList.at(_scriptList.size() - 1));
+    }
+
+    void LogicManager::sendScript(int scriptId)
+    {
+        for (auto &script : _scriptList)
+        {
+            if (script.getScriptId() == scriptId)
+            {
+                _currScriptList.push_back(&script);
+            }
+        }
+    }
+
+    //* -------------------- LOGICMANAGER -------------------- *//
+
     LogicManager LogicManager::parse(nlohmann::json root)
     {
         auto signalVector = root.at("signalList").get<std::vector<nlohmann::json>>();
         for (auto signal_js : signalVector)
         {
-            _signals.push_back(Signal::parse(signal_js));
+            _signalList.push_back(Signal::parse(signal_js));
         }
         auto logicVector = root.at("logicList").get<std::vector<nlohmann::json>>();
         for (auto logic_js : logicVector)
@@ -26,12 +65,6 @@ namespace Core
         for (auto script_js : scriptVector)
         {
         }
-    }
-
-    Signal *LogicManager::createSignal()
-    {
-        _signals.push_back(Signal());
-        return &(_signals.at(_signals.size() - 1));
     }
 
     LogicManager::LogicManager() {}
