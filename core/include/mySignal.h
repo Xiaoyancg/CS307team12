@@ -34,7 +34,7 @@ namespace Core
         std::vector<int> getTargetScriptList();
         void setTargetScriptList(std::vector<int> targetScriptList);
         static SignalCustom parse(nlohmann::json root);
-        SignalCustom() : SignalCustom(std::vector<int>());
+        SignalCustom();
         SignalCustom(std::vector<int> targetScriptList);
         ~SignalCustom();
     };
