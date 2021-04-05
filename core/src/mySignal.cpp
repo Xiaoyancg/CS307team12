@@ -14,6 +14,7 @@ namespace Core
     SignalCustom::SignalCustom() : SignalCustom(std::vector<int>()) {}
     SignalCustom::SignalCustom(std::vector<int> targetScriptList)
         : _targetScriptList(targetScriptList) {}
+
     SignalCustom::~SignalCustom() {}
     SignalCustom SignalCustom::parse(nlohmann::json root)
     {
