@@ -57,6 +57,61 @@ namespace Core
     void LogicManager::checkCurrSignalList()
     {
         //TODO
+        for (auto &signal : _currSignalList)
+        {
+            switch (signal.getSignalType())
+            {
+            // key logic enable key logic when meets the key criteria
+            case SignalType::Key:
+                for (auto &logic : _currKeyLogicList)
+                {
+                    //TODO change get function to return reference
+                    if (logic->getLogic().keyLogic.check(signal.getSignal().keySignal))
+                    {
+                        // TODO add bool in logic to enable remove function
+                        // if(logic.getAction())
+                        for (auto &scriptId : logic->getTargetScriptList())
+                        {
+                            sendScript(scriptId);
+                        }
+                    }
+                }
+                break;
+            // custom signal enable all target scripts in target logics
+            case SignalType::Custom:
+                // custom signal check custom first then others
+                for (auto &logic : _currCustomLogicList)
+                {
+                    for (auto &logicId : signal.getSignal().customSignal.getTargetLogicList())
+                    {
+                        if (logic->getLogicId() == logicId)
+                        {
+                            for (auto &scriptId : logic->getTargetScriptList())
+                            {
+                                sendScript(scriptId);
+                            }
+                        }
+                    }
+                }
+                for (auto &logic : _currKeyLogicList)
+                {
+                    for (auto &logicId : signal.getSignal().customSignal.getTargetLogicList())
+                    {
+                        if (logic->getLogicId() == logicId)
+                        {
+                            for (auto &scriptId : logic->getTargetScriptList())
+                            {
+                                sendScript(scriptId);
+                            }
+                        }
+                    }
+                }
+                break;
+
+            default:
+                break;
+            }
+        }
     }
 
     //* ------------------------ LOGIC ----------------------- *//
