@@ -6,6 +6,9 @@
 namespace Core
 {
     union SignalUnion;
+    class Signal;
+
+    //* --------------------- SIGNAL TYPE -------------------- *//
 
     enum class SignalType
     {
@@ -14,6 +17,8 @@ namespace Core
     };
 
     //* --------------- ANCHOR TYPES OF SIGNALS -------------- *//
+
+    //* ----------------------- CUSTOM ----------------------- *//
 
     /// \brief custom signal contains only the target script ID List
     /// when sending custom signal, it means the user want to evoke the target
@@ -26,16 +31,15 @@ namespace Core
         std::vector<int> _targetScriptList;
 
     public:
-        std::vector<int> getTargetScriptList() { return _targetScriptList; }
-        void setTargetScriptList(std::vector<int> targetScriptList)
-        {
-            _targetScriptList = targetScriptList;
-        }
-        SignalCustom() : SignalCustom(std::vector<int>()) {}
-        SignalCustom(std::vector<int> targetScriptList)
-            : _targetScriptList(targetScriptList) {}
-        ~SignalCustom() {}
+        std::vector<int> getTargetScriptList();
+        void setTargetScriptList(std::vector<int> targetScriptList);
+        static SignalCustom parse(nlohmann::json root);
+        SignalCustom() : SignalCustom(std::vector<int>());
+        SignalCustom(std::vector<int> targetScriptList);
+        ~SignalCustom();
     };
+
+    //* ------------------------- KEY ------------------------ *//
 
     /// \brief Key signals handles key event from SDL.
     /// Sends the key code and key type ( press / release ).
@@ -53,15 +57,14 @@ namespace Core
         Uint32 _keyType;
 
     public:
-        SignalKey() {}
-        SDL_Event event;
+        SignalKey();
+
         /// \brief Construct a new Key Signal object with event
         ///
         /// \param event
-        SignalKey(SDL_KeyboardEvent event)
-            : _key(event.keysym.sym), _keyType(event.type) {}
+        SignalKey(SDL_KeyboardEvent event);
 
-        ~SignalKey() {}
+        ~SignalKey();
     };
 
     //* ----------------- ANCHOR SIGNAL UNION ---------------- *//
@@ -71,13 +74,14 @@ namespace Core
         SignalKey keySignal;
         SignalCustom customSignal;
 
-        SignalUnion() {}
-        SignalUnion(const SignalUnion &) = default;
-        SignalUnion(SignalKey keySignal) : keySignal(keySignal) {}
-        SignalUnion(SignalCustom customSignal) : customSignal(customSignal) {}
-
-        ~SignalUnion() {}
+        SignalUnion();
+        SignalUnion(const SignalUnion &);
+        SignalUnion(SignalKey keySignal);
+        SignalUnion(SignalCustom customSignal);
+        ~SignalUnion();
     };
+
+    //* ----------------------- SIGNAL ----------------------- *//
 
     /// \brief the signal union contains all kind of signal and id and type
     ///
@@ -95,16 +99,15 @@ namespace Core
         /// Id is -1, type is custom.
         ///
         Signal() : Signal(-1, SignalType::Custom, SignalUnion(SignalCustom())) {}
-
+        Signal(const Signal &);
         /// \brief Construct a new Signal object
         ///
         /// \param signalId
         /// \param signalType
         /// \param signal
-        Signal(int signalId, SignalType signalType, SignalUnion signal)
-            : _signalId(signalId), _signalType(signalType), _signal(signal) {}
+        Signal(int signalId, SignalType signalType, SignalUnion signal);
 
-        ~Signal() {}
+        ~Signal();
     };
 
 }
