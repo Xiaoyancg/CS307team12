@@ -20,7 +20,7 @@ namespace Core
     /// script. There will be no criteria to check in logic.
     /// Should be the default signal in editor.
     ///
-    class CustomSignal // : public BaseSignal
+    class SignalCustom // : public BaseSignal
     {
     private:
         std::vector<int> _targetScriptList;
@@ -31,17 +31,17 @@ namespace Core
         {
             _targetScriptList = targetScriptList;
         }
-        CustomSignal() : CustomSignal(std::vector<int>()) {}
-        CustomSignal(std::vector<int> targetScriptList)
+        SignalCustom() : SignalCustom(std::vector<int>()) {}
+        SignalCustom(std::vector<int> targetScriptList)
             : _targetScriptList(targetScriptList) {}
-        ~CustomSignal() {}
+        ~SignalCustom() {}
     };
 
     /// \brief Key signals handles key event from SDL.
     /// Sends the key code and key type ( press / release ).
     /// System defined signal.
     ///
-    class KeySignal
+    class SignalKey
     {
     private:
         /// \brief SDL key code
@@ -53,28 +53,28 @@ namespace Core
         Uint32 _keyType;
 
     public:
-        KeySignal() {}
+        SignalKey() {}
         SDL_Event event;
         /// \brief Construct a new Key Signal object with event
         ///
         /// \param event
-        KeySignal(SDL_KeyboardEvent event)
+        SignalKey(SDL_KeyboardEvent event)
             : _key(event.keysym.sym), _keyType(event.type) {}
 
-        ~KeySignal() {}
+        ~SignalKey() {}
     };
 
     //* ----------------- ANCHOR SIGNAL UNION ---------------- *//
 
     union SignalUnion
     {
-        KeySignal keySignal;
-        CustomSignal customSignal;
+        SignalKey keySignal;
+        SignalCustom customSignal;
 
         SignalUnion() {}
         SignalUnion(const SignalUnion &) = default;
-        SignalUnion(KeySignal keySignal) : keySignal(keySignal) {}
-        SignalUnion(CustomSignal customSignal) : customSignal(customSignal) {}
+        SignalUnion(SignalKey keySignal) : keySignal(keySignal) {}
+        SignalUnion(SignalCustom customSignal) : customSignal(customSignal) {}
 
         ~SignalUnion() {}
     };
@@ -94,7 +94,7 @@ namespace Core
         /// \brief Construct a new Signal object by default.
         /// Id is -1, type is custom.
         ///
-        Signal() : Signal(-1, SignalType::Custom, SignalUnion(CustomSignal())) {}
+        Signal() : Signal(-1, SignalType::Custom, SignalUnion(SignalCustom())) {}
 
         /// \brief Construct a new Signal object
         ///
