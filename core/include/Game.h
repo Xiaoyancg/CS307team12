@@ -108,9 +108,6 @@ namespace Core
         MapPage *getDefaultMapPage();
         void renderDefaultMapPage();
 
-        /* ----------------------------- STATE OPERATION ---------------------------- */
-        // ( the flags and pointers that describing the current state of performance )
-
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
         Page *getCurrPage();
@@ -126,9 +123,7 @@ namespace Core
         /// <returns>0 if fail</returns>
         int moveCurrentPage(std::vector<Page *>::iterator target);
 
-        // =========================
-        // UTILITY OPERATION
-
+        Signal *createSignal();
         // initContext SDL context
         void initContext();
         // init opengl related flag
