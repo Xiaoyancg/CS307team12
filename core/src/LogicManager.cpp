@@ -214,7 +214,79 @@ namespace Core
 
     void LogicManager::runCurrScriptList()
     {
+        // FIXME for now the script are permanent until a script remove it
         //TODO
+        for (auto &script : _currEntityScriptList)
+        {
+            ScriptMoveConstantly mcs;
+            ScriptCustom cs;
+            switch (script->getScriptType())
+            {
+            case ScriptType::MoveConstantly:
+                mcs = script->getScript().scriptMoveConstantly;
+                if ((*_currPage)->getID() == mcs.getTargetPage())
+                {
+                    //TODO: add entity id in parse and in Entity constructor
+                    for (auto &entity : (*_currPage)->getEntityList())
+                    {
+                        for (auto &entityId : mcs.getTargetEntityList())
+                        {
+                            if (entity->getEntityId() == entityId)
+                            {
+                                entity->setLocation(entity->getLocation() + mcs.getMovement());
+                            }
+                        }
+                    }
+                }
+                break;
+            case ScriptType::Custom:
+                cs = script->getScript().scriptCustom;
+                if (cs.getAction())
+                {
+                    // true to send
+                    for (auto signalId : cs.getTargetSignalList())
+                    {
+                        sendSignal(signalId);
+                    }
+                    for (auto logicId : cs.getTargetLogicList())
+                    {
+                        sendLogic(logicId);
+                    }
+                    for (auto scriptId : cs.getTargetScriptList())
+                    {
+                        sendScript(scriptId);
+                    }
+                }
+                else
+                {
+                    // false to remove
+                    for (auto signalId : cs.getTargetSignalList())
+                    {
+                        removeSignal(signalId);
+                    }
+                    for (auto logicId : cs.getTargetLogicList())
+                    {
+                        removeLogic(logicId);
+                    }
+                    for (auto scriptId : cs.getTargetScriptList())
+                    {
+                        removeScript(scriptId);
+                    }
+                }
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        for (auto &script : _currPageScriptList)
+        {
+        }
+
+        for (auto &script : _currGameScriptList)
+        {
+        }
     }
 
     //* -------------------- LOGICMANAGER -------------------- *//
