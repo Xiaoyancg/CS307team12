@@ -52,6 +52,7 @@ namespace Core
 
     LogicManager LogicManager::parse(nlohmann::json root)
     {
+        //TODO
         auto signalVector = root.at("signalList").get<std::vector<nlohmann::json>>();
         for (auto signal_js : signalVector)
         {
@@ -64,6 +65,7 @@ namespace Core
         auto scriptVector = root.at("scriptList").get<std::vector<nlohmann::json>>();
         for (auto script_js : scriptVector)
         {
+            _scriptList.push_back(Script::parse(script_js));
         }
     }
 
