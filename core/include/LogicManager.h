@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <nlohmann/json.hpp>
 #include <vector>
+#include "Script.h"
+#include <any>
 namespace Core
 {
 
@@ -16,45 +18,48 @@ namespace Core
     private:
         /// \brief current signal list
         ///
-        std::unordered_map<int, Signal> _currSignals;
+        std::vector<Signal> _currSignals;
 
         /// \brief the signal storage
         ///
-        std::unordered_map<int, Signal> _signals;
+        std::vector<Signal> _signals;
 
     public:
         /// \brief send the signal to current signal list
         ///
-        void sendSignal(Signal);
+        void sendSignal(Signal signal)
+        {
+            _currSignals.push_back(signal);
+        }
+
+        /// \brief Get the pointer of the signals storage
+        ///
+        /// \return std::vector<Signal> *
+        std::vector<Signal> *getSignals()
+        {
+            return &_signals;
+        }
 
         /// \brief traverse the current signal list and call the corresponding
         /// logic
         ///
         void checkSignals();
 
-        /// \brief Get all Signal pointers in vector
-        ///
-        /// \return std::vector<Signal *>
-        std::vector<Signal *> getSignals()
-        {
-            std::vector<Signal *> r;
-            for (auto &signalpair : _signals)
-            {
-                r.push_back(&signalpair.second);
-            }
-            return r;
-        }
-
         /// \brief load all signals, logics and scripts to the corresponding
         /// unordered_map
         ///
         /// \param js
-        void
-        parse(nlohmann::json js);
+        LogicManager parse(nlohmann::json root);
 
-        /// \brief Create a Signal object
-        /// TODO add api
-        void createSignal();
+        /////// \brief Create a Signal object
+        ///////
+        ////Signal *createSignal(int id, SignalType type, SignalUnion signal);
+
+        /// \brief Create a Signal object for Editor
+        /// Create a default Signal and add it to the signal List, then return
+        /// the address of the stored Signal
+        ///
+        Signal *createSignal();
 
         LogicManager()
         {

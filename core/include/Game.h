@@ -19,6 +19,7 @@
 #include "RenderTarget.h"
 #include "SpriteManager.h"
 #include "MenuPage.h"
+#include "LogicManager.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
@@ -153,11 +154,6 @@ namespace Core
         // =========================
         // UTILITY OPERATION
 
-        // check the page list iterator not begin
-        bool _isBegin(PLitr i);
-        // check the page list iterator not end
-        bool _isBeforeEnd(PLitr i);
-
         void onGameCreation();
         // ==========================
         // ATTRIBUTES VARIABLE
@@ -183,7 +179,7 @@ namespace Core
         bool editorMode;
 
         /* ---------------------------- MEMBER VARIABLES ---------------------------- */
-
+        LogicManager _logicManager;
         // page pointer
         Page *currPage = nullptr;
 

@@ -5,8 +5,8 @@ namespace Core
 {
     enum class ScriptType
     {
-        MoveEntityConstantly,
-        MoveEntitiesConstantly
+        MoveEntityConstantly,  // 0
+        MoveEntitiesConstantly // 1
     };
 
     /// \brief There will only be user defined script
