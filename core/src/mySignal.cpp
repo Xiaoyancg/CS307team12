@@ -6,14 +6,14 @@ namespace Core
 
     //* ----------------------- CUSTOM ----------------------- *//
 
-    std::vector<int> SignalCustom::getTargetScriptList() { return _targetScriptList; }
-    void SignalCustom::setTargetScriptList(std::vector<int> targetScriptList)
+    std::vector<int> SignalCustom::getTargetLogicList() { return _targetLogicList; }
+    void SignalCustom::setTargetLogicList(std::vector<int> targetLogicList)
     {
-        _targetScriptList = targetScriptList;
+        _targetLogicList = targetLogicList;
     }
     SignalCustom::SignalCustom() : SignalCustom(std::vector<int>()) {}
-    SignalCustom::SignalCustom(std::vector<int> targetScriptList)
-        : _targetScriptList(targetScriptList) {}
+    SignalCustom::SignalCustom(std::vector<int> targetLogicList)
+        : _targetLogicList(targetLogicList) {}
 
     SignalCustom::~SignalCustom() {}
     SignalCustom SignalCustom::parse(nlohmann::json root)
@@ -23,6 +23,8 @@ namespace Core
 
     //* ------------------------- KEY ------------------------ *//
 
+    SDL_Keycode SignalKey::getKey() { return _key; }
+    Uint32 SignalKey::getKeyType() { return _keyType; }
     SignalKey::SignalKey() {}
     SignalKey::SignalKey(SDL_KeyboardEvent event)
         : _key(event.keysym.sym), _keyType(event.type) {}

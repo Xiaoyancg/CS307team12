@@ -3,12 +3,21 @@
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
 
+#define PAGELEVEL 9999
+#define GAMELEVEL 19999
 namespace Core
 {
     enum class ScriptType
     {
+        // run from 0 -> 20000 to avoid error
+        // logic level (base level)
         Custom = 0,
+        // entity level
         MoveConstantly = 1,
+        // page level
+        SwitchPage = 10000,
+        // game level
+        GameEnd = 20000,
 
     };
 
@@ -22,20 +31,25 @@ namespace Core
         std::vector<int> _targetSignalList;
         std::vector<int> _targetLogicList;
         std::vector<int> _targetScriptList;
+        /// \brief true to send, false to remove
+        ///
+        bool _action;
 
     public:
         std::vector<int> getTargetSignalList();
         std::vector<int> getTargetLogicList();
         std::vector<int> getTargetScriptList();
+        bool getAction();
         void setTargetSignalList(std::vector<int> targetSignalList);
         void setTargetLogicList(std::vector<int> targetLogicList);
         void setTargetScriptList(std::vector<int> targetScriptList);
+        void setAction(bool action);
 
         ScriptCustom();
 
         ScriptCustom(std::vector<int> targetSignalList,
                      std::vector<int> targetLogicList,
-                     std::vector<int> targetScriptList);
+                     std::vector<int> targetScriptList, bool action);
         ~ScriptCustom() = default;
     };
 

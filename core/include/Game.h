@@ -114,16 +114,24 @@ namespace Core
         Entity *setCurrCtrlEntity(Entity *);
         Entity *getCurrCtrlEntity();
 
-        /// <summary>
-        /// Move current page pointer and iterator
-        /// to the target iterator in the pageList.
-        /// <para>Can be fail ( begin(), end() out of range)</para>
-        /// </summary>
-        /// <param name="target">the target pagelist iterator</param>
-        /// <returns>0 if fail</returns>
-        int moveCurrentPage(std::vector<Page *>::iterator target);
-
+        /// \brief Create a default Signal object
+        /// *For editor, binding to create button in signal editor
+        ///
+        /// \return Signal*
         Signal *createSignal();
+
+        /// \brief Create a default Script object
+        /// *For editor, binding to create button in script editor
+        ///
+        /// \return Script*
+        Script *createScript();
+
+        /// \brief Create a default Logic object
+        /// *For editor, binding to create button in logic editor
+        ///
+        /// \return Logic*
+        Logic *createLogic();
+
         // initContext SDL context
         void initContext();
         // init opengl related flag
@@ -146,12 +154,7 @@ namespace Core
         void mainLoop();
 
     private:
-        // =========================
-        // UTILITY OPERATION
-
         void onGameCreation();
-        // ==========================
-        // ATTRIBUTES VARIABLE
 
         std::string gameName;
         std::string author;
@@ -159,9 +162,6 @@ namespace Core
         // last modified time
         std::string lMTime;
         std::string note;
-
-        // ===========================
-        // STATE VARIABLES
 
         Entity *currCtrlEntity;
         bool useFramebuffer;
@@ -173,7 +173,6 @@ namespace Core
         // if true use cbo
         bool editorMode;
 
-        /* ---------------------------- MEMBER VARIABLES ---------------------------- */
         LogicManager _logicManager;
         // page pointer
         Page *currPage = nullptr;

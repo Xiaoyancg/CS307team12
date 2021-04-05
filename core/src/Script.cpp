@@ -18,7 +18,10 @@ namespace Core
     {
         return _targetScriptList;
     }
-
+    bool ScriptCustom::getAction()
+    {
+        return _action;
+    }
     void ScriptCustom::setTargetSignalList(std::vector<int> targetSignalList)
     {
         _targetSignalList = targetSignalList;
@@ -31,15 +34,19 @@ namespace Core
     {
         _targetScriptList = targetScriptList;
     }
+    void ScriptCustom::setAction(bool action)
+    {
+        _action = action;
+    }
     ScriptCustom::ScriptCustom() : ScriptCustom(std::vector<int>(),
                                                 std::vector<int>(),
-                                                std::vector<int>()) {}
+                                                std::vector<int>(), true) {}
     ScriptCustom::ScriptCustom(std::vector<int> targetSignalList,
                                std::vector<int> targetLogicList,
-                               std::vector<int> targetScriptList)
+                               std::vector<int> targetScriptList, bool action)
         : _targetLogicList(targetLogicList),
           _targetScriptList(targetScriptList),
-          _targetSignalList(targetSignalList) {}
+          _targetSignalList(targetSignalList), _action(action) {}
 
     //* ------------------- MOVE CONSTANTLY ------------------ *//
 
@@ -115,6 +122,7 @@ namespace Core
     Script Script::parse(nlohmann::json root)
     {
         // TODO
+        return Script();
     }
     void Script::updateScript(ScriptType scriptType, ...)
     {
@@ -131,7 +139,8 @@ namespace Core
                     ScriptCustom(
                         va_arg(args, std::vector<int>),
                         va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>))));
+                        va_arg(args, std::vector<int>),
+                        va_arg(args, bool))));
             break;
         case ScriptType::MoveConstantly:
             setScript(
