@@ -1,6 +1,8 @@
-#pragma once
 #include <vector>
+#include <string>
 #include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
+
 namespace Core
 {
     enum class ScriptType
@@ -11,6 +13,8 @@ namespace Core
     };
 
     //* ----------------- ANCHOR SCRIPT TYPES ---------------- *//
+
+    //* ----------------------- CUSTOM ---------------------- *//
 
     class ScriptCustom
     {
@@ -35,6 +39,8 @@ namespace Core
         ~ScriptCustom() = default;
     };
 
+    //* ------------------- MOVE CONSTANTLY ------------------ *//
+
     class ScriptMoveConstantly
     {
     private:
@@ -57,40 +63,62 @@ namespace Core
         ~ScriptMoveConstantly() = default;
     };
 
-    //* -------------------- ANCHOR SCRIPT ------------------- *//
+    //* -------------------- SCRIPT UNION -------------------- *//
 
     union ScriptUnion
     {
         ScriptCustom scriptCustom;
-        ScriptMoveConstantly scriptConstantly;
+        ScriptMoveConstantly scriptMoveConstantly;
+        ScriptUnion(const ScriptUnion &other);
+        ScriptUnion &operator=(const ScriptUnion &other);
         ScriptUnion();
         ScriptUnion(ScriptCustom scriptCustom);
         ScriptUnion(ScriptMoveConstantly scriptMoveConstantly);
         ~ScriptUnion();
     };
 
-    class script
+    //* -------------------- ANCHOR SCRIPT ------------------- *//
+
+    class Script
     {
     private:
         int _scriptId;
         ScriptType _scriptType;
+        std::string _scriptName;
         ScriptUnion _script;
 
     public:
-        int getScriptId() { return _scriptId; }
-        void setScriptId(int scriptId) { _scriptId = scriptId; }
-        ScriptType getScriptType() { return _scriptType; }
-        void setScriptType(ScriptType scriptType) { _scriptType = scriptType; }
-        ScriptUnion getScript(){return Script}
+        int getScriptId();
+        void setScriptId(int scripId);
+        ScriptType getScriptType();
+        void setScriptType(ScriptType scriptType);
+        std::string getScriptName();
+        void setScriptName(std::string scriptname);
+        ScriptUnion getScript();
+        void setScript(ScriptUnion script);
 
-        script() : script(-1, ScriptType::Custom, ScriptUnion())
-        {
-        }
+        /// \brief Parse function
+        ///
+        /// \param root
+        /// \return Script
+        static Script parse(nlohmann::json root);
 
-        script(int scriptId, ScriptType scriptType, ScriptUnion script)
-            : _scriptId(scriptId), _scriptType(scriptType), _script(script) {}
+        /// \brief update all information of script
+        /// *For use in editor, binding with update button in script editor.
+        ///
+        /// \param scriptType
+        /// \param ... scriptId, scriptName, other variables. List of types:
+        /// \param Custom std::vector<int> signal, std::vector<int>
+        ///
+        void updateScript(ScriptType scriptType, ...);
 
-        ~script() = default
+        /// \brief Construct a new Script object
+        /// *For editor, used in Game::createScript()
+        ///
+        Script();
+
+        Script(int scriptId, ScriptType scriptType, std::string scriptName, ScriptUnion script);
+        ~Script();
     };
 
 }

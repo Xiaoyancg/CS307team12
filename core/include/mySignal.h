@@ -93,6 +93,7 @@ namespace Core
         SignalUnion _signal;
         std::string _signalName;
 
+    public:
         int getSignalId();
         void setSignalId(int signalId);
         SignalType getSignalType();
@@ -102,7 +103,6 @@ namespace Core
         SignalUnion getSignal();
         void setSignal(SignalUnion signal);
 
-    public:
         /// \brief Parse function
         ///
         /// \param root

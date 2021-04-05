@@ -59,7 +59,8 @@ namespace Core
 
     void Signal::updateSignal(SignalType signalType, ...)
     {
-        va_list args;
+        // no error when lacking std::
+        std::va_list args;
         va_start(args, signalType);
         setSignalType(signalType);
         setSignalId(va_arg(args, int));
