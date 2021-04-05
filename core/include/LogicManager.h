@@ -27,9 +27,14 @@ namespace Core
 
     public:
         /// \brief send the signal to current signal list
+        /// For system-defined signal
         ///
         void sendSignal(Signal signal);
 
+        /// \brief send Signal to current signal list by id
+        /// For script and initialize.
+        ///
+        /// \param signalId
         void sendSignal(int signalId);
 
         /// \brief Create a Signal object for Editor
