@@ -148,9 +148,6 @@ namespace Core
     }
 
     // =========================
-    // PROPERTY OPERATION
-
-    // =========================
     // MEMBER OPERATION
     Page *Game::addPage(Page *p)
     {
@@ -314,7 +311,16 @@ namespace Core
             mGameSprites.parse(root.at("spriteList"));
         }
 
-        // parse should set current
+        if (root.contains("logicManager"))
+        {
+            // TODO
+            _logicManager.parse(root.at("logicManager"));
+        }
+        if (root.contains("startPoint"))
+        {
+            // TODO
+        }
+        // TODO parse should set current
         // but the info of current in json is not implemented yet
         setCurrentPage(this->pageList.at(0));
         setCurrCtrlEntity(getCurrPage()->getCtrlEntity());
@@ -387,6 +393,22 @@ namespace Core
             j["spriteList"] = spriteVector;
         }
 
+        //TODO LogicManager
+        nlohmann::json logicManagerjs;
+        std::vector<nlohmann::json> logicVector;
+        //TODO for each logic push to logic vector
+        logicManagerjs["logicList"] = logicVector;
+        std::vector<nlohmann::json> scriptVector;
+        //TODO for each script push to script Vector
+        logicManagerjs["scriptList"] = scriptVector;
+        std::vector<nlohmann::json> signalVector;
+        // TODO for each signal ...
+        logicManagerjs["signalList"] = signalVector;
+        j["logicManager"] = logicManagerjs;
+
+        // TODO start point
+        nlohmann::json startPoint;
+        j["startPoint"] = startPoint;
         return ret;
     }
 
