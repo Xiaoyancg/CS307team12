@@ -282,8 +282,12 @@ namespace Core
         mGameMapPage->renderOnFramebuffer();
     }
 
-    // =========================
-    // UTILITY OPERATION
+    //* ---------------- ANCHOR LOGIC WRAPPER ---------------- *//
+
+    Signal *Game::createSignal()
+    {
+        return _logicManager.createSignal();
+    }
 
     Game *Game::parse(nlohmann::json &root)
     {

@@ -2,6 +2,15 @@
 #include "LogicManager.h"
 namespace Core
 {
+
+    void LogicManager::sendSignal(Signal signal)
+    {
+        _currSignals.push_back(signal);
+    }
+    std::vector<Signal> *LogicManager::getSignals()
+    {
+        return &_signals;
+    }
     LogicManager LogicManager::parse(nlohmann::json root)
     {
         auto signalVector = root.at("signalList").get<std::vector<nlohmann::json>>();
@@ -25,23 +34,6 @@ namespace Core
         return &(_signals.at(_signals.size() - 1));
     }
 
-    ////Signal *LogicManager::createSignal(int id, SignalType type, SignalUnion signal)
-    ////{
-    ////    Signal s(id, type);
-
-    ////    switch (type)
-    ////    {
-    ////    case SignalType::Key:
-    ////        s.keySignal = KeySignal();
-    ////        break;
-    ////    case SignalType::Custom:
-    ////        s.customSignal = CustomSignal();
-    ////        break;
-
-    ////    default:
-    ////        break;
-    ////    }
-    ////    return &s;
-    ////}
-
+    LogicManager::LogicManager() {}
+    LogicManager::~LogicManager() {}
 }
