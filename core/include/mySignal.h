@@ -20,22 +20,22 @@ namespace Core
 
     //* ----------------------- CUSTOM ----------------------- *//
 
-    /// \brief custom signal contains only the target script ID List
+    /// \brief custom signal contains only the target Logic ID List
     /// when sending custom signal, it means the user want to evoke the target
-    /// script. There will be no criteria to check in logic.
+    /// Logics. There will be no criteria to check in logic.
     /// Should be the default signal in editor.
     ///
     class SignalCustom // : public BaseSignal
     {
     private:
-        std::vector<int> _targetScriptList;
+        std::vector<int> _targetLogicList;
 
     public:
-        std::vector<int> getTargetScriptList();
-        void setTargetScriptList(std::vector<int> targetScriptList);
+        std::vector<int> getTargetLogicList();
+        void setTargetLogicList(std::vector<int> targetLogicList);
         static SignalCustom parse(nlohmann::json root);
         SignalCustom();
-        SignalCustom(std::vector<int> targetScriptList);
+        SignalCustom(std::vector<int> targetLogicList);
         ~SignalCustom();
     };
 
@@ -57,6 +57,8 @@ namespace Core
         Uint32 _keyType;
 
     public:
+        SDL_Keycode getKey();
+        Uint32 getKeyType();
         SignalKey();
 
         /// \brief Construct a new Key Signal object with event

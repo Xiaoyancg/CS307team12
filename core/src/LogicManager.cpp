@@ -5,15 +5,6 @@ namespace Core
 
     //* ----------------------- SIGNAL ----------------------- *//
 
-    Signal *LogicManager::createSignal()
-    {
-        _signalList.push_back(Signal());
-        return &(_signalList.at(_signalList.size() - 1));
-    }
-    std::vector<Signal> *LogicManager::getSignals()
-    {
-        return &_signalList;
-    }
     void LogicManager::sendSignal(Signal signal)
     {
         _currSignalList.push_back(signal);
@@ -28,8 +19,174 @@ namespace Core
             }
         }
     }
+    void LogicManager::removeSignal(int signalId)
+    {
+        for (std::vector<Signal>::iterator it = _currSignalList.begin();
+             it != _currSignalList.end(); it++)
+        {
+            if (it->getSignalId() == signalId)
+            {
+                _currSignalList.erase(it);
+                return;
+            }
+        }
+    }
+
+    Signal *LogicManager::createSignal()
+    {
+        _signalList.push_back(Signal());
+        return &(_signalList.at(_signalList.size() - 1));
+    }
+
+    void LogicManager::deleteSignal(int signalId)
+    {
+        for (std::vector<Signal>::iterator it = _signalList.begin();
+             it != _signalList.end(); ++it)
+        {
+            if (it->getSignalId() == signalId)
+            {
+                _signalList.erase(it);
+                return;
+            }
+        }
+    }
+    std::vector<Signal> *LogicManager::getSignalList()
+    {
+        return &_signalList;
+    }
+    void LogicManager::checkCurrSignalList()
+    {
+        //TODO
+    }
+
+    //* ------------------------ LOGIC ----------------------- *//
+    void LogicManager::sendLogic(int logicId)
+    {
+        for (auto &logic : _logicList)
+        {
+            if (logic.getLogicId() == logicId)
+            {
+                switch (logic.getSignalType())
+                {
+                case SignalType::Key:
+                    _currKeyLogicList.push_back(&logic);
+                    break;
+                case SignalType::Custom:
+                    _currCustomLogicList.push_back(&logic);
+                    break;
+
+                default:
+                    break;
+                }
+                return;
+            }
+        }
+    }
+    void LogicManager::removeLogic(int logicId)
+    {
+        for (std::vector<Logic *>::iterator it = _currKeyLogicList.begin();
+             it != _currKeyLogicList.end(); ++it)
+        {
+            if ((*it)->getLogicId() == logicId)
+            {
+                _currKeyLogicList.erase(it);
+                return;
+            }
+        }
+        for (std::vector<Logic *>::iterator it = _currCustomLogicList.begin();
+             it != _currCustomLogicList.end(); ++it)
+        {
+            if ((*it)->getLogicId() == logicId)
+            {
+                _currCustomLogicList.erase(it);
+                return;
+            }
+        }
+    }
+
+    Logic *LogicManager::createLogic()
+    {
+        _logicList.push_back(Logic());
+        return &_logicList.at(_logicList.size() - 1);
+    }
+
+    void LogicManager::deleteLogic(int logicId)
+    {
+        for (std::vector<Logic>::iterator it = _logicList.begin();
+             it != _logicList.end(); ++it)
+        {
+            if (it->getLogicId() == logicId)
+            {
+                _logicList.erase(it);
+                return;
+            }
+        }
+    }
+    std::vector<Logic> *LogicManager::getLogicList()
+    {
+        return &_logicList;
+    }
 
     //* ----------------------- SCRIPT ----------------------- *//
+
+    void LogicManager::sendScript(int scriptId)
+    {
+        // TODO: no duplicate check
+        for (auto &script : _scriptList)
+        {
+            if (script.getScriptId() == scriptId)
+            {
+                // use different level to avoid error
+                int level = static_cast<int>(script.getScriptType());
+                if (level > GAMELEVEL)
+                {
+                    _currGameScriptList.push_back(&script);
+                }
+                else if (level > PAGELEVEL)
+                {
+                    _currPageScriptList.push_back(&script);
+                }
+                else
+                {
+                    _currEntityScriptList.push_back(&script);
+                }
+            }
+        }
+    }
+
+    void LogicManager::removeScript(int scriptId)
+    {
+        for (std::vector<Script *>::iterator it =
+                 _currEntityScriptList.begin();
+             it != _currEntityScriptList.end(); ++it)
+        {
+            if ((*it)->getScriptId() == scriptId)
+            {
+                _currEntityScriptList.erase(it);
+                return;
+            }
+        }
+        for (std::vector<Script *>::iterator it =
+                 _currPageScriptList.begin();
+             it != _currPageScriptList.end(); ++it)
+        {
+            if ((*it)->getScriptId() == scriptId)
+            {
+                _currPageScriptList.erase(it);
+                return;
+            }
+        }
+        for (std::vector<Script *>::iterator it =
+                 _currGameScriptList.begin();
+             it != _currGameScriptList.end(); ++it)
+        {
+            if ((*it)->getScriptId() == scriptId)
+            {
+                _currGameScriptList.erase(it);
+                return;
+            }
+        }
+    }
 
     Script *LogicManager::createScript()
     {
@@ -37,38 +194,56 @@ namespace Core
         return &(_scriptList.at(_scriptList.size() - 1));
     }
 
-    void LogicManager::sendScript(int scriptId)
+    void LogicManager::deleteScript(int scriptId)
     {
-        for (auto &script : _scriptList)
+        for (std::vector<Script>::iterator it = _scriptList.begin();
+             it != _scriptList.end(); ++it)
         {
-            if (script.getScriptId() == scriptId)
+            if (it->getScriptId() == scriptId)
             {
-                _currScriptList.push_back(&script);
+                _scriptList.erase(it);
+                return;
             }
         }
     }
 
-    //* -------------------- LOGICMANAGER -------------------- *//
+    std::vector<Script> *LogicManager::getScriptList()
+    {
+        return &_scriptList;
+    }
 
+    void LogicManager::runCurrScriptList()
+    {
+        //TODO
+    }
+
+    //* -------------------- LOGICMANAGER -------------------- *//
     LogicManager LogicManager::parse(nlohmann::json root)
     {
         //TODO
-        auto signalVector = root.at("signalList").get<std::vector<nlohmann::json>>();
+        auto signalVector = root.at("signalList")
+                                .get<std::vector<nlohmann::json>>();
         for (auto signal_js : signalVector)
         {
             _signalList.push_back(Signal::parse(signal_js));
         }
-        auto logicVector = root.at("logicList").get<std::vector<nlohmann::json>>();
+        auto logicVector = root.at("logicList")
+                               .get<std::vector<nlohmann::json>>();
         for (auto logic_js : logicVector)
         {
         }
-        auto scriptVector = root.at("scriptList").get<std::vector<nlohmann::json>>();
+        auto scriptVector = root.at("scriptList")
+                                .get<std::vector<nlohmann::json>>();
         for (auto script_js : scriptVector)
         {
             _scriptList.push_back(Script::parse(script_js));
         }
+        return *this;
     }
 
     LogicManager::LogicManager() {}
+    LogicManager::LogicManager(std::vector<Page *> *pageList, Page **currPage)
+        : _pageList(pageList), _currPage(currPage) {}
+
     LogicManager::~LogicManager() {}
 }
