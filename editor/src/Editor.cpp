@@ -1,17 +1,8 @@
 #include "Editor.h"
-
-#include "GameWindow.h"
-#include "MapWindow.h"
-#include "EntityEditorWindow.h"
-#include "PageEditorWindow.h"
-#include "MapEditorWindow.h"
-#include "ScriptEditorWindow.h"
-#include "SpriteEditorWindow.h"
-#include "ObjectTreeWindow.h"
-#include "SplashWindow.h"
+#include "editorWindows.h"
 
 
-Editor::Editor() {
+Editor::Editor() : mainMenuBar(this) {
     memset(selection, 0, sizeof(selection));
 }
 
@@ -101,13 +92,13 @@ void Editor::createWindows() {
     windowList[GAMEVIEW] = new GameWindow(this, default_size);
     windowList[MAPVIEW] = new MapWindow(this, default_size);
 
-    windowList[ENTITYEDITOR] = new EntityEditorWindow(this, default_size);
-    windowList[PAGEEDITOR] = new PageEditorWindow(this, default_size);
-    windowList[SCRIPTEDITOR] = new ScriptEditorWindow(this, default_size);
-    windowList[SPRITEEDITOR] = new SpriteEditorWindow(this, default_size);
-    windowList[MAPEDITOR] = new MapEditorWindow(this, default_size);
+    windowList[ENTITYEDITOR] = new EntityEditor(this, default_size);
+    windowList[PAGEEDITOR] = new PageEditor(this, default_size);
+    windowList[SCRIPTEDITOR] = new ScriptEditor(this, default_size);
+    windowList[SPRITEEDITOR] = new SpriteEditor(this, default_size);
+    windowList[MAPEDITOR] = new MapEditor(this, default_size);
 
-    windowList[OBJECTTREE] = new ObjectTreeWindow(this, default_size);
+    windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
 }
 
@@ -213,7 +204,7 @@ void Editor::run()
 
         // turn the main viewport into a docking one to allow for docking
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-        ShowMainMenuBar();
+        mainMenuBar.draw();
         for (auto window : windowList) {
             if (window != nullptr) {
                 window->draw();
@@ -392,102 +383,7 @@ void Editor::ShowMainMenuBar()
      */
 
     // main menu bar code
-    if (ImGui::BeginMainMenuBar())
-    {
-        // File menu
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("New Project"))
-            {
-                texcbo = new GLuint();
-                glGenTextures(1, texcbo);
-                maptexcbo = new GLuint();
-                glGenTextures(1, maptexcbo);
-                game = new Core::Game(texcbo, maptexcbo);
-                currPage = game->getCurrPage();
-                game->initShader();
-                windowList[GAMEVIEW]->setVisible(true);
-                currentComponent[CUR_ENTITY] = "No Component Selected";
-                // When user new project, it won't save
-                // User should call save manually
-                // selection[SAVEAS] = true;
-            }
-            if (ImGui::MenuItem("Open Project"))
-            {
-                openDialog = ImGui::FileBrowser(
-                    ImGuiFileBrowserFlags_NoTitleBar);
-                openDialog.SetTypeFilters({".gdata"});
-                openDialog.Open();
-            }
-            if (ImGui::MenuItem("Delete Project"))
-            {
-                selection[DELETEPROJECT] = true;
-            }
-            /*if ( ImGui::MenuItem ( "Export Project" ) )
-            {
-                // call export function from VM team
-                // not yet implemented as of sprint 1
-            }*/
-
-            // Can't save empty game
-            // save button can be grey in the future ( no need to implement)
-            if (game != nullptr)
-            {
-                if (ImGui::MenuItem("Save"))
-                {
-                    if (isSaved)
-                    {
-                        nlohmann::json *content = game->serialize();
-                        WriteFile(dir, (content->dump(2)));
-                        // pointer deletion
-                        delete (content);
-                        selection[SAVEPOPUP] = true;
-                    }
-                    else
-                    {
-                        selection[SAVEAS] = true;
-                    }
-                }
-                if (ImGui::MenuItem("Save As"))
-                {
-                    selection[SAVEAS] = true;
-                }
-            }
-            ImGui::EndMenu();
-        }
-
-        //only display the edit and view menus if a project exists
-        if (game != nullptr)
-        {
-            // Edit menu
-            if (ImGui::BeginMenu("Edit"))
-            {
-                if (ImGui::MenuItem("Undo", "Ctrl+Z"))
-                {
-                    undo();
-                }
-                if (ImGui::MenuItem("Redo", "Ctrl+Y"))
-                {
-                    redo();
-                }
-                ImGui::EndMenu();
-            }
-
-            //view menu
-            if (ImGui::BeginMenu("View"))
-            {
-                ImGui::MenuItem("Object Tree", "", windowList[OBJECTTREE]->getVisiblePtr());
-                ImGui::MenuItem("Game View", "", windowList[GAMEVIEW]->getVisiblePtr());
-                ImGui::MenuItem("Entity Editor", "", windowList[ENTITYEDITOR]->getVisiblePtr());
-                ImGui::MenuItem("Page Editor", "", windowList[PAGEEDITOR]->getVisiblePtr());
-                ImGui::MenuItem("Map Editor", "", windowList[MAPEDITOR]->getVisiblePtr());
-                ImGui::MenuItem("Script Editor", "", windowList[SCRIPTEDITOR]->getVisiblePtr());
-                ImGui::MenuItem("Sprite Editor", "", windowList[SPRITEEDITOR]->getVisiblePtr());
-                ImGui::EndMenu();
-            }
-        }
-        ImGui::EndMainMenuBar();
-    }
+    
 
     /*
      *  ========================

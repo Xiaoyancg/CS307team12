@@ -1,9 +1,8 @@
-#include "MapEditorWindow.h"
-#include "Editor.h"
+#include "windows/MapEditor.h"
 #include <string>
 
 
-void MapEditorWindow::draw() {
+void MapEditor::draw() {
 	// Map editor
     static char map_name[128] = "";
     static int dim1 = 0;

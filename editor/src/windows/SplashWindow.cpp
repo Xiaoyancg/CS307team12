@@ -1,5 +1,4 @@
-#include "SplashWindow.h"
-#include "Editor.h"
+#include "windows/SplashWindow.h"
 
 #include <stb_image_aug.h>
 #include <iostream>

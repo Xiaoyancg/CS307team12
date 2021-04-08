@@ -1,9 +1,9 @@
 #pragma once
 
-#include "EditorWindow.h"
+#include "windows/Window.h"
 
 
-class GameWindow : public EditorWindow {
+class GameWindow : public Window {
 public:
     DEFAULT_CONSTRUCTOR(GameWindow)
     void draw();

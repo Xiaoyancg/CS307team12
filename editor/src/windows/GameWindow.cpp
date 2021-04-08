@@ -1,33 +1,35 @@
-#include "MapWindow.h"
-#include "Editor.h"
+#include "windows/GameWindow.h"
 
-void MapWindow::draw()
+
+void GameWindow::draw()
 {
     if (visible)
     {
         // possibly implement a new function here for readability purposes
-        if (editor->getCurrentMap() != nullptr)
+        if (editor->getGamePtr() != nullptr)
         {
-            Core::Map *currMap = editor->getCurrentMap();
             // set the windows default size
             ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
             // the game view window itself
-            ImGui::Begin("Map View", &visible);
+            ImGui::Begin("Game View", &visible);
             updateWindowFocus();
+
+            //ImVec2 dims = ImGui::GetWindowSize();
 
             // Get size of drawable space on the window, instead of the entire size of the window
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-            glm::ivec2 dims = currMap->getDimensions();
-            int tileSize = currMap->getTileSize();
-            //glViewport(0, 0, dims.x * tileSize, dims.y * tileSize);
-            glViewport(0, 0, 1000, 1000);
 
-            editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
+            glViewport(0, 0, editor->getGamePtr()->width, editor->getGamePtr()->height); // Set viewport to the Game dimensions
+
+            editor->getGamePtr()->render(); // Render Game with new viewport size
+
+            //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
+            //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void *)(*editor->getMapTexCBO()), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((void *)(*editor->getTexCBO()), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();

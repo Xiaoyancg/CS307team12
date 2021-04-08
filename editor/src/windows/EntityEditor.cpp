@@ -1,5 +1,4 @@
-#include "EntityEditorWindow.h"
-#include "Editor.h"
+#include "windows/EntityEditor.h"
 
 
 static void HelpMarker(const char *desc)
@@ -15,7 +14,7 @@ static void HelpMarker(const char *desc)
     }
 }
 
-void EntityEditorWindow::draw()
+void EntityEditor::draw()
 {
     if (visible)
     {

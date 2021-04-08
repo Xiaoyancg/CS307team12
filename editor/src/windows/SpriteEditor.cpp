@@ -1,8 +1,7 @@
-#include "SpriteEditorWindow.h"
-#include "Editor.h"
+#include "windows/SpriteEditor.h"
 
 
-void SpriteEditorWindow::draw() {
+void SpriteEditor::draw() {
 	// Sprite editor
     if (visible)
     {
