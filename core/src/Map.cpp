@@ -216,12 +216,16 @@ namespace Core
             if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
                 glBindTexture(GL_TEXTURE_2D, MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
             }
+            else {
+                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible
+            }
 
             // Buffer and draw tile
             // NOTE: Change the int multiplier whenever new data will be added to the shaders.
             //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
             glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), coords, GL_DYNAMIC_DRAW);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
 
             // Unbind the current sprite
             glBindTexture(GL_TEXTURE_2D, 0);
