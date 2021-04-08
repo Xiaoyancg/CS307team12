@@ -213,11 +213,12 @@ namespace Core
             int* coords = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
 
             // Bind the correct sprite if it exists
-            if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
-                glBindTexture(GL_TEXTURE_2D, MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
+            if (mTileArray[i].isInvisibleTile()) {
+                printf("ffff");
+                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible 
             }
-            else {
-                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible
+            else if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
+                glBindTexture(GL_TEXTURE_2D, MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
             }
 
             // Buffer and draw tile
