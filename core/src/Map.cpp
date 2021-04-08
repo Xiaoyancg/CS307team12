@@ -138,6 +138,7 @@ namespace Core
                 posCoords[6] = highX; // Bottom right x
                 posCoords[7] = lowY;  // Bottom right y
 
+                
                 // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
                 // P1
                 posCoords[0] += border;
@@ -152,6 +153,7 @@ namespace Core
                 // P4
                 posCoords[6] -= border;
                 posCoords[7] += border;
+                
 
                 // Set the coordinates for the current tile
                 mTileArray[index].setCoords(posCoords);

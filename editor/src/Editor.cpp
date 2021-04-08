@@ -356,7 +356,7 @@ static void ShowExampleAppMainMenuBar()
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter          
             
             // Calculate the min/max coords of the MapView window
-            ImVec2 min = ImGui::GetWindowViewport()->Pos;
+            ImVec2 min = ImGui::GetWindowPos();
             ImVec2 max = min;
             min.y += ImGui::GetWindowContentRegionMin().y; // Get y value of window past the title bar
             max.x += ImGui::GetWindowContentRegionMax().x; // Get max x value of MapView
@@ -375,8 +375,11 @@ static void ShowExampleAppMainMenuBar()
                     // Stretching introduces some problems with the coordinates we need to send to the core
                     // So we set them on a scale of 0->1. They later get rescaled to the dimensions of the MapView in the core
                     // This lets the core understand the coordinates regardless of stretching.
-                    game->getDefaultMapPage()->getTileFromClick((click_pos.x - min.x) / (max.x - min.x), (click_pos.y - min.y) / (max.y - min.y));
-
+                    // NOTE: Right now the code just gets the clicked Tile and sets its sprite ID to 1
+                    Core::Tile* clicked_tile = game->getDefaultMapPage()->getTileFromClick((click_pos.x - min.x) / (max.x - min.x), 1 - ((click_pos.y - min.y) / (max.y - min.y)));
+                    if (clicked_tile) {
+                        clicked_tile->setSpriteID(1);
+                    }
                 }
             }
 
