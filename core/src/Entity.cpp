@@ -155,7 +155,6 @@ namespace Core
         glActiveTexture(GL_TEXTURE0);
 
         if (mIsInvisible) {
-            printf("asdf");
             glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible 
         }
         else if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
