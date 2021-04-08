@@ -38,7 +38,8 @@ namespace Core
         : keyLogic(keyLogic) {}
     LogicUnion::~LogicUnion() {}
 
-    //* -------------------- ANCHOR LOGIC -------------------- *//
+    //* ------------------------ LOGIC ----------------------- *//
+
     void Logic::setLogicId(int logicId)
     {
         _logicId = logicId;

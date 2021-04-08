@@ -145,6 +145,15 @@ namespace Core
         ///
         void runCurrScriptList();
 
+        /// \brief execution function for script type MoveConstantly
+        ///
+        /// \param script
+        void runMoveConstantly(ScriptMoveConstantly script);
+
+        /// \brief execution function for script type custom
+        ///
+        /// \param script
+        void runCustom(ScriptCustom script);
         //* -------------------- LOGICMANAGER -------------------- *//
     private:
         std::vector<Page *> *_pageList;
