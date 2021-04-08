@@ -148,10 +148,14 @@ namespace Core
         {
             glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
         }
+        else {
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible 
+        }
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
         // Draw the bound buffer (coords)
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
 
         glBindTexture(GL_TEXTURE_2D, 0); // Unbind current sprite
 
