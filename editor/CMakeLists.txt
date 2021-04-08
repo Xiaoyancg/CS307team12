@@ -1,6 +1,6 @@
 # editor
-file(GLOB srcs "src/*.cpp")
-file(GLOB headers "include/*.h")
+file(GLOB_RECURSE srcs "src/*.cpp")
+file(GLOB_RECURSE headers "include/*.h")
 
 add_library(editorlib ${srcs} ${headers} )
 #target_compile_options(editorlib PRIVATE /w)

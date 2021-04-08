@@ -1,7 +1,7 @@
-#include "ObjectTreeWindow.h"
-#include "Editor.h"
+#include "windows/ObjectTree.h"
 
-void ObjectTreeWindow::draw()
+
+void ObjectTree::draw()
 {
     if (visible)
     {

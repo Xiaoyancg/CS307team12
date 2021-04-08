@@ -1,8 +1,7 @@
-#include "PageEditorWindow.h"
-#include "Editor.h"
+#include "windows/PageEditor.h"
 
 
-void PageEditorWindow::draw() {
+void PageEditor::draw() {
 	if (visible)
     {
         // possibly implement a new function here for readability purposes

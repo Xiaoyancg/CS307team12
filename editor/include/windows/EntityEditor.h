@@ -1,12 +1,12 @@
 #pragma once
 
+#include "windows/Window.h"
 #include <string>
-#include "EditorWindow.h"
 
 
-class EntityEditorWindow : public EditorWindow {
+class EntityEditor : public Window {
 public:
-    DEFAULT_CONSTRUCTOR(EntityEditorWindow)
+    DEFAULT_CONSTRUCTOR(EntityEditor)
     void draw();
 private:
     char entityName[128];

@@ -12,7 +12,8 @@
 #include <imgui_impl_opengl3.h>
 #include <imfilebrowser.h>
 
-#include "EditorWindow.h"
+#include "MainMenuBar.h"
+#include "windows/Window.h"
 
 #include "Game.h"
 #include "UndoRedo.h"
@@ -61,13 +62,13 @@ public:
 
 	void run();
 
+	///////////////////////////////////////////
+	// GUI HANDLER FUNCTIONS
 	void initializeGraphics();
 	void cleanupGraphics();
 	void createWindows();
 	void processInput();
 	void drawPopups();
-
-	void ShowMainMenuBar();
 
 	void markDeleteSuccess() {
 		delete_success = true;
@@ -77,7 +78,7 @@ public:
 	{
 		return game;
 	}
-	std::vector<EditorWindow*>& getWindowList() {
+	std::vector<Window*>& getWindowList() {
 		return windowList;
 	}
 	std::vector<std::string>& getCurrentComponentList() {
@@ -96,14 +97,16 @@ public:
 		currMap = value;
 	}
 
-	GLuint *getTexCBO()
+	GLuint getTexCBO()
 	{
 		return texcbo;
 	}
-	GLuint *getMapTexCBO()
+	GLuint createTexCBO();
+	GLuint getMapTexCBO()
 	{
 		return maptexcbo;
 	}
+	GLuint createMapTexCBO();
 
 private:
 	Core::Game *game = nullptr;
@@ -113,24 +116,22 @@ private:
 	SDL_GLContext gl_context;
 	ImGuiIO *io;
 
+	MainMenuBar mainMenuBar;
 	// WINDOWS
-	std::vector<EditorWindow*> windowList;
+	std::vector<Window*> windowList;
 
 	ImGui::FileBrowser saveDialog;
 	ImGui::FileBrowser openDialog;
 	ImGui::FileBrowser delDialog;
 	ImGui::FileBrowser importDialog;
 
-	// bool array to track the selections made on main menu bar
-	bool selection[SELECT_COUNT];
-
     //deletion flag if an entity, map, or page is deleted
 	bool delete_success = false;
 
 	// main texture color buffer object
 	// Game gets rendered onto this, and this is used as an Image with ImGUI
-	GLuint *texcbo = nullptr;
-	GLuint *maptexcbo = nullptr; // This is the framebuffer for the MapView
+	GLuint texcbo = 0;
+	GLuint maptexcbo = 0; // This is the framebuffer for the MapView
 	// the bool used to enable/ disable control handler
 	// check in game view
 

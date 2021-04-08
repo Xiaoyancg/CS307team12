@@ -1,7 +1,7 @@
-#include "ScriptEditorWindow.h"
-#include "Editor.h"
+#include "windows/ScriptEditor.h"
 
-void ScriptEditorWindow::draw() {
+
+void ScriptEditor::draw() {
 	// Script editor
     if (visible)
     {

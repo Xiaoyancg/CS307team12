@@ -1,14 +1,14 @@
 #pragma once
 
-#include <imgui.h>
-
-
-#define DEFAULT_CONSTRUCTOR(name) name(Editor* editor, ImVec2 size) : EditorWindow(editor, size) {}
 class Editor;
+class Window;
+#include "Editor.h"
 
-class EditorWindow {
+#define DEFAULT_CONSTRUCTOR(name) name(Editor* editor, ImVec2 size) : Window(editor, size) {}
+
+class Window {
 public:
-    EditorWindow(Editor* editor, ImVec2 size) : editor(editor), size(size) {}
+    Window(Editor* editor, ImVec2 size) : editor(editor), size(size) {}
 
     virtual void draw() = 0;
 
