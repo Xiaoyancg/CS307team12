@@ -92,6 +92,9 @@ public:
 	{
 		return currMap;
 	}
+	void setCurrentMap(Core::Map* value) {
+		currMap = value;
+	}
 
 	GLuint *getTexCBO()
 	{

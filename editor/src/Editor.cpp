@@ -4,6 +4,9 @@
 #include "MapWindow.h"
 #include "EntityEditorWindow.h"
 #include "PageEditorWindow.h"
+#include "MapEditorWindow.h"
+#include "ScriptEditorWindow.h"
+#include "SpriteEditorWindow.h"
 #include "ObjectTreeWindow.h"
 #include "SplashWindow.h"
 
@@ -69,7 +72,7 @@ void Editor::initializeGraphics()
     // docking flag
     io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     // keep docking bound to shift
-    io->ConfigDockingWithShift = true;
+    //io->ConfigDockingWithShift = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
@@ -97,8 +100,13 @@ void Editor::createWindows() {
     windowList.resize(SELECT_COUNT);
     windowList[GAMEVIEW] = new GameWindow(this, default_size);
     windowList[MAPVIEW] = new MapWindow(this, default_size);
+
     windowList[ENTITYEDITOR] = new EntityEditorWindow(this, default_size);
     windowList[PAGEEDITOR] = new PageEditorWindow(this, default_size);
+    windowList[SCRIPTEDITOR] = new ScriptEditorWindow(this, default_size);
+    windowList[SPRITEEDITOR] = new SpriteEditorWindow(this, default_size);
+    windowList[MAPEDITOR] = new MapEditorWindow(this, default_size);
+
     windowList[OBJECTTREE] = new ObjectTreeWindow(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
 }
@@ -339,279 +347,8 @@ void Editor::ShowMainMenuBar()
     windowList[OBJECTTREE]->setVisible(true);
 #endif
 
-    // Script editor
-    if (selection[SCRIPTEDITOR])
-    {
-        // set the windows default size
-        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
-
-        static char script_name[128] = "";
-        bool script_info = false;
-        if (ImGui::Begin("Script Editor", &selection[SCRIPTEDITOR]))
-        {
-            ImGui::PushItemWidth(200);
-            ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
-            if (ImGui::Button("Create New Script"))
-            {
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Delete This Script"))
-            {
-            }
-            if (ImGui::Button("Link This Script"))
-            {
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Show Script Information"))
-            {
-                script_info = true;
-            }
-        }
-
-        ImGui::End();
-    }
-
-    // Sprite editor
-    if (selection[SPRITEEDITOR])
-    {
-        // set the windows default size
-        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
-
-        // NOTE: Sprite name and ID do NOT have to be set to import a sprite. By default, the editor will use the filename if no name is given,
-        //       and will find and return the next usable ID if none is explicitly requested on Sprite creation.
-        static char sprite_name[128] = "";
-        static char spriteIDInput[128] = "";
-        int spriteID = -1; // -1 means the ID has not been sent (can't default to 0 because 0 is a valid ID)
-        bool sprite_info = false;
-        if (ImGui::Begin("Sprite Editor", &selection[SPRITEEDITOR]))
-        {
-
-            /////////////////////////////////
-            ImGui::PushItemWidth(200);
-            ImGui::Text("Enter Sprite Name:");
-            ImGui::InputText("  ", sprite_name, IM_ARRAYSIZE(sprite_name));
-
-            ImGui::PushItemWidth(200);
-
-            ImGui::Text("Set Sprite ID:");
-            ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
-            ImGui::Text(currentComponent[CUR_SPRITE].c_str());
-            if (ImGui::Button("Import Sprite"))
-            {
-                importDialog = ImGui::FileBrowser(
-                    ImGuiFileBrowserFlags_NoTitleBar);
-                importDialog.SetTypeFilters({".jpg", ".png"});
-                importDialog.Open();
-            }
-
-            if (ImGui::Button("Show Sprite Information"))
-            {
-                sprite_info = true;
-            }
-            if (ImGui::Button("Delete This Sprite"))
-            {
-                // TODO: Implement sprite deletion
-            }
-        }
-
-        // Check if the input is null (using != "" in this situation causes issues)
-        if (spriteIDInput[0] != 0)
-        {
-            spriteID = atoi(spriteIDInput);
-        }
-
-        if (sprite_info)
-        {
-            ImGui::OpenPopup("Sprite Information");
-            sprite_info = false;
-        }
-
-        // Sprite information popup
-        if (ImGui::BeginPopup("Sprite Information"))
-        {
-            // Sprite name, dimensions, ID?
-            if (currentComponent[CUR_SPRITE] == "No Component Selected")
-            {
-                ImGui::Text("Current Sprite Name: None");
-            }
-            else
-            {
-                // Show all sprites
-                for (auto &[key, value] : game->getSprites())
-                {
-                    // Any sprite referenced in the .gdata file will exist in game->getSprites, but may not have been loaded into memory yet.
-                    // This is just preventing referencing a null pointer. Once the sprite with the correct ID is loaded, this should correctly show its info
-                    if (value)
-                    {
-                        // Show the current sprite name
-                        std::string sprite_info = std::to_string(key).append(": ").append(value->getName());
-                        ImGui::Text(sprite_info.c_str());
-                    }
-                }
-            }
-            ImGui::EndPopup();
-        }
-
-        // Sprite import dialog
-        // NOTE: I had to move this here from the bottom section because this needs access to sprite_name
-        importDialog.Display();
-        if (importDialog.HasSelected())
-        {
-            // extract just the file name from the selected path
-            std::string fileName = importDialog.GetSelected().string().substr(importDialog.GetSelected().string().find_last_of('\\', std::string::npos) + 1, std::string::npos);
-            std::string filePath = std::filesystem::relative(importDialog.GetSelected()).string();
-
-            if (sprite_name[0] != 0)
-            {
-                currentComponent[CUR_SPRITE] = sprite_name;
-            }
-            else
-            {
-                currentComponent[CUR_SPRITE] = fileName;
-            }
-
-            if (spriteID >= 0)
-            {
-                game->createSprite(currentComponent[CUR_SPRITE], filePath, spriteID);
-            }
-            else
-            {
-                game->createSprite(currentComponent[CUR_SPRITE], filePath);
-            }
-
-            importDialog.ClearSelected();
-            memset(sprite_name, 0, 128);
-            memset(spriteIDInput, 0, 128);
-        }
-
-        ImGui::End();
-    }
-
-    // Map editor
-    static char map_name[128] = "";
-    static int dim1 = 0;
-    static int dim2 = 0;
-    static int tileSize = 0;
-    bool map_info = false;
-    Core::MapPage *map_page = NULL;
-    Core::Map *new_map = NULL;
-    if (selection[MAPEDITOR])
-    {
-        // possibly implement a new function here for readability purposes
-
-        // set the windows default size
-        ImGui::SetNextWindowSize(default_size, ImGuiCond_FirstUseEver);
-
-        // map editor
-        if (ImGui::Begin("Map Editor", &selection[MAPEDITOR]))
-        {
-            ImGui::Text("Enter Map Name:");
-            ImGui::PushItemWidth(200);
-            ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
-            ImGui::Text("Rows:    ");
-            ImGui::PushItemWidth(100);
-            ImGui::SameLine();
-            ImGui::SliderInt("##1", &dim1, 0, 50);
-            ImGui::Text("Columns: ");
-            ImGui::SameLine();
-            ImGui::SliderInt("##2", &dim2, 0, 50);
-            ImGui::Text("Tile size: ");
-            ImGui::SameLine();
-            ImGui::SliderInt("##3", &tileSize, 0, 128);
-            if (ImGui::Button("Create New Map"))
-            {
-                //creates a new map with map_name specified by user and dimensions as specified by user
-                //UNDO
-                std::string mname = map_name;
-                int savedDim1 = dim1;
-                int savedDim2 = dim2;
-                auto action = [this, &new_map, &map_page, mname, savedDim1, savedDim2]() {
-                    new_map = new Core::Map(mname, glm::vec2(savedDim1, savedDim2), 64);
-                    map_page = game->createMapPage(mname, new_map);
-                    new_map->setName(mname);
-                    new_map->setDimensions(glm::vec2(savedDim1, savedDim2));
-                };
-                auto restore = [this, mname]() {
-                    game->deletePage(mname);
-                };
-                pushAction(action, restore);
-                action();
-                //ENDUNDO
-                //TODO: render new map
-                // SETUP THE MAP CBO IF NEEDED
-                currMap = game->createMapOnDefaultMapPage(map_name, dim2, dim1, tileSize);
-                memset(map_name, 0, 128);
-                windowList[MAPVIEW]->setVisible(true);
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Delete This Map"))
-            {
-                //creates a map with 0x0 dimensions and an empty name
-                /*
-                memset(map_name, 0, 128);
-                new_map = new Core::Map(map_name, glm::vec2(dim1, dim2), 64);
-                map_page = game->createMapPage(map_name, new_map);
-                new_map->setName(map_name);
-                new_map->setDimensions(glm::vec2(dim1, dim2));
-                delete_success = true;
-                */
-                dim1 = 0;
-                dim2 = 0;
-                tileSize = 0;
-                game->deleteDefaultMapPageCurrentMap();
-                currMap = nullptr;
-                delete_success = true;
-            }
-            if (ImGui::Button("Show Map Information "))
-            {
-                map_info = true;
-            }
-
-            if (map_info)
-            {
-                ImGui::OpenPopup("Map Information");
-                map_info = false;
-            }
-
-            // Map information popup
-            if (ImGui::BeginPopup("Map Information"))
-            {
-                ImGui::Text("Map Name:");
-                ImGui::SameLine();
-                if (currMap != nullptr)
-                {
-                    ImGui::Text(currMap->getName().c_str());
-                }
-                else
-                {
-                    ImGui::Text("no map selected");
-                }
-                ImGui::Text("Dimensions:");
-                ImGui::SameLine();
-                glm::ivec2 dims;
-                if (currMap != nullptr)
-                {
-                    dims = currMap->getDimensions();
-                }
-                else
-                {
-                    dims = glm::ivec2(0, 0);
-                }
-                ImGui::Text("%i Columns x %i Rows", dims.x, dims.y);
-
-                if (currMap != nullptr)
-                {
-                    ImGui::Text("Tile size: %i", currMap->getTileSize());
-                }
-                else
-                {
-                    ImGui::Text("Tile size: 0");
-                }
-                ImGui::EndPopup();
-            }
-        }
-        ImGui::End();
-    }
+    
+    
 
     // Calls saved successfully popup on project save
     if (selection[SAVEPOPUP])
@@ -742,10 +479,10 @@ void Editor::ShowMainMenuBar()
                 ImGui::MenuItem("Object Tree", "", windowList[OBJECTTREE]->getVisiblePtr());
                 ImGui::MenuItem("Game View", "", windowList[GAMEVIEW]->getVisiblePtr());
                 ImGui::MenuItem("Entity Editor", "", windowList[ENTITYEDITOR]->getVisiblePtr());
-                ImGui::MenuItem("Page Editor", "", &selection[PAGEEDITOR]);
-                ImGui::MenuItem("Map Editor", "", &selection[MAPEDITOR]);
-                ImGui::MenuItem("Script Editor", "", &selection[SCRIPTEDITOR]);
-                ImGui::MenuItem("Sprite Editor", "", &selection[SPRITEEDITOR]);
+                ImGui::MenuItem("Page Editor", "", windowList[PAGEEDITOR]->getVisiblePtr());
+                ImGui::MenuItem("Map Editor", "", windowList[MAPEDITOR]->getVisiblePtr());
+                ImGui::MenuItem("Script Editor", "", windowList[SCRIPTEDITOR]->getVisiblePtr());
+                ImGui::MenuItem("Sprite Editor", "", windowList[SPRITEEDITOR]->getVisiblePtr());
                 ImGui::EndMenu();
             }
         }
