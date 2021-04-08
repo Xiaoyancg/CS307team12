@@ -44,7 +44,7 @@ namespace Core
         void render();
         void renderOnFramebuffer();
 
-
+        Tile* getTileFromClick(float x, float y);
 
         // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
         // This is set by Game.cpp when a Game object is created
