@@ -273,7 +273,6 @@ namespace Core
         //TODO
         for (auto &script : _currEntityScriptList)
         {
-            ScriptCustom cs;
             switch (script->getScriptType())
             {
             case ScriptType::MoveConstantly:
