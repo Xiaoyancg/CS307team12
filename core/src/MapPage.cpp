@@ -96,12 +96,7 @@ namespace Core
     // The coordinate is a float between 0 and 1 because the MapView window can be stretched, 
     // and we need a predictable scale (0->1 is simple)
     Tile* MapPage::getTileFromClick(float x, float y) {
-        glm::ivec2 click(x * 1280, y * 720); // Scale click to pixel 
-        printf("getTileFromClick > (%d, %d)\n", click.x, click.y);
-        for (int i = 0; i < mMap->mNumTiles; i++) {
-            mMap->mTileArray[i];
-
-        }
-        return nullptr;
+        glm::ivec2 click(x * 1280, y * 720); // Scale click to pixel coordinates
+        return mMap->checkTileCollision(click); // Returns either a ptr to a Tile or nullptr
     }
 }

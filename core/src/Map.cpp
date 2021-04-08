@@ -171,6 +171,25 @@ namespace Core
         }
     }
 
+
+    Tile* Map::checkTileCollision(glm::ivec2 click) {
+        for (int i = 0; i < mNumTiles; i++) {
+            // Parse the lower and upper coordinates for x and y from the Tile's coords array
+            int * coords = mTileArray[i].getCoords();
+            int lowX = coords[0];
+            int lowY = coords[5];
+            int highX = coords[8];
+            int highY = coords[1];
+            
+            if ((lowX < click.x) && (click.x < highX) &&
+                (lowY < click.y) && (click.y < highY)) {
+                return &mTileArray[i];
+            }
+        }
+        return nullptr;
+    }
+
+
     // Takes a pointer to an array of integers, containing the spriteID for each tile in the Map
     // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS Map::mMapDimensions
     // This will have to take a depth parameter when Tile depth gets implemented
