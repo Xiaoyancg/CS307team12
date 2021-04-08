@@ -273,61 +273,14 @@ namespace Core
         //TODO
         for (auto &script : _currEntityScriptList)
         {
-            ScriptMoveConstantly mcs;
             ScriptCustom cs;
             switch (script->getScriptType())
             {
             case ScriptType::MoveConstantly:
-                mcs = script->getScript().scriptMoveConstantly;
-                if ((*_currPage)->getID() == mcs.getTargetPage())
-                {
-                    //TODO: add entity id in parse and in Entity constructor
-                    for (auto &entity : (*_currPage)->getEntityList())
-                    {
-                        for (auto &entityId : mcs.getTargetEntityList())
-                        {
-                            if (entity->getEntityId() == entityId)
-                            {
-                                entity->setLocation(entity->getLocation() + mcs.getMovement());
-                            }
-                        }
-                    }
-                }
+                runMoveConstantly(script->getScript().scriptMoveConstantly);
                 break;
             case ScriptType::Custom:
-                cs = script->getScript().scriptCustom;
-                if (cs.getAction())
-                {
-                    // true to send
-                    for (auto signalId : cs.getTargetSignalList())
-                    {
-                        sendSignal(signalId);
-                    }
-                    for (auto logicId : cs.getTargetLogicList())
-                    {
-                        sendLogic(logicId);
-                    }
-                    for (auto scriptId : cs.getTargetScriptList())
-                    {
-                        sendScript(scriptId);
-                    }
-                }
-                else
-                {
-                    // false to remove
-                    for (auto signalId : cs.getTargetSignalList())
-                    {
-                        removeSignal(signalId);
-                    }
-                    for (auto logicId : cs.getTargetLogicList())
-                    {
-                        removeLogic(logicId);
-                    }
-                    for (auto scriptId : cs.getTargetScriptList())
-                    {
-                        removeScript(scriptId);
-                    }
-                }
+                runCustom(script->getScript().scriptCustom);
                 break;
 
             default:
@@ -344,6 +297,59 @@ namespace Core
         }
     }
 
+    void LogicManager::runMoveConstantly(ScriptMoveConstantly script)
+    {
+        if ((*_currPage)->getID() == script.getTargetPage())
+        {
+            //TODO: add entity id in parse and in Entity constructor
+            for (auto &entity : (*_currPage)->getEntityList())
+            {
+                for (auto &entityId : script.getTargetEntityList())
+                {
+                    if (entity->getEntityId() == entityId)
+                    {
+                        entity->setLocation(entity->getLocation() + script.getMovement());
+                    }
+                }
+            }
+        }
+    }
+
+    void LogicManager::runCustom(ScriptCustom script)
+    {
+        if (script.getAction())
+        {
+            // true to send
+            for (auto signalId : script.getTargetSignalList())
+            {
+                sendSignal(signalId);
+            }
+            for (auto logicId : script.getTargetLogicList())
+            {
+                sendLogic(logicId);
+            }
+            for (auto scriptId : script.getTargetScriptList())
+            {
+                sendScript(scriptId);
+            }
+        }
+        else
+        {
+            // false to remove
+            for (auto signalId : script.getTargetSignalList())
+            {
+                removeSignal(signalId);
+            }
+            for (auto logicId : script.getTargetLogicList())
+            {
+                removeLogic(logicId);
+            }
+            for (auto scriptId : script.getTargetScriptList())
+            {
+                removeScript(scriptId);
+            }
+        }
+    }
     //* -------------------- LOGICMANAGER -------------------- *//
     LogicManager LogicManager::parse(nlohmann::json root)
     {

@@ -280,7 +280,7 @@ namespace Core
         mGameMapPage->renderOnFramebuffer();
     }
 
-    //* ---------------- ANCHOR LOGIC WRAPPER ---------------- *//
+    //* -------------------- LOGIC WRAPPER ------------------- *//
 
     Signal *Game::createSignal()
     {
