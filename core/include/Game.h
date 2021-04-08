@@ -132,6 +132,11 @@ namespace Core
         /// \return Logic*
         Logic *createLogic();
 
+        // For editor
+        void deleteLogic(int logicId);
+        void deleteSignal(int signalId);
+        void deleteScript(int scriptId);
+
         // initContext SDL context
         void initContext();
         // init opengl related flag
