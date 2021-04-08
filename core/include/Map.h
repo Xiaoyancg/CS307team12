@@ -37,6 +37,8 @@ namespace Core
 
 		void render();
 
+		Tile* checkTileCollision(glm::ivec2);
+
 		friend class MapPage;
 
 	private:
