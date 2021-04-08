@@ -13,7 +13,7 @@ namespace Core
 
         // cbo is set in editor and passed here
         glBindTexture(GL_TEXTURE_2D, *cbo);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1000, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -89,5 +89,19 @@ namespace Core
         Page::render();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    // This is called from the MapView window with on a mouse click.
+    // x and y are floats on a scale from 0 to 1, indicating the location of the click.
+    // The coordinate is a float between 0 and 1 because the MapView window can be stretched, 
+    // and we need a predictable scale (0->1 is simple)
+    Tile* MapPage::getTileFromClick(float x, float y) {
+        glm::ivec2 click(x * 1280, y * 720); // Scale click to pixel 
+        printf("getTileFromClick > (%d, %d)\n", click.x, click.y);
+        for (int i = 0; i < mMap->mNumTiles; i++) {
+            mMap->mTileArray[i];
+
+        }
+        return nullptr;
     }
 }

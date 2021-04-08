@@ -349,14 +349,37 @@ static void ShowExampleAppMainMenuBar()
 
             // Get size of drawable space on the window, instead of the entire size of the window
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-            glm::ivec2 dims = currMap->getDimensions();
-            int tileSize = currMap->getTileSize();
-            //glViewport(0, 0, dims.x * tileSize, dims.y * tileSize);
-            glViewport(0, 0, 1000, 1000);
+            glViewport(0, 0, 1280, 720);
 
             game->renderDefaultMapPage(); // Render Game with new viewport size
 
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
+            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter          
+            
+            // Calculate the min/max coords of the MapView window
+            ImVec2 min = ImGui::GetWindowViewport()->Pos;
+            ImVec2 max = min;
+            min.y += ImGui::GetWindowContentRegionMin().y; // Get y value of window past the title bar
+            max.x += ImGui::GetWindowContentRegionMax().x; // Get max x value of MapView
+            max.y += ImGui::GetWindowContentRegionMax().y; // Get max y value of MapView
+            ImVec2 topLeftCanvas;
+            topLeftCanvas.x = min.x;
+            topLeftCanvas.y = min.y;
+            
+            //////////// Mouse handling within the MapView window ////////////
+            // If mouse left is currently pressed and the MapView is focused
+            if (ImGui::IsMouseDown(0) && ImGui::IsWindowFocused()) {
+                // If click is within the coordinates of the MapView window
+                ImVec2 click_pos = ImGui::GetMousePos();
+                if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y)) {
+                    // The click is valid within the MapView window.
+                    // Stretching introduces some problems with the coordinates we need to send to the core
+                    // So we set them on a scale of 0->1. They later get rescaled to the dimensions of the MapView in the core
+                    // This lets the core understand the coordinates regardless of stretching.
+                    game->getDefaultMapPage()->getTileFromClick((click_pos.x - min.x) / (max.x - min.x), (click_pos.y - min.y) / (max.y - min.y));
+
+                }
+            }
+
             ImGui::Image((void *)(*maptexcbo), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
