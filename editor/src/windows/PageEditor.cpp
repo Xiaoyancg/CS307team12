@@ -102,7 +102,7 @@ void PageEditor::draw() {
                 //ENDUNDO
                 if (game->getPageList()->size() < original)
                 {
-                    editor->markDeleteSuccess();
+                    editor->showDeleteSuccessPopup();
                     pushAction(action, restore); // UNDO
                     // memset to clear the buffer after use
                     memset(page_name, 0, 128);

@@ -5,6 +5,6 @@
 
 class ScriptEditor : public Window {
 public:
-	DEFAULT_CONSTRUCTOR(ScriptEditor)
+	DEFAULT_CONSTRUCTOR(ScriptEditor) {}
 	void draw();
 };

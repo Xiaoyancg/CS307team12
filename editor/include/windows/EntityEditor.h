@@ -6,7 +6,9 @@
 
 class EntityEditor : public Window {
 public:
-    DEFAULT_CONSTRUCTOR(EntityEditor)
+    DEFAULT_CONSTRUCTOR(EntityEditor) {
+        entityName[0] = '\0';
+    }
     void draw();
 private:
     char entityName[128];

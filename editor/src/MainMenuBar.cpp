@@ -15,8 +15,7 @@ void MainMenuBar::draw() {
 				openDialog.Open();
 			}
 			if (ImGui::MenuItem("Delete Project")) {
-				ImGui::OpenPopup("Delete Successful");
-        		ImGui::OpenPopup("Delete Project");
+        		ImGui::OpenPopup("delete_project_popup");
 			}
 			/*if ( ImGui::MenuItem ( "Export Project" ) )
 			{
@@ -31,11 +30,11 @@ void MainMenuBar::draw() {
 					if (editor->getGameFilePath().empty()) {
 						editor->saveGame();
 					} else {
-						ImGui::OpenPopup("Save As");
+						ImGui::OpenPopup("save_as_popup");
 					}
 				}
 				if (ImGui::MenuItem("Save As")) {
-					ImGui::OpenPopup("Save As");
+					ImGui::OpenPopup("save_as_popup");
 				}
 			}
 			ImGui::EndMenu();
@@ -72,7 +71,7 @@ void MainMenuBar::draw() {
 
 	drawOpenDialog();
 	drawSaveAsPopup();
-	drawDeleteProjectPopup();	
+	drawDeleteProjectPopup();
 }
 
 void MainMenuBar::drawOpenDialog() {
@@ -86,7 +85,12 @@ void MainMenuBar::drawOpenDialog() {
 }
 
 void MainMenuBar::drawDeleteProjectPopup() {
-	if (ImGui::BeginPopup("Delete Project"))
+	// Initial deletion prompt
+	if (deleteProjectPopup) {
+		ImGui::OpenPopup("delete_project_popup");
+		deleteProjectPopup = false;
+	}	
+	if (ImGui::BeginPopup("delete_project_popup"))
     {
         ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
         if (ImGui::Button("Yes"))
@@ -104,13 +108,24 @@ void MainMenuBar::drawDeleteProjectPopup() {
     {
         DeleteFile(delDialog.GetSelected().string().c_str());
         delDialog.ClearSelected();
-        ImGui::OpenPopup("Deleted Successfully");
+        ImGui::OpenPopup("project_deleted_popup");
+    }
+
+	// Successful Project deletion popup
+    if (projectDeletedPopup) {
+        ImGui::OpenPopup("project_deleted_popup");
+        projectDeletedPopup = false;
+    }
+    if (ImGui::BeginPopup("project_deleted_popup"))
+    {
+        ImGui::Text("Project deleted successfully!");
+        ImGui::EndPopup();
     }
 }
 
 void MainMenuBar::drawSaveAsPopup() {
 	static char name[128] = "";
-    if (ImGui::BeginPopup("Save As"))
+    if (ImGui::BeginPopup("save_as_popup"))
     {
         ImGui::Text("Enter the name of your project.");
         ImGui::InputText("", name, IM_ARRAYSIZE(name));
@@ -142,6 +157,6 @@ void MainMenuBar::drawSaveAsPopup() {
         // delete (content);
         // isSaved = true;
         saveDialog.ClearSelected();
-        ImGui::OpenPopup("Saved Successfully");
+        ImGui::OpenPopup("save_success_popup");
     }
 }

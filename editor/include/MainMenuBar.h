@@ -15,6 +15,10 @@ public:
 	void drawSaveAsPopup();
 private:
 	Editor* editor;
+
+	bool deleteProjectPopup = false;
+	bool projectDeletedPopup = false;
+
 	ImGui::FileBrowser openDialog;
 	ImGui::FileBrowser delDialog;
 	ImGui::FileBrowser saveDialog;
