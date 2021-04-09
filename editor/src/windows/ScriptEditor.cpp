@@ -14,18 +14,18 @@ void ScriptEditor::draw() {
         {
             ImGui::PushItemWidth(200);
             ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
-            if (ImGui::Button("Create New Script"))
+            if (ImGui::Button("Create Script"))
             {
             }
             ImGui::SameLine();
-            if (ImGui::Button("Delete This Script"))
+            if (ImGui::Button("Delete Script"))
             {
             }
-            if (ImGui::Button("Link This Script"))
+            if (ImGui::Button("Link Script"))
             {
             }
             ImGui::SameLine();
-            if (ImGui::Button("Show Script Information"))
+            if (ImGui::Button("Show Information"))
             {
                 script_info = true;
             }
