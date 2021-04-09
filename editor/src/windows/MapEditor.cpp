@@ -1,4 +1,5 @@
 #include "windows/MapEditor.h"
+#include "UndoRedo.h"
 #include <string>
 
 
@@ -57,7 +58,7 @@ void MapEditor::draw() {
                 //TODO: render new map
                 // SETUP THE MAP CBO IF NEEDED
                 editor->setCurrentMap(game->createMapOnDefaultMapPage(map_name, dim2, dim1, tileSize));
-                memset(map_name, 0, 128);
+                map_name[0] = '\0';
                 editor->getWindowList()[MAPVIEW]->setVisible(true);
             }
             ImGui::SameLine();
@@ -93,7 +94,7 @@ void MapEditor::draw() {
             // Map information popup
             if (ImGui::BeginPopup("Map Information"))
             {
-				Core::Map* currMap = editor->getCurrentMap();
+                Core::Map* currMap = editor->getCurrentMap();
                 ImGui::Text("Map Name:");
                 ImGui::SameLine();
                 if (currMap != nullptr)

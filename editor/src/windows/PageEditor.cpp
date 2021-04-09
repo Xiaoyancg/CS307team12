@@ -1,4 +1,5 @@
 #include "windows/PageEditor.h"
+#include "UndoRedo.h"
 
 
 void PageEditor::draw() {
@@ -124,7 +125,7 @@ void PageEditor::draw() {
         {
             ImGui::Text("Page Name:");
             ImGui::SameLine();
-            ImGui::Text(editor->getCurrentPage()->getName().c_str());
+            ImGui::Text(editor->getGamePtr()->getCurrPage()->getName().c_str());
             std::vector<Core::Page *> plist = *game->getPageList();
             ImGui::Text("");
             ImGui::Text("Page List: ");

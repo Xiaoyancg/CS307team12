@@ -27,7 +27,7 @@ void ObjectTree::draw()
                     static int selected = -1;
                     int node_clicked = -1;
                     int index = 0;
-                    std::vector<Core::Entity *> elist = editor->getCurrentPage()->getEntityList();
+                    std::vector<Core::Entity *> elist = editor->getGamePtr()->getCurrPage()->getEntityList();
                     for (Core::Entity *e : elist)
                     {
                         ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -116,7 +116,7 @@ void ObjectTree::draw()
                         if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
                         {
                             editor->getWindowList()[SPRITEEDITOR]->setVisible(true);
-                            editor->getCurrentComponentList()[CUR_SCRIPT] = value->getName();
+                            editor->getCurrentComponentList()[CUR_SPRITE] = value->getName();
                         }
                         index++;
                     }

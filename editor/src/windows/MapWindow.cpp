@@ -27,7 +27,7 @@ void MapWindow::draw()
             editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void *)(*editor->getMapTexCBO()), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((ImTextureID) mTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();

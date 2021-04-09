@@ -5,6 +5,10 @@
 
 class MapWindow : public Window {
 public:
-    DEFAULT_CONSTRUCTOR(MapWindow)
+    MapWindow(Editor* editor, ImVec2 size, unsigned int texcbo, unsigned int fbo)
+        : Window(editor, size), mTexCBO(texcbo), mFBO(fbo) {}
     void draw();
+private:
+    unsigned int mTexCBO;
+    unsigned int mFBO;
 };
