@@ -5,6 +5,6 @@
 
 class PageEditor : public Window {
 public:
-	DEFAULT_CONSTRUCTOR(PageEditor)
+	DEFAULT_CONSTRUCTOR(PageEditor) {}
 	void draw();
 };

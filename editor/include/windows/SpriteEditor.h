@@ -6,7 +6,7 @@
 
 class SpriteEditor : public Window {
 public:
-	DEFAULT_CONSTRUCTOR(SpriteEditor)
+	DEFAULT_CONSTRUCTOR(SpriteEditor) {}
 	void draw();
 private:
 	ImGui::FileBrowser importDialog;

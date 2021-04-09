@@ -5,6 +5,6 @@
 
 class ObjectTree : public Window {
 public:
-    DEFAULT_CONSTRUCTOR(ObjectTree)
+    DEFAULT_CONSTRUCTOR(ObjectTree) {}
     void draw();
 };

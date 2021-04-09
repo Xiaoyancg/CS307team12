@@ -23,7 +23,6 @@ void EntityEditor::draw()
 
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-        entityName[0] = '\0';
         entityInfo = false;
         if (ImGui::Begin("Entity Editor", &visible))
         {
@@ -32,8 +31,7 @@ void EntityEditor::draw()
             ImGui::Text("Enter Entity Name:");
             ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 260);
             ImGui::Text("Current Entity: %s", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
-            // vvv POSSIBLE BUFFER OVERFLOW, CHECK LATER -jack vvv
-            ImGui::InputText(" ", entityName, sizeof(entityName));
+            ImGui::InputText("", entityName, IM_ARRAYSIZE(entityName));
 
             if (ImGui::Button("Create New Entity"))
             {
@@ -57,11 +55,9 @@ void EntityEditor::draw()
             std::string& currentEntityName = editor->getCurrentComponentList()[CUR_ENTITY];
             if (ImGui::Button("Delete This Entity") && currentEntityName != "No Component Selected")
             {
-                memcpy(entityName, currentEntityName.c_str(), currentEntityName.size() + 1);
-                printf("Deleting entity: %s\n", entityName);
                 size_t original = editor->getGamePtr()->getCurrPage()->getEntityList().size();
                 //UNDO
-                std::string e = entityName;
+                std::string& e = currentEntityName;
                 int idx = -1;
                 bool isCtrlEntity = false;
                 auto &eList = currPage->getEntityList();
@@ -78,15 +74,18 @@ void EntityEditor::draw()
                     }
                 }
                 Core::Entity savedEntity = *eList[idx];
-                auto action = [currPage, e]() {
-                    currPage->deleteEntity(e);
+                auto action = [this, e]() {
+                    editor->getGamePtr()->getCurrPage()->deleteEntity(e);
                 };
-                auto restore = [idx, currPage, savedEntity, isCtrlEntity]() {
+                auto restore = [this, idx, savedEntity, isCtrlEntity]() {
                     Core::Entity *newEntity = new Core::Entity(savedEntity);
-                    currPage->getEntityList().insert(currPage->getEntityList().begin() + idx, newEntity);
+                    editor->getGamePtr()->getCurrPage()->getEntityList().insert(
+                        editor->getGamePtr()->getCurrPage()->getEntityList().begin() + idx,
+                        newEntity
+                    );
                     if (isCtrlEntity)
                     {
-                        currPage->setCtrlEntity(newEntity);
+                        editor->getGamePtr()->getCurrPage()->setCtrlEntity(newEntity);
                     }
                 };
 
@@ -100,7 +99,7 @@ void EntityEditor::draw()
 
                 if (currPage->getEntityList().size() < original)
                 {
-                    editor->markDeleteSuccess();
+                    editor->showDeleteSuccessPopup();
                     pushAction(action, restore); // UNDO
                     // clear the buffer after use
                     entityName[0] = '\0';
@@ -108,7 +107,6 @@ void EntityEditor::draw()
             }
             ImGui::Text("");
             ImGui::Text("Select Entity:");
-            char **entities_list = (char **)malloc(sizeof(char *) * currPage->getEntityList().size());
             static int current_entity = 0;
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
@@ -118,26 +116,23 @@ void EntityEditor::draw()
                     editor->getCurrentComponentList()[CUR_ENTITY] = currPage->getEntityList()[0]->getName();
                 }
 
-                for (int n = 0; n < currPage->getEntityList().size(); n++)
+                for (int i = 0; i < currPage->getEntityList().size(); i++)
                 {
-                    std::string ent_name = currPage->getEntityList()[n]->getName().c_str();
-                    entities_list[n] = (char *)malloc(ent_name.length() + 1);
-                    strncpy(entities_list[n], (char *)currPage->getEntityList()[n]->getName().c_str(), ent_name.length());
-                    entities_list[n][ent_name.length()] = '\0';
-
-                    const bool is_selected = (current_entity == n);
-                    if (ImGui::Selectable(entities_list[n], is_selected))
+                    auto entity = currPage->getEntityList()[i];
+                    bool is_selected = (current_entity == i);
+                    if (ImGui::Selectable(entity->getName().c_str(), is_selected))
                     {
-                        current_entity = n;
-                        editor->getCurrentComponentList()[CUR_ENTITY] = ent_name;
-                        printf("%s\n", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
+                        current_entity = i;
+                        x_pos = entity->getLocation().x;
+                        y_pos = entity->getLocation().y;
+                        editor->getCurrentComponentList()[CUR_ENTITY] = entity->getName();
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     if (is_selected)
+                    {
                         ImGui::SetItemDefaultFocus();
-
-                    free(entities_list[n]);
+                    }
                 }
 
                 ImGui::EndListBox();
@@ -153,6 +148,7 @@ void EntityEditor::draw()
                         {
                             e->setName(entityName);
                             editor->getCurrentComponentList()[CUR_ENTITY] = entityName;
+                            break;
                         }
                     }
                 }
@@ -221,7 +217,6 @@ void EntityEditor::draw()
                     y_pos = 0;
                 }
             }
-            free(entities_list);
         }
 
         if (entityInfo)

@@ -49,6 +49,7 @@ class Editor
 public:
 	void run();
 
+
 	///////////////////////////////////////////
 	// GUI HANDLER FUNCTIONS
 	void initializeGraphics();
@@ -58,12 +59,10 @@ public:
 	void processInput();
 	void drawPopups();
 
-	void markDeleteSuccess() {
-		ImGui::OpenPopup("Delete Successful");
-	}
 
 	///////////////////////////////////////////
 	// GAME HANDLER FUNCTIONS
+
 	Core::Game *getGamePtr()
 	{
 		return game;
@@ -92,6 +91,16 @@ public:
 		currentMap = value;
 	}
 
+	////////////////////////////////////////////
+	// POPUP OPENERS
+	void showSaveSuccessPopup() {
+		saveSuccessPopup = true;
+	}
+
+	void showDeleteSuccessPopup() {
+		deleteSuccessPopup = true;
+	}
+
 private:
 	bool running = false;
 
@@ -112,8 +121,10 @@ private:
 	// Game gets rendered onto this, and this is used as an Image with ImGUI
 	GLuint mFBO = 0;
 	GLuint mTexCBO = 0;
-	// the bool used to enable/ disable control handler
-	// check in game view
+	
+	// popup bools
+	bool saveSuccessPopup = false;
+	bool deleteSuccessPopup = false;
 
 	// is control key pressed
 	bool ctrl_pressed = false;

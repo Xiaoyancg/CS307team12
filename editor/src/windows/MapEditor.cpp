@@ -78,7 +78,7 @@ void MapEditor::draw() {
                 tileSize = 0;
                 game->deleteDefaultMapPageCurrentMap();
                 editor->setCurrentMap(nullptr);
-                editor->markDeleteSuccess();
+                editor->showDeleteSuccessPopup();
             }
             if (ImGui::Button("Show Map Information "))
             {

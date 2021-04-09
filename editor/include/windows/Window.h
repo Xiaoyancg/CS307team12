@@ -4,7 +4,7 @@ class Editor;
 class Window;
 #include "Editor.h"
 
-#define DEFAULT_CONSTRUCTOR(name) name(Editor* editor, ImVec2 size) : Window(editor, size) {}
+#define DEFAULT_CONSTRUCTOR(name) name(Editor* editor, ImVec2 size) : Window(editor, size)
 
 class Window {
 public:

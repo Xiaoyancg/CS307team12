@@ -271,21 +271,22 @@ void Editor::run()
 
 void Editor::drawPopups() {
     // Successful save popup
-    if (ImGui::BeginPopup("Saved Successfully"))
+    if (saveSuccessPopup) {
+        ImGui::OpenPopup("save_success_popup");
+        saveSuccessPopup = false;
+    }
+    if (ImGui::BeginPopup("save_success_popup"))
     {
         ImGui::Text("Project saved successfully!");
         ImGui::EndPopup();
     }
 
-    // Successful Project deletion popup
-    if (ImGui::BeginPopup("Deleted Successfully"))
-    {
-        ImGui::Text("Project deleted successfully!");
-        ImGui::EndPopup();
-    }
-
     // Successful deletion popup
-    if (ImGui::BeginPopup("Delete Successful"))
+    if (deleteSuccessPopup) {
+        ImGui::OpenPopup("delete_success_popup");
+        deleteSuccessPopup = false;
+    }
+    if (ImGui::BeginPopup("delete_success_popup"))
     {
         ImGui::Text("Deletion successful!");
         ImGui::EndPopup();
@@ -327,7 +328,7 @@ void Editor::saveGame() {
     WriteFile(gameFilePath, (content->dump(2)));
 	// pointer deletion
 	delete content;
-    ImGui::OpenPopup("Saved Successfully");
+    ImGui::OpenPopup("save_success_popup");
 }
 
 void Editor::saveGameAs(const std::string filePath) {
