@@ -1,10 +1,17 @@
 #include "Editor.h"
+
+#include "UndoRedo.h"
+#include "VMTool.h"
+
+#include <glad/glad.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_impl_opengl3.h>
 #include "editorWindows.h"
 
 
-Editor::Editor() : mainMenuBar(this) {
-    memset(selection, 0, sizeof(selection));
-}
+
+//////////////////////////////////////////
+// GUI HANDLER FUNCTIONS
 
 void Editor::initializeGraphics()
 {
@@ -72,6 +79,21 @@ void Editor::initializeGraphics()
     // these two functions are from imgui_impl_*.h it's in the backend folder in imgui-master
     ImGui_ImplSDL2_InitForOpenGL(sdlWindow, gl_context);
     ImGui_ImplOpenGL3_Init();
+} // initializeGraphics()
+
+void Editor::initializeFramebuffer() {
+    glGenTextures(1, &mTexCBO);
+    glGenFramebuffers(1, &mFBO);
+    glBindTexture(GL_TEXTURE_2D, mTexCBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1000, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexCBO, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Editor::cleanupGraphics()
@@ -85,12 +107,14 @@ void Editor::cleanupGraphics()
     SDL_GL_DeleteContext(gl_context);
     SDL_DestroyWindow(sdlWindow);
     SDL_Quit();
-}
+} // cleanupGraphics()
 
 void Editor::createWindows() {
+    mainMenuBar = new MainMenuBar(this);
+
     windowList.resize(SELECT_COUNT);
-    windowList[GAMEVIEW] = new GameWindow(this, default_size);
-    windowList[MAPVIEW] = new MapWindow(this, default_size);
+    windowList[GAMEVIEW] = new GameWindow(this, default_size, mTexCBO, mFBO);
+    windowList[MAPVIEW] = new MapWindow(this, default_size, mTexCBO, mFBO);
 
     windowList[ENTITYEDITOR] = new EntityEditor(this, default_size);
     windowList[PAGEEDITOR] = new PageEditor(this, default_size);
@@ -100,7 +124,7 @@ void Editor::createWindows() {
 
     windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
-}
+} // createWindows()
 
 void Editor::processInput()
 {
@@ -147,33 +171,34 @@ void Editor::processInput()
             }
         }
         // Handle mouse clicks
-        if (evt.type == SDL_MOUSEBUTTONDOWN)
+        /*if (evt.type == SDL_MOUSEBUTTONDOWN)
         {
             // Left mouse click
             int x, y;
             if (evt.button.button == SDL_BUTTON_LEFT)
             {
                 // TEMP
-                /*
-                    SDL_GetMouseState(&x, &y);
-                    printf("Click at (%d, %d)\n", x, y);
-                    */
+                
+                //    SDL_GetMouseState(&x, &y);
+                //    printf("Click at (%d, %d)\n", x, y);
+                    
             }
-        }
+        }*/
     }
-}
+} // processInput()
+
 
 // ===============================
 // Main function
-
 void Editor::run()
 {
 #ifdef __TEST_EDITOR
     game = Core::s1Game();
-    currPage = game->getCurrPage();
 #endif
     initializeGraphics();
+    initializeFramebuffer();
     createWindows();
+    currentComponent.resize(COMP_COUNT);
 
     // clear color, opengl use clear color to clear the context for the next drawing
     // if we don't clear the context, when you move the imgui window, it's trace will be left on the context.
@@ -181,12 +206,6 @@ void Editor::run()
     // clear_color is a RGBA color, Red Green Blue and alpha. read more:https://en.wikipedia.org/wiki/RGBA_color_model
     // Every color in opengl stored as vector. can be vec3 or vec4.
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-    // Initialize current components to none selected
-    for (int i = 0; i < COMP_COUNT; i++)
-    {
-        currentComponent.push_back("No Component Selected");
-    }
 
     //set the default splash screen state to open
     windowList[SPLASHSCREEN]->setVisible(true);
@@ -204,7 +223,7 @@ void Editor::run()
 
         // turn the main viewport into a docking one to allow for docking
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-        mainMenuBar.draw();
+        mainMenuBar->draw();
         for (auto window : windowList) {
             if (window != nullptr) {
                 window->draw();
@@ -248,47 +267,9 @@ void Editor::run()
     }
 
     cleanupGraphics();
-}
+} // run()
 
 void Editor::drawPopups() {
-    // Delete project popup
-    if (ImGui::BeginPopup("Delete Project"))
-    {
-        ImGui::Text("Are you sure you want to delete a project? Click outside of this popup to cancel.");
-        if (ImGui::Button("Yes"))
-        {
-            delDialog = ImGui::FileBrowser(
-                ImGuiFileBrowserFlags_NoTitleBar);
-            delDialog.Open();
-        }
-        ImGui::EndPopup();
-    }
-
-    // Save as project popup
-    static char name[128] = "";
-    if (ImGui::BeginPopup("Save As"))
-    {
-        ImGui::Text("Enter the name of your project.");
-        ImGui::InputText("", name, IM_ARRAYSIZE(name));
-        if (ImGui::Button("Save"))
-        {
-            // init file browser ( update info every time it was opened)
-            saveDialog = ImGui::FileBrowser(
-                ImGuiFileBrowserFlags_NoTitleBar |
-                ImGuiFileBrowserFlags_SelectDirectory |
-                ImGuiFileBrowserFlags_CreateNewDir);
-            saveDialog.Open();
-
-            if (!saveDialog.IsOpened())
-            {
-                gameName = std::string(name);
-                // memset to clear the buffer after use
-                memset(name, 0, 128);
-            }
-        }
-        ImGui::EndPopup();
-    }
-
     // Successful save popup
     if (ImGui::BeginPopup("Saved Successfully"))
     {
@@ -309,134 +290,57 @@ void Editor::drawPopups() {
         ImGui::Text("Deletion successful!");
         ImGui::EndPopup();
     }
+} // drawPopups()
+
+
+
+//////////////////////////////////////////
+// GAME HANDLER FUNCTIONS
+
+void Editor::createGame() {
+	//createTexCBO();
+	//createMapTexCBO();
+	game = new Core::Game();
+	game->initShader();
+	windowList[GAMEVIEW]->setVisible(true);
+	for (int i = 0; i < COMP_COUNT; i++)
+    {
+        currentComponent[i] = "No Component Selected";
+    }
+
+	// When user new project, it won't save
+	// User should call save manually
 }
 
-void Editor::ShowMainMenuBar()
-{
-#ifdef __TEST_EDITOR
-    selection[SAVEAS] = testbool;
-#endif // __TEST_EDITOR
+void Editor::loadGame(const std::string filePath) {
+    gameFilePath = filePath;
+    nlohmann::json *j = readGameDataFile(gameFilePath);
+    game = new Core::Game(*j);
+    // pointer deletion
+    delete j;
+    game->initShader();
+    windowList[GAMEVIEW]->setVisible(true);
+}
 
+void Editor::saveGame() {
+    nlohmann::json *content = game->serialize();
+    WriteFile(gameFilePath, (content->dump(2)));
+	// pointer deletion
+	delete content;
+    ImGui::OpenPopup("Saved Successfully");
+}
 
-    /*
-     *  ========================
-     *  SELECTION OPTIONS
-     *  ========================
-     */
+void Editor::saveGameAs(const std::string filePath) {
+    gameFilePath = filePath;
+    saveGame();
+}
 
-    // open save as popup
-    if (selection[SAVEAS])
-    {
-        ImGui::OpenPopup("Save As");
-#ifdef __TEST_EDITOR
-        isSaveAsOpen = ImGui::IsPopupOpen("Save As");
-#endif // __TEST_EDITOR
-        selection[SAVEAS] = false;
-    }
+void Editor::freeGame() {
+    currentComponent.clear();
+    mTexCBO = 0;//TODO: FREE
 
-#ifdef __TEST_EDITOR
-    windowList[OBJECTTREE]->setVisible(true);
-#endif
+    delete game;
+    game = nullptr;
 
-    
-    
-
-    // Calls saved successfully popup on project save
-    if (selection[SAVEPOPUP])
-    {
-        ImGui::OpenPopup("Saved Successfully");
-        selection[SAVEPOPUP] = false;
-    }
-
-    // Calls delete successfully popup on successful project deletion
-    if (selection[DELETEPOPUP])
-    {
-        ImGui::OpenPopup("Deleted Successfully");
-        selection[DELETEPOPUP] = false;
-    }
-
-    /*
-     *  ========================
-     *  CONDITIONAL POPUP TRIGGERS
-     *  ========================
-     */
-
-    // Open delete project popup
-    if (selection[DELETEPROJECT])
-    {
-        ImGui::OpenPopup("Delete Successful");
-        ImGui::OpenPopup("Delete Project");
-        selection[DELETEPROJECT] = false;
-    }
-
-    // Open delete element popup
-    if (delete_success)
-    {
-        ImGui::OpenPopup("Delete Successful");
-        delete_success = false;
-    }
-
-    /*
-     *  ========================
-     *  MAIN MENU BAR
-     *  ========================
-     */
-
-    // main menu bar code
-    
-
-    /*
-     *  ========================
-     *  FILE DIALOGS
-     *  ========================
-     */
-
-    // Save dialog selection return
-    saveDialog.Display();
-    if (saveDialog.HasSelected())
-    {
-        //printf ( "(printf) Selected Directory: %s\n", saveDialog.GetSelected ().string ().c_str () );
-        //std::cout << "(cout) Selected Directory: " << saveDialog.GetSelected ().string () << std::endl;
-        dir = std::string(saveDialog.GetSelected().string()).append("//").append(gameName).append(".gdata");
-        nlohmann::json *content = game->serialize();
-        WriteFile(dir, (content->dump(2)));
-        // pointer deletion
-        delete (content);
-        isSaved = true;
-        saveDialog.ClearSelected();
-        selection[SAVEPOPUP] = true;
-    }
-
-    // Open dialog selection return
-    openDialog.Display();
-    if (openDialog.HasSelected())
-    {
-        //printf ( "(printf) Selected File: %s\n", openDialog.GetSelected ().string ().c_str () );
-        //std::cout << "(cout) Selected File: " << openDialog.GetSelected ().string () << std::endl;
-        nlohmann::json *j = readGameDataFile(openDialog.GetSelected().string());
-        dir = openDialog.GetSelected().string();
-        texcbo = new GLuint();
-        glGenTextures(1, texcbo);
-        maptexcbo = new GLuint();
-        glGenTextures(1, maptexcbo);
-        game = new Core::Game(*j, texcbo, maptexcbo);
-        // pointer deletion
-        delete (j);
-        gameName = game->getGameName();
-        currPage = game->getCurrPage();
-        game->initShader();
-        windowList[GAMEVIEW]->setVisible(true);
-        isSaved = true;
-
-        openDialog.ClearSelected();
-    }
-
-    // Delete dialog selection return
-    delDialog.Display();
-    if (delDialog.HasSelected())
-    {
-        DeleteFile(delDialog.GetSelected().string().c_str());
-        delDialog.ClearSelected();
-        selection[DELETEPOPUP] = true;
-    }
+    gameFilePath.clear();
 }

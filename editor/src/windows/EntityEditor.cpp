@@ -1,4 +1,5 @@
 #include "windows/EntityEditor.h"
+#include "UndoRedo.h"
 
 
 static void HelpMarker(const char *desc)
@@ -26,7 +27,7 @@ void EntityEditor::draw()
         entityInfo = false;
         if (ImGui::Begin("Entity Editor", &visible))
         {
-            Core::Page* currPage = editor->getCurrentPage();
+            Core::Page* currPage = editor->getGamePtr()->getCurrPage();
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
             ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 260);
@@ -38,14 +39,12 @@ void EntityEditor::draw()
             {
                 if (strlen(entityName) != 0)
                 {
-                    //UNDO
-                    Core::Page *p = editor->getCurrentPage();
                     std::string e = entityName;
-                    auto action = [p, e]() {
-                        p->createEntity(e);
+                    auto action = [this, e]() {
+                        editor->getGamePtr()->getCurrPage()->createEntity(e);
                     };
-                    auto restore = [p, e]() {
-                        p->deleteEntity(e);
+                    auto restore = [this, e]() {
+                        editor->getGamePtr()->getCurrPage()->deleteEntity(e);
                     };
                     pushAction(action, restore);
                     action();
@@ -62,7 +61,6 @@ void EntityEditor::draw()
                 printf("Deleting entity: %s\n", entityName);
                 size_t original = editor->getGamePtr()->getCurrPage()->getEntityList().size();
                 //UNDO
-                Core::Page *p = currPage;
                 std::string e = entityName;
                 int idx = -1;
                 bool isCtrlEntity = false;
@@ -80,15 +78,15 @@ void EntityEditor::draw()
                     }
                 }
                 Core::Entity savedEntity = *eList[idx];
-                auto action = [p, e]() {
-                    p->deleteEntity(e);
+                auto action = [currPage, e]() {
+                    currPage->deleteEntity(e);
                 };
-                auto restore = [idx, p, savedEntity, isCtrlEntity]() {
+                auto restore = [idx, currPage, savedEntity, isCtrlEntity]() {
                     Core::Entity *newEntity = new Core::Entity(savedEntity);
-                    p->getEntityList().insert(p->getEntityList().begin() + idx, newEntity);
+                    currPage->getEntityList().insert(currPage->getEntityList().begin() + idx, newEntity);
                     if (isCtrlEntity)
                     {
-                        p->setCtrlEntity(newEntity);
+                        currPage->setCtrlEntity(newEntity);
                     }
                 };
 
@@ -235,7 +233,7 @@ void EntityEditor::draw()
         // Entity information popup
         if (ImGui::BeginPopup("Entity Information"))
         {
-            std::vector<Core::Entity *> elist = editor->getCurrentPage()->getEntityList();
+            std::vector<Core::Entity *> elist = editor->getGamePtr()->getCurrPage()->getEntityList();
             ImGui::Text("Entity List: ");
             for (Core::Entity *e : elist)
             {

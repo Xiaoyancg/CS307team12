@@ -1,23 +1,12 @@
 #pragma once
-#include <cstdio>
-#include <chrono>
-#include <iostream>
-#include <list>
 
 #include <SDL.h>
-#include <glad/glad.h>
-
 #include <imgui.h>
-#include <imgui_impl_sdl.h>
-#include <imgui_impl_opengl3.h>
-#include <imfilebrowser.h>
 
 #include "MainMenuBar.h"
 #include "windows/Window.h"
 
 #include "Game.h"
-#include "UndoRedo.h"
-#include "VMTool.h"
 #ifdef __TEST_EDITOR
 #include "TestEditor.h"
 #include "Sprint1.h"
@@ -58,26 +47,36 @@ enum CurrentComponent
 class Editor
 {
 public:
-	Editor();
-
 	void run();
 
 	///////////////////////////////////////////
 	// GUI HANDLER FUNCTIONS
 	void initializeGraphics();
+	void initializeFramebuffer();
 	void cleanupGraphics();
 	void createWindows();
 	void processInput();
 	void drawPopups();
 
 	void markDeleteSuccess() {
-		delete_success = true;
+		ImGui::OpenPopup("Delete Successful");
 	}
 
+	///////////////////////////////////////////
+	// GAME HANDLER FUNCTIONS
 	Core::Game *getGamePtr()
 	{
 		return game;
 	}
+	std::string& getGameFilePath() {
+		return gameFilePath;
+	}
+	void createGame();
+	void loadGame(const std::string filePath);
+	void saveGame();
+	void saveGameAs(const std::string filePath);
+	void freeGame();
+
 	std::vector<Window*>& getWindowList() {
 		return windowList;
 	}
@@ -85,70 +84,36 @@ public:
 		return currentComponent;
 	}
 
-	Core::Page *getCurrentPage()
-	{
-		return currPage;
-	}
-	Core::Map *getCurrentMap()
-	{
-		return currMap;
-	}
-	void setCurrentMap(Core::Map* value) {
-		currMap = value;
+	Core::Map* getCurrentMap() {
+		return currentMap;
 	}
 
-	GLuint getTexCBO()
-	{
-		return texcbo;
+	void setCurrentMap(Core::Map* value) {
+		currentMap = value;
 	}
-	GLuint createTexCBO();
-	GLuint getMapTexCBO()
-	{
-		return maptexcbo;
-	}
-	GLuint createMapTexCBO();
 
 private:
-	Core::Game *game = nullptr;
 	bool running = false;
+
+	Core::Game *game = nullptr;
+	std::string gameFilePath;
 
 	SDL_Window *sdlWindow = nullptr;
 	SDL_GLContext gl_context;
 	ImGuiIO *io;
 
-	MainMenuBar mainMenuBar;
+	MainMenuBar* mainMenuBar;
 	// WINDOWS
 	std::vector<Window*> windowList;
 
-	ImGui::FileBrowser saveDialog;
-	ImGui::FileBrowser openDialog;
-	ImGui::FileBrowser delDialog;
-	ImGui::FileBrowser importDialog;
-
-    //deletion flag if an entity, map, or page is deleted
-	bool delete_success = false;
+	Core::Map* currentMap;
 
 	// main texture color buffer object
 	// Game gets rendered onto this, and this is used as an Image with ImGUI
-	GLuint texcbo = 0;
-	GLuint maptexcbo = 0; // This is the framebuffer for the MapView
+	GLuint mFBO = 0;
+	GLuint mTexCBO = 0;
 	// the bool used to enable/ disable control handler
 	// check in game view
-
-	// Current Map
-	Core::Map *currMap = nullptr;
-
-	// Current page pointer
-	Core::Page *currPage = nullptr;
-
-	// project directory
-	std::string dir = "";
-
-	// Game Name
-	std::string gameName = "empty";
-
-	// is game saved before (for save)
-	bool isSaved = false;
 
 	// is control key pressed
 	bool ctrl_pressed = false;

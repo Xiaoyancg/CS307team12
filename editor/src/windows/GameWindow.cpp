@@ -22,14 +22,15 @@ void GameWindow::draw()
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
             glViewport(0, 0, editor->getGamePtr()->width, editor->getGamePtr()->height); // Set viewport to the Game dimensions
-
+            glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
             editor->getGamePtr()->render(); // Render Game with new viewport size
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             //glViewport(0, 0, (int)dims.x, (int)dims.y); // Reset viewport size
             //ImGui::Image((void *)(*texcbo), ImVec2(dims.x, dims.y), ImVec2(0, 1), ImVec2(1, 0));
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((void *)(*editor->getTexCBO()), ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((ImTextureID) mTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
