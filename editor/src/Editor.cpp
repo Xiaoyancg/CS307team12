@@ -70,7 +70,6 @@ void Editor::initializeGraphics()
     // docking flag
     io->ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     // keep docking bound to shift
-    //io->ConfigDockingWithShift = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark(); // alternative: Classic
@@ -139,6 +138,7 @@ void Editor::processInput()
         {
             running = false;
         }
+        
         if (evt.type == SDL_KEYDOWN)
         {
             if (evt.key.keysym.sym == SDLK_LCTRL)

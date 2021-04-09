@@ -35,11 +35,11 @@ void SpriteEditor::draw() {
                 importDialog.Open();
             }
 
-            if (ImGui::Button("Show Sprite Information"))
+            if (ImGui::Button("Show Information"))
             {
                 sprite_info = true;
             }
-            if (ImGui::Button("Delete This Sprite"))
+            if (ImGui::Button("Delete Sprite"))
             {
                 // TODO: Implement sprite deletion
             }

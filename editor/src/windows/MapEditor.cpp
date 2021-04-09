@@ -36,7 +36,7 @@ void MapEditor::draw() {
             ImGui::Text("Tile size: ");
             ImGui::SameLine();
             ImGui::SliderInt("##3", &tileSize, 0, 128);
-            if (ImGui::Button("Create New Map"))
+            if (ImGui::Button("Create Map"))
             {
                 //creates a new map with map_name specified by user and dimensions as specified by user
                 //UNDO
@@ -62,7 +62,7 @@ void MapEditor::draw() {
                 editor->getWindowList()[MAPVIEW]->setVisible(true);
             }
             ImGui::SameLine();
-            if (ImGui::Button("Delete This Map"))
+            if (ImGui::Button("Delete Map"))
             {
                 //creates a map with 0x0 dimensions and an empty name
                 /*
@@ -80,7 +80,7 @@ void MapEditor::draw() {
                 editor->setCurrentMap(nullptr);
                 editor->showDeleteSuccessPopup();
             }
-            if (ImGui::Button("Show Map Information "))
+            if (ImGui::Button("Show Information"))
             {
                 map_info = true;
             }

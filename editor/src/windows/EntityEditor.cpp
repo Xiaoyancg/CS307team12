@@ -19,8 +19,6 @@ void EntityEditor::draw()
 {
     if (visible)
     {
-        // possibly implement a new function here for readability purposes
-
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
         entityInfo = false;
@@ -29,8 +27,6 @@ void EntityEditor::draw()
             Core::Page* currPage = editor->getGamePtr()->getCurrPage();
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
-            ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 260);
-            ImGui::Text("Current Entity: %s", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
             ImGui::InputText("", entityName, IM_ARRAYSIZE(entityName));
 
             if (ImGui::Button("Create New Entity"))
@@ -51,64 +47,9 @@ void EntityEditor::draw()
                     entityName[0] = '\0';
                 }
             }
-            ImGui::SameLine();
-            std::string& currentEntityName = editor->getCurrentComponentList()[CUR_ENTITY];
-            if (ImGui::Button("Delete This Entity") && currentEntityName != "No Component Selected")
-            {
-                size_t original = editor->getGamePtr()->getCurrPage()->getEntityList().size();
-                //UNDO
-                std::string& e = currentEntityName;
-                int idx = -1;
-                bool isCtrlEntity = false;
-                auto &eList = currPage->getEntityList();
-                for (int i = 0; i < eList.size(); i++)
-                {
-                    if (eList[i]->getName() == entityName)
-                    {
-                        idx = i;
-                        if (eList[i] == currPage->getCtrlEntity())
-                        {
-                            isCtrlEntity = true;
-                        }
-                        break;
-                    }
-                }
-                if (idx != -1) {
-                    Core::Entity savedEntity = *eList[idx];
-                    auto action = [this, e]() {
-                        editor->getGamePtr()->getCurrPage()->deleteEntity(e);
-                    };
-                    auto restore = [this, idx, savedEntity, isCtrlEntity]() {
-                        Core::Entity *newEntity = new Core::Entity(savedEntity);
-                        editor->getGamePtr()->getCurrPage()->getEntityList().insert(
-                            editor->getGamePtr()->getCurrPage()->getEntityList().begin() + idx,
-                            newEntity
-                        );
-                        if (isCtrlEntity)
-                        {
-                            editor->getGamePtr()->getCurrPage()->setCtrlEntity(newEntity);
-                        }
-                    };
-
-                    // Only delete if the entity was found
-                    if (idx > -1)
-                    {
-                        action();
-                        currentEntityName = idx < currPage->getEntityList().size() ? currPage->getEntityList()[idx]->getName() : currPage->getEntityList()[idx - 1]->getName();
-                    }
-                    //ENDUNDO
-
-                    if (currPage->getEntityList().size() < original)
-                    {
-                        editor->showDeleteSuccessPopup();
-                        pushAction(action, restore); // UNDO
-                        // clear the buffer after use
-                        entityName[0] = '\0';
-                    }
-                }
-            }
+            
             ImGui::Text("");
-            ImGui::Text("Select Entity:");
+            ImGui::Text("Current Entity: %s", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
             static int current_entity = 0;
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
@@ -159,7 +100,58 @@ void EntityEditor::draw()
                 entityName[0] = '\0';
             }
             ImGui::SameLine();
-            if (ImGui::Button("Show Entity Information"))
+
+            std::string currentEntityName = editor->getCurrentComponentList()[CUR_ENTITY];
+            if (ImGui::Button("Delete Entity") && currentEntityName != "No Component Selected")
+            {
+                int idx = -1;
+                size_t original = editor->getGamePtr()->getCurrPage()->getEntityList().size();
+                bool isCtrlEntity = false;
+                auto& eList = currPage->getEntityList();
+                for (int i = 0; i < eList.size(); i++)
+                {
+                    if (eList[i]->getName() == currentEntityName)
+                    {
+                        idx = i;
+                        if (eList[i] == currPage->getCtrlEntity())
+                        {
+                            isCtrlEntity = true;
+                        }
+                        break;
+                    }
+                }
+                if (idx > -1)
+                {
+                    Core::Entity savedEntity = *eList[idx];
+                    auto action = [this, currentEntityName]() {
+                        editor->getGamePtr()->getCurrPage()->deleteEntity(currentEntityName);
+                    };
+                    auto restore = [this, idx, savedEntity, isCtrlEntity]() {
+                        Core::Entity* newEntity = new Core::Entity(savedEntity);
+                        editor->getGamePtr()->getCurrPage()->getEntityList()
+                            .insert(p->getEntityList().begin() + idx, newEntity);
+                        if (isCtrlEntity)
+                        {
+                            editor->getGamePtr()->getCurrPage()->setCtrlEntity(newEntity);
+                        }
+                    };
+                    // Only delete if the entity was found
+                
+                    action();
+                    editor->getCurrentComponentList()[CUR_ENTITY] = idx < currPage->getEntityList().size() ?
+                        currPage->getEntityList()[idx]->getName() : currPage->getEntityList()[idx - 1]->getName();
+                        
+                    if (currPage->getEntityList().size() < original)
+                    {
+                        editor->getCurrentComponentList()[CUR_ENTITY] = eList[0]->getName();
+                        editor->showDeleteSuccessPopup();
+                        pushAction(action, restore); // UNDO
+                        // memset to clear the buffer after use
+                        entityName[0] = '\0';
+                    }
+                }
+            }
+            if (ImGui::Button("Show Information"))
             {
                 entityInfo = true;
             }
@@ -230,12 +222,8 @@ void EntityEditor::draw()
         // Entity information popup
         if (ImGui::BeginPopup("Entity Information"))
         {
-            std::vector<Core::Entity *> elist = editor->getGamePtr()->getCurrPage()->getEntityList();
-            ImGui::Text("Entity List: ");
-            for (Core::Entity *e : elist)
-            {
-                ImGui::Text(e->getName().c_str());
-            }
+            ImGui::Text("Entity Name: %s", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
+            ImGui::Text("Entity Position: %d, %d", x_pos, y_pos);
             ImGui::EndPopup();
         }
 
