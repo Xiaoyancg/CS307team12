@@ -23,29 +23,25 @@ namespace Core
 
     Game::Game(std::string gameName) : gameName(gameName)
     {
-        this->setCurrentPage(this->createPage("emptyPage"));
         initialize();
-        // // Initialize OpenGL and necessary SDL objects
-        // initContext();
-
-        // // Create the shaders
-        // initShader();
+        this->setCurrentPage(this->createPage("emptyPage"));
     }
 
     Game::Game(nlohmann::json &json)
     {
-        // // Initialize OpenGL and necessary SDL objects
-        // initContext();
-        // // Create the shaders
-        // initShader();
-        this->parse(json);
         initialize();
+        this->parse(json);
     }
 
     void Game::initialize() {
         mGameMapPage = new MapPage("Default MapPage");
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
+        // Create the shaders
+        if (SDL_WasInit(SDL_INIT_VIDEO) == 0) {
+            initContext();
+        }
+        initShader();
     }
 
     // =========================

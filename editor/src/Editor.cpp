@@ -301,7 +301,6 @@ void Editor::createGame() {
 	//createTexCBO();
 	//createMapTexCBO();
 	game = new Core::Game();
-	game->initShader();
 	windowList[GAMEVIEW]->setVisible(true);
 	for (int i = 0; i < COMP_COUNT; i++)
     {
@@ -318,7 +317,6 @@ void Editor::loadGame(const std::string filePath) {
     game = new Core::Game(*j);
     // pointer deletion
     delete j;
-    game->initShader();
     windowList[GAMEVIEW]->setVisible(true);
 }
 
