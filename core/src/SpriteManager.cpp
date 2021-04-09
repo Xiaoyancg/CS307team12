@@ -75,7 +75,7 @@ namespace Core
 	// This may never be used, but if you need the whole list of sprites here it is!
 	// This might be used to iterate through all sprites, but be warned that iteration with maps is in no specific order
 	// Leaving it commented until a use case for it comes up
-	std::unordered_map<int, Sprite *> SpriteManager::getSprites()
+	std::unordered_map<int, Sprite *>& SpriteManager::getSprites()
 	{
 		return this->mSprites;
 	}

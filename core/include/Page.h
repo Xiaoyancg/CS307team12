@@ -64,7 +64,7 @@ namespace Core
 
     protected:
         // the entity that bind to keys of current page
-        Entity *ctrlEntity;
+        Entity *ctrlEntity = nullptr;
         std::string name;
         glm::vec4 backgroundColor;
         std::vector<Entity*> entityList;
