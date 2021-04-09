@@ -129,7 +129,7 @@ void EntityEditor::draw()
                     auto restore = [this, idx, savedEntity, isCtrlEntity]() {
                         Core::Entity* newEntity = new Core::Entity(savedEntity);
                         editor->getGamePtr()->getCurrPage()->getEntityList()
-                            .insert(p->getEntityList().begin() + idx, newEntity);
+                            .insert(editor->getGamePtr()->getCurrPage()->getEntityList().begin() + idx, newEntity);
                         if (isCtrlEntity)
                         {
                             editor->getGamePtr()->getCurrPage()->setCtrlEntity(newEntity);

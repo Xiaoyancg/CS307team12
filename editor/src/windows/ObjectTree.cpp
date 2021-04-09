@@ -65,7 +65,7 @@ void ObjectTree::draw()
                     static int selected = -1;
                     int node_clicked = -1;
                     int index = 0;
-                    std::vector<Core::Page *> plist = *game->getPageList();
+                    auto& plist = game->getPageList();
                     for (int i = 0; i < plist.size(); i++)
                     {
                         Core::Page *p = plist[i];
