@@ -15,7 +15,7 @@ void MainMenuBar::draw() {
 				openDialog.Open();
 			}
 			if (ImGui::MenuItem("Delete Project")) {
-        		ImGui::OpenPopup("delete_project_popup");
+        		deleteProjectPopup = true;
 			}
 			/*if ( ImGui::MenuItem ( "Export Project" ) )
 			{
@@ -27,14 +27,15 @@ void MainMenuBar::draw() {
 			// save button can be grey in the future ( no need to implement)
 			if (editor->getGamePtr() != nullptr) {
 				if (ImGui::MenuItem("Save")) {
-					if (editor->getGameFilePath().empty()) {
+					if (!editor->getGameFilePath().empty()) {
 						editor->saveGame();
+						editor->showSaveSuccessPopup();
 					} else {
-						ImGui::OpenPopup("save_as_popup");
+						saveAsPopup = true;
 					}
 				}
 				if (ImGui::MenuItem("Save As")) {
-					ImGui::OpenPopup("save_as_popup");
+					saveAsPopup = true;
 				}
 			}
 			ImGui::EndMenu();
@@ -125,6 +126,10 @@ void MainMenuBar::drawDeleteProjectPopup() {
 
 void MainMenuBar::drawSaveAsPopup() {
 	static char name[128] = "";
+	if (saveAsPopup) {
+		ImGui::OpenPopup("save_as_popup");
+		saveAsPopup = false;
+	}
     if (ImGui::BeginPopup("save_as_popup"))
     {
         ImGui::Text("Enter the name of your project.");
@@ -137,12 +142,6 @@ void MainMenuBar::drawSaveAsPopup() {
                 ImGuiFileBrowserFlags_SelectDirectory |
                 ImGuiFileBrowserFlags_CreateNewDir);
             saveDialog.Open();
-
-            if (!saveDialog.IsOpened())
-            {
-                editor->getGamePtr()->setGameName(name);
-				name[0] = '\0';
-            }
         }
         ImGui::EndPopup();
     }
@@ -150,13 +149,10 @@ void MainMenuBar::drawSaveAsPopup() {
 	saveDialog.Display();
     if (saveDialog.HasSelected())
     {
+        editor->getGamePtr()->setGameName(name);
 		editor->saveGameAs(saveDialog.GetSelected().string().append("//").append(name).append(".gdata"));
-        // nlohmann::json *content = game->serialize();
-        // WriteFile(dir, (content->dump(2)));
-        // // pointer deletion
-        // delete (content);
-        // isSaved = true;
+		name[0] = '\0';
         saveDialog.ClearSelected();
-        ImGui::OpenPopup("save_success_popup");
+        editor->showSaveSuccessPopup();
     }
 }

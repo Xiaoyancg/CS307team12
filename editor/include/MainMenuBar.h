@@ -18,6 +18,7 @@ private:
 
 	bool deleteProjectPopup = false;
 	bool projectDeletedPopup = false;
+	bool saveAsPopup = false;
 
 	ImGui::FileBrowser openDialog;
 	ImGui::FileBrowser delDialog;

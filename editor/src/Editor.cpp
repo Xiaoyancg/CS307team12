@@ -87,7 +87,6 @@ void Editor::initializeFramebuffer() {
     glBindTexture(GL_TEXTURE_2D, mTexCBO);
     glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1000, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mTexCBO, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -328,7 +327,6 @@ void Editor::saveGame() {
     WriteFile(gameFilePath, (content->dump(2)));
 	// pointer deletion
 	delete content;
-    ImGui::OpenPopup("save_success_popup");
 }
 
 void Editor::saveGameAs(const std::string filePath) {

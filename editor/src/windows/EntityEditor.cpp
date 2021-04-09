@@ -73,36 +73,38 @@ void EntityEditor::draw()
                         break;
                     }
                 }
-                Core::Entity savedEntity = *eList[idx];
-                auto action = [this, e]() {
-                    editor->getGamePtr()->getCurrPage()->deleteEntity(e);
-                };
-                auto restore = [this, idx, savedEntity, isCtrlEntity]() {
-                    Core::Entity *newEntity = new Core::Entity(savedEntity);
-                    editor->getGamePtr()->getCurrPage()->getEntityList().insert(
-                        editor->getGamePtr()->getCurrPage()->getEntityList().begin() + idx,
-                        newEntity
-                    );
-                    if (isCtrlEntity)
+                if (idx != -1) {
+                    Core::Entity savedEntity = *eList[idx];
+                    auto action = [this, e]() {
+                        editor->getGamePtr()->getCurrPage()->deleteEntity(e);
+                    };
+                    auto restore = [this, idx, savedEntity, isCtrlEntity]() {
+                        Core::Entity *newEntity = new Core::Entity(savedEntity);
+                        editor->getGamePtr()->getCurrPage()->getEntityList().insert(
+                            editor->getGamePtr()->getCurrPage()->getEntityList().begin() + idx,
+                            newEntity
+                        );
+                        if (isCtrlEntity)
+                        {
+                            editor->getGamePtr()->getCurrPage()->setCtrlEntity(newEntity);
+                        }
+                    };
+
+                    // Only delete if the entity was found
+                    if (idx > -1)
                     {
-                        editor->getGamePtr()->getCurrPage()->setCtrlEntity(newEntity);
+                        action();
+                        currentEntityName = idx < currPage->getEntityList().size() ? currPage->getEntityList()[idx]->getName() : currPage->getEntityList()[idx - 1]->getName();
                     }
-                };
+                    //ENDUNDO
 
-                // Only delete if the entity was found
-                if (idx > -1)
-                {
-                    action();
-                    currentEntityName = idx < currPage->getEntityList().size() ? currPage->getEntityList()[idx]->getName() : currPage->getEntityList()[idx - 1]->getName();
-                }
-                //ENDUNDO
-
-                if (currPage->getEntityList().size() < original)
-                {
-                    editor->showDeleteSuccessPopup();
-                    pushAction(action, restore); // UNDO
-                    // clear the buffer after use
-                    entityName[0] = '\0';
+                    if (currPage->getEntityList().size() < original)
+                    {
+                        editor->showDeleteSuccessPopup();
+                        pushAction(action, restore); // UNDO
+                        // clear the buffer after use
+                        entityName[0] = '\0';
+                    }
                 }
             }
             ImGui::Text("");
