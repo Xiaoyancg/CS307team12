@@ -119,6 +119,7 @@ void Editor::createWindows() {
     windowList[SCRIPTEDITOR] = new ScriptEditor(this, default_size);
     windowList[SPRITEEDITOR] = new SpriteEditor(this, default_size);
     windowList[MAPEDITOR] = new MapEditor(this, default_size);
+    windowList[LOGICEDITOR] = new LogicEditor(this, default_size);
 
     windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
