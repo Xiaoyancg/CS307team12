@@ -64,6 +64,7 @@ void MainMenuBar::draw() {
 				ImGui::MenuItem("Map Editor", "", windowList[MAPEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Script Editor", "", windowList[SCRIPTEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Sprite Editor", "", windowList[SPRITEEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("Logic Editor", "", windowList[LOGICEDITOR]->getVisiblePtr());
 				ImGui::EndMenu();
 			}
 		}
