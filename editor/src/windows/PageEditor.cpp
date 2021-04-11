@@ -19,11 +19,9 @@ void PageEditor::draw() {
 		Core::Game* game = editor->getGamePtr();
         if (ImGui::Begin("Page Editor", &visible))
         {
-            ImGui::Text("Enter Page Name:");
             ImGui::PushItemWidth(200);
-            ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
             ImGui::Text("Input Page Name & Type:");
-            ImGui::InputText("", page_name, IM_ARRAYSIZE(page_name));
+            ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
             if (ImGui::BeginListBox("##1", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
