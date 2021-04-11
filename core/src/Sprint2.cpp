@@ -17,7 +17,7 @@ namespace Core
             game->createSprite(s.substr(0, s.find_first_of('.')), s);
             break;
         }
-        for (auto e : game->getPageList()->at(0)->getEntityList())
+        for (auto e : game->getPageList().at(0)->getEntityList())
         {
             e->setSpriteID(0);
         }

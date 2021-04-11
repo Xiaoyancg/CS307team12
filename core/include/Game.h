@@ -44,10 +44,11 @@ namespace Core
         // CONSTRUCTOR
 
         // Game ();
-        Game(GLuint *texcbo, GLuint *maptexcbo);
+        Game() : Game("Untitled Game") {}
         Game(nlohmann::json &json);
         Game(std::string gameName);
-        Game(nlohmann::json &json, GLuint *texcbo, GLuint *maptexcbo);
+
+        void initialize();
 
         // =========================
         // ATTRIBUTES OPERATION (attributes mean non functionality related variables)
@@ -93,7 +94,7 @@ namespace Core
         MenuPage *createMenuPage();
         void deletePage(Page *);
         void deletePage(std::string);
-        std::vector<Page *> *getPageList();
+        std::vector<Page *>& getPageList();
         int getNumPage();
 
         // Sprite operations
@@ -111,8 +112,6 @@ namespace Core
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
         Page *getCurrPage();
-        Entity *setCurrCtrlEntity(Entity *);
-        Entity *getCurrCtrlEntity();
 
         /// \brief Create a default Signal object
         /// *For editor, binding to create button in signal editor
@@ -158,8 +157,9 @@ namespace Core
         // the only game loop
         void mainLoop();
 
-    private:
+
         void onGameCreation();
+
 
         std::string gameName;
         std::string author;
@@ -168,8 +168,10 @@ namespace Core
         std::string lMTime;
         std::string note;
 
+
         Entity *currCtrlEntity;
         bool useFramebuffer;
+
 
         // page list iterator: current page iterator
         PLitr _currPitr;
@@ -181,11 +183,7 @@ namespace Core
         LogicManager _logicManager;
         // page pointer
         Page *currPage = nullptr;
-
-        // texcbo from editor
-        GLuint *texcbo, *maptexcbo;
-        // framebuffer object
-        GLuint fbo;
+        
         // contains all pages
         std::vector<Page *> pageList;
 
