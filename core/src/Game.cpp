@@ -284,8 +284,13 @@ namespace Core
         return mGameMapPage;
     }
 
+    // This function is called from the Editor and will render the current Map onto the MapView window in ImGui
     void Game::renderDefaultMapPage()
     {
+        // Use the Map's Camera as opposed to the Game's camera. This lets each Map be centered and unaffected by the Game's Camera's movement
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mGameMapPage->getCurrCamera()->getMatrix()));
+
+        // Render the Map onto the MapPage's Framebuffer set by Editor. (TODO: Fix this approach)
         mGameMapPage->renderOnFramebuffer();
     }
 
@@ -678,7 +683,7 @@ namespace Core
             }
             break;
             
-            // Theses are here to test switching fonts
+        // Theses are here for test purposes
         case SDLK_a:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
             mCamera->offsetPosition(glm::ivec3(move_camera, 0, 0));
@@ -694,6 +699,12 @@ namespace Core
         case SDLK_s:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
             mCamera->offsetPosition(glm::ivec3(0, move_camera, 0));
+            break;
+        case SDLK_q:
+            mCamera->setZoom(mCamera->getZoom() - 0.1f);
+            break;
+        case SDLK_e:
+            mCamera->setZoom(mCamera->getZoom() + 0.1f);
             break;
         }
     }

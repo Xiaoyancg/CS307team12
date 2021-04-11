@@ -1,6 +1,7 @@
 #pragma once
 #include "Page.h"
 #include "Map.h"
+#include "Camera.h"
 #include <string>
 
 namespace Core
@@ -39,6 +40,9 @@ namespace Core
 
         // Returns mMap
         std::vector<Map*> getMaps();
+
+        // Returns the camera for the current Map
+        Camera* getCurrCamera();
 
         // Render the current map!
         void render();

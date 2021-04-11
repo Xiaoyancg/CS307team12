@@ -63,6 +63,10 @@ namespace Core
         return mMaps;
     }
 
+    Camera* MapPage::getCurrCamera() {
+        return mMap->getCamera();
+    }
+
     void MapPage::render()
     {
         if (mMap != nullptr) {
