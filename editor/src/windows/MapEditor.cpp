@@ -35,7 +35,7 @@ void MapEditor::draw() {
 			if (ImGui::Button("Create Map")) {
 				ImGui::OpenPopup("create_map_popup");
 			}
-	        drawCreateMapPopup();
+			drawCreateMapPopup();
 			ImGui::SameLine();
 			if (ImGui::Button("Delete Map")) {
 				game->deleteDefaultMapPageCurrentMap();
@@ -43,18 +43,8 @@ void MapEditor::draw() {
 				editor->showDeleteSuccessPopup();
 			}
 
-			if (ImGui::Button("Show Information")) {
-				map_info = true;
-			}
-
-			if (map_info) {
-				ImGui::OpenPopup("Map Information");
-				map_info = false;
-			}
-
-			// Map information popup
-			if (ImGui::BeginPopup("Map Information")) {
-				Core::Map *currMap = editor->getCurrentMap();
+			Core::Map *currMap = editor->getCurrentMap();
+			if (currMap != nullptr) {
 				ImGui::Text("Map Name:");
 				ImGui::SameLine();
 				if (currMap != nullptr) {
@@ -77,7 +67,6 @@ void MapEditor::draw() {
 				} else {
 					ImGui::Text("Tile size: 0");
 				}
-				ImGui::EndPopup();
 			}
 		}
 		ImGui::End();
@@ -110,13 +99,14 @@ void MapEditor::drawCreateMapPopup() {
 			std::string mname = map_name;
 			glm::vec2 dimensions = glm::vec2(dim1, dim2);
 			auto action = [this, mname, dimensions]() {
-				Core::Map* new_map = new Core::Map(mname, dimensions, 64);
-				Core::MapPage* map_page = editor->getGamePtr()->createMapPage(mname, new_map);
+				Core::Map *new_map = new Core::Map(mname, dimensions, 64);
+				Core::MapPage *map_page =
+					editor->getGamePtr()->createMapPage(mname, new_map);
 				new_map->setName(mname);
 				new_map->setDimensions(dimensions);
-    			editor->setCurrentMap(
-                    editor->getGamePtr()->createMapOnDefaultMapPage(map_name, dim2, dim1, tileSize)
-                );
+				editor->setCurrentMap(
+					editor->getGamePtr()->createMapOnDefaultMapPage(
+						map_name, dim2, dim1, tileSize));
 			};
 			auto restore = [this, mname]() {
 				editor->getGamePtr()->deletePage(mname);
@@ -127,14 +117,14 @@ void MapEditor::drawCreateMapPopup() {
 			// TODO: render new map
 			// SETUP THE MAP CBO IF NEEDED
 			map_name[0] = '\0';
-            dim1 = 0;
-            dim2 = 0;
-            tileSize = 0;
+			dim1 = 0;
+			dim2 = 0;
+			tileSize = 0;
 			editor->getWindowList()[MAPVIEW]->setVisible(true);
 
-            //ImGui::CloseCurrentPopup();
+			// ImGui::CloseCurrentPopup();
 		}
 
-        ImGui::EndPopup();
+		ImGui::EndPopup();
 	}
 }
