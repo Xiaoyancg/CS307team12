@@ -119,9 +119,9 @@ namespace Core
         int halfYPixels = halfYTiles * mTileSize;
 
         // Calculate the top-left corner of the centered map
-        int lowX = (Game::width / 2) - halfXPixels;
+        int lowX = -halfXPixels;
         int highX = lowX + mTileSize;
-        int highY = (Game::height / 2) + halfYPixels;
+        int highY = halfYPixels;
         int lowY = highY - mTileSize;
 
         int border = 0; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
@@ -158,7 +158,7 @@ namespace Core
             }
 
             // Calculate the next tile in a new row
-            lowX = (Game::width / 2) - halfXPixels;
+            lowX = - halfXPixels;
             highX = lowX + mTileSize;
             highY -= mTileSize;
             lowY -= mTileSize;
