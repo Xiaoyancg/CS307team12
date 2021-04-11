@@ -28,7 +28,7 @@ namespace Core {
 
     glm::mat4 Camera::getMatrix() {
         //printf("%d %d %d\n", mPosition.x, mPosition.y, mPosition.z);
-        glm::mat4 ortho = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f);
+        glm::mat4 ortho = glm::ortho(0.0f, 2.0f, 0.0f, 2.0f);
         //glm::mat4 ortho = glm::ortho(0.0f, 1280.0f, 720.0f, 0.0f);
 
         glm::mat4 translate = glm::translate(glm::mat4(1), glm::vec3(mPosition));
