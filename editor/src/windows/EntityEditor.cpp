@@ -27,7 +27,7 @@ void EntityEditor::draw()
             Core::Page* currPage = editor->getGamePtr()->getCurrPage();
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
-            ImGui::InputText("", entityName, IM_ARRAYSIZE(entityName));
+            ImGui::InputText(" ", entityName, IM_ARRAYSIZE(entityName));
 
             if (ImGui::Button("Create New Entity"))
             {
