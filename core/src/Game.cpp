@@ -30,13 +30,19 @@ namespace Core
         this->parse(json);
     }
 
-    void Game::initialize() {
+    void Game::initialize()
+    {
         mGameMapPage = new MapPage("Default MapPage");
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
 
         _logicManager = LogicManager(&pageList, &currPage);
-
+        // Create the shaders
+        if (SDL_WasInit(SDL_INIT_VIDEO) == 0)
+        {
+            initContext();
+        }
+        initShader();
     }
 
     // =========================
@@ -157,7 +163,7 @@ namespace Core
         MenuPage *mp = new MenuPage();
         return (MenuPage *)addPage(mp);
     }
-    std::vector<Page *>& Game::getPageList()
+    std::vector<Page *> &Game::getPageList()
     {
         return pageList;
     }
