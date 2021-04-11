@@ -20,65 +20,23 @@ namespace Core
 
     Game::Game(std::string gameName) : gameName(gameName)
     {
-        useFramebuffer = false;
-        onGameCreation();
-
-        // Initialize OpenGL and necessary SDL objects
-        initContext();
-
-        // Create the shaders
-        initShader();
-    }
-    // editor open
-    Game::Game(nlohmann::json &json, GLuint *o, GLuint *mapcbo)
-    {
-        this->parse(json);
-        texcbo = o;
-        maptexcbo = mapcbo;
-        useFramebuffer = true;
-        onGameCreation();
+        initialize();
+        this->setCurrentPage(this->createPage("emptyPage"));
     }
 
     Game::Game(nlohmann::json &json)
     {
-        useFramebuffer = false;
-        // Initialize OpenGL and necessary SDL objects
-        initContext();
-
-        // Create the shaders
-        initShader();
+        initialize();
         this->parse(json);
-        onGameCreation();
     }
 
-    // editor new
-    Game::Game(GLuint *o, GLuint *mapcbo)
-    {
-        texcbo = o;
-        maptexcbo = mapcbo;
-        useFramebuffer = true;
-        this->gameName = "editortestname";
-        this->setCurrentPage(this->createPage("emptyPage"));
-        onGameCreation();
-    }
-
-    // FIXME: move to core
-    // Each class that renders sprites needs a reference to the same SpriteManager as this class.
-    // Whenever a new class is added that renders sprites, its reference must be set here.
-    void Game::onGameCreation()
-    {
-        // Set default MapPage
-        if (useFramebuffer)
-        {
-            mGameMapPage = new MapPage(maptexcbo);
-        }
-        else
-        {
-            mGameMapPage = new MapPage("Default MapPage");
-        }
+    void Game::initialize() {
+        mGameMapPage = new MapPage("Default MapPage");
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
+
         _logicManager = LogicManager(&pageList, &currPage);
+
     }
 
     // =========================
@@ -199,9 +157,9 @@ namespace Core
         MenuPage *mp = new MenuPage();
         return (MenuPage *)addPage(mp);
     }
-    std::vector<Page *> *Game::getPageList()
+    std::vector<Page *>& Game::getPageList()
     {
-        return &pageList;
+        return pageList;
     }
 
     void Game::deletePage(Page *dp)
@@ -277,7 +235,7 @@ namespace Core
 
     void Game::renderDefaultMapPage()
     {
-        mGameMapPage->renderOnFramebuffer();
+        mGameMapPage->render();
     }
 
     //* -------------------- LOGIC WRAPPER ------------------- *//
@@ -347,7 +305,6 @@ namespace Core
         // TODO parse should set current
         // but the info of current in json is not implemented yet
         setCurrentPage(this->pageList.at(0));
-        setCurrCtrlEntity(getCurrPage()->getCtrlEntity());
 
         return this;
     }
@@ -570,26 +527,6 @@ namespace Core
         // Set the scale based on the width and height
         int scaleID = glGetUniformLocation(shaderProgram, "scale");
         glUniform2f(scaleID, (float)2 / width, (float)2 / height);
-
-        // if in editor mode
-        if (useFramebuffer)
-        {
-            glGenFramebuffers(1, &fbo);
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-            // texbuffer is done in editor
-            // unsigned int texcbo; // texture color buffer obj
-            // glGenTextures ( 1, &texcbo );
-            glBindTexture(GL_TEXTURE_2D, *texcbo);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texcbo, 0);
-
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
     }
 
     void Game::initContext()
@@ -633,23 +570,13 @@ namespace Core
         return this->currPage;
     }
 
-    Entity *Game::setCurrCtrlEntity(Entity *e)
-    {
-        this->currCtrlEntity = e;
-        return e;
-    }
-
-    Entity *Game::getCurrCtrlEntity()
-    {
-        return this->currCtrlEntity;
-    }
-
     void Game::handleInput(SDL_Event event)
     {
         glm::vec2 loc;
         glm::vec2 scale;
-        if (setCurrCtrlEntity(currPage->getCtrlEntity()) != nullptr)
+        if (currPage->getCtrlEntity() != nullptr)
         {
+            auto currCtrlEntity = currPage->getCtrlEntity();
             loc = currCtrlEntity->getLocation();
             scale = currCtrlEntity->getScale();
             float moveBy = 5;
@@ -721,10 +648,6 @@ namespace Core
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
-        if (useFramebuffer)
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        }
         glClearColor(0.1, 0.2, 0.59, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -737,8 +660,6 @@ namespace Core
 
             currPage->render();
         }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     void Game::run()

@@ -3,7 +3,8 @@
 #include "VMTool.h"
 #include "Game.h"
 #include "Timer.h"
-volatile unsigned sink = 0;
+
+
 int GameVMMain()
 {
 

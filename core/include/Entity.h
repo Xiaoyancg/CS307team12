@@ -74,7 +74,7 @@ namespace Core
         // but that sounds like a disgusting solution and im not about to break encapsulation.
         // If anyone has a better idea, feel free to implement it. Otherwise, this should be fine.
         // Thank you Josh for the comments here! I'll move it to Core, along with logic
-        static inline SpriteManager *mGameSprites;
+        static inline SpriteManager *mGameSprites = nullptr;
 
         int getEntityId();
         void setEntityId(int entityId);
@@ -84,15 +84,17 @@ namespace Core
         std::string mEntityName;
         glm::vec2 mLocation; // Center of the entity (x, y)
         glm::vec2 mScale;    // (x width, y height)
-        double mRotation;
+        double mRotation = 0;
         int mCoords[16]; // Stores 4 pairs of (x, y) int coordinates (8 total), one for each corner of the entity
 
         // Sprite ID used to index sprites loaded into memory from the Game class
         // This isn't used yet though, I'm just adding it for later
-        int mSpriteID;
+        int mSpriteID = -1;
+
 
         int _entityId;
 
         bool mControlledEntity;
+
     };
 }

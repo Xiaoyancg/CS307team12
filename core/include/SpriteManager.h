@@ -32,7 +32,7 @@ namespace Core
 		void deleteSprite(int spriteID);
 
 		// Unused for now, can be uncommented if needed
-		std::unordered_map<int, Sprite *> getSprites();
+		std::unordered_map<int, Sprite *>& getSprites();
 
 		// Returns a pointer to the sprite with the requested ID
 		// (in constant time because we're using unordered_maps instead of vectors!)
