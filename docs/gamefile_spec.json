@@ -5,7 +5,36 @@
   "Version": "test-version",
   "LastModifiedTime": "test-datetime",
   "Note": "test-note",
-
+  "logicManager":{
+    "signalList":[
+      {
+        "signalId":1,
+        "SignalName":"a name",
+        "signalType":1,
+        "targetScriptList" :[1,2]
+      }
+    ],
+    "logicList":[{
+      "signalId":1,
+      "LogicName":"name of logic",
+      "signalType":1
+    }],
+    "scriptList":[
+      {
+        "scriptId":0,
+        "ScriptName":"name of script",
+        "scriptType":1,
+        "targetEntityList":[0,1],
+        "movement":[100.0,50.0]
+    }
+  ]
+  },
+  "startPoint":{
+    "startSignal":[1,2],
+    "startLogic":[1],
+    "startScript":[2],
+    "startPages":[3]
+  },
   "pageList": [
     {
       "Name": "test-page01",

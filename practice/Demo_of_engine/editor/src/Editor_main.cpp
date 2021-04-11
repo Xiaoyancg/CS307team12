@@ -18,6 +18,7 @@
 #include <iostream>
 #include <stdio.h>
 
+#include <cassert>
 // Our libraries
 #include "FileManager.h";
 
@@ -56,9 +57,33 @@ public:
     };
     int &geta() { return a; }
 };
+union ttu
+{
+    int x;
+    double d;
+    int y;
+    ttu &operator=(const ttu &other)
+    {
+        x = other.x;
+        d = other.d;
+        y = other.y;
+        return *this;
+    }
+};
 int main(int argc, char **argv)
 {
-    bool t = true;
+    bool t0 = true;
+    if (t0)
+    {
+        ttu tu0;
+        tu0.y = 5;
+        ttu tu1;
+        tu1.y = 6;
+        tu0 = tu1;
+        printf("tu0.y = %d\n", tu0.y);
+        return 0;
+    }
+    bool t = false;
     if (t)
     {
         myTop t;
