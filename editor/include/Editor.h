@@ -116,13 +116,13 @@ private:
 
 	SDL_Window *sdlWindow = nullptr;
 	SDL_GLContext gl_context;
-	ImGuiIO *io;
+	ImGuiIO *io = nullptr;
 
-	MainMenuBar* mainMenuBar;
+	MainMenuBar* mainMenuBar = nullptr;
 	// WINDOWS
 	std::vector<Window*> windowList;
 
-	Core::Map* currentMap;
+	Core::Map* currentMap = nullptr;
 
 	// main texture color buffer object
 	// Game gets rendered onto this, and this is used as an Image with ImGUI
