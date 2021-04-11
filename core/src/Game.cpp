@@ -1,3 +1,4 @@
+#pragma once
 #include <Game.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -6,7 +7,8 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <algorithm>
-#include <MapPage.h>
+
+#include "Camera.h"
 
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -24,13 +26,14 @@ namespace Core
     Game::Game(std::string gameName) : gameName(gameName)
     {
         useFramebuffer = false;
-        onGameCreation();
 
         // Initialize OpenGL and necessary SDL objects
         initContext();
 
         // Create the shaders
         initShader();
+
+        onGameCreation();
     }
     // editor open
     Game::Game(nlohmann::json &json, GLuint *o, GLuint *mapcbo)
@@ -81,6 +84,7 @@ namespace Core
         }
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
+        mCamera = new Camera();
     }
 
     // =========================
@@ -411,13 +415,14 @@ namespace Core
 		    layout (location = 0) in vec2 pos;
             layout (location = 1) in vec2 textureCoords;
 
+            uniform mat4 camera;
 		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
 
             out vec2 TexCoord;
 
 		    void main()
 		    {
-		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
+		        gl_Position = camera * vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
                 TexCoord = vec2(textureCoords.x,  1-textureCoords.y);
 		    }
 	    )glsl";
@@ -642,11 +647,11 @@ namespace Core
                 break;
 
                 // Control Entity scaling in the interactive demo
-            case SDLK_a: // a key is Scale up, for now
+            case SDLK_z: // z key is Scale up, for now
                 currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
                 break;
 
-            case SDLK_z: // z key is Scale down, for now
+            case SDLK_x: // x key is Scale down, for now
                 // Make sure not to scale into the negatives
                 if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0)
                 {
@@ -674,15 +679,24 @@ namespace Core
                 moveCurrentPage(_currPitr + 1);
             }
             break;
-            /*
+            
             // Theses are here to test switching fonts
-        case SDLK_f:
-            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
+        case SDLK_a:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
+            mCamera->offsetPosition(glm::ivec3(-5, 0, 0));
             break;
-        case SDLK_g:
-            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
+        case SDLK_d:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
+            mCamera->offsetPosition(glm::ivec3(5, 0, 0));
             break;
-            */
+        case SDLK_w:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
+            mCamera->offsetPosition(glm::ivec3(0, 5, 0));
+            break;
+        case SDLK_s:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
+            mCamera->offsetPosition(glm::ivec3(0, -5, 0));
+            break;
         }
     }
 
@@ -713,6 +727,8 @@ namespace Core
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
+        // Set Camera matrix uniform
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
         if (useFramebuffer)
         {
             glBindFramebuffer(GL_FRAMEBUFFER, fbo);

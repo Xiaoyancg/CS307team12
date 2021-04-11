@@ -13,6 +13,7 @@
 #include <nlohmann/json.hpp>
 
 // Parchment header
+#include "Camera.h"
 #include "Page.h"
 #include "Entity.h"
 #include "MapPage.h"
@@ -183,6 +184,8 @@ namespace Core
         bool editorMode;
 
         /* ---------------------------- MEMBER VARIABLES ---------------------------- */
+        // Camera used to move map
+        Camera* mCamera;
 
         // page pointer
         Page *currPage = nullptr;
