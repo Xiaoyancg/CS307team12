@@ -5,6 +5,8 @@ namespace Core
     Game *s1Game()
     {
         Game *game = new Game("s1Game");
+        game->initContext();
+        game->initShader();
         Entity *entityInteractive;
         Entity *entityTallThin;
         Entity *entityShortWide;
@@ -67,18 +69,18 @@ namespace Core
         // map4->setDimensions(glm::vec2(7, 3));
 
         // MENU PAGE TEST //////////////////////
-        //Menu *menu = new Menu("example menu");
-        //// First argument is a name for the menu entry (which gets displayed)
-        //// Second argument is the size of the text
-        //// Third and fourth are for callback addresses for 1 or 2 buttons, depending on what is not null
-        //menu->createMenuEntry("text ahhh", 48, (void *)123, nullptr);
-        //menu->createMenuEntry("", 62, (void *)123, (void *)123);
-        //menu->createMenuEntry("oooooo  oo o oooo oo o", 32, (void *)123, (void *)123);
-        //menu->createMenuEntry("aha", 100, (void *)123, nullptr);
-        //menu->createMenuEntry("text asdf", 62, 0, (void *)123);
-        //menu->createMenuEntry("", 62, (void *)123, nullptr);
-        //menu->createMenuEntry("POG !!!!", 62, (void *)123, nullptr);
-        //MenuPage *mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
+        Menu *menu = new Menu("example menu");
+        // First argument is a name for the menu entry (which gets displayed)
+        // Second argument is the size of the text
+        // Third and fourth are for callback addresses for 1 or 2 buttons, depending on what is not null
+        menu->createMenuEntry("text ahhh", 48, (void *)123, nullptr);
+        menu->createMenuEntry("", 62, (void *)123, (void *)123);
+        menu->createMenuEntry("oooooo  oo o oooo oo o", 32, (void *)123, (void *)123);
+        menu->createMenuEntry("aha", 100, (void *)123, nullptr);
+        menu->createMenuEntry("text asdf", 62, 0, (void *)123);
+        menu->createMenuEntry("", 62, (void *)123, nullptr);
+        menu->createMenuEntry("POG !!!!", 62, (void *)123, nullptr);
+        MenuPage *mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
         /////////////////////////////////////////
 
         // very important
