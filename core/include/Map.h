@@ -35,7 +35,7 @@ namespace Core
 		void setName(std::string);
 		std::string getName();
 
-		void render();
+		void render(bool withBorder);
 
 		Tile* checkTileCollision(glm::ivec2);
 

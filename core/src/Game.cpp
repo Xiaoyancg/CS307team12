@@ -416,13 +416,12 @@ namespace Core
             layout (location = 1) in vec2 textureCoords;
 
             uniform mat4 camera;
-		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
 
             out vec2 TexCoord;
 
 		    void main()
 		    {
-		        gl_Position = camera * vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
+                gl_Position = camera * vec4(pos.xy, 0.0, 1.0);
                 TexCoord = vec2(textureCoords.x,  1-textureCoords.y);
 		    }
 	    )glsl";
@@ -526,9 +525,6 @@ namespace Core
 
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
-        // Set the scale based on the width and height
-        int scaleID = glGetUniformLocation(shaderProgram, "scale");
-        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
         // if in editor mode
         if (useFramebuffer)
@@ -661,7 +657,7 @@ namespace Core
             }
         }
 
-        int move_camera = 1;
+        int move_camera = 10;
 
         // Control pages switch.
         switch (event.key.keysym.sym)
@@ -797,10 +793,6 @@ namespace Core
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                         glViewport(0, 0, width, height);
 
-                        // Preserve dimensions of objects after resize
-                        // Set the scale based on the width and height of the screen
-                        int scaleID = glGetUniformLocation(shaderProgram, "scale");
-                        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }
