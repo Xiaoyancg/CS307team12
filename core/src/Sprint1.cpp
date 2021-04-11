@@ -5,6 +5,8 @@ namespace Core
     Game *s1Game()
     {
         Game *game = new Game("s1Game");
+        game->initContext();
+        game->initShader();
         Entity *entityInteractive;
         Entity *entityTallThin;
         Entity *entityShortWide;
