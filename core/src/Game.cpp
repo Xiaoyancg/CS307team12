@@ -661,6 +661,8 @@ namespace Core
             }
         }
 
+        int move_camera = 1;
+
         // Control pages switch.
         switch (event.key.keysym.sym)
         {
@@ -683,19 +685,19 @@ namespace Core
             // Theses are here to test switching fonts
         case SDLK_a:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
-            mCamera->offsetPosition(glm::ivec3(-5, 0, 0));
+            mCamera->offsetPosition(glm::ivec3(-move_camera, 0, 0));
             break;
         case SDLK_d:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
-            mCamera->offsetPosition(glm::ivec3(5, 0, 0));
+            mCamera->offsetPosition(glm::ivec3(move_camera, 0, 0));
             break;
         case SDLK_w:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
-            mCamera->offsetPosition(glm::ivec3(0, 5, 0));
+            mCamera->offsetPosition(glm::ivec3(0, move_camera, 0));
             break;
         case SDLK_s:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
-            mCamera->offsetPosition(glm::ivec3(0, -5, 0));
+            mCamera->offsetPosition(glm::ivec3(0, -move_camera, 0));
             break;
         }
     }
