@@ -9,7 +9,8 @@ namespace Core
     Map::Map(std::string name, glm::vec2 dimensions, int tileSize) : mMapDimensions(dimensions),
                                                                      mTileSize(tileSize),
                                                                      mAssociatedPage(nullptr),
-                                                                     mMapName(name)
+                                                                     mMapName(name),
+                                                                     mCamera(nullptr)
     {
         // Create map
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
@@ -22,6 +23,11 @@ namespace Core
         {
             mTileArray = nullptr;
         }
+
+
+        // Each map gets its own Camera. Whenever the map is drawn from Game::renderDefaultMapPage,
+        // mCamera will be used instead of 
+        mCamera = new Camera();
     }
 
     Map::~Map()
@@ -91,6 +97,10 @@ namespace Core
     std::string Map::getName()
     {
         return mMapName;
+    }
+
+    Camera* Map::getCamera() {
+        return mCamera;
     }
 
     // This will set the 4 corners of each tile of the map based on the dimensions and tilesize.

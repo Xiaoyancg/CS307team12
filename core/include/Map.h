@@ -2,7 +2,7 @@
 #pragma warning(disable : 5033)
 #include <glm/glm.hpp>
 #include <Tile.h>
-//#include <MapPage.h>
+#include <Camera.h>
 
 // Map class
 namespace Core
@@ -31,6 +31,9 @@ namespace Core
 
 		// Get mNumTiles
 		int getNumTiles();
+
+		// Get the Camera associated with this Map (this function is used with the MapView window)
+		Camera* getCamera();
 
 		void setName(std::string);
 		std::string getName();
@@ -63,6 +66,9 @@ namespace Core
 		glm::ivec2 mMapDimensions;
 
 		std::string mMapName;
+
+		// This is used to zoom and move around a MapView
+		Camera* mCamera;
 
 		// This is set to a MapPage only when the map is in use on the MapPage.
 		// It's used to remove itself from the MapPage if it's suddenly deleted
