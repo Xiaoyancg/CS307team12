@@ -19,6 +19,7 @@
 #include "RenderTarget.h"
 #include "SpriteManager.h"
 #include "MenuPage.h"
+#include "LogicManager.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
@@ -108,24 +109,32 @@ namespace Core
         MapPage *getDefaultMapPage();
         void renderDefaultMapPage();
 
-        /* ----------------------------- STATE OPERATION ---------------------------- */
-        // ( the flags and pointers that describing the current state of performance )
-
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
         Page *getCurrPage();
 
-        /// <summary>
-        /// Move current page pointer and iterator
-        /// to the target iterator in the pageList.
-        /// <para>Can be fail ( begin(), end() out of range)</para>
-        /// </summary>
-        /// <param name="target">the target pagelist iterator</param>
-        /// <returns>0 if fail</returns>
-        int moveCurrentPage(std::vector<Page *>::iterator target);
+        /// \brief Create a default Signal object
+        /// *For editor, binding to create button in signal editor
+        ///
+        /// \return Signal*
+        Signal *createSignal();
 
-        // =========================
-        // UTILITY OPERATION
+        /// \brief Create a default Script object
+        /// *For editor, binding to create button in script editor
+        ///
+        /// \return Script*
+        Script *createScript();
+
+        /// \brief Create a default Logic object
+        /// *For editor, binding to create button in logic editor
+        ///
+        /// \return Logic*
+        Logic *createLogic();
+
+        // For editor
+        void deleteLogic(int logicId);
+        void deleteSignal(int signalId);
+        void deleteScript(int scriptId);
 
         // initContext SDL context
         void initContext();
@@ -148,17 +157,9 @@ namespace Core
         // the only game loop
         void mainLoop();
 
-    private:
-        // =========================
-        // UTILITY OPERATION
 
-        // check the page list iterator not begin
-        bool _isBegin(PLitr i);
-        // check the page list iterator not end
-        bool _isBeforeEnd(PLitr i);
+        void onGameCreation();
 
-        // ==========================
-        // ATTRIBUTES VARIABLE
 
         std::string gameName;
         std::string author;
@@ -167,8 +168,10 @@ namespace Core
         std::string lMTime;
         std::string note;
 
-        // ===========================
-        // STATE VARIABLES
+
+        Entity *currCtrlEntity;
+        bool useFramebuffer;
+
 
         // page list iterator: current page iterator
         PLitr _currPitr;
@@ -177,8 +180,7 @@ namespace Core
         // if true use cbo
         bool editorMode;
 
-        /* ---------------------------- MEMBER VARIABLES ---------------------------- */
-
+        LogicManager _logicManager;
         // page pointer
         Page *currPage = nullptr;
         

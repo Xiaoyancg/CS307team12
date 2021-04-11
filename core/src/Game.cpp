@@ -18,9 +18,6 @@ namespace Core
     int Game::width = 1280;
     int Game::height = 720;
 
-    // =========================
-    // CONSTRUCTOR
-
     Game::Game(std::string gameName) : gameName(gameName)
     {
         initialize();
@@ -37,11 +34,9 @@ namespace Core
         mGameMapPage = new MapPage("Default MapPage");
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
-        // Create the shaders
-        if (SDL_WasInit(SDL_INIT_VIDEO) == 0) {
-            initContext();
-        }
-        initShader();
+
+        _logicManager = LogicManager(&pageList, &currPage);
+
     }
 
     // =========================
@@ -107,9 +102,6 @@ namespace Core
     {
         return this->note;
     }
-
-    // =========================
-    // PROPERTY OPERATION
 
     // =========================
     // MEMBER OPERATION
@@ -246,9 +238,35 @@ namespace Core
         mGameMapPage->render();
     }
 
-    // =========================
-    // UTILITY OPERATION
+    //* -------------------- LOGIC WRAPPER ------------------- *//
 
+    Signal *Game::createSignal()
+    {
+        return _logicManager.createSignal();
+    }
+
+    Script *Game::createScript()
+    {
+        return _logicManager.createScript();
+    }
+
+    Logic *Game::createLogic()
+    {
+        return _logicManager.createLogic();
+    }
+
+    void Game::deleteLogic(int logicId)
+    {
+        _logicManager.deleteLogic(logicId);
+    }
+    void Game::deleteSignal(int signalId)
+    {
+        _logicManager.deleteSignal(signalId);
+    }
+    void Game::deleteScript(int scriptId)
+    {
+        _logicManager.deleteSignal(scriptId);
+    }
     Game *Game::parse(nlohmann::json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
@@ -274,8 +292,17 @@ namespace Core
         {
             mGameSprites.parse(root.at("spriteList"));
         }
-
-        // parse should set current
+        // TODO: Logic
+        if (root.contains("logicManager"))
+        {
+            // TODO
+            _logicManager.parse(root.at("logicManager"));
+        }
+        if (root.contains("startPoint"))
+        {
+            // TODO
+        }
+        // TODO parse should set current
         // but the info of current in json is not implemented yet
         setCurrentPage(this->pageList.at(0));
 
@@ -347,6 +374,22 @@ namespace Core
             j["spriteList"] = spriteVector;
         }
 
+        //TODO LogicManager
+        nlohmann::json logicManagerjs;
+        std::vector<nlohmann::json> logicVector;
+        //TODO for each logic push to logic vector
+        logicManagerjs["logicList"] = logicVector;
+        std::vector<nlohmann::json> scriptVector;
+        //TODO for each script push to script Vector
+        logicManagerjs["scriptList"] = scriptVector;
+        std::vector<nlohmann::json> signalVector;
+        // TODO for each signal ...
+        logicManagerjs["signalList"] = signalVector;
+        j["logicManager"] = logicManagerjs;
+
+        // TODO start point
+        nlohmann::json startPoint;
+        j["startPoint"] = startPoint;
         return ret;
     }
 
@@ -522,17 +565,6 @@ namespace Core
         SDL_GL_MakeCurrent(window, gl_context);
     }
 
-    int Game::moveCurrentPage(std::vector<Page *>::iterator i)
-    {
-        if (i >= pageList.begin() && i < pageList.end())
-        {
-            setCurrentPage(*i);
-            _currPitr = i;
-            return 0;
-        }
-        return 1;
-    }
-
     Page *Game::getCurrPage()
     {
         return this->currPage;
@@ -592,17 +624,9 @@ namespace Core
         // use 1 to look the previous page
         case SDLK_1:
             // have to check begin and end here
-            if (!_isBegin(_currPitr))
-            {
-                moveCurrentPage(_currPitr - 1);
-            }
             break;
         // use 2 to look the next page
         case SDLK_2:
-            if (_isBeforeEnd(_currPitr))
-            {
-                moveCurrentPage(_currPitr + 1);
-            }
             break;
             /*
             // Theses are here to test switching fonts
@@ -615,28 +639,9 @@ namespace Core
             */
         }
     }
-
-    bool Game::_isBegin(PLitr i)
-    {
-        return !(i > pageList.begin());
-    }
-
-    bool Game::_isBeforeEnd(PLitr i)
-    {
-        return (i < pageList.end() - 1);
-    }
-
     void Game::setCurrentPage(Page *p)
     {
         this->currPage = p;
-        for (std::vector<Page *>::iterator itr = pageList.begin(); itr < pageList.end(); itr++)
-        {
-            if (*itr == p)
-            {
-                this->_currPitr = itr;
-                return;
-            }
-        }
     }
 
     // only render graphics so can be used in editor
@@ -755,5 +760,4 @@ namespace Core
 #endif // __TEST_CORE
         }
     }
-
 }
