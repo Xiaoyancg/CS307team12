@@ -157,10 +157,9 @@ void Editor::processInput()
                     redo();
                 }
             }
-            if (game != nullptr)
+            if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
             {
-                if (windowList[GAMEVIEW]->isFocused())
-                    game->handleInput(evt);
+                game->handleInput(evt);
             }
         }
         if (evt.type == SDL_KEYUP)
@@ -313,6 +312,9 @@ void Editor::createGame() {
 }
 
 void Editor::loadGame(const std::string filePath) {
+    if (game != nullptr) {
+        freeGame();
+    }
     gameFilePath = filePath;
     nlohmann::json *j = readGameDataFile(gameFilePath);
     game = new Core::Game(*j);
@@ -341,4 +343,8 @@ void Editor::freeGame() {
     game = nullptr;
 
     gameFilePath.clear();
+}
+
+void Editor::setGameRunning(bool value) {
+    gameRunning = value;
 }

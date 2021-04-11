@@ -77,6 +77,11 @@ public:
 	void saveGameAs(const std::string filePath);
 	void freeGame();
 
+	bool isGameRunning() {
+		return gameRunning;
+	}
+	void setGameRunning(bool value);
+
 	std::vector<Window*>& getWindowList() {
 		return windowList;
 	}
@@ -105,6 +110,7 @@ public:
 private:
 	bool running = false;
 
+	bool gameRunning = false;
 	Core::Game *game = nullptr;
 	std::string gameFilePath;
 
