@@ -76,6 +76,9 @@ namespace Core
         // Thank you Josh for the comments here! I'll move it to Core, along with logic
         static inline SpriteManager *mGameSprites = nullptr;
 
+        int getEntityId();
+        void setEntityId(int entityId);
+
     private:
         // Basic Entity variables
         std::string mEntityName;
@@ -88,6 +91,10 @@ namespace Core
         // This isn't used yet though, I'm just adding it for later
         int mSpriteID = -1;
 
-        bool mControlledEntity = false;
+
+        int _entityId;
+
+        bool mControlledEntity;
+
     };
 }
