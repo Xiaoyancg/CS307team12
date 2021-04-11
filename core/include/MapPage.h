@@ -46,8 +46,6 @@ namespace Core
         static inline SpriteManager* mGameSprites;
 
     private:
-        GLuint mFBO;
-
         std::vector<Map*> mMaps;
 
         // The current map

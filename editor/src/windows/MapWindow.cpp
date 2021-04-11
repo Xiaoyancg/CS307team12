@@ -24,10 +24,20 @@ void MapWindow::draw()
             //glViewport(0, 0, dims.x * tileSize, dims.y * tileSize);
             glViewport(0, 0, 1000, 1000);
 
+            glBindTexture(GL_TEXTURE_2D, mMapTexCBO);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1000, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glViewport(0, 0, 1000, 1000);
+            glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
+            Core::MapPage* mapPage = editor->getGamePtr()->getDefaultMapPage();
+            glm::vec4& bgCol = mapPage->GetBackgroundColor();
+            glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
+            glClear(GL_COLOR_BUFFER_BIT);
             editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((ImTextureID) mTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            ImGui::Image((ImTextureID) mMapTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
 
             ImGui::End();
             ImGui::PopStyleVar();
