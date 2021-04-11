@@ -114,7 +114,7 @@ namespace Core
         int highY = (Game::height / 2) + halfYPixels;
         int lowY = highY - mTileSize;
 
-        int border = 1; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
+        int border = 0; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
         int index = 0;  // An easy way to access the mTileArray without having to do any calculations
         for (int row = mMapDimensions.y - 1; row >= 0; row--)
         {
@@ -138,23 +138,6 @@ namespace Core
                 posCoords[6] = highX; // Bottom right x
                 posCoords[7] = lowY;  // Bottom right y
 
-                
-                // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
-                // P1
-                posCoords[0] += border;
-                posCoords[1] -= border;
-
-                // P2
-                posCoords[2] += border;
-                posCoords[3] += border;
-                // P3
-                posCoords[4] -= border;
-                posCoords[5] -= border;
-                // P4
-                posCoords[6] -= border;
-                posCoords[7] += border;
-                
-
                 // Set the coordinates for the current tile
                 mTileArray[index].setCoords(posCoords);
 
@@ -166,7 +149,6 @@ namespace Core
 
             // Calculate the next tile in a new row
             lowX = (Game::width / 2) - halfXPixels;
-            ;
             highX = lowX + mTileSize;
             highY -= mTileSize;
             lowY -= mTileSize;
@@ -205,12 +187,33 @@ namespace Core
         }
     }
 
-    void Map::render() {
+    void Map::render(bool withBorder) {
         // Traverse all tiles in the Map
         for (int i = 0; i < getNumTiles(); i++)
         {
             // Render each tile of the map!
-            int* coords = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+            int* coordsPtr = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+            int coords[16];
+            std::memcpy(coords, coordsPtr, sizeof(int) * 16);
+
+            if (withBorder) {
+                int border = 1;
+                // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
+                // P1
+                coords[0] += border;
+                coords[1] -= border;
+
+                // P2
+                coords[4] += border;
+                coords[5] += border;
+                // P3
+                coords[8] -= border;
+                coords[9] -= border;
+                // P4
+                coords[12] -= border;
+                coords[13] += border;
+            }
+
 
             // Bind the correct sprite if it exists
             if (mTileArray[i].isInvisibleTile()) {

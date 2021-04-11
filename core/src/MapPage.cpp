@@ -66,7 +66,7 @@ namespace Core
     void MapPage::render()
     {
         if (mMap != nullptr) {
-            mMap->render();
+            mMap->render(false);
         }
 
         Page::render();
@@ -79,11 +79,13 @@ namespace Core
         if (mMap != nullptr) {
             if (mFBO >= 0) {
                 glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
-
+                glClear(GL_COLOR_BUFFER_BIT);
+                mMap->render(true);
             }
-            glClear(GL_COLOR_BUFFER_BIT);
-
-            mMap->render();
+            else {
+                glClear(GL_COLOR_BUFFER_BIT);
+                mMap->render(false);
+            }
         }
 
         Page::render();
