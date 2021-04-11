@@ -531,8 +531,14 @@ namespace Core
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
         // Set the scale based on the width and height
-        int scaleID = glGetUniformLocation(shaderProgram, "scale");
-        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
+        scaleUniformID = glGetUniformLocation(shaderProgram, "scale");
+        setShaderScale(glm::vec2(width, height));
+    }
+
+    void Game::setShaderScale(glm::vec2 scale)
+    {
+        shaderScale = scale;
+        glUniform2f(scaleUniformID, 2.0f / scale.x, 2.0f / scale.y);
     }
 
     void Game::initContext()

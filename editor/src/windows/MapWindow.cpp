@@ -21,23 +21,42 @@ void MapWindow::draw()
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
             glm::ivec2 dims = currMap->getDimensions();
             int tileSize = currMap->getTileSize();
-            //glViewport(0, 0, dims.x * tileSize, dims.y * tileSize);
-            glViewport(0, 0, 1000, 1000);
+            int mapWidth = (dims.x+1) * tileSize;
+            int mapHeight = (dims.y+1) * tileSize;
+            //ImGui::SetWindowSize(ImVec2(mapWidth, mapHeight));
 
-            glBindTexture(GL_TEXTURE_2D, mMapTexCBO);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1000, 1000, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glViewport(0, 0, 1000, 1000);
-            glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
             Core::MapPage* mapPage = editor->getGamePtr()->getDefaultMapPage();
             glm::vec4& bgCol = mapPage->GetBackgroundColor();
+
+            glBindTexture(GL_TEXTURE_2D, mMapTexCBO);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mapWidth, mapHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+            float bgColArr[] = { bgCol.r, bgCol.g, bgCol.b, bgCol.a };
+            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bgColArr);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            glViewport(
+                0, 0,
+                (int) mapWidth, (int) mapHeight
+            );
+            Core::Game* game = editor->getGamePtr();
+            glm::vec2 prevScale = game->getShaderScale();
+            game->setShaderScale(glm::vec2(mapWidth, mapHeight));
+            //glViewport(0, 0, 1000, 1000);
+            glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
+
             glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             glClear(GL_COLOR_BUFFER_BIT);
             editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((ImTextureID) mMapTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+            game->setShaderScale(prevScale);
+
+            ImVec2 uv0 = ImVec2(0.5f - (0.5f*canvas_size.x)/mapWidth, 0.5f - (0.5f*canvas_size.y)/mapHeight);
+            ImVec2 uv1 = ImVec2(0.5f + (0.5f*canvas_size.x)/mapWidth, 0.5f + (0.5f*canvas_size.y)/mapHeight);
+            ImGui::Image((ImTextureID) mMapTexCBO, ImVec2(canvas_size.x, canvas_size.y), uv0, uv1);
 
             ImGui::End();
             ImGui::PopStyleVar();
