@@ -49,6 +49,9 @@ namespace Core
             if (*ptr == dp)
             {
                 entityList.erase(ptr);
+                if (ctrlEntity == dp) {
+                    ctrlEntity = nullptr;
+                }
                 delete (dp);
                 dp = nullptr;
                 break;
@@ -65,6 +68,9 @@ namespace Core
             if (!(*ptr)->getName().compare(s))
             {
                 Entity *p = *ptr;
+                if (ctrlEntity == p) {
+                    ctrlEntity = nullptr;
+                }
                 entityList.erase(ptr);
                 delete (p);
                 p = nullptr;

@@ -6,6 +6,14 @@
 
 namespace Core
 {
+    int Entity::getEntityId()
+    {
+        return _entityId;
+    }
+    void Entity::setEntityId(int entityId)
+    {
+        _entityId = entityId;
+    }
     // Constructor of the game class
     Entity::Entity(std::string s, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID)
         : mEntityName(s),
@@ -195,7 +203,9 @@ namespace Core
         if (root.contains("control") && root.at("control").get<bool>() == true)
         {
             entity->setControlledEntity(true);
-        } else {
+        }
+        else
+        {
             entity->setControlledEntity(false);
         }
 
