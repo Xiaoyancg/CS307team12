@@ -3,27 +3,7 @@
 
 
 namespace Core
-{  
-
-    MapPage::MapPage(GLuint *cbo) :
-        Page("No MapPage name :(("), mMap(nullptr) {
-
-        glGenFramebuffers(1, &mFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
-
-        // cbo is set in editor and passed here
-        glBindTexture(GL_TEXTURE_2D, *cbo);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 720, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *cbo, 0);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        //addMap(new Map("No Map name :(", glm::vec2(0, 0), 0));
-    }
+{
 
     // Sets mMap to the given map ('map' argument should be created with 'new Map' on the heap)
     Map* MapPage::addMap ( Map *map )
@@ -70,31 +50,10 @@ namespace Core
     void MapPage::render()
     {
         if (mMap != nullptr) {
-            mMap->render(false);
+            mMap->render();
         }
 
         Page::render();
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-    void MapPage::renderOnFramebuffer ()
-    {
-        if (mMap != nullptr) {
-            if (mFBO >= 0) {
-                glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
-                glClear(GL_COLOR_BUFFER_BIT);
-                mMap->render(true);
-            }
-            else {
-                glClear(GL_COLOR_BUFFER_BIT);
-                mMap->render(false);
-            }
-        }
-
-        Page::render();
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     // This is called from the MapView window with on a mouse click.

@@ -1,6 +1,8 @@
-#include <Editor.h>
+#include "Editor.h"
 
 int main(int argc, char *argv[])
 {
-    return EditorMain();
+    Editor editor;
+    editor.run();
+    return 0;
 }

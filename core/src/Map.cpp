@@ -111,57 +111,45 @@ namespace Core
         // Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
         // Starting at the top left corner
         // Find the amount of tiles to the left/right and top/bottom (in tiles)
-        int halfXTiles = mMapDimensions.x / 2;
-        int halfYTiles = mMapDimensions.y / 2;
+        // int halfXTiles = mMapDimensions.x / 2;
+        // int halfYTiles = mMapDimensions.y / 2;
 
         // Find the amount of pixels to the left/right and top/bottom from the center of the map to the edge
-        int halfXPixels = halfXTiles * mTileSize;
-        int halfYPixels = halfYTiles * mTileSize;
+        // int halfXPixels = halfXTiles * mTileSize;
+        // int halfYPixels = halfYTiles * mTileSize;
 
         // Calculate the top-left corner of the centered map
-        int lowX = -halfXPixels;
-        int highX = lowX + mTileSize;
-        int highY = halfYPixels;
-        int lowY = highY - mTileSize;
+        // int lowX = (Game::width / 2) - halfXPixels;
+        // int highX = lowX + mTileSize;
+        // int highY = (Game::height / 2) + halfYPixels;
+        // int lowY = highY - mTileSize;
 
-        int border = 0; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
-        int index = 0;  // An easy way to access the mTileArray without having to do any calculations
-        for (int row = mMapDimensions.y - 1; row >= 0; row--)
+        int border = 2; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
+        for (int y = 0; y < mMapDimensions.y; y++)
         {
-            for (int col = 0; col < mMapDimensions.x; col++)
+            for (int x = 0; x < mMapDimensions.x; x++)
             {
                 // posCoords will be filled with the 4 position coordinates for each tile and will be
                 // given to Tile::setCoords() where it will be stored in a render-able buffer correctly
                 int posCoords[8];
 
                 // P1
-                posCoords[0] = lowX;  // Top left x
-                posCoords[1] = highY; // Top left y
+                posCoords[0] = x * mTileSize;  // Top left x
+                posCoords[1] = y * mTileSize; // Top left y
 
                 // P2
-                posCoords[2] = lowX; // Bottom left x
-                posCoords[3] = lowY; // Bottom left y
+                posCoords[2] = x * mTileSize; // Bottom left x
+                posCoords[3] = (y + 1) * mTileSize; // Bottom left y
                 // P3
-                posCoords[4] = highX; // Top right x
-                posCoords[5] = highY; // Top right y
+                posCoords[4] = (x + 1) * mTileSize; // Top right x
+                posCoords[5] = y * mTileSize; // Top right y
                 // P4
-                posCoords[6] = highX; // Bottom right x
-                posCoords[7] = lowY;  // Bottom right y
+                posCoords[6] = (x + 1) * mTileSize; // Bottom right x
+                posCoords[7] = (y + 1) * mTileSize;  // Bottom right y
 
                 // Set the coordinates for the current tile
-                mTileArray[index].setCoords(posCoords);
-
-                // Increment loop variables to find the next tile in the same row
-                lowX += mTileSize;
-                highX += mTileSize;
-                index++;
+                mTileArray[y*mMapDimensions.x + x].setCoords(posCoords);
             }
-
-            // Calculate the next tile in a new row
-            lowX = - halfXPixels;
-            highX = lowX + mTileSize;
-            highY -= mTileSize;
-            lowY -= mTileSize;
         }
     }
 

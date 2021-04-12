@@ -12,20 +12,12 @@ namespace Core
     public:
         
         // Needs the current window to make a new opengl context, in the Page constructor 
-        MapPage::MapPage(GLuint* fbo);
-        MapPage::MapPage () : 
-            MapPage ( "No MapPage name :(")
-        { }
-
-        MapPage::MapPage (std::string s): 
-            Page(s), mMap(nullptr), mFBO(-1)
-        { }
+        MapPage::MapPage() : MapPage("New Map Page") {}
+        MapPage::MapPage(const std::string name) : MapPage(name, nullptr) {}
         
         // Users can specify a map if it's already created
-        MapPage::MapPage(std::string s, Map* map) :
-            Page(s), mMap(nullptr), mFBO(-1)
+        MapPage::MapPage(const std::string s, Map* map) : Page(s), mMap(map)
         {
-            addMap(map);
             SetBackgroundColor(0.1f, 0.9f, 0.59f, 1.0f);
         }
 
@@ -46,7 +38,6 @@ namespace Core
 
         // Render the current map!
         void render();
-        void renderOnFramebuffer();
 
         Tile* getTileFromClick(float x, float y);
 
@@ -59,8 +50,6 @@ namespace Core
         static inline SpriteManager* mGameSprites;
 
     private:
-        GLuint mFBO;
-
         std::vector<Map*> mMaps;
 
         // The current map

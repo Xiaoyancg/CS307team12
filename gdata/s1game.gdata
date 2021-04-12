@@ -1,0 +1,78 @@
+{
+  "Author": "team12",
+  "FileType": "Parchment Game Data",
+  "GameName": "test",
+  "LastModifiedTime": "",
+  "Note": "this is the test file",
+  "pageList": [
+    {
+      "entityList": [
+        {
+          "EntityName": "interactive",
+          "location": [
+            50.0,
+            50.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            64.0
+          ],
+          "spriteID": 0
+        },
+        {
+          "EntityName": "shortWide",
+          "location": [
+            500.0,
+            500.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            64.0,
+            32.0
+          ],
+          "spriteID": 2
+        },
+        {
+          "EntityName": "veryShortWide",
+          "location": [
+            640.0,
+            100.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            16.0
+          ],
+          "spriteID": 3
+        },
+        {
+          "EntityName": "origin",
+          "location": [
+            1000.0,
+            300.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            128.0,
+            128.0
+          ],
+          "spriteID": 4
+        }
+      ],
+      "PageName": "entityPage",
+      "isMenu": false
+    },
+    {
+      "PageName": "1",
+      "entityList": [],
+      "isMenu": false
+    },
+    {
+      "PageName": "2",
+      "entityList": [],
+      "isMenu": false
+    }
+  ],
+  "Version": "0.2"
+}

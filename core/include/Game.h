@@ -20,6 +20,7 @@
 #include "RenderTarget.h"
 #include "SpriteManager.h"
 #include "MenuPage.h"
+#include "LogicManager.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator
@@ -44,10 +45,11 @@ namespace Core
         // CONSTRUCTOR
 
         // Game ();
-        Game(GLuint *texcbo, GLuint *maptexcbo);
+        Game() : Game("Untitled Game") {}
         Game(nlohmann::json &json);
         Game(std::string gameName);
-        Game(nlohmann::json &json, GLuint *texcbo, GLuint *maptexcbo);
+
+        void initialize();
 
         // =========================
         // ATTRIBUTES OPERATION (attributes mean non functionality related variables)
@@ -93,7 +95,7 @@ namespace Core
         MenuPage *createMenuPage();
         void deletePage(Page *);
         void deletePage(std::string);
-        std::vector<Page *> *getPageList();
+        std::vector<Page *>& getPageList();
         int getNumPage();
 
         // Sprite operations
@@ -108,31 +110,42 @@ namespace Core
         MapPage *getDefaultMapPage();
         void renderDefaultMapPage();
 
-        /* ----------------------------- STATE OPERATION ---------------------------- */
-        // ( the flags and pointers that describing the current state of performance )
-
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
         Page *getCurrPage();
-        Entity *setCurrCtrlEntity(Entity *);
-        Entity *getCurrCtrlEntity();
 
-        /// <summary>
-        /// Move current page pointer and iterator
-        /// to the target iterator in the pageList.
-        /// <para>Can be fail ( begin(), end() out of range)</para>
-        /// </summary>
-        /// <param name="target">the target pagelist iterator</param>
-        /// <returns>0 if fail</returns>
-        int moveCurrentPage(std::vector<Page *>::iterator target);
+        /// \brief Create a default Signal object
+        /// *For editor, binding to create button in signal editor
+        ///
+        /// \return Signal*
+        Signal *createSignal();
 
-        // =========================
-        // UTILITY OPERATION
+        /// \brief Create a default Script object
+        /// *For editor, binding to create button in script editor
+        ///
+        /// \return Script*
+        Script *createScript();
+
+        /// \brief Create a default Logic object
+        /// *For editor, binding to create button in logic editor
+        ///
+        /// \return Logic*
+        Logic *createLogic();
+
+        // For editor
+        void deleteLogic(int logicId);
+        void deleteSignal(int signalId);
+        void deleteScript(int scriptId);
 
         // initContext SDL context
         void initContext();
         // init opengl related flag
         void initShader();
+        glm::vec2 getShaderScale()
+        {
+            return shaderScale;
+        }
+        void setShaderScale(glm::vec2 scale);
 
         void sdl_die(const char *err_msg);
         void handleInput(SDL_Event event);
@@ -150,19 +163,10 @@ namespace Core
         // the only game loop
         void mainLoop();
 
-    private:
-        // =========================
-        // UTILITY OPERATION
-
-        // check the page list iterator not begin
-        bool _isBegin(PLitr i);
-        // check the page list iterator not end
-        bool _isBeforeEnd(PLitr i);
 
         void onGameCreation();
-        // ==========================
-        // ATTRIBUTES VARIABLE
 
+    private:
         std::string gameName;
         std::string author;
         std::string version;
@@ -170,11 +174,12 @@ namespace Core
         std::string lMTime;
         std::string note;
 
-        // ===========================
-        // STATE VARIABLES
 
         Entity *currCtrlEntity;
-        bool useFramebuffer;
+
+        int scaleUniformID = -1;
+        glm::vec2 shaderScale;
+
 
         // page list iterator: current page iterator
         PLitr _currPitr;
@@ -183,17 +188,14 @@ namespace Core
         // if true use cbo
         bool editorMode;
 
+        LogicManager _logicManager;
         /* ---------------------------- MEMBER VARIABLES ---------------------------- */
         // Camera used to move map
         Camera* mCamera;
 
         // page pointer
         Page *currPage = nullptr;
-
-        // texcbo from editor
-        GLuint *texcbo, *maptexcbo;
-        // framebuffer object
-        GLuint fbo;
+        
         // contains all pages
         std::vector<Page *> pageList;
 
