@@ -50,7 +50,7 @@ namespace Core
     void MapPage::render()
     {
         if (mMap != nullptr) {
-            mMap->render();
+            mMap->render(0);
         }
 
         Page::render();

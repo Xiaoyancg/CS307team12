@@ -35,27 +35,26 @@ void MapWindow::draw()
             float bgColArr[] = { bgCol.r, bgCol.g, bgCol.b, bgCol.a };
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bgColArr);
             glBindTexture(GL_TEXTURE_2D, 0);
-
             glViewport(
                 0, 0,
                 (int) mapWidth, (int) mapHeight
             );
             Core::Game* game = editor->getGamePtr();
-            glm::vec2 prevScale = game->getShaderScale();
-            game->setShaderScale(glm::vec2(mapWidth, mapHeight));
-            //glViewport(0, 0, 1000, 1000);
-            glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
 
+            glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
             glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             glClear(GL_COLOR_BUFFER_BIT);
             editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            game->setShaderScale(prevScale);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             ImVec2 uv0 = ImVec2(0.5f - (0.5f*canvas_size.x)/mapWidth, 0.5f - (0.5f*canvas_size.y)/mapHeight);
             ImVec2 uv1 = ImVec2(0.5f + (0.5f*canvas_size.x)/mapWidth, 0.5f + (0.5f*canvas_size.y)/mapHeight);
+            // Use these for stretchy MapView
+            //ImVec2 uv0 = ImVec2(0, 1);
+            //ImVec2 uv1 = ImVec2(1, 0);
+
             ImGui::Image((ImTextureID) mMapTexCBO, ImVec2(canvas_size.x, canvas_size.y), uv0, uv1);
 
             ImGui::End();
