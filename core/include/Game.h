@@ -141,11 +141,6 @@ namespace Core
         void initContext();
         // init opengl related flag
         void initShader();
-        glm::vec2 getShaderScale()
-        {
-            return shaderScale;
-        }
-        void setShaderScale(glm::vec2 scale);
 
         void sdl_die(const char *err_msg);
         void handleInput(SDL_Event event);
@@ -176,9 +171,6 @@ namespace Core
 
 
         Entity *currCtrlEntity;
-
-        int scaleUniformID = -1;
-        glm::vec2 shaderScale;
 
 
         // page list iterator: current page iterator

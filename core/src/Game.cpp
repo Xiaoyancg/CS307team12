@@ -44,6 +44,7 @@ namespace Core
         {
             initContext();
         }
+        mCamera = new Camera();
         initShader();
     }
 
@@ -248,7 +249,7 @@ namespace Core
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mGameMapPage->getCurrCamera()->getMatrix()));
 
         // Render the Map onto the MapPage's Framebuffer set by Editor. (TODO: Fix this approach)
-        mGameMapPage->renderOnFramebuffer();
+        mGameMapPage->render();
     }
 
     //* -------------------- LOGIC WRAPPER ------------------- *//
@@ -537,26 +538,6 @@ namespace Core
 
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
-
-        // if in editor mode
-        if (useFramebuffer)
-        {
-            glGenFramebuffers(1, &fbo);
-            glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-            // texbuffer is done in editor
-            // unsigned int texcbo; // texture color buffer obj
-            // glGenTextures ( 1, &texcbo );
-            glBindTexture(GL_TEXTURE_2D, *texcbo);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glBindTexture(GL_TEXTURE_2D, 0);
-
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *texcbo, 0);
-
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
     }
 
     void Game::initContext()
