@@ -1,6 +1,7 @@
 #pragma once
 
 #include "windows/Window.h"
+#include "Tile.h"
 #include <glad/glad.h>
 
 class MapWindow : public Window {
@@ -19,7 +20,7 @@ class MapWindow : public Window {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	void draw();
-
+	Core::Tile* handleClick();
   private:
 	GLuint mMapTexCBO;
 	GLuint mMapFBO;
