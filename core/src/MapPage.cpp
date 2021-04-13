@@ -1,5 +1,8 @@
 #include "MapPage.h"
 #include "glm/glm.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include "glm/gtx/string_cast.hpp"
+#include <iostream>
 
 
 namespace Core
@@ -61,7 +64,19 @@ namespace Core
     // The coordinate is a float between 0 and 1 because the MapView window can be stretched, 
     // and we need a predictable scale (0->1 is simple)
     Tile* MapPage::getTileFromClick(float x, float y) {
-        glm::ivec2 click(x * 1280, y * 720); // Scale click to pixel coordinates
-        return mMap->checkTileCollision(click); // Returns either a ptr to a Tile or nullptr
+        printf("click recv %f %f\n", x,y );
+        glm::vec2 click(x, -y); // Scale click to pixel coordinates
+
+
+        glm::mat4 rev_ortho = glm::inverse(mMap->getCamera()->getMatrix());
+        glm::vec4 ret = rev_ortho * glm::vec4(click.x, -click.y, 1.0f, 1.0f);
+        //glm::ivec2 c(ret.x, ret.y);
+        glm::ivec2 c(x,-y);
+        //ret = rev_ortho * glm::vec4(c, 0.0f, 1.0f);
+        glm::ivec2 asdf(ret.x, ret.y);
+        printf("ahhhh > %d %d\n", c.x, c.y);
+
+        //printf("ahhhh > %d %d\n", c.x, c.y);
+        return mMap->checkTileCollision(c); // Returns either a ptr to a Tile or nullptr
     }
 }

@@ -435,6 +435,7 @@ namespace Core
 		    void main()
 		    {
                 gl_Position = camera * vec4(pos.xy, 0.0, 1.0);
+
                 TexCoord = vec2(textureCoords.x,  1-textureCoords.y);
 		    }
 	    )glsl";
