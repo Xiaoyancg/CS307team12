@@ -5,7 +5,7 @@
 namespace Core {
     Camera::Camera() {
         // Set position of the camera, defaults to (0, 0)
-        mPosition = glm::ivec3(0, 0, 0);
+        mPosition = glm::ivec2(0, 0);
 
         // Set dimensions of camera, defaults to (1280, 720) which is the size of the Game viewport
         // This can be changed, but I think it might be assumed to be these dimensions somewhere else in the code
@@ -17,15 +17,15 @@ namespace Core {
     }
 
     // Position
-    glm::ivec3 Camera::getPosition() {
+    glm::ivec2 Camera::getPosition() {
         return mPosition;
     }
 
-    void Camera::setPosition(glm::ivec3 position) {
+    void Camera::setPosition(glm::ivec2 position) {
         mPosition = position;
     }
 
-    void Camera::offsetPosition(glm::ivec3 offset) {
+    void Camera::offsetPosition(glm::ivec2 offset) {
         mPosition += offset;
     }
 
@@ -45,13 +45,19 @@ namespace Core {
         return mZoom;
     }
 
-
-    glm::mat4 Camera::getMatrix() {
+    // Get matrices
+    glm::mat4 Camera::getTranslate() {
+        return glm::translate(glm::mat4(1), glm::vec3(mPosition, 0));
+    }
+    glm::mat4 Camera::getOrtho() {
         glm::vec2 dims = glm::vec2(mDimensions.x * mZoom, mDimensions.y * mZoom);
         float dimX = dims.x / 2;
         float dimY = dims.y / 2;
         glm::mat4 ortho = glm::ortho(-dimX, dimX, -dimY, dimY);
-        glm::mat4 translate = glm::translate(glm::mat4(1), glm::vec3(mPosition));
-        return ortho * translate;
+        return ortho;
+    }
+
+    glm::mat4 Camera::getMatrix() {
+        return getOrtho() * getTranslate();
     }
 }

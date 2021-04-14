@@ -29,6 +29,7 @@ namespace Core
         // mCamera will be used instead of 
         mCamera = new Camera();
         mCamera->setDimensions((mMapDimensions.x + 1) * tileSize, (mMapDimensions.y + 1) * tileSize);
+        //mCamera->setDimensions(1024, 1024);
     }
 
     Map::~Map()
