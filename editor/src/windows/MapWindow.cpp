@@ -1,6 +1,6 @@
 #include "windows/MapWindow.h"
 
-static ImVec2 prevClick(0, 0);
+static ImVec2 prevDelta;
 
 // handleClick will return a pointer to a Tile on the current Map based on whether
 // a click has occured, or nullptr 
@@ -39,6 +39,7 @@ Core::Tile* MapWindow::handleClick() {
 
             if (clicked_tile) {
                 clicked_tile->setSpriteID(1);
+                return clicked_tile;
             }
         }
     }
@@ -49,13 +50,24 @@ Core::Tile* MapWindow::handleClick() {
         if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y)) {
             // The click is valid within the MapView window.
             Core::Camera* cam = editor->getCurrentMap()->getCamera();
-            cam->offsetPosition(glm::ivec2(-prevClick.x, -prevClick.y));
-            prevClick = ImGui::GetMouseDragDelta(1);
-            cam->offsetPosition(glm::ivec2(prevClick.x, prevClick.y));
+            printf("into %f %f\n", prevDelta.x, prevDelta.y);
+            if (prevDelta.x != 0 && prevDelta.y != 0) {
+                cam->offsetPosition(glm::ivec2(-prevDelta.x, -prevDelta.y));
+
+            }
+            ImVec2 delta = ImGui::GetMouseDragDelta(1);
+            printf("prevdelta %f %f\n", prevDelta.x, prevDelta.y);
+            cam->offsetPosition(glm::ivec2(delta.x, delta.y));
+            prevDelta.x = delta.x;
+            prevDelta.y = delta.y;
         }
     }
     else if (ImGui::IsMouseDown(1) && ImGui::IsWindowFocused()) {
-        prevClick = ImVec2(0, 0);
+        printf("reset! %f %f\n", prevDelta.x, prevDelta.y);
+        prevDelta.x = 0;
+        prevDelta.y = 0;
+        printf("reset2! %f %f\n", prevDelta.x, prevDelta.y);
+
     }
 
 

@@ -28,8 +28,8 @@ namespace Core
         // Each map gets its own Camera. Whenever the map is drawn from Game::renderDefaultMapPage,
         // mCamera will be used instead of 
         mCamera = new Camera();
-        mCamera->setDimensions((mMapDimensions.x + 1) * tileSize, (mMapDimensions.y + 1) * tileSize);
-        //mCamera->setDimensions(1024, 1024);
+        //mCamera->setDimensions((mMapDimensions.x + 1) * tileSize, (mMapDimensions.y + 1) * tileSize);
+        mCamera->setDimensions(1024, 1024);
     }
 
     Map::~Map()

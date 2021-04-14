@@ -26,7 +26,18 @@ namespace Core {
     }
 
     void Camera::offsetPosition(glm::ivec2 offset) {
-        mPosition += offset;
+        if (offset.x == 0 && offset.y == 0) {
+
+        }
+        float dimx = mDimensions.x / 2;
+        float dimy = mDimensions.y / 2;
+        glm::vec4 ret = glm::ortho(-dimx, dimx, -dimy, dimy) * glm::vec4(offset, 0.0f, 1.0f);
+        ret = glm::inverse(getOrtho()) * ret;
+        ret = glm::inverse(getTranslate()) * ret;
+
+        printf("offsetting %f %f\n", ret.x , ret.y);
+        mPosition.x += ret.x;
+        mPosition.y += ret.y;
     }
 
     // Dimensions
