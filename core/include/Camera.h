@@ -30,7 +30,8 @@ namespace Core
 
 
         // Returns the matrix transformation used in the main shader
-        glm::mat4 getMatrix();
+        glm::mat4 getMatrix(); // getOrtho * getTranslate
+
 
     private:
         glm::ivec2 mPosition;
