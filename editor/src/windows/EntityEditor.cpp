@@ -22,12 +22,19 @@ void EntityEditor::draw()
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
         entityInfo = false;
+        static bool collideable = false;
         if (ImGui::Begin("Entity Editor", &visible))
         {
             Core::Page* currPage = editor->getGamePtr()->getCurrPage();
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
             ImGui::InputText(" ", entityName, IM_ARRAYSIZE(entityName));
+
+            ImGui::Checkbox("Collideable?", &collideable);
+            if (collideable)
+            {
+                //TODO: call collision functions
+            }
 
             if (ImGui::Button("Create New Entity"))
             {
@@ -65,7 +72,7 @@ void EntityEditor::draw()
                     bool is_selected = (current_entity == i);
                     if (ImGui::Selectable(entity->getName().c_str(), is_selected))
                     {
-                        current_entity = i;
+                        current_entity = i; 
                         x_pos = entity->getLocation().x;
                         y_pos = entity->getLocation().y;
                         editor->getCurrentComponentList()[CUR_ENTITY] = entity->getName();
@@ -77,7 +84,6 @@ void EntityEditor::draw()
                         ImGui::SetItemDefaultFocus();
                     }
                 }
-
                 ImGui::EndListBox();
             }
 
@@ -157,6 +163,12 @@ void EntityEditor::draw()
             }
 
             //get x pos and y pos for entity's new location
+            if (editor->getCurrentComponentList()[CUR_ENTITY] == "No Component Selected")
+            {
+                x_pos = 0;
+                y_pos = 0;
+            }
+
             Core::Entity *moved_ent = NULL;
             ImGui::Text("");
             ImGui::Text("X Pos:");
