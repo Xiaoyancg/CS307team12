@@ -342,6 +342,8 @@ void Editor::freeGame() {
     delete game;
     game = nullptr;
 
+    currentMap = nullptr;
+
     gameFilePath.clear();
 }
 

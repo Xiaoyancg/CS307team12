@@ -12,9 +12,9 @@ namespace Core
         Camera();
 
         // Position
-        glm::ivec3 getPosition();
-        void setPosition(glm::ivec3 position);
-        void offsetPosition(glm::ivec3 offset);
+        glm::ivec2 getPosition();
+        void setPosition(glm::ivec2 position);
+        void offsetPosition(glm::ivec2 offset);
 
         // Dimensions
         void setDimensions(int x, int y);
@@ -25,11 +25,15 @@ namespace Core
         float getZoom();
 
 
+        glm::mat4 getTranslate();
+        glm::mat4 Camera::getOrtho();
+
+
         // Returns the matrix transformation used in the main shader
         glm::mat4 getMatrix();
 
     private:
-        glm::ivec3 mPosition;
+        glm::ivec2 mPosition;
         glm::ivec2 mDimensions;
         float mZoom; // Defaults to 1, meaning no zoom. <1 means zoom out, >1 means zoom in
     };

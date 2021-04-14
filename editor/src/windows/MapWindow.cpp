@@ -1,5 +1,7 @@
 #include "windows/MapWindow.h"
 
+static ImVec2 prevClick(0, 0);
+
 // handleClick will return a pointer to a Tile on the current Map based on whether
 // a click has occured, or nullptr 
 Core::Tile* MapWindow::handleClick() {
@@ -15,7 +17,7 @@ Core::Tile* MapWindow::handleClick() {
     bottomLeftCanvas.y = ImGui::GetWindowContentRegionMax().y;
     ImVec2 canvasDimensions(ImGui::GetWindowContentRegionMax().x - ImGui::GetWindowContentRegionMin().x,
                             ImGui::GetWindowContentRegionMax().y - ImGui::GetWindowContentRegionMin().y);
-    //printf("loc (%f, %f) dims (%f, %f)\n", bottomLeftCanvas.x, bottomLeftCanvas.y, canvasDimensions.x, canvasDimensions.y);
+
 
     //////////// Mouse handling within the MapView window ////////////
     // If mouse left is currently pressed and the MapView is focused
@@ -28,31 +30,11 @@ Core::Tile* MapWindow::handleClick() {
             // So we set them on a scale of 0->1. They later get rescaled to the dimensions of the MapView in the core
             // This lets the core understand the coordinates regardless of window stretching.
             // NOTE: Right now the code just gets the clicked Tile and sets its sprite ID to 1
-
-
             glm::ivec2 center(canvasDimensions.x / 2, canvasDimensions.y / 2);
             float x = (click_pos.x - min.x);
             float y = canvasDimensions.y - (click_pos.y - min.y);
             glm::ivec2 diff(x - center.x, y - center.y);
-            printf("DIFF %d %d\n", diff.x, diff.y);
-            
-            /*
-            float x = (click_pos.x - min.x) / canvasDimensions.x;
-            float y = 1 - ((click_pos.y - min.y) / canvasDimensions.y);
-            x = 2 * (x - 0.5);
-            y = 2 * (y - 0.5);
-            */
-            /*
-            Core::Map* currMap = editor->getCurrentMap();
-            glm::ivec2 dims = currMap->getDimensions();
-            int tileSize = currMap->getTileSize();
-            int mapWidth = (dims.x + 1) * tileSize;
-            int mapHeight = (dims.y + 1) * tileSize;
-            x *= (mapWidth/2);
-            y *= (mapHeight/2);
-            */
-            //printf("click send > %f %f\n", x, y);
-            //Core::Tile* clicked_tile = editor->getGamePtr()->getDefaultMapPage()->getTileFromClick(2 * (x - 0.5), 2 * (y - 0.5));
+
             Core::Tile* clicked_tile = editor->getGamePtr()->getDefaultMapPage()->getTileFromClick(diff.x, diff.y);
 
             if (clicked_tile) {
@@ -60,6 +42,22 @@ Core::Tile* MapWindow::handleClick() {
             }
         }
     }
+    // Handle right click!
+    else if (ImGui::IsMouseDown(1) && ImGui::IsMouseDragging(1) && ImGui::IsWindowFocused()) {
+        // If click is within the coordinates of the MapView window (in global coords based on top right corner)
+        ImVec2 click_pos = ImGui::GetMousePos();
+        if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y)) {
+            // The click is valid within the MapView window.
+            Core::Camera* cam = editor->getCurrentMap()->getCamera();
+            cam->offsetPosition(glm::ivec2(-prevClick.x, -prevClick.y));
+            prevClick = ImGui::GetMouseDragDelta(1);
+            cam->offsetPosition(glm::ivec2(prevClick.x, prevClick.y));
+        }
+    }
+    else if (ImGui::IsMouseDown(1) && ImGui::IsWindowFocused()) {
+        prevClick = ImVec2(0, 0);
+    }
+
 
     return nullptr;
 }
@@ -98,17 +96,46 @@ void MapWindow::draw()
             float bgColArr[] = { bgCol.r, bgCol.g, bgCol.b, bgCol.a };
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bgColArr);
             glBindTexture(GL_TEXTURE_2D, 0);
-            glViewport(0, 0, (int) mapWidth, (int) mapHeight);
-            //glViewport(0, 0, 1280, 720);
-
+            glViewport(0, 0, (int)mapWidth, (int)mapHeight);
 
             Core::Game* game = editor->getGamePtr();
 
             glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
             glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             glClear(GL_COLOR_BUFFER_BIT);
-            editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
+
+            ///////////////////// DEBUGGING ////////////////////////
+            SDL_Event event;
+            if (SDL_PollEvent(&event)) {
+                int move_camera = 10;
+                Core::Camera* cam = currMap->getCamera();
+                // Debugging Camera controls
+                switch (event.key.keysym.sym)
+                {
+                case SDLK_a:
+                    cam->offsetPosition(glm::ivec2(move_camera, 0));
+                    break;
+                case SDLK_d:
+                    cam->offsetPosition(glm::ivec2(-move_camera, 0));
+                    break;
+                case SDLK_w:
+                    cam->offsetPosition(glm::ivec2(0, -move_camera));
+                    break;
+                case SDLK_s:
+                    cam->offsetPosition(glm::ivec2(0, move_camera));
+                    break;
+                case SDLK_q:
+                    cam->setZoom(cam->getZoom() - 0.1f);
+                    break;
+                case SDLK_e:
+                    cam->setZoom(cam->getZoom() + 0.1f);
+                    break;
+                }
+            }
+            /////////////////////////////////////////////////////////
+
             handleClick();
+            editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
 
             glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
