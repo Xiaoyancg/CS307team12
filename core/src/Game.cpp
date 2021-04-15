@@ -1,3 +1,4 @@
+#pragma once
 #include <Game.h>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -6,7 +7,8 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <algorithm>
-#include <MapPage.h>
+
+#include "Camera.h"
 
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -42,6 +44,7 @@ namespace Core
         {
             initContext();
         }
+        mCamera = new Camera();
         initShader();
     }
 
@@ -239,8 +242,15 @@ namespace Core
         return mGameMapPage;
     }
 
+    // This function is called from the Editor and will render the current Map onto the MapView window in ImGui
     void Game::renderDefaultMapPage()
     {
+        glm::ivec2 dims = mGameMapPage->getCurrMap()->getCamera()->getDimensions();
+        //glViewport(0, 0, dims.x, dims.y);
+        // Use the Map's Camera as opposed to the Game's camera. This lets each Map be centered and unaffected by the Game's Camera's movement
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mGameMapPage->getCurrCamera()->getMatrix()));
+
+        // Render the Map onto the MapPage's Framebuffer set by Editor. (TODO: Fix this approach)
         mGameMapPage->render();
     }
 
@@ -420,13 +430,14 @@ namespace Core
 		    layout (location = 0) in vec2 pos;
             layout (location = 1) in vec2 textureCoords;
 
-		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
+            uniform mat4 camera;
 
             out vec2 TexCoord;
 
 		    void main()
 		    {
-		      gl_Position = vec4(scale.xy * pos.xy - 1, 0.0, 1.0);
+                gl_Position = camera * vec4(pos.xy, 0.0, 1.0);
+
                 TexCoord = vec2(textureCoords.x,  1-textureCoords.y);
 		    }
 	    )glsl";
@@ -530,9 +541,6 @@ namespace Core
 
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
-        // Set the scale based on the width and height
-        int scaleID = glGetUniformLocation(shaderProgram, "scale");
-        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
     }
 
     void Game::initContext()
@@ -610,11 +618,11 @@ namespace Core
                 break;
 
                 // Control Entity scaling in the interactive demo
-            case SDLK_a: // a key is Scale up, for now
+            case SDLK_z: // z key is Scale up, for now
                 currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
                 break;
 
-            case SDLK_z: // z key is Scale down, for now
+            case SDLK_x: // x key is Scale down, for now
                 // Make sure not to scale into the negatives
                 if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0)
                 {
@@ -623,6 +631,8 @@ namespace Core
                 break;
             }
         }
+
+        int move_camera = 10;
 
         // Control pages switch.
         switch (event.key.keysym.sym)
@@ -634,15 +644,30 @@ namespace Core
         // use 2 to look the next page
         case SDLK_2:
             break;
-            /*
-            // Theses are here to test switching fonts
-        case SDLK_f:
-            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
+            
+        // Theses are here for test purposes
+        case SDLK_a:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
+            mCamera->offsetPosition(glm::ivec2(move_camera, 0));
             break;
-        case SDLK_g:
-            ((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
+        case SDLK_d:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
+            mCamera->offsetPosition(glm::ivec2(-move_camera, 0));
             break;
-            */
+        case SDLK_w:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
+            mCamera->offsetPosition(glm::ivec2(0, -move_camera));
+            break;
+        case SDLK_s:
+            //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
+            mCamera->offsetPosition(glm::ivec2(0, move_camera));
+            break;
+        case SDLK_q:
+            mCamera->setZoom(mCamera->getZoom() - 0.1f);
+            break;
+        case SDLK_e:
+            mCamera->setZoom(mCamera->getZoom() + 0.1f);
+            break;
         }
     }
     void Game::setCurrentPage(Page *p)
@@ -654,6 +679,9 @@ namespace Core
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
+        // Set Camera matrix uniform
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
+
         glClearColor(0.1, 0.2, 0.59, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -714,10 +742,6 @@ namespace Core
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                         glViewport(0, 0, width, height);
 
-                        // Preserve dimensions of objects after resize
-                        // Set the scale based on the width and height of the screen
-                        int scaleID = glGetUniformLocation(shaderProgram, "scale");
-                        glUniform2f(scaleID, (float)2 / width, (float)2 / height);
 
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }

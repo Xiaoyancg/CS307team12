@@ -27,12 +27,16 @@ namespace Core
 		void setCoords ( int *coords ); // coords points to an array of 8 ints, 4 pairs of coordinates
 		int *getCoords ();
 
+		bool isInvisibleTile();
+		void setInvisibleTile(bool value);
 
 	private:
 		int mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
 
 		// Basic Tile variables
 		int mCurrentDepth; // Not implemented yet, but saving for later
+
+		bool mIsInvisible;
 
 		// Sprite ID used to index sprites loaded into memory from the Game class
 		// This isn't used yet though, I'm just adding it for later
