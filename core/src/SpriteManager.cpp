@@ -2,7 +2,7 @@
 #include <iostream>
 namespace Core
 {
-	SpriteManager::SpriteManager() : mCurrSpriteID(0)
+	SpriteManager::SpriteManager() : mCurrSpriteID(0), mCurrSpriteSheetID(0)
 	{
 	}
 
@@ -118,6 +118,7 @@ namespace Core
 	// SPRITESHEET STUFF
 
 	int SpriteManager::createSpriteSheet(std::string name, std::string filename) {
+		printf("create spriteshseet");
 		unsigned int id = mCurrSpriteSheetID;
 
 		// This will loop as long as it needs to until it finds the closest valid ID
@@ -159,6 +160,10 @@ namespace Core
 				id++;
 			}
 		}
+	}
+	void SpriteManager::deleteSpriteSheet(int spritesheetID) {
+		delete this->mSpriteSheets[spritesheetID];
+		mSpriteSheets.erase(spritesheetID);
 	}
 	std::unordered_map<int, Sprite*>& SpriteManager::getSpriteSheets() {
 		return this->mSpriteSheets;

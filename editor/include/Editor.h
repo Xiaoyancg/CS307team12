@@ -41,7 +41,7 @@ enum CurrentComponent
 	CUR_PAGE,
 	CUR_SCRIPT,
 	CUR_SPRITE,
-
+	CUR_SPRITESHEET,
 	COMP_COUNT,
 };
 

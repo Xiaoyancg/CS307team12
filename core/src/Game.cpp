@@ -232,12 +232,39 @@ namespace Core
         return mGameSprites.getSprites();
     }
 
-    std::vector<Map *> Game::getDefaultMapPageMaps()
+    // SpriteSheet stuff
+    unsigned int Game::createSpriteSheet(std::string name, std::string filename)
+    {
+        // Return OpenGL ID of the new sprite
+        return mGameSprites.createSpriteSheet(name, filename);
+    }
+    unsigned int Game::createSpriteSheet(std::string name, std::string filename, int id)
+    {
+        return mGameSprites.createSpriteSheet(name, filename, id);
+    }
+
+    void Game::deleteSpriteSheet(int id)
+    {
+        mGameSprites.deleteSpriteSheet(id);
+    }
+
+    Sprite* Game::getSpriteSheetFromID(int id)
+    {
+        return mGameSprites.atSheetID(id);
+    }
+
+    std::unordered_map<int, Sprite*> Game::getSpriteSheets()
+    {
+        return mGameSprites.getSpriteSheets();
+    }
+
+
+    std::vector<Map*> Game::getDefaultMapPageMaps()
     {
         return mGameMapPage->getMaps();
     }
 
-    MapPage *Game::getDefaultMapPage()
+    MapPage* Game::getDefaultMapPage()
     {
         return mGameMapPage;
     }
