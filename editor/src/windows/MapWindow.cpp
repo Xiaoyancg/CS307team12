@@ -1,6 +1,6 @@
 #include "windows/MapWindow.h"
 
-ImVec2 prevDelta(0,0);
+ImVec2 prevClick(0,0);
 
 // handleClick will return a pointer to a Tile on the current Map based on whether
 // a click has occured, or nullptr 
@@ -43,7 +43,7 @@ Core::Tile* MapWindow::handleClick() {
             }
         }
     }
-    // Handle right click!
+    // Handle mouse wheel zoom
     else if (ImGui::GetIO().MouseWheel != 0.0f) {
         float wheel = ImGui::GetIO().MouseWheel;
         // If click is within the coordinates of the MapView window (in global coords based on top right corner)
@@ -59,22 +59,24 @@ Core::Tile* MapWindow::handleClick() {
             }
         }
     }
+    // Handle right-click drag
     else if (ImGui::IsMouseDown(1) && ImGui::IsMouseDragging(1) && ImGui::IsWindowFocused()) {
         // If click is within the coordinates of the MapView window (in global coords based on top right corner)
         ImVec2 click_pos = ImGui::GetMousePos();
-        if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y)) {
             // The click is valid within the MapView window.
             Core::Camera* cam = editor->getCurrentMap()->getCamera();
-            cam->offsetPosition(glm::ivec2(-prevDelta.x, -prevDelta.y));
-            ImVec2 delta = ImGui::GetMouseDragDelta(1);
-            cam->offsetPosition(glm::ivec2(delta.x, delta.y));
-            prevDelta.x = delta.x;
-            prevDelta.y = delta.y;
-        }
+            cam->offsetPosition(glm::ivec2(click_pos.x - prevClick.x, click_pos.y - prevClick.y));
+            prevClick.x = click_pos.x;
+            prevClick.y = click_pos.y;
     }
+    // Handle initial right-click
     else if (ImGui::IsMouseDown(1) && ImGui::IsWindowFocused()) {
-        prevDelta.x = 0;
-        prevDelta.y = 0;
+        ImVec2 click_pos = ImGui::GetMousePos();
+
+        if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y)) {
+            prevClick.x = click_pos.x;
+            prevClick.y = click_pos.y;
+        }
     }
 
 
@@ -118,6 +120,7 @@ void MapWindow::draw()
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bgColArr);
             glBindTexture(GL_TEXTURE_2D, 0);
             glViewport(0, 0, (int)mapWidth, (int)mapHeight);
+            glViewport(0, 0, (int)1024, (int)1024);
 
             Core::Game* game = editor->getGamePtr();
 

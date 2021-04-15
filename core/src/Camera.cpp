@@ -26,27 +26,23 @@ namespace Core {
     }
 
     void Camera::offsetPosition(glm::ivec2 offset) {
-        mPosition.x += offset.x;
-        mPosition.y += offset.y;
-        // Using matrix transformation to link offsets to Camera projection has been a pain to implement...
-        // It's working other than resetting each offset, meaning each right-click starts from (0,0), not from the last offset
-        /*
+        // If there's nothing to offset, return
         if (offset.x == 0 && offset.y == 0) {
             return;
         }
+
+        // Scale the position in pixels
         float dimx = mDimensions.x / 2;
         float dimy = mDimensions.y / 2;
         glm::vec4 ret = glm::ortho(-dimx, dimx, -dimy, dimy) * glm::vec4(offset.x, offset.y, 0.0f, 1.0f);
-        ret = glm::inverse(getOrtho()) * ret;
-        //ret = glm::inverse(getTranslate()) * ret;
-        //ret = glm::inverse(glm::translate(glm::mat4(1), glm::vec3(ret.x, ret.y, 0))) * ret;
 
-        printf("offsetting (%d %d)->(%f %f)\n", offset.x, offset.y, ret.x , ret.y);
-        printf("mposition bef %d %d\n", mPosition.x, mPosition.y);
+        // Rescale the click to the Camera's projection (this just means the click will considered with the zoom of the camera)
+        ret = glm::inverse(getOrtho()) * ret;
+
+        // Add window offset->camera projection offset
         mPosition.x += ret.x;
         mPosition.y += ret.y;
-        printf("mposition aft %d %d\n", mPosition.x, mPosition.y);
-        */
+        
     }
 
     // Dimensions

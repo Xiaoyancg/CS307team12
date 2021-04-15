@@ -177,8 +177,8 @@ namespace Core
             int highX = coords[8];
             int highY = coords[1];
             
-            if ((lowX < click.x) && (click.x < highX) &&
-                (lowY < click.y) && (click.y < highY)) {
+            if ((lowX <= click.x) && (click.x <= highX) &&
+                (lowY <= click.y) && (click.y <= highY)) {
                 return &mTileArray[i];
             }
         }
