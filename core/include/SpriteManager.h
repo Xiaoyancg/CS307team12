@@ -28,25 +28,35 @@ namespace Core
 		int createSprite(std::string name, std::string filename);
 		int createSprite(std::string name, std::string filename, int id);
 
+		// These do the same thing as createSprite, but to the mSpriteSheets map instead
+		// We need the separate maps because spritesheets shouldn't be considered Sprites.
+		// There was no need to create a separate class for SpriteSheets because all operations are the same as Sprite.cpp.
+		int createSpriteSheet(std::string name, std::string filename);
+		int createSpriteSheet(std::string name, std::string filename, int id);
+
 		// Delete the sprite with the given ID
 		void deleteSprite(int spriteID);
 
 		// Unused for now, can be uncommented if needed
-		std::unordered_map<int, Sprite *>& getSprites();
+		std::unordered_map<int, Sprite*>& getSprites();
+		std::unordered_map<int, Sprite*>& getSpriteSheets();
 
 		// Returns a pointer to the sprite with the requested ID
 		// (in constant time because we're using unordered_maps instead of vectors!)
-		Sprite *atID(int spriteID);
+		Sprite* atID(int spriteID);
+		Sprite* atSheetID(int spriteID);
 
 		// parse json
 		int parse(nlohmann::json);
 
 	private:
 		int mCurrSpriteID; // The current sprite ID, which will be set to whatever sprite is created next
+		int mCurrSpriteSheetID; // The current sprite ID, which will be set to whatever sprite is created next
 
 		// This is where sprites are stored, like an array based on their IDs
 		// If a sprite has ID=32, then a pointer to it is stored at mSprites[32]
-		std::unordered_map<int, Sprite *> mSprites;
+		std::unordered_map<int, Sprite*> mSprites;
+		std::unordered_map<int, Sprite*> mSpriteSheets;
 
 		// Used for debugging
 		void printSprites();

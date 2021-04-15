@@ -107,4 +107,67 @@ namespace Core
 
 		return 0;
 	}
+
+
+
+
+
+
+
+
+	// SPRITESHEET STUFF
+
+	int SpriteManager::createSpriteSheet(std::string name, std::string filename) {
+		unsigned int id = mCurrSpriteSheetID;
+
+		// This will loop as long as it needs to until it finds the closest valid ID
+		while (true)
+		{
+			// Check if sprite with id does not already exist
+			if (mSpriteSheets[id] == nullptr)
+			{
+				// init id for sprite
+				Sprite* newSprite = new Sprite(name, filename, id);
+				this->mSpriteSheets[id] = newSprite;
+				mCurrSpriteSheetID = id + 1;
+				return id; // Return ID of the new sprite
+			}
+			// Otherwise, the specified sprite ID already exists, so check the next ID
+			else
+			{
+				printf("ID %d already used :( Trying SpriteSheetID: %d\n", id, id + 1);
+				id++;
+			}
+		}
+	}
+	int SpriteManager::createSpriteSheet(std::string name, std::string filename, int id) {
+		// This will loop as long as it needs to until it finds the closest valid ID
+		while (true)
+		{
+			// Check if sprite with id does not already exist
+			if (mSpriteSheets[id] == nullptr)
+			{
+				// init id for sprite
+				Sprite* newSprite = new Sprite(name, filename, id);
+				this->mSpriteSheets[id] = newSprite;
+				return id; // Return ID of the new sprite
+			}
+			// Otherwise, the specified sprite ID already exists, so check the next ID
+			else
+			{
+				printf("ID %d already used :( Trying SpriteSheetID: %d\n", id, id + 1);
+				id++;
+			}
+		}
+	}
+	std::unordered_map<int, Sprite*>& SpriteManager::getSpriteSheets() {
+		return this->mSpriteSheets;
+	}
+	Sprite* SpriteManager::atSheetID(int spritesheetID) {
+		return mSpriteSheets[spritesheetID];
+	}
+
+
+
+
 }
