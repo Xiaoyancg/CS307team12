@@ -28,7 +28,7 @@ void EntityEditor::draw()
             Core::Page* currPage = editor->getGamePtr()->getCurrPage();
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Entity Name:");
-            ImGui::InputText(" ", entityName, IM_ARRAYSIZE(entityName));
+            ImGui::InputText("##entity_name", entityName, IM_ARRAYSIZE(entityName));
 
             ImGui::Checkbox("Collideable?", &collideable);
             if (collideable)
@@ -174,12 +174,12 @@ void EntityEditor::draw()
             ImGui::Text("X Pos:");
             ImGui::PushItemWidth(80);
             ImGui::SameLine();
-            ImGui::InputInt("##1", &x_pos);
+            ImGui::InputInt("##x_pos", &x_pos);
             ImGui::SameLine();
             HelpMarker("Choose a value between [0,1250]");
             ImGui::Text("Y Pos:");
             ImGui::SameLine();
-            ImGui::InputInt("##2", &y_pos);
+            ImGui::InputInt("##y_pos", &y_pos);
             ImGui::SameLine();
             HelpMarker("Choose a value between [0,700]");
             if (ImGui::Button("Change Entity Position"))
