@@ -1,6 +1,6 @@
 #include "windows/MapWindow.h"
 
-static ImVec2 prevDelta;
+ImVec2 prevDelta(0,0);
 
 // handleClick will return a pointer to a Tile on the current Map based on whether
 // a click has occured, or nullptr 
@@ -44,30 +44,37 @@ Core::Tile* MapWindow::handleClick() {
         }
     }
     // Handle right click!
+    else if (ImGui::GetIO().MouseWheel != 0.0f) {
+        float wheel = ImGui::GetIO().MouseWheel;
+        // If click is within the coordinates of the MapView window (in global coords based on top right corner)
+        ImVec2 click_pos = ImGui::GetMousePos();
+        if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y)) {
+            // The click is valid within the MapView window.
+            Core::Camera* cam = editor->getCurrentMap()->getCamera();
+            if (wheel > 0) {
+                    cam->setZoom(cam->getZoom() - .05);
+            }
+            else if (wheel < 0) {
+                cam->setZoom(cam->getZoom() + .05);
+            }
+        }
+    }
     else if (ImGui::IsMouseDown(1) && ImGui::IsMouseDragging(1) && ImGui::IsWindowFocused()) {
         // If click is within the coordinates of the MapView window (in global coords based on top right corner)
         ImVec2 click_pos = ImGui::GetMousePos();
         if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y)) {
             // The click is valid within the MapView window.
             Core::Camera* cam = editor->getCurrentMap()->getCamera();
-            printf("into %f %f\n", prevDelta.x, prevDelta.y);
-            if (prevDelta.x != 0 && prevDelta.y != 0) {
-                cam->offsetPosition(glm::ivec2(-prevDelta.x, -prevDelta.y));
-
-            }
+            cam->offsetPosition(glm::ivec2(-prevDelta.x, -prevDelta.y));
             ImVec2 delta = ImGui::GetMouseDragDelta(1);
-            printf("prevdelta %f %f\n", prevDelta.x, prevDelta.y);
             cam->offsetPosition(glm::ivec2(delta.x, delta.y));
             prevDelta.x = delta.x;
             prevDelta.y = delta.y;
         }
     }
     else if (ImGui::IsMouseDown(1) && ImGui::IsWindowFocused()) {
-        printf("reset! %f %f\n", prevDelta.x, prevDelta.y);
         prevDelta.x = 0;
         prevDelta.y = 0;
-        printf("reset2! %f %f\n", prevDelta.x, prevDelta.y);
-
     }
 
 
@@ -96,10 +103,12 @@ void MapWindow::draw()
             int tileSize = currMap->getTileSize();
             int mapWidth = (dims.x+1) * tileSize;
             int mapHeight = (dims.y+1) * tileSize;
-            //ImGui::SetWindowSize(ImVec2(mapWidth, mapHeight));
+            ImGui::SetWindowSize(ImVec2(mapWidth + ((((mapWidth / tileSize) - 1) % 2) * (tileSize / 2)), mapHeight + (((mapWidth / tileSize) % 2) * (tileSize / 2)))); // Make enough room for entire map on window
+            //ImGui::SetWindowSize(ImVec2(mapWidth, mapHeight)); // Make enough room for entire map on window
 
             Core::MapPage* mapPage = editor->getGamePtr()->getDefaultMapPage();
             glm::vec4& bgCol = mapPage->GetBackgroundColor();
+
 
             glBindTexture(GL_TEXTURE_2D, mMapTexCBO);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mapWidth, mapHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
@@ -115,7 +124,7 @@ void MapWindow::draw()
             glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
             glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             glClear(GL_COLOR_BUFFER_BIT);
-
+            /*
             ///////////////////// DEBUGGING ////////////////////////
             SDL_Event event;
             if (SDL_PollEvent(&event)) {
@@ -124,28 +133,18 @@ void MapWindow::draw()
                 // Debugging Camera controls
                 switch (event.key.keysym.sym)
                 {
-                case SDLK_a:
-                    cam->offsetPosition(glm::ivec2(move_camera, 0));
-                    break;
-                case SDLK_d:
-                    cam->offsetPosition(glm::ivec2(-move_camera, 0));
-                    break;
-                case SDLK_w:
-                    cam->offsetPosition(glm::ivec2(0, -move_camera));
-                    break;
-                case SDLK_s:
-                    cam->offsetPosition(glm::ivec2(0, move_camera));
-                    break;
                 case SDLK_q:
+                    printf("zoom small\n");
                     cam->setZoom(cam->getZoom() - 0.1f);
                     break;
                 case SDLK_e:
+                    printf("zoom big\n");
                     cam->setZoom(cam->getZoom() + 0.1f);
                     break;
                 }
             }
             /////////////////////////////////////////////////////////
-
+            */
             handleClick();
             editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
 
