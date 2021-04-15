@@ -20,7 +20,8 @@ namespace Core
           mLocation(location),
           mScale(scale),
           mRotation(rotation),
-          mSpriteID(spriteID)
+          mSpriteID(spriteID),
+          mIsInvisible(false)
     {
         // All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
         calculateCoords(location, scale);
@@ -74,7 +75,7 @@ namespace Core
     }
 
     Entity::Entity(std::string s)
-        : mEntityName(s) {}
+        : mEntityName(s), mIsInvisible(false) {}
 
     void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale)
     {
@@ -139,6 +140,14 @@ namespace Core
         return mScale;
     }
 
+    bool Entity::isInvisibleEntity() {
+        return mIsInvisible;
+    }
+
+    void Entity::setInvisibleEntity(bool value) {
+        mIsInvisible = value;
+    }
+
     bool Entity::isControlledEntity()
     {
         return mControlledEntity;
@@ -152,14 +161,20 @@ namespace Core
     void Entity::render()
     {
         glActiveTexture(GL_TEXTURE0);
-        if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
+
+        if (mIsInvisible) {
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible 
+        }
+        else if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
         {
             glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
         }
+
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
         // Draw the bound buffer (coords)
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
 
         glBindTexture(GL_TEXTURE_2D, 0); // Unbind current sprite
 

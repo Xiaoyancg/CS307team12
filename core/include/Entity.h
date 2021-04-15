@@ -58,6 +58,9 @@ namespace Core
         void setSpriteID(int);
         int getSpriteID();
 
+        bool isInvisibleEntity();
+        void setInvisibleEntity(bool value);
+
         bool isControlledEntity();
         void setControlledEntity(bool value);
 
@@ -94,6 +97,7 @@ namespace Core
 
         int _entityId;
 
+        bool mIsInvisible;
         bool mControlledEntity;
 
     };

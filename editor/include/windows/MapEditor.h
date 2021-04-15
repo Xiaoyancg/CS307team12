@@ -7,4 +7,5 @@ class MapEditor : public Window {
 public:
 	DEFAULT_CONSTRUCTOR(MapEditor) {}
 	void draw();
+	void drawCreateMapPopup();
 };
