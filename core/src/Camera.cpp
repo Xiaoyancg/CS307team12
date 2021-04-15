@@ -25,18 +25,19 @@ namespace Core {
         mPosition = position;
     }
 
+    // Calling with offset={2,2} would move the camera's position 2 pixels in the positive x and y direction
     void Camera::offsetPosition(glm::ivec2 offset) {
         // If there's nothing to offset, return
         if (offset.x == 0 && offset.y == 0) {
             return;
         }
 
-        // Scale the position in pixels
+        // Scale the position in pixels to the expected dimensions
         float dimx = mDimensions.x / 2;
         float dimy = mDimensions.y / 2;
-        glm::vec4 ret = glm::ortho(-dimx, dimx, -dimy, dimy) * glm::vec4(offset.x, offset.y, 0.0f, 1.0f);
+        glm::vec4 ret = glm::ortho(dimx, -dimx, dimy, -dimy) * glm::vec4(offset.x, offset.y, 0.0f, 1.0f);
 
-        // Rescale the click to the Camera's projection (this just means the click will considered with the zoom of the camera)
+        // Rescale the offset to the Camera's projection (this just means the offset will considered with the zoom of the camera)
         ret = glm::inverse(getOrtho()) * ret;
 
         // Add window offset->camera projection offset
@@ -55,7 +56,9 @@ namespace Core {
 
     // Zoom
     void Camera::setZoom(float zoom) {
-        mZoom = zoom;
+        if (zoom > 0) {
+            mZoom = zoom;
+        }
     }
     float Camera::getZoom() {
         return mZoom;

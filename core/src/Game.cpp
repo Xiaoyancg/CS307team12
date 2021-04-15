@@ -246,7 +246,7 @@ namespace Core
     void Game::renderDefaultMapPage()
     {
         glm::ivec2 dims = mGameMapPage->getCurrMap()->getCamera()->getDimensions();
-        glViewport(0, 0, dims.x, dims.y);
+        //glViewport(0, 0, dims.x, dims.y);
         // Use the Map's Camera as opposed to the Game's camera. This lets each Map be centered and unaffected by the Game's Camera's movement
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mGameMapPage->getCurrCamera()->getMatrix()));
 
