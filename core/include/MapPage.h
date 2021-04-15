@@ -39,7 +39,7 @@ namespace Core
         // Render the current map!
         void render();
 
-        Tile* getTileFromClick(float x, float y);
+        Tile* getTileFromClick(int x, int y);
 
         // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
         // This is set by Game.cpp when a Game object is created
