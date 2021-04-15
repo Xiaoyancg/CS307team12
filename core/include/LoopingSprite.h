@@ -1,18 +1,19 @@
+#pragma once
 #include "Sprite.h"
+#include "FullSprite.h" // Needed for SpriteSheets
 #include <glm/glm.hpp>
 
 namespace Core
 {
-    // Entity class
+    // LoopingSprite class
     class LoopingSprite : public Sprite
     {
     public:
         // LoopingSprite needs a Sprite pointer (probably to a loaded SpriteSheet), the number of images to loop, 
         // the location of the sprite loop in the image (pixel location of the bottom left of the loop), and the w/h of each sprite in the loop.
         // The location is specified based on the distance from the bottom left of the screen
-        LoopingSprite(SpriteSheet* spritesheet, int numImages, glm::ivec2 location, glm::ivec2 dimensions);
+        LoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, glm::ivec2 location, glm::ivec2 dimensions);
         unsigned int getOpenGLTextureID();
-        int getSpriteID();
 
     private:
         // The SpriteSheet that contains the sprite loop. The sprite loop is found using the given location and dimensions

@@ -21,4 +21,7 @@ namespace Core
 		return mTextureCoordinates;
 	}
 
+	int Sprite::getSpriteID() {
+		return mSpriteID;
+	}
 }
