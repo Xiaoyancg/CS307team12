@@ -13,8 +13,9 @@ namespace Core
         int getSpriteID();
 
     private:
-        // The Parchment ID of the Sprite
-        int mSpriteID;
         unsigned int mTextureID; // Set by OpenGL
     };
+
+
+    typedef FullSprite SpriteSheet;
 }

@@ -1,16 +1,17 @@
+#pragma once
 #include "Sprite.h"
+#include "FullSprite.h" // Neeeded for SpriteSheets
 #include <glm/glm.hpp>
 
 namespace Core
 {
-    // Entity class
+    // PartailSprite class
     class PartialSprite : public Sprite
     {
     public:
         // Needs spritesheet holding the sprite, its location, and its dimensions
-        PartialSprite(SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
+        PartialSprite(std::string name, int spriteID, SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
         unsigned int getOpenGLTextureID();
-        int getSpriteID();
 
     private:
         // The SpriteSheet that contains the sprite loop. The sprite loop is found using the given location and dimensions
