@@ -4,22 +4,17 @@
 namespace Core
 {
     // Entity class
-    class LoopingSprite : public Sprite
+    class PartialSprite : public Sprite
     {
     public:
-        // LoopingSprite needs a Sprite pointer (probably to a loaded SpriteSheet), the number of images to loop, 
-        // the location of the sprite loop in the image (pixel location of the bottom left of the loop), and the w/h of each sprite in the loop.
-        // The location is specified based on the distance from the bottom left of the screen
-        LoopingSprite(SpriteSheet* spritesheet, int numImages, glm::ivec2 location, glm::ivec2 dimensions);
+        // Needs spritesheet holding the sprite, its location, and its dimensions
+        PartialSprite(SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
         unsigned int getOpenGLTextureID();
         int getSpriteID();
 
     private:
         // The SpriteSheet that contains the sprite loop. The sprite loop is found using the given location and dimensions
         SpriteSheet* mSpriteSheet;
-
-        // The number of images in the specified loop to loop. 
-        int mNumImages;
 
         // The location on the image of the bottom left of your loop. This and the dimensions specify the "subset" of the spritesheet that consists of the image
         glm::ivec2 mLocation;

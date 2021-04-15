@@ -1,4 +1,5 @@
 #include "SpriteManager.h"
+#include "FullSprite.h"
 #include <iostream>
 namespace Core
 {
@@ -18,7 +19,7 @@ namespace Core
 			if (mSprites[id] == nullptr)
 			{
 				// init id for sprite
-				Sprite *newSprite = new Sprite(name, filename, id);
+				Sprite *newSprite = new FullSprite(name, filename, id);
 				this->mSprites[id] = newSprite;
 				mCurrSpriteID = id + 1;
 				return id; // Return ID of the new sprite
@@ -42,7 +43,7 @@ namespace Core
 			if (mSprites[id] == nullptr)
 			{
 				// init id for sprite
-				Sprite *newSprite = new Sprite(name, filename, id);
+				Sprite *newSprite = new FullSprite(name, filename, id);
 				this->mSprites[id] = newSprite;
 				return id; // Return ID of the new sprite
 			}
@@ -118,7 +119,6 @@ namespace Core
 	// SPRITESHEET STUFF
 
 	int SpriteManager::createSpriteSheet(std::string name, std::string filename) {
-		printf("create spriteshseet");
 		unsigned int id = mCurrSpriteSheetID;
 
 		// This will loop as long as it needs to until it finds the closest valid ID
@@ -128,8 +128,8 @@ namespace Core
 			if (mSpriteSheets[id] == nullptr)
 			{
 				// init id for sprite
-				Sprite* newSprite = new Sprite(name, filename, id);
-				this->mSpriteSheets[id] = newSprite;
+				SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
+				this->mSpriteSheets[id] = newSpriteSheet;
 				mCurrSpriteSheetID = id + 1;
 				return id; // Return ID of the new sprite
 			}
@@ -149,8 +149,8 @@ namespace Core
 			if (mSpriteSheets[id] == nullptr)
 			{
 				// init id for sprite
-				Sprite* newSprite = new Sprite(name, filename, id);
-				this->mSpriteSheets[id] = newSprite;
+				SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
+				this->mSpriteSheets[id] = newSpriteSheet;
 				return id; // Return ID of the new sprite
 			}
 			// Otherwise, the specified sprite ID already exists, so check the next ID
