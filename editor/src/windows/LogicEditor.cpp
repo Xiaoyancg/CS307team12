@@ -13,21 +13,6 @@ void LogicEditor::draw()
         logicInfo = false;
         if (ImGui::Begin("Logic Editor", &visible))
         {
-            /*ImGui::Text("Enter Logic Name:");
-            ImGui::PushItemWidth(200);
-            ImGui::InputText(" ", logic_name, IM_ARRAYSIZE(logic_name));
-            ImGui::SameLine();
-            ImGui::Text("Enter ID:");
-            ImGui::InputText(" ", logicIDInput, IM_ARRAYSIZE(logicIDInput));
-            ImGui::SameLine();
-            if (ImGui::BeginCombo("Type", "key"))
-            {
-                ImGui::Selectable("test");
-                ImGui::Selectable("key");
-                ImGui::Selectable("lol");
-            }*/
-
-
             ImGui::Text("Current Logic: ");
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {

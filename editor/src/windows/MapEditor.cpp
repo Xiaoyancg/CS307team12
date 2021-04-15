@@ -25,17 +25,17 @@ void MapEditor::draw() {
         {
             ImGui::Text("Enter Map Name:");
             ImGui::PushItemWidth(200);
-            ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
+            ImGui::InputText("##map_name", map_name, IM_ARRAYSIZE(map_name));
             ImGui::Text("Rows:    ");
             ImGui::PushItemWidth(100);
             ImGui::SameLine();
-            ImGui::SliderInt("##1", &dim1, 0, 50);
+            ImGui::SliderInt("##rows", &dim1, 0, 50);
             ImGui::Text("Columns: ");
             ImGui::SameLine();
-            ImGui::SliderInt("##2", &dim2, 0, 50);
+            ImGui::SliderInt("##cols", &dim2, 0, 50);
             ImGui::Text("Tile size: ");
             ImGui::SameLine();
-            ImGui::SliderInt("##3", &tileSize, 0, 128);
+            ImGui::SliderInt("##tile_size", &tileSize, 0, 128);
             if (ImGui::Button("Create Map"))
             {
                 //creates a new map with map_name specified by user and dimensions as specified by user
