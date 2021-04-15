@@ -104,6 +104,12 @@ namespace Core
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();
+        // SpriteSheet operations
+        unsigned int createSpriteSheet(std::string, std::string);
+        unsigned int createSpriteSheet(std::string, std::string, int);
+        void deleteSpriteSheet(int);
+        Sprite* getSpriteSheetFromID(int);
+        std::unordered_map<int, Sprite*> getSpriteSheets();
 
         // Map operations
         std::vector<Map *> getDefaultMapPageMaps();

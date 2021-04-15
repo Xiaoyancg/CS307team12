@@ -36,6 +36,7 @@ namespace Core
 
 		// Delete the sprite with the given ID
 		void deleteSprite(int spriteID);
+		void deleteSpriteSheet(int spritesheetID);
 
 		// Unused for now, can be uncommented if needed
 		std::unordered_map<int, Sprite*>& getSprites();
