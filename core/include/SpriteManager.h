@@ -5,6 +5,7 @@
 #include "Sprite.h"
 #include "FullSprite.h"
 #include "PartialSprite.h"
+#include "LoopingSprite.h"
 
 
 // We can't predict OpenGL texture/sprite ID's, and we need some consistent way to reference specific sprites in the .gdata files,

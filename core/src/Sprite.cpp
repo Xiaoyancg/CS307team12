@@ -24,4 +24,8 @@ namespace Core
 	int Sprite::getSpriteID() {
 		return mSpriteID;
 	}
+
+	enum class SPRITE_TYPES Sprite::getType() {
+		return mType;
+	}
 }

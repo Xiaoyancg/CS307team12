@@ -27,6 +27,8 @@ namespace Core
 		std::string getName();
 		std::string getFileName();
 
+		enum class SPRITE_TYPES getType();
+
 		float* getTextureCoordinates();
 
 	protected:
