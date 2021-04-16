@@ -25,13 +25,13 @@ namespace Core
 		}
 
 		void setCoords ( int *coords ); // coords points to an array of 8 ints, 4 pairs of coordinates
-		int *getCoords ();
+		float *getCoords ();
 
 		bool isInvisibleTile();
 		void setInvisibleTile(bool value);
 
 	private:
-		int mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
+		float mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
 
 		// Basic Tile variables
 		int mCurrentDepth; // Not implemented yet, but saving for later

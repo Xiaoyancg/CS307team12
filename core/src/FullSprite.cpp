@@ -49,6 +49,17 @@ namespace Core
 
 			glBindTexture(GL_TEXTURE_2D, 0);  // Unbind the new sprite
 			SOIL_free_image_data(mImageData); // Delete image data after loading into OpenGL
+
+
+			mTextureCoordinates[0] = 0;
+			mTextureCoordinates[1] = 1;
+			mTextureCoordinates[2] = 0;
+			mTextureCoordinates[3] = 0;
+			mTextureCoordinates[4] = 1;
+			mTextureCoordinates[5] = 1;
+			mTextureCoordinates[6] = 1;
+			mTextureCoordinates[7] = 0;
+
 		} else
 		{
 			printf("FullSprite::FullSprite > Image loading error!\n");

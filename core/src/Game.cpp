@@ -546,15 +546,15 @@ namespace Core
         // The arguments are
         // 0 to denote the 'position' vertex attribute in the vertex shader
         // 2 ints are read at a time (x, y)
-        // The the type is float (GL_INT)
+        // The the type is int (GL_INT)
         // GL_FALSE means the data should not be normalized
         // Spread between each set of attributes (4 * sizeof(int))
         //// Offset isn't used yet since there's only one attribute in 'vertices'
 
         // attribute ptr for position coords
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         // attribute ptr for texture coords
-        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 
         // Enable the vertex attributes
         glEnableVertexAttribArray(0);
