@@ -103,6 +103,7 @@ namespace Core
         unsigned int createSprite(std::string, std::string);
         unsigned int createSprite(std::string, std::string, int);
         unsigned int createPartialSprite(std::string name, int spriteID, int spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
+        unsigned int createLoopingSprite(std::string name, int spriteID, int spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpadding);
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();

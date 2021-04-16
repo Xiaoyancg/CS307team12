@@ -39,6 +39,7 @@ namespace Core
 		int createSpriteSheet(std::string name, std::string filename, int id);
 
 		unsigned int createPartialSprite(std::string name, int spriteID, SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
+		unsigned int createLoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpad);
 
 		// Delete the sprite with the given ID
 		void deleteSprite(int spriteID);
