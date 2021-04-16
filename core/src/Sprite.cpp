@@ -17,7 +17,7 @@ namespace Core
 	{
 		return this->mFileName;
 	}
-	int* Sprite::getTextureCoordinates() {
+	float* Sprite::getTextureCoordinates() {
 		return mTextureCoordinates;
 	}
 

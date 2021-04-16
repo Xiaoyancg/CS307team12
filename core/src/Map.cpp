@@ -171,7 +171,7 @@ namespace Core
     Tile* Map::checkTileCollision(glm::ivec2 click) {
         for (int i = 0; i < mNumTiles; i++) {
             // Parse the lower and upper coordinates for x and y from the Tile's coords array
-            int * coords = mTileArray[i].getCoords();
+            float * coords = mTileArray[i].getCoords();
             int lowX = coords[0];
             int lowY = coords[5];
             int highX = coords[8];
@@ -204,8 +204,8 @@ namespace Core
         for (int i = 0; i < getNumTiles(); i++)
         {
             // Render each tile of the map!
-            int* coordsPtr = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
-            int coords[16];
+            float* coordsPtr = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+            float coords[16];
             std::memcpy(coords, coordsPtr, sizeof(int) * 16);
 
             if (withBorder) {
@@ -238,7 +238,7 @@ namespace Core
             // Buffer and draw tile
             // NOTE: Change the int multiplier whenever new data will be added to the shaders.
             //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
-            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), coords, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), coords, GL_DYNAMIC_DRAW);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
 

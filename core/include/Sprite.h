@@ -27,13 +27,13 @@ namespace Core
 		std::string getName();
 		std::string getFileName();
 
-		int* getTextureCoordinates();
+		float* getTextureCoordinates();
 
 	protected:
 		std::string mSpriteName;
 		std::string mFileName;
 
-		int mTextureCoordinates[8];
+		float mTextureCoordinates[8];
 
 		glm::vec2 mImageDimensions;
 

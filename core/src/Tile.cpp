@@ -43,7 +43,7 @@ namespace Core
 		mCoords[15] = 0;
 	}
 
-	int *Tile::getCoords ()
+	float *Tile::getCoords ()
 	{
 		return mCoords;
 	}
