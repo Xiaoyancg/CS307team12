@@ -88,10 +88,8 @@ namespace Core
         int highX = location.x + halfScaleWidth;
         int lowY = location.y - halfScaleHeight;
         int highY = location.y + halfScaleHeight;
-        printf("asdf %d\n", mSpriteID);
 
         if (mGameSprites->atID(mSpriteID)) {
-            printf("LETS GO!\n");
             float* texcoords = mGameSprites->atID(mSpriteID)->getTextureCoordinates();
             // P1
             mCoords[0] = lowX;  // Top left x

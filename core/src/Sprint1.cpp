@@ -29,7 +29,7 @@ namespace Core
 
         entityInteractive =
             entityPage->createEntity("interactive", glm::vec2(50, 50),
-                                     glm::vec2(64, 64), 0, 0);
+                                     glm::vec2(64, 64), 0, 1);
         entityPage->setCtrlEntity(entityInteractive);
         entityShortWide =
             entityPage->createEntity("shortWide", glm::vec2(500, 500),
