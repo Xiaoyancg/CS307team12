@@ -32,27 +32,13 @@ namespace Core
 		}
 	}
 
-	// Creates a new sprite at the correct location in mSprites
+	// Creates a new sprite at the given location in mSprites (may overwrite)
 	int SpriteManager::createSprite(std::string name, std::string filename, int id)
 	{
-		// This will loop as long as it needs to until it finds the closest valid ID
-		while (true)
-		{
-			// Check if sprite with id does not already exist
-			if (mSprites[id] == nullptr)
-			{
-				// init id for sprite
-				Sprite *newSprite = new FullSprite(name, filename, id);
-				this->mSprites[id] = newSprite;
-				return id; // Return ID of the new sprite
-			}
-			// Otherwise, the specified sprite ID already exists, so check the next ID
-			else
-			{
-				printf("ID %d already used :( Trying SpriteID: %d\n", id, id + 1);
-				id++;
-			}
-		}
+		// init id for sprite
+		Sprite *newSprite = new FullSprite(name, filename, id);
+		this->mSprites[id] = newSprite;
+		return id; // Return ID of the new sprite
 	}
 
 	void SpriteManager::deleteSprite(int spriteID)
@@ -140,25 +126,13 @@ namespace Core
 			}
 		}
 	}
+
+	// This will overwrite the given id with a new spritesheet
 	int SpriteManager::createSpriteSheet(std::string name, std::string filename, int id) {
-		// This will loop as long as it needs to until it finds the closest valid ID
-		while (true)
-		{
-			// Check if sprite with id does not already exist
-			if (mSpriteSheets[id] == nullptr)
-			{
-				// init id for sprite
-				SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
-				this->mSpriteSheets[id] = newSpriteSheet;
-				return id; // Return ID of the new sprite
-			}
-			// Otherwise, the specified sprite ID already exists, so check the next ID
-			else
-			{
-				printf("ID %d already used :( Trying SpriteSheetID: %d\n", id, id + 1);
-				id++;
-			}
-		}
+		// init id for sprite
+		SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
+		this->mSpriteSheets[id] = newSpriteSheet;
+		return id; // Return ID of the new sprite
 	}
 	void SpriteManager::deleteSpriteSheet(int spritesheetID) {
 		delete this->mSpriteSheets[spritesheetID];

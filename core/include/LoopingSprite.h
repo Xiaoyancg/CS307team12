@@ -1,6 +1,7 @@
 #pragma once
 #include "Sprite.h"
 #include "FullSprite.h" // Needed for SpriteSheets
+#include "Timer.h"
 #include <glm/glm.hpp>
 
 namespace Core
@@ -33,6 +34,8 @@ namespace Core
 
         // The location on the image of the bottom left of your loop. This and the dimensions specify the "subset" of the spritesheet that consists of the image
         glm::ivec2 mLocation;
+
+        Timer mTimer; // The timer is used with stamps to check 
 
         // The width/height of each sprite in the sprite loop
         glm::ivec2 mDimensions;
