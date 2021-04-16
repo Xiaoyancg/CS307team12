@@ -177,7 +177,10 @@ namespace Core
 			}
 		}*/
 	}
-
-
-
+	unsigned int SpriteManager::createLoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpad) {
+		// init id for sprite
+		Sprite* newSprite = new LoopingSprite(name, spriteID, spritesheet, numImages, speed, loc, dims, xpad);
+		this->mSprites[spriteID] = newSprite;
+		return spriteID; // Return ID of the new sprite
+	}
 }

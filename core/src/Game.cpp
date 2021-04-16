@@ -222,6 +222,9 @@ namespace Core
         // Return OpenGL ID of the new sprite
         return mGameSprites.createPartialSprite(name, spriteID, mGameSprites.atSheetID(spritesheet), location, dimensions);
     }
+    unsigned int Game::createLoopingSprite(std::string name, int spriteID, int spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpad) {
+        return mGameSprites.createLoopingSprite(name, spriteID, mGameSprites.atSheetID(spritesheet), numImages, speed, loc, dims, xpad);
+    }
 
     void Game::deleteSprite(int id)
     {
