@@ -15,6 +15,7 @@ namespace Core {
 
         mSpeed = 1.0f;
         
+        printf("time passed %f\n", mTimer.getPassedTimeInSec());
 
         // Get texture coords based on location/dims
         glm::vec2 spritesheetDims(spritesheet->getDimensions());
