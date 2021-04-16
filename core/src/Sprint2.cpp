@@ -26,8 +26,8 @@ namespace Core
         //game->createSprite("2", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\resource\\test_image_2.png", 2);
         //game->createSprite("3", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\resource\\test_image_3.png", 3);
         //game->createSprite("guy", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\resource\\oh_yeah_woo_yeah.png", 4);
-        //int ss = game->createSpriteSheet("spritesheet", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\resource\\spritesheet.png");
-        //game->createPartialSprite("guy", 1, 0, glm::ivec2(17, 3), glm::ivec2(13, 22));
+        int ss = game->createSpriteSheet("spritesheet", "C:\\Users\\joshu\\Desktop\\Parchment\\CS307team12\\resource\\spritesheet.png");
+        game->createPartialSprite("guy", 1, 0, glm::ivec2(17, 3), glm::ivec2(13, 22));
 
 
         game->mainLoop();

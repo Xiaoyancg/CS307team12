@@ -68,6 +68,24 @@ namespace Core
     void Entity::setSpriteID(int i)
     {
         this->mSpriteID = i;
+        if (mGameSprites->atID(mSpriteID)) {
+            float* texcoords = mGameSprites->atID(mSpriteID)->getTextureCoordinates();
+            // P1 texture coords
+            mCoords[2] = texcoords[0];
+            mCoords[3] = texcoords[1];
+
+            // P2 texture coords
+            mCoords[6] = texcoords[2];
+            mCoords[7] = texcoords[3];
+
+            // P3 texture coords
+            mCoords[10] = texcoords[4];
+            mCoords[11] = texcoords[5];
+
+            // P4 texture coords
+            mCoords[14] = texcoords[6];
+            mCoords[15] = texcoords[7];
+        }
     }
     int Entity::getSpriteID()
     {
@@ -90,6 +108,7 @@ namespace Core
         int highY = location.y + halfScaleHeight;
 
         if (mGameSprites->atID(mSpriteID)) {
+            printf("yee\n");
             float* texcoords = mGameSprites->atID(mSpriteID)->getTextureCoordinates();
             // P1
             mCoords[0] = lowX;  // Top left x
@@ -201,7 +220,12 @@ namespace Core
         }
         else if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
         {
-            glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
+            Sprite* sprite = mGameSprites->atID(mSpriteID);
+            glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID()); // Bind correct sprite
+            if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+                // If the sprite is a looping sprite, the current sprite may need to change, so we update it before rendering
+                ((LoopingSprite*)sprite)->updateTextureCoords();
+            }
         }
 
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO

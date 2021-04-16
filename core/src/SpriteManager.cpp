@@ -178,6 +178,12 @@ namespace Core
 
 
 	unsigned int SpriteManager::createPartialSprite(std::string name, int spriteID, SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions) {
+		// init id for sprite
+		Sprite* newSprite = new PartialSprite(name, spriteID, spritesheet, location, dimensions);
+		this->mSprites[spriteID] = newSprite;
+		return spriteID; // Return ID of the new sprite
+
+		/*
 		// This will loop as long as it needs to until it finds the closest valid ID
 		while (true)
 		{
@@ -195,7 +201,7 @@ namespace Core
 				printf("ID %d already used :( Trying SpriteID: %d\n", spriteID, spriteID + 1);
 				spriteID++;
 			}
-		}
+		}*/
 	}
 
 

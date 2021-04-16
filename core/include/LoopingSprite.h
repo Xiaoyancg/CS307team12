@@ -15,12 +15,21 @@ namespace Core
         LoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, glm::ivec2 location, glm::ivec2 dimensions);
         unsigned int getOpenGLTextureID();
 
+        // This is used to move the sprite shown on the screen to the next in the spritesheet (or loop-around)
+        // after a specified amount of time if necessary. It's called each time an 
+        void updateTextureCoords(); 
+
     private:
         // The SpriteSheet that contains the sprite loop. The sprite loop is found using the given location and dimensions
         SpriteSheet* mSpriteSheet;
 
         // The number of images in the specified loop to loop. 
         int mNumImages;
+        // The current image in the range [0, mNumImages] being displayed (used in texcoord calculation)
+        int mCurrImg;
+
+        // The speed of the loop
+        float mSpeed; // TODO: Maybe turn into an array of size mNumImages, specify length of each individual image
 
         // The location on the image of the bottom left of your loop. This and the dimensions specify the "subset" of the spritesheet that consists of the image
         glm::ivec2 mLocation;
