@@ -16,6 +16,10 @@ namespace Core
         LoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, float speed, glm::ivec2 location, glm::ivec2 dimensions, int xpadding);
         unsigned int getOpenGLTextureID();
 
+        // Argument will set mIsRunning to either start or stop sprite looping
+        void setRunning(bool);
+        bool isRunning();
+
         // This is used to move the sprite shown on the screen to the next in the spritesheet (or loop-around)
         // after a specified amount of time if necessary. It's called each time an 
         void updateTextureCoords(); 
@@ -23,6 +27,9 @@ namespace Core
     private:
         // The SpriteSheet that contains the sprite loop. The sprite loop is found using the given location and dimensions
         SpriteSheet* mSpriteSheet;
+
+        // True means the sprite loop is running, false will stop the loop
+        bool mIsRunning;
 
         // The number of images in the specified loop to loop. 
         int mNumImages;

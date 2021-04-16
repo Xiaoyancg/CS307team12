@@ -232,7 +232,25 @@ namespace Core
                 glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible 
             }
             else if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
-                glBindTexture(GL_TEXTURE_2D, MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
+                Sprite* sprite = MapPage::mGameSprites->atID(mTileArray[i].getSpriteID());
+                glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID());
+                if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+                    // If the sprite is a looping sprite, the current sprite's texture coordinates may need to change, so we update and get them before rendering
+                    ((LoopingSprite*)sprite)->updateTextureCoords();
+                    float* texcoords = sprite->getTextureCoordinates();
+                    // P1 texture coords
+                    coords[2] = texcoords[0];
+                    coords[3] = texcoords[1];
+                    // P2 texture coords
+                    coords[6] = texcoords[2];
+                    coords[7] = texcoords[3];
+                    // P3 texture coords
+                    coords[10] = texcoords[4];
+                    coords[11] = texcoords[5];
+                    // P4 texture coords
+                    coords[14] = texcoords[6];
+                    coords[15] = texcoords[7];
+                }
             }
 
             // Buffer and draw tile
