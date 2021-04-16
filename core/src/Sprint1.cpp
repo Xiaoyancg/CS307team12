@@ -42,11 +42,16 @@ namespace Core
                                      glm::vec2(128, 128), 0, 0);
 
         // MAP TEST
-        int spriteMap[] = {
+        /*int spriteMap[] = {
             1, 2, 3, 4,
             4, 3, 2, 1,
             2, 4, 1, 3,
-            3, 1, 4, 2};
+            3, 1, 4, 2 };     */   
+        int spriteMap[] = {
+            1, 1, 1, 1,
+            1, 1, 1, 1,
+            1, 1, 1, 1,
+            1, 1, 1, 1 };
 
         Map *map1 = new Map("Map 1 woohoo!", glm::vec2(4, 4), 64);
         map1->setMapTileSpritesFromArray(spriteMap);
@@ -84,7 +89,8 @@ namespace Core
         /////////////////////////////////////////
 
         // very important
-        game->setCurrentPage(entityPage);
+        //game->setCurrentPage(entityPage);
+        game->setCurrentPage(mapPage1);
         return game;
     }
 }

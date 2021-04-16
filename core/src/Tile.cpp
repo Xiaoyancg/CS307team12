@@ -14,6 +14,7 @@ namespace Core
 	// Copy the given coordinates to the coordinates of the tile
 	void Tile::setCoords ( int *coords )
 	{
+		// Texture coordinates are set assuming a FullSprite, and will be handled differently in Map.cpp if not a FullSprite
 		// P1
 		mCoords[0] = coords[0];
 		mCoords[1] = coords[1];
