@@ -217,6 +217,12 @@ namespace Core
         return mGameSprites.createSprite(name, filename, id);
     }
 
+    unsigned int Game::createPartialSprite(std::string name, int spriteID, int spritesheet, glm::ivec2 location, glm::ivec2 dimensions)
+    {
+        // Return OpenGL ID of the new sprite
+        return mGameSprites.createPartialSprite(name, spriteID, mGameSprites.atSheetID(spritesheet), location, dimensions);
+    }
+
     void Game::deleteSprite(int id)
     {
         mGameSprites.deleteSprite(id);
@@ -248,12 +254,12 @@ namespace Core
         mGameSprites.deleteSpriteSheet(id);
     }
 
-    Sprite* Game::getSpriteSheetFromID(int id)
+    SpriteSheet* Game::getSpriteSheetFromID(int id)
     {
         return mGameSprites.atSheetID(id);
     }
 
-    std::unordered_map<int, Sprite*> Game::getSpriteSheets()
+    std::unordered_map<int, SpriteSheet*> Game::getSpriteSheets()
     {
         return mGameSprites.getSpriteSheets();
     }

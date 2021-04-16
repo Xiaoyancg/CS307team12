@@ -19,6 +19,7 @@
 #include "MapPage.h"
 #include "RenderTarget.h"
 #include "SpriteManager.h"
+#include "FullSprite.h" // Needed for SpriteSheets
 #include "MenuPage.h"
 #include "LogicManager.h"
 
@@ -101,6 +102,7 @@ namespace Core
         // Sprite operations
         unsigned int createSprite(std::string, std::string);
         unsigned int createSprite(std::string, std::string, int);
+        unsigned int createPartialSprite(std::string name, int spriteID, int spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();
@@ -108,8 +110,8 @@ namespace Core
         unsigned int createSpriteSheet(std::string, std::string);
         unsigned int createSpriteSheet(std::string, std::string, int);
         void deleteSpriteSheet(int);
-        Sprite* getSpriteSheetFromID(int);
-        std::unordered_map<int, Sprite*> getSpriteSheets();
+        SpriteSheet* getSpriteSheetFromID(int);
+        std::unordered_map<int, SpriteSheet*> getSpriteSheets();
 
         // Map operations
         std::vector<Map *> getDefaultMapPageMaps();

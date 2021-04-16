@@ -1,5 +1,4 @@
 #include "SpriteManager.h"
-#include "FullSprite.h"
 #include <iostream>
 namespace Core
 {
@@ -165,13 +164,39 @@ namespace Core
 		delete this->mSpriteSheets[spritesheetID];
 		mSpriteSheets.erase(spritesheetID);
 	}
-	std::unordered_map<int, Sprite*>& SpriteManager::getSpriteSheets() {
+	std::unordered_map<int, SpriteSheet*>& SpriteManager::getSpriteSheets() {
 		return this->mSpriteSheets;
 	}
-	Sprite* SpriteManager::atSheetID(int spritesheetID) {
+	SpriteSheet* SpriteManager::atSheetID(int spritesheetID) {
 		return mSpriteSheets[spritesheetID];
 	}
 
+
+
+
+
+
+
+	unsigned int SpriteManager::createPartialSprite(std::string name, int spriteID, SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions) {
+		// This will loop as long as it needs to until it finds the closest valid ID
+		while (true)
+		{
+			// Check if sprite with id does not already exist
+			if (mSprites[spriteID] == nullptr)
+			{
+				// init id for sprite
+				Sprite* newSprite = new PartialSprite(name, spriteID, spritesheet, location, dimensions);
+				this->mSprites[spriteID] = newSprite;
+				return spriteID; // Return ID of the new sprite
+			}
+			// Otherwise, the specified sprite ID already exists, so check the next ID
+			else
+			{
+				printf("ID %d already used :( Trying SpriteID: %d\n", spriteID, spriteID + 1);
+				spriteID++;
+			}
+		}
+	}
 
 
 
