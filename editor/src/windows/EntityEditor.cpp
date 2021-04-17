@@ -1,19 +1,8 @@
 #include "windows/EntityEditor.h"
 #include "UndoRedo.h"
+#include "HelpMarker.h"
 
-
-static void HelpMarker(const char *desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered())
-    {
-        ImGui::BeginTooltip();
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
+extern void HelpMarker(const char*);
 
 void EntityEditor::draw()
 {
