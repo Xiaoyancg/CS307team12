@@ -113,6 +113,9 @@ namespace Core
         void setCurrentPage(Page *p);
         Page *getCurrPage();
 
+        // Return logic list
+        std::vector<Logic>* Game::getLogicList();
+
         /// \brief Create a default Signal object
         /// *For editor, binding to create button in signal editor
         ///
@@ -131,10 +134,10 @@ namespace Core
         /// \return Logic*
         Logic *createLogic();
 
-        // For editor
-        void deleteLogic(int logicId);
+        // For logic deletion
         void deleteSignal(int signalId);
         void deleteScript(int scriptId);
+        void deleteLogic(int logicId);
 
         // initContext SDL context
         void initContext();

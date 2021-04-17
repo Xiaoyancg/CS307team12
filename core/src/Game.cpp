@@ -246,6 +246,11 @@ namespace Core
 
     //* -------------------- LOGIC WRAPPER ------------------- *//
 
+    std::vector<Logic>* Game::getLogicList()
+    {
+        return _logicManager.getLogicList();
+    }
+
     Signal *Game::createSignal()
     {
         return _logicManager.createSignal();
@@ -261,18 +266,23 @@ namespace Core
         return _logicManager.createLogic();
     }
 
-    void Game::deleteLogic(int logicId)
-    {
-        _logicManager.deleteLogic(logicId);
-    }
     void Game::deleteSignal(int signalId)
     {
         _logicManager.deleteSignal(signalId);
     }
+
     void Game::deleteScript(int scriptId)
     {
         _logicManager.deleteSignal(scriptId);
     }
+
+    void Game::deleteLogic(int logicId)
+    {
+        _logicManager.deleteLogic(logicId);
+    }
+
+    //* -------------------- JSON PARSING ------------------- *//
+
     Game *Game::parse(nlohmann::json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());

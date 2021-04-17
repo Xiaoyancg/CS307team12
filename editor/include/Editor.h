@@ -132,7 +132,6 @@ private:
 
 	// currently selected game component
 	std::vector<std::string> currentComponent;
-	//std::string currentComponent = "No Component Selected";
 
 	ImVec2 default_size = ImVec2(600, 400);
 };

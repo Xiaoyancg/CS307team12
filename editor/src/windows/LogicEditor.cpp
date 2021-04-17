@@ -12,9 +12,39 @@ void LogicEditor::draw()
 
         static char logic_name[128] = "";
         static int logicIDInput = -1;
+        static int current_logic = 0;
         logicInfo = false;
+        Core::Game* game = editor->getGamePtr();
         if (ImGui::Begin("Logic Editor", &visible))
         {
+            ImGui::Text("Current Logic: %s", editor->getCurrentComponentList()[CUR_LOGIC].c_str());
+            if (ImGui::BeginListBox("##logic_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
+            {
+                auto logic_list = *game->getLogicList();
+                // Set default selected logic to be the first in the logic list
+                if (editor->getCurrentComponentList()[CUR_LOGIC] == "No Component Selected" && logic_list.size() > 0)
+                {
+                    editor->getCurrentComponentList()[CUR_LOGIC] = logic_list[0].getLogicName();
+                }
+                for (int i = 0; i < logic_list.size(); i++)
+                {
+                    auto logic = logic_list[i];
+                    const bool is_selected = (current_logic == i);
+                    if (ImGui::Selectable(logic.getLogicName().c_str(), is_selected))
+                    {
+                        current_logic = i;
+                        editor->getCurrentComponentList()[CUR_LOGIC] = logic.getLogicName();
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndListBox();
+            }
+
             // Set input widget widths to 200
             ImGui::PushItemWidth(200);
 
@@ -48,11 +78,6 @@ void LogicEditor::draw()
 
             ImGui::PopItemWidth();
 
-            ImGui::Text("Current Logic: ");
-            if (ImGui::BeginListBox(" ", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
-            {
-                ImGui::EndListBox();
-            }
             if (ImGui::Button("Show Information"))
             {
                 logicInfo = true;
@@ -60,7 +85,28 @@ void LogicEditor::draw()
 
             if (ImGui::Button("Create"))
             {
+                if (strlen(logic_name) != 0)
+                {
+                    Core::Logic * new_logic = game->createLogic();
+                    new_logic->setLogicName(std::string(logic_name));
 
+                    //UNDO
+                    /*std::string pname = page_name;
+                    auto action = [this, pname]() {
+                        editor->getGamePtr()->createMenuPage(pname);
+                    };
+                    auto restore = [this, pname]() {
+                        editor->getGamePtr()->deletePage(pname);
+                    };
+                    pushAction(action, restore);
+                    action();
+                    //ENDUNDO
+                    */
+
+                    // memset to clear the buffer after use
+                    memset(logic_name, 0, 128);
+                }
+                
             }
             ImGui::SameLine();
             if (ImGui::Button("Update"))
