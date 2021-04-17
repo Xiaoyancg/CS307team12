@@ -102,45 +102,48 @@ void MapWindow::draw()
 
             // Get size of drawable space on the window, instead of the entire size of the window
             ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+            glm::ivec2 icanvas_size = glm::ivec2((int) canvas_size.x, (int) canvas_size.y);
             glm::ivec2 dims = currMap->getDimensions();
             int tileSize = currMap->getTileSize();
             int mapWidth = (dims.x+1) * tileSize;
             int mapHeight = (dims.y+1) * tileSize;
-            ImGui::SetWindowSize(ImVec2(mapWidth, mapHeight)); // Make enough room for entire map on window
 
             Core::MapPage* mapPage = editor->getGamePtr()->getDefaultMapPage();
             glm::vec4& bgCol = mapPage->GetBackgroundColor();
 
 
+            // set texture size to map dimensions so that we don't get quality loss
+            // --initially I thought about only rendering the visible part of the map
+            // --but that won't work without a shader rework
             glBindTexture(GL_TEXTURE_2D, mMapTexCBO);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, mapWidth, mapHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, icanvas_size.x, icanvas_size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+            // make it so that the texture goes on forever with only the background color
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
             float bgColArr[] = { bgCol.r, bgCol.g, bgCol.b, bgCol.a };
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bgColArr);
             glBindTexture(GL_TEXTURE_2D, 0);
-            glViewport(0, 0, (int)mapWidth, (int)mapHeight);
 
-            Core::Game* game = editor->getGamePtr();
+            Core::Camera* cam = mapPage->getCurrCamera();
+            glm::ivec2 lastDims = cam->getDimensions();
+            cam->setDimensions(icanvas_size.x, icanvas_size.y);
 
+            // render the map
             glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
+            // and make sure the viewport knows the size of the output texture
+            glViewport(0, 0, icanvas_size.x, icanvas_size.y);
             glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             glClear(GL_COLOR_BUFFER_BIT);
-
-            handleClick(); // Handle clicks within the MapView window
             editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
-
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            //ImVec2 uv1 = ImVec2(0.5f - (0.5f * canvas_size.x) / mapWidth, 0.5f - (0.5f * canvas_size.y) / mapHeight);
-            //ImVec2 uv0 = ImVec2(0.5f + (0.5f * canvas_size.x) / mapWidth, 0.5f + (0.5f * canvas_size.y) / mapHeight);
-            // Use these for stretchy MapView
-            // Stretching isn't allowed because the window size isn't changable. I just needed these uv values because ^ those flipped the screen in some way
-            ImVec2 uv0 = ImVec2(0, 1);
-            ImVec2 uv1 = ImVec2(1, 0);
+            cam->setDimensions(lastDims.x, lastDims.y);
 
-            ImGui::Image((ImTextureID) mMapTexCBO, ImVec2(canvas_size.x, canvas_size.y), uv0, uv1);
+            // draw the rendered image to the window
+            ImGui::Image((ImTextureID) mMapTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+
+            // Handle clicks within the MapView window
+            handleClick();
 
             ImGui::End();
             ImGui::PopStyleVar();

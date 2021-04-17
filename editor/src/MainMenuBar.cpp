@@ -59,6 +59,7 @@ void MainMenuBar::draw() {
 				auto& windowList = editor->getWindowList();
 				ImGui::MenuItem("Object Tree", "", windowList[OBJECTTREE]->getVisiblePtr());
 				ImGui::MenuItem("Game View", "", windowList[GAMEVIEW]->getVisiblePtr());
+				ImGui::MenuItem("Map View", "", windowList[MAPVIEW]->getVisiblePtr());
 				ImGui::MenuItem("Entity Editor", "", windowList[ENTITYEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Page Editor", "", windowList[PAGEEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Map Editor", "", windowList[MAPEDITOR]->getVisiblePtr());

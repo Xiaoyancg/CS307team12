@@ -1,8 +1,8 @@
 #pragma once
-#pragma warning(disable : 5033)
 #include <glm/glm.hpp>
-#include <Tile.h>
-#include <Camera.h>
+#include <string>
+#include "Tile.h"
+#include "Camera.h"
 
 // Map class
 namespace Core
@@ -50,7 +50,7 @@ namespace Core
 		void setTileCoords();
 
 		// For now, the map is an array of tiles with no depth
-		Tile *mTileArray;
+		Tile *mTileArray = nullptr;
 
 		// Size of the tile in pixels
 		// (only one dimension because it's a square, x = y)
@@ -68,11 +68,11 @@ namespace Core
 		std::string mMapName;
 
 		// This is used to zoom and move around a MapView
-		Camera* mCamera;
+		Camera* mCamera = nullptr;
 
 		// This is set to a MapPage only when the map is in use on the MapPage.
 		// It's used to remove itself from the MapPage if it's suddenly deleted
 		// while in use.
-		MapPage *mAssociatedPage;
+		MapPage *mAssociatedPage = nullptr;
 	};
 }
