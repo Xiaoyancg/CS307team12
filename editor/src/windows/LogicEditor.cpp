@@ -15,8 +15,95 @@ void LogicEditor::draw()
         static int current_logic = 0;
         logicInfo = false;
         Core::Game* game = editor->getGamePtr();
+
+        // For "key type" logic
+        char key_code[2] = "";
+        static int key_idx = 0;
+
+        char target_script_list[128] = "";
+        
         if (ImGui::Begin("Logic Editor", &visible))
         {
+            // Set input widget widths to 200
+            ImGui::PushItemWidth(200);
+
+            ImGui::Text("Logic Name:");
+            ImGui::SameLine();
+            ImGui::InputText("##logic_name", logic_name, IM_ARRAYSIZE(logic_name));
+
+            ImGui::Text("ID:        ");
+            ImGui::SameLine();
+            ImGui::InputInt("##logic_id", &logicIDInput);
+
+            ImGui::Text("Type:      ");
+            ImGui::SameLine();
+            const char* logic_types[] = { "Key", "Custom" };
+            static int logic_type_idx = 0; // Here we store our selection data as an index.
+            const char* combo_label = logic_types[logic_type_idx];
+            if (ImGui::BeginCombo("##logic_type", logic_types[logic_type_idx]))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(logic_types); n++)
+                {
+                    const bool is_selected = (logic_type_idx == n);
+                    if (ImGui::Selectable(logic_types[n], is_selected))
+                        logic_type_idx = n;
+
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            ImGui::Separator();
+
+            // Render different UI options based on logic type selected
+            switch (logic_type_idx)
+            {
+                case 0: // Key type
+                {
+                    ImGui::Text("Key Code:  ");
+                    ImGui::SameLine();
+                    ImGui::PushItemWidth(25);
+                    ImGui::InputText("##key_code", key_code, IM_ARRAYSIZE(key_code));
+                    ImGui::PopItemWidth();
+
+                    ImGui::Text("Key Type:  ");
+                    ImGui::SameLine();
+                    const char* key_types[] = { "Pressed", "Released" };
+                    const char* combo_label = key_types[key_idx];
+                    if (ImGui::BeginCombo("##key_type", key_types[key_idx]))
+                    {
+                        for (int n = 0; n < IM_ARRAYSIZE(key_types); n++)
+                        {
+                            const bool is_selected = (key_idx == n);
+                            if (ImGui::Selectable(key_types[n], is_selected))
+                                key_idx = n;
+
+                            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                            if (is_selected)
+                                ImGui::SetItemDefaultFocus();
+                        }
+                        ImGui::EndCombo();
+                    }
+
+                    ImGui::Text("Target Script List:");
+                    ImGui::SameLine();
+                    ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
+                }
+                    break;
+                case 1: // Custom type
+                {
+                    ImGui::Text("Target Script List:");
+                    ImGui::SameLine();
+                    ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
+                }
+                    break;
+            }
+
+            ImGui::PopItemWidth();
+            ImGui::Separator();
+             
             ImGui::Text("Current Logic: %s", editor->getCurrentComponentList()[CUR_LOGIC].c_str());
             if (ImGui::BeginListBox("##logic_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
@@ -44,39 +131,6 @@ void LogicEditor::draw()
                 }
                 ImGui::EndListBox();
             }
-
-            // Set input widget widths to 200
-            ImGui::PushItemWidth(200);
-
-            ImGui::Text("Logic Name:");
-            ImGui::SameLine();
-            ImGui::InputText("##logic_name", logic_name, IM_ARRAYSIZE(logic_name));
-
-            ImGui::Text("ID:        ");
-            ImGui::SameLine();
-            ImGui::InputInt("##logic_id", &logicIDInput);
-
-            ImGui::Text("Type:      ");
-            ImGui::SameLine();
-            const char* items[] = { "Key", "Custom" };
-            static int item_current_idx = 0; // Here we store our selection data as an index.
-            const char* combo_label = items[item_current_idx];
-            if (ImGui::BeginCombo("##logic_type", items[item_current_idx]))
-            {
-                for (int n = 0; n < IM_ARRAYSIZE(items); n++)
-                {
-                    const bool is_selected = (item_current_idx == n);
-                    if (ImGui::Selectable(items[n], is_selected))
-                        item_current_idx = n;
-
-                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                    if (is_selected)
-                        ImGui::SetItemDefaultFocus();
-                }
-                ImGui::EndCombo();
-            }
-
-            ImGui::PopItemWidth();
 
             if (ImGui::Button("Show Information"))
             {
