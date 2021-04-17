@@ -290,6 +290,53 @@ namespace Core
         mGameMapPage->render();
     }
 
+    void Game::renderSpriteSheet(SpriteSheet* spritesheet) {
+        if (spritesheet->getOpenGLTextureID() >= 0) {
+            // Create camera and set it to fit the spritesheet perfectly
+            Camera* camera = new Camera();
+            glm::vec2 dims = spritesheet->getDimensions();
+            camera->setDimensions(dims.x, dims.y);
+
+            // Set the camera in the shader
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(camera->getMatrix()));
+
+            glBindTexture(GL_TEXTURE_2D, spritesheet->getOpenGLTextureID());
+
+
+            float verts[16];
+            glm::vec2 half_dims(dims.x / 2, dims.y / 2);
+            // P1
+            verts[0] = -half_dims.x;  // Top left x
+            verts[1] = half_dims.y; // Top left y
+            verts[2] = 0;
+            verts[3] = 1;
+
+            // P2
+            verts[4] = -half_dims.x; // Bottom left x
+            verts[5] = -half_dims.y; // Bottom left y
+            verts[6] = 0;
+            verts[7] = 0;
+
+            // P3
+            verts[8] = half_dims.x; // Top right x
+            verts[9] = half_dims.y; // Top right y
+            verts[10] = 1;
+            verts[11] = 1;
+
+            // P4
+            verts[12] = half_dims.x; // Bottom right x
+            verts[13] = -half_dims.y;  // Bottom right y
+            verts[14] = 1;
+            verts[15] = 0;
+
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), verts, GL_DYNAMIC_DRAW);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Unbind the current sprite
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+
     //* -------------------- LOGIC WRAPPER ------------------- *//
 
     Signal *Game::createSignal()

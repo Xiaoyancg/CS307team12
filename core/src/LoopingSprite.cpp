@@ -37,7 +37,7 @@ namespace Core {
     void LoopingSprite::updateTextureCoords() {
         if (mIsRunning) {
             if (mTimer.getPassedTimeFromStampInSec() >= mImageSeconds) {
-                printf("%d time passed %f\n", mCurrImg, mTimer.getPassedTimeFromStampInSec());
+                //printf("%d time passed %f\n", mCurrImg, mTimer.getPassedTimeFromStampInSec());
 
                 // Check if the current image is at the end of the loop, meaning the next 
                 // image is at the beginning of the loop (wrap-around)
