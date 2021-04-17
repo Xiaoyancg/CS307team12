@@ -119,6 +119,8 @@ namespace Core
         MapPage *getDefaultMapPage();
         void renderDefaultMapPage();
 
+        void renderSpriteSheet(SpriteSheet*);
+
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
         Page *getCurrPage();
