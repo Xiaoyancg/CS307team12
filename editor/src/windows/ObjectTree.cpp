@@ -7,7 +7,7 @@ void ObjectTree::draw()
         Core::Game *game = editor->getGamePtr();
 
         ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
         if (ImGui::Begin("Object Tree", &visible))
         {
 #ifdef __TEST_EDITOR

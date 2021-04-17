@@ -24,7 +24,6 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
   )
 endif()
 
-
 option(WITH_TESTS "Build tests" ON)
 if(WITH_TESTS)
 	enable_testing()
@@ -33,6 +32,7 @@ if(WITH_TESTS)
 	add_subdirectory(lib/googletest)
 endif()
 
+add_link_options($<$<CXX_COMPILER_ID:MSVC>:/ignore:4099>)
 
 set(SDL_DIR "${PROJECT_SOURCE_DIR}/lib/SDL")
 add_library(sdl SHARED IMPORTED)
@@ -60,6 +60,7 @@ target_include_directories(imgui
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE ${GLM_DIR})
+target_compile_options(glm INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/wd5033>)
 
 set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
 add_library(imfb INTERFACE)
@@ -68,6 +69,7 @@ target_include_directories(imfb INTERFACE ${IMFB_DIR})
 set(GLAD_DIR "${PROJECT_SOURCE_DIR}/lib/glad")
 add_library(glad "${GLAD_DIR}/src/glad.cpp")
 target_include_directories(glad PUBLIC "${GLAD_DIR}/include")
+target_compile_options(glad PUBLIC $<$<CXX_COMPILER_ID:MSVC>:/wd4005>)
 
 set(SOIL_DIR "${PROJECT_SOURCE_DIR}/lib/SOIL")
 add_library(soil STATIC IMPORTED)

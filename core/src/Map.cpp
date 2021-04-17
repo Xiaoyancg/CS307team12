@@ -1,16 +1,11 @@
-#pragma once
-#include <string>
 #include "Map.h"
 #include "Game.h"
 
 namespace Core
 {
     // Takes a scale, the number of tiles in the x and y direction
-    Map::Map(std::string name, glm::vec2 dimensions, int tileSize) : mMapDimensions(dimensions),
-                                                                     mTileSize(tileSize),
-                                                                     mAssociatedPage(nullptr),
-                                                                     mMapName(name),
-                                                                     mCamera(nullptr)
+    Map::Map(std::string name, glm::vec2 dimensions, int tileSize)
+        : mMapDimensions(dimensions), mTileSize(tileSize), mMapName(name)
     {
         // Create map
         mNumTiles = mMapDimensions.x * mMapDimensions.y;
@@ -18,10 +13,6 @@ namespace Core
         {
             mTileArray = new Tile[mNumTiles];
             setTileCoords();
-        }
-        else
-        {
-            mTileArray = nullptr;
         }
 
 
@@ -52,7 +43,7 @@ namespace Core
     {
         if (dimensions.x < 0 || dimensions.y < 0)
         {
-            printf("Don't set negative map dimensions >:(\n");
+            // Don't set negative map dimensions >:(
             return;
         }
 
@@ -206,7 +197,7 @@ namespace Core
             // Render each tile of the map!
             int* coordsPtr = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
             int coords[16];
-            std::memcpy(coords, coordsPtr, sizeof(int) * 16);
+            std::memcpy(coords, coordsPtr, sizeof(coords));
 
             if (withBorder) {
                 int border = 1;
@@ -238,7 +229,7 @@ namespace Core
             // Buffer and draw tile
             // NOTE: Change the int multiplier whenever new data will be added to the shaders.
             //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
-            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), coords, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_DYNAMIC_DRAW);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
 
