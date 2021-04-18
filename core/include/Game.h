@@ -95,11 +95,15 @@ namespace Core
         MenuPage *createMenuPage();
         void deletePage(Page *);
         void deletePage(std::string);
-        std::vector<Page *>& getPageList();
+        std::vector<Page *> &getPageList();
         int getNumPage();
 
         // Sprite operations
         unsigned int createSprite(std::string, std::string);
+
+        /// \brief Create a Sprite object
+        ///
+        /// \return unsigned int
         unsigned int createSprite(std::string, std::string, int);
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
@@ -158,7 +162,6 @@ namespace Core
         // the only game loop
         void mainLoop();
 
-
         void onGameCreation();
 
     private:
@@ -169,9 +172,7 @@ namespace Core
         std::string lMTime;
         std::string note;
 
-
         Entity *currCtrlEntity;
-
 
         // page list iterator: current page iterator
         PLitr _currPitr;
@@ -183,11 +184,11 @@ namespace Core
         LogicManager _logicManager;
         /* ---------------------------- MEMBER VARIABLES ---------------------------- */
         // Camera used to move map
-        Camera* mCamera;
+        Camera *mCamera;
 
         // page pointer
         Page *currPage = nullptr;
-        
+
         // contains all pages
         std::vector<Page *> pageList;
 

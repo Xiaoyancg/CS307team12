@@ -212,6 +212,7 @@ namespace Core
         // Return OpenGL ID of the new sprite
         return mGameSprites.createSprite(name, filename);
     }
+
     unsigned int Game::createSprite(std::string name, std::string filename, int id)
     {
         return mGameSprites.createSprite(name, filename, id);
@@ -540,7 +541,6 @@ namespace Core
         glBindVertexArray(vao);
 
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
-
     }
 
     void Game::initContext()
@@ -644,7 +644,7 @@ namespace Core
         // use 2 to look the next page
         case SDLK_2:
             break;
-            
+
         // Theses are here for test purposes
         case SDLK_a:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
@@ -741,7 +741,6 @@ namespace Core
 
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                         glViewport(0, 0, width, height);
-
 
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }
