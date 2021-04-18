@@ -16,6 +16,12 @@ namespace Core
         // zoom < 1 will shrink the image, zoom > 1 will enlarge image
         mZoom = 1.0f;
     }
+    Camera::Camera(
+        glm::ivec2 dimensions = glm::ivec2(1280, 720),
+        glm::ivec2 position = glm::ivec2(0, 0),
+        float zoom = 1.0f) : mPosition(position), mDimensions(dimensions), mZoom(zoom)
+    {
+    }
 
     // Position
     glm::ivec2 Camera::getPosition()
