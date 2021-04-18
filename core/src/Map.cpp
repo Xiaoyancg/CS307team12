@@ -15,12 +15,11 @@ namespace Core
             setTileCoords();
         }
 
-
         // Each map gets its own Camera. Whenever the map is drawn from Game::renderDefaultMapPage,
-        // mCamera will be used instead of 
+        // mCamera will be used instead of
         mCamera = new Camera();
-        mCamera->setDimensions((mMapDimensions.x + 1) * tileSize, (mMapDimensions.y + 1) * tileSize);
-        //mCamera->setDimensions(852, 480);
+        mCamera->setDimensions((mMapDimensions.x + 1) * tileSize, (mMapDimensions.y + 1) * tileSize); // This is the projection the Editor expects
+        //mCamera->setDimensions(1024, 1024);
     }
 
     Map::~Map()
@@ -92,7 +91,8 @@ namespace Core
         return mMapName;
     }
 
-    Camera* Map::getCamera() {
+    Camera *Map::getCamera()
+    {
         return mCamera;
     }
 
@@ -158,24 +158,25 @@ namespace Core
         }
     }
 
-
-    Tile* Map::checkTileCollision(glm::ivec2 click) {
-        for (int i = 0; i < mNumTiles; i++) {
+    Tile *Map::checkTileCollision(glm::ivec2 click)
+    {
+        for (int i = 0; i < mNumTiles; i++)
+        {
             // Parse the lower and upper coordinates for x and y from the Tile's coords array
-            int * coords = mTileArray[i].getCoords();
+            float *coords = mTileArray[i].getCoords();
             int lowX = coords[0];
             int lowY = coords[5];
             int highX = coords[8];
             int highY = coords[1];
-            
+
             if ((lowX <= click.x) && (click.x <= highX) &&
-                (lowY <= click.y) && (click.y <= highY)) {
+                (lowY <= click.y) && (click.y <= highY))
+            {
                 return &mTileArray[i];
             }
         }
         return nullptr;
     }
-
 
     // Takes a pointer to an array of integers, containing the spriteID for each tile in the Map
     // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS Map::mMapDimensions
@@ -190,16 +191,18 @@ namespace Core
         }
     }
 
-    void Map::render(bool withBorder) {
+    void Map::render(bool withBorder)
+    {
         // Traverse all tiles in the Map
         for (int i = 0; i < getNumTiles(); i++)
         {
             // Render each tile of the map!
-            int* coordsPtr = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
-            int coords[16];
-            std::memcpy(coords, coordsPtr, sizeof(coords));
+            float *coordsPtr = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+            float coords[16];
+            std::memcpy(coords, coordsPtr, sizeof(int) * 16);
 
-            if (withBorder) {
+            if (withBorder)
+            {
                 int border = 1;
                 // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
                 // P1
@@ -217,19 +220,42 @@ namespace Core
                 coords[13] += border;
             }
 
-
             // Bind the correct sprite if it exists
-            if (mTileArray[i].isInvisibleTile()) {
-                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible 
+            if (mTileArray[i].isInvisibleTile())
+            {
+                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible
             }
-            else if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
-                glBindTexture(GL_TEXTURE_2D, MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())->getOpenGLTextureID());
+            else if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID()))
+            {
+                Sprite *sprite = MapPage::mGameSprites->atID(mTileArray[i].getSpriteID());
+                glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID());
+                if (sprite->getType() != SPRITE_TYPES::FULL)
+                {
+                    // If the sprite is a looping sprite, the current sprite's texture coordinates may need to change, so we update and get them before rendering
+                    if (sprite->getType() == SPRITE_TYPES::LOOPING)
+                    {
+                        ((LoopingSprite *)sprite)->updateTextureCoords();
+                    }
+                    float *texcoords = sprite->getTextureCoordinates();
+                    // P1 texture coords
+                    coords[2] = texcoords[0];
+                    coords[3] = texcoords[1];
+                    // P2 texture coords
+                    coords[6] = texcoords[2];
+                    coords[7] = texcoords[3];
+                    // P3 texture coords
+                    coords[10] = texcoords[4];
+                    coords[11] = texcoords[5];
+                    // P4 texture coords
+                    coords[14] = texcoords[6];
+                    coords[15] = texcoords[7];
+                }
             }
 
             // Buffer and draw tile
             // NOTE: Change the int multiplier whenever new data will be added to the shaders.
             //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
-            glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), coords, GL_DYNAMIC_DRAW);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
 

@@ -22,7 +22,7 @@ namespace Core
     public:
         Page();
         Page(std::string name);
-        explicit Page(const Page& other);
+        explicit Page(const Page &other);
         ~Page();
 
         void setName(std::string name);
@@ -58,6 +58,11 @@ namespace Core
         void setGame(Game* game) {
             mGame = game;
         }
+        
+        void setInScriptId(int);
+        int getInScriptId();
+        void setOutScriptId(int);
+        int getOutScriptId();
 
     protected:
         // the entity that bind to keys of current page
@@ -70,5 +75,7 @@ namespace Core
         std::vector<Entity *> entityList;
 
         Game* mGame = nullptr;
+        int mInScriptId;
+        int mOutScriptId;
     };
 }

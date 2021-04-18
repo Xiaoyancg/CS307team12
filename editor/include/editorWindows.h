@@ -2,6 +2,7 @@
 
 #include "windows/GameWindow.h"
 #include "windows/MapWindow.h"
+#include "windows/SpriteSheetWindow.h"
 
 #include "windows/EntityEditor.h"
 #include "windows/PageEditor.h"

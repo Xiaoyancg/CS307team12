@@ -22,23 +22,28 @@ namespace Core
 		}
 
 		void setCoords(int *coords); // coords points to an array of 8 ints, 4 pairs of coordinates
-		int *getCoords();
+		float *getCoords();
 
-		bool isInvisibleTile() {
+		bool isInvisibleTile()
+		{
 			return mIsInvisible;
 		}
-		void setInvisibleTile(bool value) {
+		void setInvisibleTile(bool value)
+		{
 			mIsInvisible = value;
 		}
 
-		bool isSolid() {
+		bool isSolid()
+		{
 			return mSolid;
 		}
-		void setSolid(bool solid) {
+		void setSolid(bool solid)
+		{
 			mSolid = solid;
 		}
+
 	private:
-		int mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
+		float mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
 
 		// Basic Tile variables
 		int mCurrentDepth = 0; // Not implemented yet, but saving for later

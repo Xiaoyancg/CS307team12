@@ -18,7 +18,7 @@ namespace Core
         // spriteID is unimplemented, but will reference a specific loaded sprite
         Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
         Entity(std::string);
-        explicit Entity(const Entity& other);
+        explicit Entity(const Entity &other);
 
         // Calculate the coordinates of the corners based on location and scale
         // This will set 'mCoords'
@@ -93,6 +93,10 @@ namespace Core
         void setParentPage(Page* page) {
             mParentPage = page;
         }
+        void setInScriptId(int);
+        int getInScriptId();
+        void setOutScriptId(int);
+        int getOutScriptId();
 
     private:
         // Basic Entity variables
@@ -100,7 +104,7 @@ namespace Core
         glm::vec2 mLocation; // Center of the entity (x, y)
         glm::vec2 mScale;    // (x width, y height)
         double mRotation = 0;
-        int mCoords[16]; // Stores 4 pairs of (x, y) int coordinates (8 total), one for each corner of the entity
+        float mCoords[16]; // Stores 4 pairs of (x, y) int coordinates (8 total), one for each corner of the entity
 
         // Sprite ID used to index sprites loaded into memory from the Game class
         // This isn't used yet though, I'm just adding it for later
@@ -113,6 +117,11 @@ namespace Core
         bool mControlledEntity = false;
 
         Page* mParentPage = nullptr;
+
+        /// \brief when the entity enter, game should run this (custom) script
+        ///
+        int mInScriptId = -1;
+        int mOutScriptId = -1;
 
     };
 }
