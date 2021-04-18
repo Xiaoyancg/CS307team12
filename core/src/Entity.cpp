@@ -75,7 +75,10 @@ namespace Core
     }
 
     Entity::Entity(std::string s)
-        : mEntityName(s), mIsInvisible(false) {}
+        : mEntityName(s), mIsInvisible(true)
+    {
+        mScale = glm::vec2(0.0);
+    }
 
     void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale)
     {
@@ -140,11 +143,13 @@ namespace Core
         return mScale;
     }
 
-    bool Entity::isInvisibleEntity() {
+    bool Entity::isInvisibleEntity()
+    {
         return mIsInvisible;
     }
 
-    void Entity::setInvisibleEntity(bool value) {
+    void Entity::setInvisibleEntity(bool value)
+    {
         mIsInvisible = value;
     }
 
@@ -162,8 +167,9 @@ namespace Core
     {
         glActiveTexture(GL_TEXTURE0);
 
-        if (mIsInvisible) {
-            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible 
+        if (mIsInvisible)
+        {
+            glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible
         }
         else if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
         {
