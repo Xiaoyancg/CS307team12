@@ -315,6 +315,12 @@ namespace Core
     {
         _logicManager.deleteSignal(scriptId);
     }
+
+    std::vector<Script> *Game::getScriptsList()
+    {
+        return _logicManager.getScriptList();
+    }
+
     Game *Game::parse(nlohmann::json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
