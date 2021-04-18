@@ -127,7 +127,7 @@ void Editor::createWindows() {
 void Editor::processInput()
 {
     SDL_Event evt;
-    while (SDL_PollEvent(&evt))
+    if (SDL_PollEvent(&evt))
     {
         ImGui_ImplSDL2_ProcessEvent(&evt);
         if (evt.type == SDL_QUIT)
@@ -158,7 +158,7 @@ void Editor::processInput()
             }
             if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
             {
-                game->handleInput(evt);
+                game->handleWindowEvent(evt);
             }
         }
         if (evt.type == SDL_KEYUP)
@@ -377,6 +377,7 @@ void Editor::runGame() {
     if (!gameRunning) {
         savedGame = game;
         game = new Core::Game(*game);
+        ((GameWindow*) windowList[GAMEVIEW])->updateLastTime();
         gameRunning = true;
     }
 }

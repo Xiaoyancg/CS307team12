@@ -15,11 +15,13 @@ namespace Core
     Page::Page(const Page& other) :
         name(other.name),
         backgroundColor(other.backgroundColor),
-        entityList(other.entityList.size())
+        entityList(other.entityList.size()),
+        mGame(other.mGame)
     {
         // TODO: restore ctrl entity and _id
         for (int i = 0; i < other.entityList.size(); i++) {
             entityList[i] = new Entity(*other.entityList[i]);
+            entityList[i]->setParentPage(this);
             if (entityList[i]->isControlledEntity()) {
                 ctrlEntity = entityList[i];
             }
@@ -136,6 +138,12 @@ namespace Core
         return this->entityList;
     }
 
+    void Page::update(float dt) {
+        for (auto entity : entityList) {
+            entity->update(dt);
+        }
+    }
+
     void Page::render()
     {
         for (Entity *e : this->getEntityList())
@@ -165,6 +173,7 @@ namespace Core
         for (json entityJson : entityVec)
         {
             Entity* ent = Entity::parse(entityJson);
+            ent->setParentPage(page);
             if (ent->isControlledEntity()) {
                 page->setCtrlEntity(ent);
             }
