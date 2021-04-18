@@ -97,7 +97,7 @@ void MapEditor::drawCreateMapPopup() {
 			// creates a new map with map_name specified by user and
 			// dimensions as specified by user UNDO
 			std::string mname = map_name;
-			glm::vec2 dimensions = glm::vec2(dim1, dim2);
+			glm::ivec2 dimensions = glm::ivec2(dim1, dim2);
 			auto action = [this, mname, dimensions]() {
 				Core::Map *new_map = new Core::Map(mname, dimensions, 64);
 				Core::MapPage *map_page =

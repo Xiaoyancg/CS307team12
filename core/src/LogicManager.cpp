@@ -374,8 +374,8 @@ namespace Core
     }
 
     LogicManager::LogicManager() {}
-    LogicManager::LogicManager(std::vector<Page *> *pageList, Page **currPage)
-        : _pageList(pageList), _currPage(currPage) {}
+    LogicManager::LogicManager(std::vector<Page *>* pageList)
+        : _pageList(pageList) {}
 
     LogicManager::~LogicManager() {}
 }

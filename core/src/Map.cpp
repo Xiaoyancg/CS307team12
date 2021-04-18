@@ -4,7 +4,7 @@
 namespace Core
 {
     // Takes a scale, the number of tiles in the x and y direction
-    Map::Map(std::string name, glm::vec2 dimensions, int tileSize)
+    Map::Map(std::string name, glm::ivec2 dimensions, int tileSize)
         : mMapDimensions(dimensions), mTileSize(tileSize), mMapName(name)
     {
         // Create map
@@ -39,7 +39,7 @@ namespace Core
     }
 
     // Set mMapDimensions to new dimensions
-    void Map::setDimensions(glm::vec2 dimensions)
+    void Map::setDimensions(glm::ivec2 dimensions)
     {
         if (dimensions.x < 0 || dimensions.y < 0)
         {

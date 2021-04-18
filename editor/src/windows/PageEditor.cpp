@@ -140,7 +140,7 @@ void PageEditor::draw() {
                 }
                 if (idx != -1 && game->getPageList().size() != 1)
                 {
-                    Core::Page savedPage = *pList[idx];
+                    Core::Page savedPage(*pList[idx]);
                     auto action = [this, pname]() {
                         editor->getGamePtr()->deletePage(pname);
                     };

@@ -9,11 +9,26 @@ namespace Core
     // =========================
     // CONSTRUCTOR
     Page::Page() : Page("empty")
-    {
-    }
+    {}
     Page::Page(std::string name) : name(name)
+    {}
+    Page::Page(const Page& other) :
+        name(other.name),
+        backgroundColor(other.backgroundColor),
+        entityList(other.entityList.size())
     {
-        ctrlEntity = nullptr;
+        // TODO: restore ctrl entity and _id
+        for (int i = 0; i < other.entityList.size(); i++) {
+            entityList[i] = new Entity(*other.entityList[i]);
+            if (entityList[i]->isControlledEntity()) {
+                ctrlEntity = entityList[i];
+            }
+        }
+    }
+    Page::~Page() {
+        for (auto entity : entityList) {
+            delete entity;
+        }
     }
 
     // =========================

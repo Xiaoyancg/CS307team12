@@ -27,6 +27,19 @@ namespace Core
         calculateCoords(location, scale);
     }
 
+    Entity::Entity(const Entity& other) :
+        mEntityName(other.mEntityName),
+        mLocation(other.mLocation),
+        mScale(other.mScale),
+        mRotation(other.mRotation),
+        mSpriteID(other.mSpriteID),
+        mIsInvisible(other.mIsInvisible),
+        mControlledEntity(other.mControlledEntity)
+    {
+        // TODO: restore _entityId
+        calculateCoords(mLocation, mScale);
+    }
+
     // CONSTRUCTOR
 
     // =========================
