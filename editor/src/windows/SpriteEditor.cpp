@@ -1,4 +1,5 @@
 #include "windows/SpriteEditor.h"
+#include "windows/SpriteSheetWindow.h"
 
 
 void SpriteEditor::draw() {
@@ -28,7 +29,7 @@ void SpriteEditor::draw() {
             ImGui::Text("Set Sprite ID:");
             ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
             ImGui::Text(editor->getCurrentComponentList()[CUR_SPRITE].c_str());
-            if (ImGui::Button("Import Sprite From File"))
+            if (ImGui::Button("Import Sprite"))
             {
                 sprite_sheet = false;
                 importDialog = ImGui::FileBrowser(
@@ -36,22 +37,19 @@ void SpriteEditor::draw() {
                 importDialog.SetTypeFilters({".jpg", ".png"});
                 importDialog.Open();
             }
-            if (ImGui::Button("Import SpriteSheet From File"))
+            if (ImGui::Button("Import SpriteSheet"))
             {
                 sprite_sheet = true;
                 importDialog = ImGui::FileBrowser(
                     ImGuiFileBrowserFlags_NoTitleBar);
                 importDialog.SetTypeFilters({ ".jpg", ".png" });
                 importDialog.Open();
-            }            
+            }
             if (ImGui::Button("Import Sprite From SpriteSheet"))
             {
-                editor->getWindowList()[SPRITESHEET]->setVisible(true);
-
-            }
-            if (ImGui::Button("Import Looping Sprite From SpriteSheet"))
-            {
-
+                if (editor->getCurrentSpriteSheet() >= 0) {
+                    editor->getWindowList()[SPRITESHEET]->setVisible(true);
+                }
             }
             if (ImGui::Button("Show Sprite Information"))
             {
@@ -163,7 +161,7 @@ void SpriteEditor::draw() {
             {
                 if (sprite_sheet) {
                     int ssid = editor->getGamePtr()->createSpriteSheet(editor->getCurrentComponentList()[CUR_SPRITESHEET], filePath, spriteID);
-                    editor->setCurrentSpriteSheet(editor->getGamePtr()->getSpriteSheetFromID(ssid));
+                    editor->setCurrentSpriteSheet(ssid);
                 }
                 else {
                     editor->getGamePtr()->createSprite(editor->getCurrentComponentList()[CUR_SPRITE], filePath, spriteID);
@@ -173,7 +171,7 @@ void SpriteEditor::draw() {
             {
                 if (sprite_sheet) {
                     int ssid = editor->getGamePtr()->createSpriteSheet(editor->getCurrentComponentList()[CUR_SPRITESHEET], filePath);
-                    editor->setCurrentSpriteSheet(editor->getGamePtr()->getSpriteSheetFromID(ssid));
+                    editor->setCurrentSpriteSheet(ssid);
                 }
                 else {
                     editor->getGamePtr()->createSprite(editor->getCurrentComponentList()[CUR_SPRITE], filePath);

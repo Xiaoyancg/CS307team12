@@ -234,9 +234,11 @@ namespace Core
             else if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID())) {
                 Sprite* sprite = MapPage::mGameSprites->atID(mTileArray[i].getSpriteID());
                 glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID());
-                if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+                if (sprite->getType() != SPRITE_TYPES::FULL) {
                     // If the sprite is a looping sprite, the current sprite's texture coordinates may need to change, so we update and get them before rendering
-                    ((LoopingSprite*)sprite)->updateTextureCoords();
+                    if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+                        ((LoopingSprite*)sprite)->updateTextureCoords();
+                    }
                     float* texcoords = sprite->getTextureCoordinates();
                     // P1 texture coords
                     coords[2] = texcoords[0];

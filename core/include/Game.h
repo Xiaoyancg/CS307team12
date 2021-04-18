@@ -22,6 +22,7 @@
 #include "FullSprite.h" // Needed for SpriteSheets
 #include "MenuPage.h"
 #include "LogicManager.h"
+#include "SpriteHighlighter.h"
 
 // page list iterator
 #define __plitr std::vector<Page *>::iterator

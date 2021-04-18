@@ -97,11 +97,11 @@ public:
 	void setCurrentMap(Core::Map* value) {
 		currentMap = value;
 	}
-	Core::SpriteSheet* getCurrentSpriteSheet() {
+	int getCurrentSpriteSheet() {
 		return currentSpriteSheet;
 	}
 
-	void setCurrentSpriteSheet(Core::SpriteSheet* value) {
+	void setCurrentSpriteSheet(int value) {
 		currentSpriteSheet = value;
 	}
 
@@ -131,7 +131,7 @@ private:
 	std::vector<Window*> windowList;
 
 	Core::Map* currentMap = nullptr;
-	Core::SpriteSheet* currentSpriteSheet = nullptr;
+	int currentSpriteSheet = -1;
 
 	// main texture color buffer object
 	// Game gets rendered onto this, and this is used as an Image with ImGUI

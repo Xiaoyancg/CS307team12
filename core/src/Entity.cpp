@@ -221,9 +221,11 @@ namespace Core
         {
             Sprite* sprite = mGameSprites->atID(mSpriteID);
             glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID()); // Bind correct sprite
-            if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+            if (sprite->getType() != SPRITE_TYPES::FULL) {
                 // If the sprite is a looping sprite, the current sprite's texture coordinates may need to change, so we update and get them before rendering
-                ((LoopingSprite*)sprite)->updateTextureCoords();
+                if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+                    ((LoopingSprite*)sprite)->updateTextureCoords();
+                }
                 float* texcoords = sprite->getTextureCoordinates();
                 // P1 texture coords
                 mCoords[2] = texcoords[0];

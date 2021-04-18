@@ -19,7 +19,10 @@ public:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	void draw();
+
 private:
 	GLuint mSpriteSheetTexCBO;
 	GLuint mSpriteSheetFBO;
+
+	Core::SpriteHighlighter mSpriteHighlighter;
 };
