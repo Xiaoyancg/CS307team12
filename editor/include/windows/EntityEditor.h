@@ -19,4 +19,5 @@ private:
     int x_pos;
     int y_pos;
     int entity_width = 0, entity_height = 0;
+    int sprite_id;
 };
