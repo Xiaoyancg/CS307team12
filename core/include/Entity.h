@@ -17,7 +17,7 @@ namespace Core
         // spriteID is unimplemented, but will reference a specific loaded sprite
         Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
         Entity(std::string);
-        explicit Entity(const Entity& other);
+        explicit Entity(const Entity &other);
 
         // Calculate the coordinates of the corners based on location and scale
         // This will set 'mCoords'
@@ -83,6 +83,11 @@ namespace Core
         int getEntityId();
         void setEntityId(int entityId);
 
+        void setInScriptId(int);
+        int getInScriptId();
+        void setOutScriptId(int);
+        int getOutScriptId();
+
     private:
         // Basic Entity variables
         std::string mEntityName;
@@ -95,11 +100,13 @@ namespace Core
         // This isn't used yet though, I'm just adding it for later
         int mSpriteID = -1;
 
-
         int _entityId;
 
         bool mIsInvisible;
         bool mControlledEntity;
-
+        /// \brief when the entity enter, game should run this (custom) script
+        ///
+        int mInScriptId = -1;
+        int mOutScriptId = -1;
     };
 }

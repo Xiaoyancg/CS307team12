@@ -21,7 +21,7 @@ namespace Core
     public:
         Page();
         Page(std::string name);
-        explicit Page(const Page& other);
+        explicit Page(const Page &other);
         ~Page();
 
         void setName(std::string name);
@@ -49,6 +49,11 @@ namespace Core
         // TODO: should have error checking
         void setCtrlEntity(Entity *);
 
+        void setInScriptId(int);
+        int getInScriptId();
+        void setOutScriptId(int);
+        int getOutScriptId();
+
     protected:
         // the entity that bind to keys of current page
 
@@ -58,5 +63,7 @@ namespace Core
         std::string name;
         glm::vec4 backgroundColor;
         std::vector<Entity *> entityList;
+        int mInScriptId;
+        int mOutScriptId;
     };
 }
