@@ -66,6 +66,7 @@ void EntityEditor::draw()
                         y_pos = entity->getLocation().y;
                         entity_width = entity->getScale().x;
                         entity_height = entity->getScale().y;
+                        sprite_id = entity->getSpriteID();
                         editor->getCurrentComponentList()[CUR_ENTITY] = entity->getName();
                     }
 
@@ -283,8 +284,56 @@ void EntityEditor::draw()
                     entity_height = 0;
                 }
             }
-        }
 
+            Core::Entity *sprite_ent = NULL;
+            ImGui::Text("");
+            ImGui::Text("SpriteID:");
+            ImGui::PushItemWidth(80);
+            ImGui::SameLine();
+            ImGui::InputInt("##sprite_id", &sprite_id);
+            ImGui::SameLine();
+            HelpMarker("Choose a int value between [0,1000], negatives is default");
+            if (ImGui::Button("Change Entity Id"))
+            {
+                if (sprite_id >= 0 && sprite_id <= 1000 || sprite_id < 0)
+                {
+                    if (sprite_id < 0)
+                        sprite_id = -100;
+                    for (Core::Entity *e : currPage->getEntityList())
+                    {
+                        if (e->getName() == editor->getCurrentComponentList()[CUR_ENTITY])
+                        {
+                            //set location as specified by user
+                            //UNDO
+                            auto newId = sprite_id;
+                            auto currentId = e->getSpriteID();
+                            auto action = [e, newId, &sprite_ent]() {
+                                e->setSpriteID(newId);
+                                sprite_ent = e;
+                            };
+                            auto restore = [e, currentId, &sprite_ent]() {
+                                e->setSpriteID(currentId);
+                                sprite_ent = e;
+                            };
+                            pushAction(action, restore);
+                            action();
+                            //END UNDO
+
+                            break;
+                        }
+                    }
+                    //render the new entity location
+                    if (sprite_ent != NULL)
+                    {
+                        sprite_ent->render();
+                    }
+                }
+                else
+                {
+                    sprite_id = -100;
+                }
+            }
+        }
         if (entityInfo)
         {
             ImGui::OpenPopup("Entity Information");
