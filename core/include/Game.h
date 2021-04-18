@@ -34,6 +34,8 @@ namespace Core
     class Game
     {
     public:
+        static const int FPS;
+
         // =========================
         // PUBLIC VARIABLE
         static int width;
@@ -144,8 +146,10 @@ namespace Core
         void initShader();
 
         void sdl_die(const char *err_msg);
-        void handleInput(SDL_Event event);
+        void handleWindowEvent(SDL_Event event);
 
+        // update all objects with a delta time
+        void update(float dt);
         // render the all currpage with entities
         void render();
 
@@ -161,6 +165,8 @@ namespace Core
 
 
         void onGameCreation();
+
+        bool isKeyPressed(SDL_Keycode kc);
 
     private:
         std::string gameName;
@@ -194,8 +200,11 @@ namespace Core
         // The context of this Game
         SDL_GLContext gl_context;
 
+        const Uint8* keyboardState;
+
         // The shaders, set by initShaders before entering the game loop
         unsigned int shaderProgram = -1;
+        unsigned int mCameraUniform = -1;
 
         // FIXME: to Core
         // Holds pointers to all the game's sprites and handles ID's properly
