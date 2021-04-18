@@ -128,7 +128,7 @@ void EntityEditor::draw()
                 }
                 if (idx > -1)
                 {
-                    Core::Entity savedEntity = *eList[idx];
+                    Core::Entity savedEntity(*eList[idx]);
                     auto action = [this, currentEntityName]() {
                         editor->getGamePtr()->getCurrPage()->deleteEntity(currentEntityName);
                     };

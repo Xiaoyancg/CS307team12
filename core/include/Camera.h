@@ -46,7 +46,7 @@ namespace Core
         }
 
         glm::mat4 getTranslate();
-        glm::mat4 Camera::getOrtho();
+        glm::mat4 getOrtho();
         // Returns the matrix transformation used in the main shader
         glm::mat4 getMatrix(); // getOrtho * getTranslate
 

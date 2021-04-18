@@ -11,32 +11,40 @@ namespace Core
 	class Tile
 	{
 	public:
-		// Sets the spriteID to -1
-		Tile ();
-
-		void setSpriteID ( int id )
+		void setSpriteID(int id)
 		{
 			mSpriteID = id;
 		}
 
-		int getSpriteID ()
+		int getSpriteID()
 		{
 			return mSpriteID;
 		}
 
-		void setCoords ( int *coords ); // coords points to an array of 8 ints, 4 pairs of coordinates
-		int *getCoords ();
+		void setCoords(int *coords); // coords points to an array of 8 ints, 4 pairs of coordinates
+		int *getCoords();
 
-		bool isInvisibleTile();
-		void setInvisibleTile(bool value);
+		bool isInvisibleTile() {
+			return mIsInvisible;
+		}
+		void setInvisibleTile(bool value) {
+			mIsInvisible = value;
+		}
 
+		bool isSolid() {
+			return mSolid;
+		}
+		void setSolid(bool solid) {
+			mSolid = solid;
+		}
 	private:
 		int mCoords[16]; // 4 pairs of (x,y) coordinates in pixels
 
 		// Basic Tile variables
-		int mCurrentDepth; // Not implemented yet, but saving for later
+		int mCurrentDepth = 0; // Not implemented yet, but saving for later
 
-		bool mIsInvisible;
+		bool mIsInvisible = false;
+		bool mSolid = false;
 
 		// Sprite ID used to index sprites loaded into memory from the Game class
 		// This isn't used yet though, I'm just adding it for later

@@ -80,7 +80,8 @@ public:
 	bool isGameRunning() {
 		return gameRunning;
 	}
-	void setGameRunning(bool value);
+	void runGame();
+	void stopGame();
 
 	std::vector<Window*>& getWindowList() {
 		return windowList;
@@ -111,7 +112,8 @@ private:
 	bool running = false;
 
 	bool gameRunning = false;
-	Core::Game *game = nullptr;
+	Core::Game* game = nullptr;
+	Core::Game* savedGame = nullptr;
 	std::string gameFilePath;
 
 	SDL_Window *sdlWindow = nullptr;

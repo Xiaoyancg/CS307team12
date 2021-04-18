@@ -16,8 +16,9 @@ namespace Core
         // 'rotation' is the rotation of the entity
         // spriteID is unimplemented, but will reference a specific loaded sprite
         Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
-
         Entity(std::string);
+        explicit Entity(const Entity& other);
+
         // Calculate the coordinates of the corners based on location and scale
         // This will set 'mCoords'
         void calculateCoords(glm::vec2 location, glm::vec2 scale);

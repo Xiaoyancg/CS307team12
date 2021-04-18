@@ -60,7 +60,7 @@ target_include_directories(imgui
 set(GLM_DIR "${PROJECT_SOURCE_DIR}/lib/glm")
 add_library(glm INTERFACE)
 target_include_directories(glm INTERFACE ${GLM_DIR})
-target_compile_options(glm INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/wd5033>)
+target_compile_options(glm INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/wd5033 /wd4996>)
 
 set(IMFB_DIR "${PROJECT_SOURCE_DIR}/lib/imgui-filebrowser")
 add_library(imfb INTERFACE)

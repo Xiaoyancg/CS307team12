@@ -336,17 +336,33 @@ void Editor::saveGameAs(const std::string filePath) {
 }
 
 void Editor::freeGame() {
+    stopGame();
     currentComponent.clear();
     mTexCBO = 0;//TODO: FREE
 
-    delete game;
-    game = nullptr;
+    if (game != nullptr) {
+        delete game;
+        game = nullptr;
+    }
 
     currentMap = nullptr;
 
     gameFilePath.clear();
 }
 
-void Editor::setGameRunning(bool value) {
-    gameRunning = value;
+void Editor::runGame() {
+    if (!gameRunning) {
+        savedGame = game;
+        game = new Core::Game(*game);
+        gameRunning = true;
+    }
+}
+
+void Editor::stopGame() {
+    if (gameRunning) {
+        gameRunning = false;
+        delete game;
+        game = savedGame;
+        savedGame = nullptr;
+    }
 }

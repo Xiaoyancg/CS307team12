@@ -51,10 +51,10 @@ Core::Tile* MapWindow::handleClick() {
             // The click is valid within the MapView window.
             Core::Camera* cam = editor->getCurrentMap()->getCamera();
             if (wheel > 0) {
-                    cam->setZoom(cam->getZoom() - .05); // Zoom in 
+                    cam->setZoom(cam->getZoom() - 0.05f); // Zoom in 
             }
             else if (wheel < 0) {
-                cam->setZoom(cam->getZoom() + .05); // Zoom out
+                cam->setZoom(cam->getZoom() + 0.05f); // Zoom out
             }
         }
     }
@@ -117,11 +117,6 @@ void MapWindow::draw()
             // --but that won't work without a shader rework
             glBindTexture(GL_TEXTURE_2D, mMapTexCBO);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, icanvas_size.x, icanvas_size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            // make it so that the texture goes on forever with only the background color
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-            float bgColArr[] = { bgCol.r, bgCol.g, bgCol.b, bgCol.a };
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, bgColArr);
             glBindTexture(GL_TEXTURE_2D, 0);
 
             Core::Camera* cam = mapPage->getCurrCamera();

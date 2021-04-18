@@ -11,14 +11,14 @@ namespace Core
 	{
 	public:
 		// Takes a scale, the number of tiles in the x and y direction
-		Map(std::string name, glm::vec2 scale, int tileSize);
+		Map(std::string name, glm::ivec2 dimensions, int tileSize);
 		~Map();
 
 		// Creates a
 		void setMapTileSpritesFromArray(int *spriteIDMap);
 
 		// Set mMapDimensions
-		void setDimensions(glm::vec2 dimensions);
+		void setDimensions(glm::ivec2 dimensions);
 
 		// Get mMapDimensions
 		glm::ivec2 getDimensions();
