@@ -245,7 +245,7 @@ namespace Core
 
     Script *LogicManager::createScript(std::string name)
     {
-        _scriptList.push_back(Script(std::string name));
+        _scriptList.push_back(Script(name));
         return &(_scriptList.at(_scriptList.size() - 1));
     }
 
