@@ -186,8 +186,8 @@ namespace Core
         // Camera used to move map
         Camera *mCamera;
 
-        // page pointer
-        Page *currPage = nullptr;
+        // page index
+        int currPageIdx = -1;
 
         // contains all pages
         std::vector<Page *> pageList;
