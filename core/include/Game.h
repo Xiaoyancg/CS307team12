@@ -22,9 +22,6 @@
 #include "MenuPage.h"
 #include "LogicManager.h"
 
-// page list iterator
-#define __plitr std::vector<Page *>::iterator
-#define __pl std::vector<Page *>
 namespace Core
 {
 
@@ -48,6 +45,8 @@ namespace Core
         Game() : Game("Untitled Game") {}
         Game(nlohmann::json &json);
         Game(std::string gameName);
+        explicit Game(const Game &other);
+        ~Game();
 
         void initialize();
 
@@ -116,6 +115,7 @@ namespace Core
 
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
+        void setCurrentPage(int idx);
         Page *getCurrPage();
 
         /// \brief Create a default Signal object
@@ -193,20 +193,20 @@ namespace Core
         std::vector<Page *> pageList;
 
         // Each game needs at least one MapPage, so heres a pointer to the default one
-        MapPage *mGameMapPage;
+        int currMapPageIdx = -1;
 
         // the current in display pagelist
         // FIXME: why use int?
         std::vector<int> inDisplayList;
 
         // the render window of this Game
-        SDL_Window *window;
+        SDL_Window *window = nullptr;
 
         // The context of this Game
         SDL_GLContext gl_context;
 
         // The shaders, set by initShaders before entering the game loop
-        unsigned int shaderProgram;
+        unsigned int shaderProgram = -1;
 
         // FIXME: to Core
         // Holds pointers to all the game's sprites and handles ID's properly

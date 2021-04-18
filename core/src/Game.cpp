@@ -32,13 +32,43 @@ namespace Core
         this->parse(json);
     }
 
+    Game::Game(const Game& other) :
+        gameName(other.gameName),
+        author(other.author),
+        version(other.version),
+        lMTime(other.lMTime),
+        note(other.note),
+        _logicManager(other._logicManager),
+        mCamera(new Camera(*other.mCamera)),
+        currPageIdx(other.currPageIdx),
+        pageList(other.pageList.size()),
+        currMapPageIdx(other.currMapPageIdx),
+        inDisplayList(other.inDisplayList),
+        window(other.window),
+        gl_context(other.gl_context),
+        shaderProgram(other.shaderProgram),
+        mGameSprites(other.mGameSprites)
+    {
+        // TODO: restore current page, map, camera, and ctrl entity
+        for (int i = 0; i < other.pageList.size(); i++) {
+            pageList[i] = new Page(*other.pageList[i]);
+        }
+    }
+
+    Game::~Game()
+    {
+        for (auto page : pageList) {
+            delete page;
+        }
+        delete mCamera;
+    }
+
     void Game::initialize()
     {
-        mGameMapPage = new MapPage("Default MapPage");
         Entity::mGameSprites = &mGameSprites;
         MapPage::mGameSprites = &mGameSprites;
 
-        _logicManager = LogicManager(&pageList, &currPage);
+        _logicManager = LogicManager(&pageList);
         // Create the shaders
         if (SDL_WasInit(SDL_INIT_VIDEO) == 0)
         {
@@ -141,15 +171,15 @@ namespace Core
     }
     Map *Game::createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize)
     {
-        if (mGameMapPage)
+        if (currMapPageIdx != -1)
         {
-            return mGameMapPage->addMap(new Map(name, glm::vec2(cols, rows), tilesize));
+            return getDefaultMapPage()->addMap(new Map(name, glm::ivec2(cols, rows), tilesize));
         }
         return nullptr;
     }
     void Game::deleteDefaultMapPageCurrentMap()
     {
-        mGameMapPage->deleteCurrMap();
+        getDefaultMapPage()->deleteCurrMap();
     }
     MenuPage *Game::createMenuPage(std::string name, Menu *menu)
     {
@@ -235,24 +265,24 @@ namespace Core
 
     std::vector<Map *> Game::getDefaultMapPageMaps()
     {
-        return mGameMapPage->getMaps();
+        return getDefaultMapPage()->getMaps();
     }
 
     MapPage *Game::getDefaultMapPage()
     {
-        return mGameMapPage;
+        return currMapPageIdx != -1 ? (MapPage*) pageList[currMapPageIdx] : nullptr;
     }
 
     // This function is called from the Editor and will render the current Map onto the MapView window in ImGui
     void Game::renderDefaultMapPage()
     {
-        glm::ivec2 dims = mGameMapPage->getCurrMap()->getCamera()->getDimensions();
+        glm::ivec2 dims = getDefaultMapPage()->getCurrMap()->getCamera()->getDimensions();
         //glViewport(0, 0, dims.x, dims.y);
         // Use the Map's Camera as opposed to the Game's camera. This lets each Map be centered and unaffected by the Game's Camera's movement
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mGameMapPage->getCurrCamera()->getMatrix()));
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(getDefaultMapPage()->getCurrCamera()->getMatrix()));
 
         // Render the Map onto the MapPage's Framebuffer set by Editor. (TODO: Fix this approach)
-        mGameMapPage->render();
+        getDefaultMapPage()->render();
     }
 
     //* -------------------- LOGIC WRAPPER ------------------- *//
@@ -321,7 +351,7 @@ namespace Core
         }
         // TODO parse should set current
         // but the info of current in json is not implemented yet
-        setCurrentPage(this->pageList.at(0));
+        setCurrentPage(0);
 
         return this;
     }
@@ -581,16 +611,16 @@ namespace Core
 
     Page *Game::getCurrPage()
     {
-        return this->currPage;
+        return currPageIdx != -1 ? pageList[currPageIdx] : nullptr;
     }
 
     void Game::handleInput(SDL_Event event)
     {
         glm::vec2 loc;
         glm::vec2 scale;
-        if (currPage->getCtrlEntity() != nullptr)
+        if (getCurrPage()->getCtrlEntity() != nullptr)
         {
-            auto currCtrlEntity = currPage->getCtrlEntity();
+            auto currCtrlEntity = getCurrPage()->getCtrlEntity();
             loc = currCtrlEntity->getLocation();
             scale = currCtrlEntity->getScale();
             float moveBy = 5;
@@ -672,7 +702,15 @@ namespace Core
     }
     void Game::setCurrentPage(Page *p)
     {
-        this->currPage = p;
+        for (int i = 0; i < pageList.size(); i++) {
+            if (p == pageList[i]) {
+                currPageIdx = i;
+                break;
+            }
+        }
+    }
+    void Game::setCurrentPage(int idx) {
+        currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
     }
 
     // only render graphics so can be used in editor
@@ -682,17 +720,17 @@ namespace Core
         // Set Camera matrix uniform
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
 
-        glClearColor(0.1, 0.2, 0.59, 1.0);
+        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        if (currPage != nullptr)
+        if (getCurrPage() != nullptr)
         {
             // TODO: enable bg color
             //glm::vec4 pageColor = currPage->GetBackgroundColor ();
             //glClearColor ( pageColor.r, pageColor.g, pageColor.b, pageColor.a );
             glClear(GL_COLOR_BUFFER_BIT);
 
-            currPage->render();
+            getCurrPage()->render();
         }
     }
 
