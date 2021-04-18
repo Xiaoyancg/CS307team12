@@ -20,18 +20,21 @@ void ScriptEditor::draw()
             }
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
+                std::vector<Core::Script> *t = nullptr;
                 // Set default selected entity to be the first in the entity list
-                if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && editor->getGamePtr()->getScriptsList()->size() > 0)
+                if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && (t = editor->getGamePtr()->getScriptsList())->size() > 0)
                 {
-                    editor->getCurrentComponentList()[CUR_ENTITY] = currPage->getEntityList()[0]->getName();
+                    editor->getCurrentComponentList()[CUR_SCRIPT] = editor->getGamePtr()->getScriptsList()->at(0).getScriptName();
                 }
 
-                for (int i = 0; i < currPage->getEntityList().size(); i++)
+                for (int i = 0; t && i < t->size(); i++)
                 {
-                    auto entity = currPage->getEntityList()[i];
-                    bool is_selected = (current_entity == i);
-                    if (ImGui::Selectable(entity->getName().c_str(), is_selected))
+                    auto s = t->at(i);
+                    bool is_selected = (currScriptId == i);
+                    if (ImGui::Selectable(s.getScriptName().c_str(), is_selected))
                     {
+                        currScriptId = i;
+                        editor->getCurrentComponentList()[CUR_SCRIPT] = s.getScriptName().c_str();
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)

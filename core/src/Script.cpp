@@ -188,6 +188,7 @@ namespace Core
                               ScriptUnion())
     {
     }
+    Script::Script(std::string name) : Script(-1, ScriptType::Custom, name, ScriptUnion()) {}
 
     Script::Script(int scriptId, ScriptType scriptType, std::string scriptName,
                    ScriptUnion script)
