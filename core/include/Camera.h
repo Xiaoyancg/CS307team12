@@ -1,47 +1,50 @@
 #pragma once
 #include <glm/glm.hpp>
 
-namespace Core 
+namespace Core
 {
 
     /*
      * 2D camera with only a position attribute. 
      */
-    class Camera {
+    class Camera
+    {
     public:
+        Camera();
         Camera(
-            glm::ivec2 dimensions = glm::ivec2(1280, 720),
-            glm::ivec2 position = glm::ivec2(0, 0),
-            float zoom = 1.0f
-        ) : mPosition(position), mDimensions(dimensions), mZoom(zoom) {}
+            glm::ivec2 dimensions,
+            glm::ivec2 position,
+            float zoom);
 
         // Position
-        glm::ivec2 getPosition() {
-            return mPosition;
-        }
-        void setPosition(glm::ivec2 position) {
-            mPosition = position;
-        }
+        glm::ivec2 getPosition();
+        void setPosition(glm::ivec2 position);
         void offsetPosition(glm::ivec2 offset);
 
         // Dimensions
-        void setDimensions(int x, int y) {
+        void setDimensions(int x, int y)
+        {
             setDimensions(glm::ivec2(x, y));
         }
-        void setDimensions(glm::ivec2 dimensions) {
+        void setDimensions(glm::ivec2 dimensions)
+        {
             mDimensions = dimensions;
         }
-        glm::ivec2 getDimensions() {
+        glm::ivec2 getDimensions()
+        {
             return mDimensions;
         }
 
         // Zoom
-        void setZoom(float zoom) {
-            if (zoom > 0) {
+        void setZoom(float zoom)
+        {
+            if (zoom > 0)
+            {
                 mZoom = zoom;
             }
         }
-        float getZoom() {
+        float getZoom()
+        {
             return mZoom;
         }
 
