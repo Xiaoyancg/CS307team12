@@ -21,6 +21,8 @@ namespace Core
     public:
         Page();
         Page(std::string name);
+        explicit Page(const Page& other);
+        ~Page();
 
         void setName(std::string name);
         std::string getName();
@@ -50,7 +52,7 @@ namespace Core
     protected:
         // the entity that bind to keys of current page
 
-        Entity *ctrlEntity;
+        Entity *ctrlEntity = nullptr;
         int _id;
 
         std::string name;

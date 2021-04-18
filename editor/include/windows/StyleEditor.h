@@ -52,3 +52,5 @@ public:
 	DEFAULT_CONSTRUCTOR(StyleEditor) {}
 	void draw();
 };
+
+bool ResetStyle(int flags, ImGuiStyle& style);

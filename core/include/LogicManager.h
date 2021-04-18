@@ -166,7 +166,7 @@ namespace Core
         /// \param js
         LogicManager parse(nlohmann::json root);
         LogicManager();
-        LogicManager(std::vector<Page *> *pageList, Page **currPage);
+        LogicManager(std::vector<Page *>* pageList);
         ~LogicManager();
     };
 

@@ -1,30 +1,7 @@
-#pragma once
 #include "Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Core {
-    Camera::Camera() {
-        // Set position of the camera, defaults to (0, 0)
-        mPosition = glm::ivec2(0, 0);
-
-        // Set dimensions of camera, defaults to (1280, 720) which is the size of the Game viewport
-        // This can be changed, but I think it might be assumed to be these dimensions somewhere else in the code
-        mDimensions = glm::ivec2(1280, 720);
-
-        // Set zoom of the camera, defaults to 1.0f
-        // zoom < 1 will shrink the image, zoom > 1 will enlarge image
-        mZoom = 1.0f;
-    }
-
-    // Position
-    glm::ivec2 Camera::getPosition() {
-        return mPosition;
-    }
-
-    void Camera::setPosition(glm::ivec2 position) {
-        mPosition = position;
-    }
-
     // Calling with offset={2,2} would move the camera's position 2 pixels in the positive x and y direction
     void Camera::offsetPosition(glm::ivec2 offset) {
         // If there's nothing to offset, return
@@ -44,24 +21,6 @@ namespace Core {
         mPosition.x += ret.x;
         mPosition.y += ret.y;
         
-    }
-
-    // Dimensions
-    void Camera::setDimensions(int x, int y) {
-        mDimensions = glm::ivec2(x, y);
-    }
-    glm::ivec2 Camera::getDimensions() {
-        return mDimensions;
-    }
-
-    // Zoom
-    void Camera::setZoom(float zoom) {
-        if (zoom > 0) {
-            mZoom = zoom;
-        }
-    }
-    float Camera::getZoom() {
-        return mZoom;
     }
 
     // Get matrices
