@@ -116,6 +116,7 @@ void Editor::createWindows()
     windowList.resize(SELECT_COUNT);
     windowList[GAMEVIEW] = new GameWindow(this, default_size, mTexCBO, mFBO);
     windowList[MAPVIEW] = new MapWindow(this, default_size);
+    windowList[SPRITESHEET] = new SpriteSheetWindow(this, default_size);
 
     windowList[ENTITYEDITOR] = new EntityEditor(this, default_size);
     windowList[PAGEEDITOR] = new PageEditor(this, default_size);

@@ -26,6 +26,7 @@ enum SelectionEnum
 	DELETEPOPUP,
 	OBJECTTREE,
 	SPRITEEDITOR,
+	SPRITESHEET,
 	SCRIPTEDITOR,
 	SPLASHSCREEN,
 	LOGICEDITOR,
@@ -43,7 +44,7 @@ enum CurrentComponent
 	CUR_PAGE,
 	CUR_SCRIPT,
 	CUR_SPRITE,
-
+	CUR_SPRITESHEET,
 	COMP_COUNT,
 };
 
@@ -99,6 +100,13 @@ public:
 	void setCurrentMap(Core::Map* value) {
 		currentMap = value;
 	}
+	int getCurrentSpriteSheet() {
+		return currentSpriteSheet;
+	}
+
+	void setCurrentSpriteSheet(int value) {
+		currentSpriteSheet = value;
+	}
 
 	////////////////////////////////////////////
 	// POPUP OPENERS
@@ -135,6 +143,7 @@ private:
 	std::vector<Window*> windowList;
 
 	Core::Map* currentMap = nullptr;
+	int currentSpriteSheet = -1;
 
 	// main texture color buffer object
 	// Game gets rendered onto this, and this is used as an Image with ImGUI

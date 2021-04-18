@@ -2,7 +2,7 @@
 #include <iostream>
 namespace Core
 {
-	SpriteManager::SpriteManager() : mCurrSpriteID(0)
+	SpriteManager::SpriteManager() : mCurrSpriteID(0), mCurrSpriteSheetID(0)
 	{
 	}
 
@@ -18,7 +18,7 @@ namespace Core
 			if (mSprites[id] == nullptr)
 			{
 				// init id for sprite
-				Sprite *newSprite = new Sprite(name, filename, id);
+				Sprite *newSprite = new FullSprite(name, filename, id);
 				this->mSprites[id] = newSprite;
 				mCurrSpriteID = id + 1;
 				return id; // Return ID of the new sprite
@@ -26,33 +26,19 @@ namespace Core
 			// Otherwise, the specified sprite ID already exists, so check the next ID
 			else
 			{
-				printf("ID %d already used :( Trying SpriteID: %d\n", id, id + 1);
+				//printf("ID %d already used :( Trying SpriteID: %d\n", id, id + 1);
 				id++;
 			}
 		}
 	}
 
-	// Creates a new sprite at the correct location in mSprites
+	// Creates a new sprite at the given location in mSprites (may overwrite)
 	int SpriteManager::createSprite(std::string name, std::string filename, int id)
 	{
-		// This will loop as long as it needs to until it finds the closest valid ID
-		while (true)
-		{
-			// Check if sprite with id does not already exist
-			if (mSprites[id] == nullptr)
-			{
-				// init id for sprite
-				Sprite *newSprite = new Sprite(name, filename, id);
-				this->mSprites[id] = newSprite;
-				return id; // Return ID of the new sprite
-			}
-			// Otherwise, the specified sprite ID already exists, so check the next ID
-			else
-			{
-				printf("ID %d already used :( Trying SpriteID: %d\n", id, id + 1);
-				id++;
-			}
-		}
+		// init id for sprite
+		Sprite *newSprite = new FullSprite(name, filename, id);
+		this->mSprites[id] = newSprite;
+		return id; // Return ID of the new sprite
 	}
 
 	void SpriteManager::deleteSprite(int spriteID)
@@ -106,5 +92,132 @@ namespace Core
 		}
 
 		return 0;
+	}
+
+
+
+
+
+
+
+
+	// SPRITESHEET STUFF
+
+	int SpriteManager::createSpriteSheet(std::string name, std::string filename) {
+		unsigned int id = mCurrSpriteSheetID;
+
+		// This will loop as long as it needs to until it finds the closest valid ID
+		while (true)
+		{
+			// Check if sprite with id does not already exist
+			if (mSpriteSheets[id] == nullptr)
+			{
+				// init id for sprite
+				SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
+				this->mSpriteSheets[id] = newSpriteSheet;
+				mCurrSpriteSheetID = id + 1;
+				return id; // Return ID of the new sprite
+			}
+			// Otherwise, the specified sprite ID already exists, so check the next ID
+			else
+			{
+				//printf("ID %d already used :( Trying SpriteSheetID: %d\n", id, id + 1);
+				id++;
+			}
+		}
+	}
+
+	// This will overwrite the given id with a new spritesheet
+	int SpriteManager::createSpriteSheet(std::string name, std::string filename, int id) {
+		// init id for sprite
+		SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
+		this->mSpriteSheets[id] = newSpriteSheet;
+		return id; // Return ID of the new sprite
+	}
+	void SpriteManager::deleteSpriteSheet(int spritesheetID) {
+		delete this->mSpriteSheets[spritesheetID];
+		mSpriteSheets.erase(spritesheetID);
+	}
+	std::unordered_map<int, SpriteSheet*>& SpriteManager::getSpriteSheets() {
+		return this->mSpriteSheets;
+	}
+	SpriteSheet* SpriteManager::atSheetID(int spritesheetID) {
+		return mSpriteSheets[spritesheetID];
+	}
+
+
+
+
+
+
+
+	unsigned int SpriteManager::createPartialSprite(std::string name, int spriteID, SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions) {
+		// init id for sprite
+		int id = spriteID;
+		if (id == -1) {
+			// Find next available id starting at 0
+			id = 0;
+			// This will loop as long as it needs to until it finds the closest valid ID
+			while (true)
+			{
+				// Check if sprite with id does not already exist
+				if (mSprites[id] == nullptr)
+				{
+					// init id for sprite
+					mCurrSpriteID = id + 1;
+					break;
+				}
+				// Otherwise, the specified sprite ID already exists, so check the next ID
+				else
+				{
+					//printf("ID %d already used :( Trying SpriteID: %d\n", id, id + 1);
+					id++;
+				}
+			}
+		}
+
+		// init name for sprite
+		if (name == "") {
+			name = spritesheet->getName();
+		}
+
+
+		Sprite* newSprite = new PartialSprite(name, id, spritesheet, location, dimensions);
+		this->mSprites[id] = newSprite;
+		return id; // Return ID of the new sprite
+	}
+	unsigned int SpriteManager::createLoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpad) {
+		// init id for sprite
+		int id = spriteID;
+		if (id == -1) {
+			// Find next available id starting at 0
+			id = 0;
+			// This will loop as long as it needs to until it finds the closest valid ID
+			while (true)
+			{
+				// Check if sprite with id does not already exist
+				if (mSprites[id] == nullptr)
+				{
+					// init id for sprite
+					mCurrSpriteID = id + 1;
+					break;
+				}
+				// Otherwise, the specified sprite ID already exists, so check the next ID
+				else
+				{
+					//printf("ID %d already used :( Trying SpriteID: %d\n", id, id + 1);
+					id++;
+				}
+			}
+		}
+
+		// init name for sprite
+		if (name == "") {
+			name = spritesheet->getName();
+		}
+
+		Sprite* newSprite = new LoopingSprite(name, id, spritesheet, numImages, speed, loc, dims, xpad);
+		this->mSprites[id] = newSprite;
+		return id; // Return ID of the new sprite
 	}
 }

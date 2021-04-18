@@ -81,6 +81,24 @@ namespace Core
     void Entity::setSpriteID(int i)
     {
         this->mSpriteID = i;
+        if (mGameSprites->atID(mSpriteID)) {
+            float* texcoords = mGameSprites->atID(mSpriteID)->getTextureCoordinates();
+            // P1 texture coords
+            mCoords[2] = texcoords[0];
+            mCoords[3] = texcoords[1];
+
+            // P2 texture coords
+            mCoords[6] = texcoords[2];
+            mCoords[7] = texcoords[3];
+
+            // P3 texture coords
+            mCoords[10] = texcoords[4];
+            mCoords[11] = texcoords[5];
+
+            // P4 texture coords
+            mCoords[14] = texcoords[6];
+            mCoords[15] = texcoords[7];
+        }
     }
     int Entity::getSpriteID()
     {
@@ -105,33 +123,67 @@ namespace Core
         int lowY = location.y - halfScaleHeight;
         int highY = location.y + halfScaleHeight;
 
-        // P1
-        mCoords[0] = lowX;  // Top left x
-        mCoords[1] = highY; // Top left y
-        // P1 texture coords
-        mCoords[2] = 0;
-        mCoords[3] = 1;
+        if (mGameSprites->atID(mSpriteID)) {
+            float* texcoords = mGameSprites->atID(mSpriteID)->getTextureCoordinates();
+            // P1
+            mCoords[0] = lowX;  // Top left x
+            mCoords[1] = highY; // Top left y
+            // P1 texture coords
+            mCoords[2] = texcoords[0];
+            mCoords[3] = texcoords[1];
 
-        // P2
-        mCoords[4] = lowX; // Bottom left x
-        mCoords[5] = lowY; // Bottom left y
-        // P2 texture coords
-        mCoords[6] = 0;
-        mCoords[7] = 0;
+            // P2
+            mCoords[4] = lowX; // Bottom left x
+            mCoords[5] = lowY; // Bottom left y
+            // P2 texture coords
+            mCoords[6] = texcoords[2];
+            mCoords[7] = texcoords[3];
 
-        // P3
-        mCoords[8] = highX; // Top right x
-        mCoords[9] = highY; // Top right y
-        // P3 texture coords
-        mCoords[10] = 1;
-        mCoords[11] = 1;
+            // P3
+            mCoords[8] = highX; // Top right x
+            mCoords[9] = highY; // Top right y
+            // P3 texture coords
+            mCoords[10] = texcoords[4];
+            mCoords[11] = texcoords[5];
 
-        // P4
-        mCoords[12] = highX; // Bottom right x
-        mCoords[13] = lowY;  // Bottom right y
-        // P4 texture coords
-        mCoords[14] = 1;
-        mCoords[15] = 0;
+            // P4
+            mCoords[12] = highX; // Bottom right x
+            mCoords[13] = lowY;  // Bottom right y
+            // P4 texture coords
+            mCoords[14] = texcoords[6];
+            mCoords[15] = texcoords[7];
+        }
+        else {
+            // P1
+            mCoords[0] = lowX;  // Top left x
+            mCoords[1] = highY; // Top left y
+            // P1 texture coords
+            mCoords[2] = 0;
+            mCoords[3] = 1;
+
+            // P2
+            mCoords[4] = lowX; // Bottom left x
+            mCoords[5] = lowY; // Bottom left y
+            // P2 texture coords
+            mCoords[6] = 0;
+            mCoords[7] = 0;
+
+            // P3
+            mCoords[8] = highX; // Top right x
+            mCoords[9] = highY; // Top right y
+            // P3 texture coords
+            mCoords[10] = 1;
+            mCoords[11] = 1;
+
+            // P4
+            mCoords[12] = highX; // Bottom right x
+            mCoords[13] = lowY;  // Bottom right y
+            // P4 texture coords
+            mCoords[14] = 1;
+            mCoords[15] = 0;
+        }
+
+
     }
 
     void Entity::setLocation(glm::vec2 location)
@@ -186,7 +238,27 @@ namespace Core
         }
         else if (mSpriteID != -1 && mGameSprites->atID(mSpriteID))
         {
-            glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
+            Sprite* sprite = mGameSprites->atID(mSpriteID);
+            glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID()); // Bind correct sprite
+            if (sprite->getType() != SPRITE_TYPES::FULL) {
+                // If the sprite is a looping sprite, the current sprite's texture coordinates may need to change, so we update and get them before rendering
+                if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+                    ((LoopingSprite*)sprite)->updateTextureCoords();
+                }
+                float* texcoords = sprite->getTextureCoordinates();
+                // P1 texture coords
+                mCoords[2] = texcoords[0];
+                mCoords[3] = texcoords[1];
+                // P2 texture coords
+                mCoords[6] = texcoords[2];
+                mCoords[7] = texcoords[3];
+                // P3 texture coords
+                mCoords[10] = texcoords[4];
+                mCoords[11] = texcoords[5];
+                // P4 texture coords
+                mCoords[14] = texcoords[6];
+                mCoords[15] = texcoords[7];
+            }
         }
 
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO

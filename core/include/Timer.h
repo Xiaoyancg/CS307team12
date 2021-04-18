@@ -26,7 +26,7 @@ public:
         std::chrono::duration<double> diff = std::chrono::steady_clock::now() - mstartTick;
         return diff.count();
     }
-    void stamp() { mstartTick = std::chrono::steady_clock::now(); }
+    void stamp() { mstamp = std::chrono::steady_clock::now(); }
     double getPassedTimeFromStampInSec()
     {
         std::chrono::duration<double> diff = std::chrono::steady_clock::now() - mstamp;
