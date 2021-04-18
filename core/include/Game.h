@@ -13,6 +13,7 @@
 #include <nlohmann/json.hpp>
 
 // Parchment header
+#include "Camera.h"
 #include "Page.h"
 #include "Entity.h"
 #include "MapPage.h"
@@ -160,7 +161,7 @@ namespace Core
 
         void onGameCreation();
 
-
+    private:
         std::string gameName;
         std::string author;
         std::string version;
@@ -170,7 +171,6 @@ namespace Core
 
 
         Entity *currCtrlEntity;
-        bool useFramebuffer;
 
 
         // page list iterator: current page iterator
@@ -181,6 +181,10 @@ namespace Core
         bool editorMode;
 
         LogicManager _logicManager;
+        /* ---------------------------- MEMBER VARIABLES ---------------------------- */
+        // Camera used to move map
+        Camera* mCamera;
+
         // page pointer
         Page *currPage = nullptr;
         

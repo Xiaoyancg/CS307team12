@@ -21,8 +21,8 @@ void PageEditor::draw() {
         {
             ImGui::PushItemWidth(200);
             ImGui::Text("Input Page Name & Type:");
-            ImGui::InputText(" ", page_name, IM_ARRAYSIZE(page_name));
-            if (ImGui::BeginListBox("##1", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
+            ImGui::InputText("##page_name", page_name, IM_ARRAYSIZE(page_name));
+            if (ImGui::BeginListBox("##page_type", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
                 {
@@ -78,7 +78,7 @@ void PageEditor::draw() {
 
             ImGui::Text("");
             ImGui::Text("Current Page: %s", editor->getCurrentComponentList()[CUR_PAGE].c_str());
-            if (ImGui::BeginListBox("##2", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
+            if (ImGui::BeginListBox("##page_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 auto& pList = game->getPageList();
                 // Set default selected page to be the first in the page list

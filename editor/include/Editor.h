@@ -12,6 +12,7 @@
 #include "Sprint1.h"
 #endif // __TEST_EDITOR
 
+
 enum SelectionEnum
 {
 	SAVEAS,
@@ -28,6 +29,7 @@ enum SelectionEnum
 	SCRIPTEDITOR,
 	SPLASHSCREEN,
 	LOGICEDITOR,
+	STYLEEDITOR,
 
 	// LEAVE THIS AT THE END OF THE LIST OR ELSE THIS IS A THREAT
 	SELECT_COUNT,
@@ -77,6 +79,11 @@ public:
 	void saveGameAs(const std::string filePath);
 	void freeGame();
 
+	bool isGameRunning() {
+		return gameRunning;
+	}
+	void setGameRunning(bool value);
+
 	std::vector<Window*>& getWindowList() {
 		return windowList;
 	}
@@ -98,6 +105,14 @@ public:
 		saveSuccessPopup = true;
 	}
 
+	void showStyleSaveSuccessPopup() {
+		styleSaveSuccessPopup = true;
+	}
+
+	void showStyleLoadSuccessPopup() {
+		styleLoadSuccessPopup = true;
+	}
+
 	void showDeleteSuccessPopup() {
 		deleteSuccessPopup = true;
 	}
@@ -105,18 +120,19 @@ public:
 private:
 	bool running = false;
 
+	bool gameRunning = false;
 	Core::Game *game = nullptr;
 	std::string gameFilePath;
 
 	SDL_Window *sdlWindow = nullptr;
 	SDL_GLContext gl_context;
-	ImGuiIO *io;
+	ImGuiIO *io = nullptr;
 
-	MainMenuBar* mainMenuBar;
+	MainMenuBar* mainMenuBar = nullptr;
 	// WINDOWS
 	std::vector<Window*> windowList;
 
-	Core::Map* currentMap;
+	Core::Map* currentMap = nullptr;
 
 	// main texture color buffer object
 	// Game gets rendered onto this, and this is used as an Image with ImGUI
@@ -125,6 +141,8 @@ private:
 	
 	// popup bools
 	bool saveSuccessPopup = false;
+	bool styleSaveSuccessPopup = false;
+	bool styleLoadSuccessPopup = false;
 	bool deleteSuccessPopup = false;
 
 	// is control key pressed

@@ -9,6 +9,7 @@
 #include "windows/ScriptEditor.h"
 #include "windows/SpriteEditor.h"
 #include "windows/LogicEditor.h"
+#include "windows/StyleEditor.h"
 
 #include "windows/ObjectTree.h"
 #include "windows/SplashWindow.h"

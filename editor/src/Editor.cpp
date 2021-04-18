@@ -7,8 +7,9 @@
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 #include "editorWindows.h"
+#include "windows/StyleEditor.cpp"
 
-
+extern bool ResetStyle(int, ImGuiStyle&);
 
 //////////////////////////////////////////
 // GUI HANDLER FUNCTIONS
@@ -112,7 +113,7 @@ void Editor::createWindows() {
 
     windowList.resize(SELECT_COUNT);
     windowList[GAMEVIEW] = new GameWindow(this, default_size, mTexCBO, mFBO);
-    windowList[MAPVIEW] = new MapWindow(this, default_size, mTexCBO, mFBO);
+    windowList[MAPVIEW] = new MapWindow(this, default_size);
 
     windowList[ENTITYEDITOR] = new EntityEditor(this, default_size);
     windowList[PAGEEDITOR] = new PageEditor(this, default_size);
@@ -120,6 +121,7 @@ void Editor::createWindows() {
     windowList[SPRITEEDITOR] = new SpriteEditor(this, default_size);
     windowList[MAPEDITOR] = new MapEditor(this, default_size);
     windowList[LOGICEDITOR] = new LogicEditor(this, default_size);
+    windowList[STYLEEDITOR] = new StyleEditor(this, default_size);
 
     windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
@@ -157,10 +159,9 @@ void Editor::processInput()
                     redo();
                 }
             }
-            if (game != nullptr)
+            if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
             {
-                if (windowList[GAMEVIEW]->isFocused())
-                    game->handleInput(evt);
+                game->handleInput(evt);
             }
         }
         if (evt.type == SDL_KEYUP)
@@ -198,6 +199,8 @@ void Editor::run()
     initializeGraphics();
     initializeFramebuffer();
     createWindows();
+    ResetStyle(ImGuiStyle_Custom, ImGui::GetStyle());
+    //((StyleEditor*)windowList[STYLEEDITOR])->LoadStyle("./editor.style", ImGui::GetStyle());
     currentComponent.resize(COMP_COUNT);
 
     // clear color, opengl use clear color to clear the context for the next drawing
@@ -281,6 +284,28 @@ void Editor::drawPopups() {
         ImGui::EndPopup();
     }
 
+    // Successful style save popup
+    if (styleSaveSuccessPopup) {
+        ImGui::OpenPopup("style_save_success_popup");
+        styleSaveSuccessPopup = false;
+    }
+    if (ImGui::BeginPopup("style_save_success_popup"))
+    {
+        ImGui::Text("Style saved successfully!");
+        ImGui::EndPopup();
+    }
+
+    // Successful style load popup
+    if (styleLoadSuccessPopup) {
+        ImGui::OpenPopup("style_load_success_popup");
+        styleLoadSuccessPopup = false;
+    }
+    if (ImGui::BeginPopup("style_load_success_popup"))
+    {
+        ImGui::Text("Style loaded successfully!");
+        ImGui::EndPopup();
+    }
+
     // Successful deletion popup
     if (deleteSuccessPopup) {
         ImGui::OpenPopup("delete_success_popup");
@@ -313,6 +338,9 @@ void Editor::createGame() {
 }
 
 void Editor::loadGame(const std::string filePath) {
+    if (game != nullptr) {
+        freeGame();
+    }
     gameFilePath = filePath;
     nlohmann::json *j = readGameDataFile(gameFilePath);
     game = new Core::Game(*j);
@@ -340,5 +368,11 @@ void Editor::freeGame() {
     delete game;
     game = nullptr;
 
+    currentMap = nullptr;
+
     gameFilePath.clear();
+}
+
+void Editor::setGameRunning(bool value) {
+    gameRunning = value;
 }

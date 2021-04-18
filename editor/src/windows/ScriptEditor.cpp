@@ -13,7 +13,7 @@ void ScriptEditor::draw() {
         if (ImGui::Begin("Script Editor", &visible))
         {
             ImGui::PushItemWidth(200);
-            ImGui::InputText(" ", script_name, IM_ARRAYSIZE(script_name));
+            ImGui::InputText("##script_name", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create Script"))
             {
             }
