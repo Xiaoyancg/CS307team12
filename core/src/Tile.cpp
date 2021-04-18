@@ -4,7 +4,8 @@ namespace Core
 {
 // Sets the spriteID (eventually mCurrentDepth too)
 	Tile::Tile ():
-		mSpriteID ( -1 )
+		mSpriteID ( -1 ),
+		mIsInvisible(false)
 	{
 // Nothing needs to be done here
 // Sprite ID gets set to -1 by default, just meaning the sprite hasn't been set
@@ -45,5 +46,13 @@ namespace Core
 	int *Tile::getCoords ()
 	{
 		return mCoords;
+	}
+
+	bool Tile::isInvisibleTile() {
+		return mIsInvisible;
+	}
+
+	void Tile::setInvisibleTile(bool value) {
+		mIsInvisible = value;
 	}
 }

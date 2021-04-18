@@ -20,12 +20,12 @@ void SpriteEditor::draw() {
             /////////////////////////////////
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Sprite Name:");
-            ImGui::InputText("  ", sprite_name, IM_ARRAYSIZE(sprite_name));
+            ImGui::InputText("##sprite_name", sprite_name, IM_ARRAYSIZE(sprite_name));
 
             ImGui::PushItemWidth(200);
 
             ImGui::Text("Set Sprite ID:");
-            ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
+            ImGui::InputText("##sprite_id", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
             ImGui::Text(editor->getCurrentComponentList()[CUR_SPRITE].c_str());
             if (ImGui::Button("Import Sprite"))
             {
