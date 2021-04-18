@@ -21,9 +21,6 @@ void SpriteSheetWindow::draw() {
 			int ss = editor->getCurrentSpriteSheet();
 			Core::SpriteSheet* spritesheet = editor->getGamePtr()->getSpriteSheetFromID(ss);
 
-			//ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-
-
 			// Open controls popup
 			ImGui::Begin("Sprite Finder", &visible);
 
@@ -87,9 +84,6 @@ void SpriteSheetWindow::draw() {
             // set the windows default size (not needed for game window)
             //ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-
-			size = ImVec2(spritesheet->getDimensions().x, spritesheet->getDimensions().y);
-			ImGui::SetNextWindowSize(size, 0);
 
 
             // the game view window itself
