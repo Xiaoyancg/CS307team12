@@ -15,39 +15,43 @@ void EntityEditor::draw()
         if (ImGui::Begin("Entity Editor", &visible))
         {
             Core::Page* currPage = editor->getGamePtr()->getCurrPage();
-            ImGui::PushItemWidth(200);
-            ImGui::Text("Enter Entity Name:");
-            ImGui::InputText("##entity_name", entityName, IM_ARRAYSIZE(entityName));
-
-            ImGui::Checkbox("Collideable?", &collideable);
-            if (collideable)
-            {
-                //TODO: call collision functions
-            }
 
             if (ImGui::Button("Create New Entity"))
             {
-                if (strlen(entityName) != 0)
-                {
-                    std::string e = entityName;
-                    auto action = [this, e]() {
-                        editor->getGamePtr()->getCurrPage()->createEntity(e);
-                    };
-                    auto restore = [this, e]() {
-                        editor->getGamePtr()->getCurrPage()->deleteEntity(e);
-                    };
-                    pushAction(action, restore);
-                    action();
-                    //ENDUNDO
-                    // clear the buffer after use
-                    entityName[0] = '\0';
+                ImGui::OpenPopup("create_entity_popup");
+            }
+
+            if (ImGui::BeginPopup("create_entity_popup")) {
+                ImGui::PushItemWidth(200);
+                ImGui::Text("Enter Entity Name:");
+                ImGui::InputText("##entity_name", entityName, IM_ARRAYSIZE(entityName));
+
+                ImGui::Checkbox("Collideable?", &collideable);
+                if (ImGui::Button("Create")) {
+                    if (strlen(entityName) != 0)
+                    {
+                        std::string e = entityName;
+                        auto action = [this, e]() {
+                            editor->getGamePtr()->getCurrPage()->createEntity(e);
+                        };
+                        auto restore = [this, e]() {
+                            editor->getGamePtr()->getCurrPage()->deleteEntity(e);
+                        };
+                        pushAction(action, restore);
+                        action();
+                        //ENDUNDO
+                        // clear the buffer after use
+                        entityName[0] = '\0';
+                    }
+                    ImGui::CloseCurrentPopup();
                 }
+                ImGui::EndPopup();
             }
             
             ImGui::Text("");
             ImGui::Text("Current Entity: %s", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
             static int current_entity = 0;
-            if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
+            if (ImGui::BeginListBox("##entityListBox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 // Set default selected entity to be the first in the entity list
                 if (editor->getCurrentComponentList()[CUR_ENTITY] == "No Component Selected" && currPage->getEntityList().size() > 0)
