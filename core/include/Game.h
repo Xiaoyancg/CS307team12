@@ -19,8 +19,10 @@
 #include "MapPage.h"
 #include "RenderTarget.h"
 #include "SpriteManager.h"
+#include "FullSprite.h" // Needed for SpriteSheets
 #include "MenuPage.h"
 #include "LogicManager.h"
+#include "SpriteHighlighter.h"
 
 namespace Core
 {
@@ -104,14 +106,24 @@ namespace Core
         ///
         /// \return unsigned int
         unsigned int createSprite(std::string, std::string, int);
+        unsigned int createPartialSprite(std::string name, int spriteID, int spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
+        unsigned int createLoopingSprite(std::string name, int spriteID, int spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpadding);
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();
+        // SpriteSheet operations
+        unsigned int createSpriteSheet(std::string, std::string);
+        unsigned int createSpriteSheet(std::string, std::string, int);
+        void deleteSpriteSheet(int);
+        SpriteSheet* getSpriteSheetFromID(int);
+        std::unordered_map<int, SpriteSheet*> getSpriteSheets();
 
         // Map operations
         std::vector<Map *> getDefaultMapPageMaps();
         MapPage *getDefaultMapPage();
         void renderDefaultMapPage();
+
+        void renderSpriteSheet(SpriteSheet*);
 
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
