@@ -12,6 +12,7 @@
 #include "Sprint1.h"
 #endif // __TEST_EDITOR
 
+
 enum SelectionEnum
 {
 	SAVEAS,
@@ -28,6 +29,7 @@ enum SelectionEnum
 	SCRIPTEDITOR,
 	SPLASHSCREEN,
 	LOGICEDITOR,
+	STYLEEDITOR,
 
 	// LEAVE THIS AT THE END OF THE LIST OR ELSE THIS IS A THREAT
 	SELECT_COUNT,
@@ -104,6 +106,14 @@ public:
 		saveSuccessPopup = true;
 	}
 
+	void showStyleSaveSuccessPopup() {
+		styleSaveSuccessPopup = true;
+	}
+
+	void showStyleLoadSuccessPopup() {
+		styleLoadSuccessPopup = true;
+	}
+
 	void showDeleteSuccessPopup() {
 		deleteSuccessPopup = true;
 	}
@@ -133,6 +143,8 @@ private:
 	
 	// popup bools
 	bool saveSuccessPopup = false;
+	bool styleSaveSuccessPopup = false;
+	bool styleLoadSuccessPopup = false;
 	bool deleteSuccessPopup = false;
 
 	// is control key pressed
