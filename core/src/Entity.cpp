@@ -1,11 +1,14 @@
 #include "Entity.h"
 #include <glad/glad.h>
+#include "Game.h"
 #ifdef __TEST_CORE
 #include <TestCore.h>
 #endif // __TEST_CORE
 
 namespace Core
 {
+    static const float SPEED = 200.0f;
+
     int Entity::getEntityId()
     {
         return _entityId;
@@ -20,12 +23,8 @@ namespace Core
           mLocation(location),
           mScale(scale),
           mRotation(rotation),
-          mSpriteID(spriteID),
-          mIsInvisible(false)
-    {
-        // All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
-        calculateCoords(location, scale);
-    }
+          mSpriteID(spriteID)
+    {}
 
     Entity::Entity(const Entity& other) :
         mEntityName(other.mEntityName),
@@ -34,11 +33,9 @@ namespace Core
         mRotation(other.mRotation),
         mSpriteID(other.mSpriteID),
         mIsInvisible(other.mIsInvisible),
-        mControlledEntity(other.mControlledEntity)
-    {
-        // TODO: restore _entityId
-        calculateCoords(mLocation, mScale);
-    }
+        mControlledEntity(other.mControlledEntity),
+        mParentPage(other.mParentPage)
+    {} // TODO: restore _entityId
 
     // CONSTRUCTOR
 
@@ -62,7 +59,6 @@ namespace Core
         this->mScale = s;
         this->mRotation = r;
         this->mSpriteID = sid;
-        calculateCoords(mLocation, mScale);
     }
     // =========================
     // MEMBER OPERATION
@@ -171,6 +167,25 @@ namespace Core
         mControlledEntity = value;
     }
 
+    void Entity::update(float dt) {
+
+        if (mControlledEntity) {
+            Game* game = getParentPage()->getGame();
+            if (game->isKeyPressed(SDLK_RIGHT)) {
+                mLocation.x += dt * SPEED;
+            }
+            if (game->isKeyPressed(SDLK_LEFT)) {
+                mLocation.x -= dt * SPEED;
+            }
+            if (game->isKeyPressed(SDLK_DOWN)) {
+                mLocation.y -= dt * SPEED;
+            }
+            if (game->isKeyPressed(SDLK_UP)) {
+                mLocation.y += dt * SPEED;
+            }
+        }
+    }
+
     void Entity::render()
     {
         glActiveTexture(GL_TEXTURE0);
@@ -183,6 +198,7 @@ namespace Core
             glBindTexture(GL_TEXTURE_2D, mGameSprites->atID(mSpriteID)->getOpenGLTextureID()); // Bind correct sprite
         }
 
+        calculateCoords(mLocation, mScale);
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
         // Draw the bound buffer (coords)

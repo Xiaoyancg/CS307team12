@@ -16,7 +16,7 @@
 
 namespace Core
 {
-
+    const int Game::FPS = 60;
     int Game::width = 1280;
     int Game::height = 720;
 
@@ -46,12 +46,15 @@ namespace Core
         inDisplayList(other.inDisplayList),
         window(other.window),
         gl_context(other.gl_context),
+        keyboardState(other.keyboardState),
         shaderProgram(other.shaderProgram),
+        mCameraUniform(other.mCameraUniform),
         mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
         for (int i = 0; i < other.pageList.size(); i++) {
             pageList[i] = new Page(*other.pageList[i]);
+            pageList[i]->setGame(this);
         }
     }
 
@@ -325,7 +328,9 @@ namespace Core
             auto pageVec = root.at("pageList").get<std::vector<nlohmann::json>>();
             for (nlohmann::json pageJson : pageVec)
             {
-                this->pageList.push_back(Page::parse(pageJson));
+                Page* page = Page::parse(pageJson);
+                page->setGame(this);
+                this->pageList.push_back(page);
             }
         }
         catch (const std::exception &e)
@@ -569,6 +574,8 @@ namespace Core
         // Enable the Vertex Object Array
         glBindVertexArray(vao);
 
+        mCameraUniform = glGetUniformLocation(shaderProgram, "camera");
+
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
     }
@@ -614,7 +621,7 @@ namespace Core
         return currPageIdx != -1 ? pageList[currPageIdx] : nullptr;
     }
 
-    void Game::handleInput(SDL_Event event)
+    void Game::handleWindowEvent(SDL_Event event)
     {
         glm::vec2 loc;
         glm::vec2 scale;
@@ -623,30 +630,11 @@ namespace Core
             auto currCtrlEntity = getCurrPage()->getCtrlEntity();
             loc = currCtrlEntity->getLocation();
             scale = currCtrlEntity->getScale();
-            float moveBy = 5;
             int scaleBy = 3;
 
             // Control entity movement and reshape
             switch (event.key.keysym.sym)
             {
-            // Control Entity movement in the interactive demo
-            // Handle left arrow key
-            case SDLK_LEFT:
-                currCtrlEntity->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
-                break;
-                // Handle right arrow key
-            case SDLK_RIGHT:
-                currCtrlEntity->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
-                break;
-                // Handle up arrow key
-            case SDLK_UP:
-                currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
-                break;
-                // Handle down arrow key
-            case SDLK_DOWN:
-                currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
-                break;
-
                 // Control Entity scaling in the interactive demo
             case SDLK_z: // z key is Scale up, for now
                 currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
@@ -713,12 +701,22 @@ namespace Core
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
     }
 
+    bool Game::isKeyPressed(SDL_Keycode kc) {
+        return keyboardState[SDL_GetScancodeFromKey(kc)] == 1;
+    }
+
+    void Game::update(float dt) {
+        std::cout << dt << std::endl;
+        keyboardState = SDL_GetKeyboardState(nullptr);
+        getCurrPage()->update(dt);
+    }
+
     // only render graphics so can be used in editor
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
         // Set Camera matrix uniform
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
+        glUniformMatrix4fv(mCameraUniform, 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
 
         glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -754,13 +752,14 @@ namespace Core
 
     void Game::mainLoop()
     {
-
+        long lastTime = std::clock();
+        long lastFrame = lastTime;
         SDL_Event event;
         bool close_window = false;
         while (!close_window)
         {
             // Input handling!
-            while (SDL_PollEvent(&event))
+            if (SDL_PollEvent(&event))
             {
                 switch (event.type)
                 {
@@ -784,13 +783,22 @@ namespace Core
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }
                     break;
-                    // Handle Keypresses
                 case SDL_KEYDOWN:
-                    handleInput(event);
+                    // Handle Keypresses
+                    handleWindowEvent(event);
                 }
             }
-
-            render();
+            long now = std::clock();
+            float dt = (now - lastTime) / 1000.0f;
+            lastTime = now;
+            update(dt);
+            now = std::clock();
+            float dtFrame = (now - lastFrame) / 1000.0f;
+            if (dtFrame > 1.0f / FPS) {
+                lastFrame = now;
+                render();
+                dtFrame = 0;
+            }
 
             // Show the entities by bringing showing the back buffer
             SDL_GL_SwapWindow(window);
