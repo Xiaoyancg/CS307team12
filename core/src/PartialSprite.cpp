@@ -30,6 +30,7 @@ namespace Core {
         mTextureCoordinates[5] = p3.y;
         mTextureCoordinates[6] = p4.x;
         mTextureCoordinates[7] = p4.y;
+
     }
 
     unsigned int PartialSprite::getOpenGLTextureID() {

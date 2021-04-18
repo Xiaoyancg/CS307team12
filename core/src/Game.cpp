@@ -292,40 +292,41 @@ namespace Core
 
     void Game::renderSpriteSheet(SpriteSheet* spritesheet) {
         if (spritesheet->getOpenGLTextureID() >= 0) {
+            glClear(GL_COLOR_BUFFER_BIT);
+
             // Create camera and set it to fit the spritesheet perfectly
             Camera* camera = new Camera();
             glm::vec2 dims = spritesheet->getDimensions();
             camera->setDimensions(dims.x, dims.y);
+            camera->offsetPosition(glm::ivec2(dims.x / 2, dims.y / 2));
 
             // Set the camera in the shader
             glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(camera->getMatrix()));
 
             glBindTexture(GL_TEXTURE_2D, spritesheet->getOpenGLTextureID());
 
-
             float verts[16];
-            glm::vec2 half_dims(dims.x / 2, dims.y / 2);
             // P1
-            verts[0] = -half_dims.x;  // Top left x
-            verts[1] = half_dims.y; // Top left y
+            verts[0] = 0;  // Top left x
+            verts[1] = dims.y; // Top left y
             verts[2] = 0;
             verts[3] = 1;
 
             // P2
-            verts[4] = -half_dims.x; // Bottom left x
-            verts[5] = -half_dims.y; // Bottom left y
+            verts[4] = 0; // Bottom left x
+            verts[5] = 0; // Bottom left y
             verts[6] = 0;
             verts[7] = 0;
 
             // P3
-            verts[8] = half_dims.x; // Top right x
-            verts[9] = half_dims.y; // Top right y
+            verts[8] = dims.x; // Top right x
+            verts[9] = dims.y; // Top right y
             verts[10] = 1;
             verts[11] = 1;
 
             // P4
-            verts[12] = half_dims.x; // Bottom right x
-            verts[13] = -half_dims.y;  // Bottom right y
+            verts[12] = dims.x; // Bottom right x
+            verts[13] = 0;  // Bottom right y
             verts[14] = 1;
             verts[15] = 0;
 
@@ -334,6 +335,10 @@ namespace Core
 
             // Unbind the current sprite
             glBindTexture(GL_TEXTURE_2D, 0);
+
+            // Set line color
+            GLfloat color[] = { 1.0f, 0.0f, 0.0f };
+            glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
         }
     }
 
@@ -532,12 +537,13 @@ namespace Core
             in vec2 TexCoord;
 
             uniform sampler2D texture1;
+            uniform vec3 color;
 
 		    out vec4 FragColor;
 
 		    void main()
 		    {
-		      FragColor = texture(texture1, TexCoord);
+		      FragColor = texture(texture1, TexCoord) * vec4(color, 1.0);
 		    }
 	    )glsl";
 
@@ -624,6 +630,13 @@ namespace Core
 
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
+        // Make the default texture white. This allows any non-textured objects using the default texture to be rendered in color with the color uniform
+        glBindTexture(GL_TEXTURE_2D, 0);
+        GLubyte texData[] = { 255, 255, 255, 255 };
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     void Game::initContext()
@@ -765,6 +778,9 @@ namespace Core
         // Set Camera matrix uniform
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
 
+        GLfloat color[] = { 1.0f, 1.0f, 1.0f };
+        glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
+
         glClearColor(0.1, 0.2, 0.59, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -824,7 +840,6 @@ namespace Core
 
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                         glViewport(0, 0, width, height);
-
 
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }

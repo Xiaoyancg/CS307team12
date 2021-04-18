@@ -25,7 +25,7 @@ namespace Core {
         mPosition = position;
     }
 
-    // Calling with offset={2,2} would move the camera's position 2 pixels in the positive x and y direction
+    // Offsets the position of the camera based on a click-drag offset in pixels. The pixels are scaled based on the cameras variables
     void Camera::offsetPosition(glm::ivec2 offset) {
         // If there's nothing to offset, return
         if (offset.x == 0 && offset.y == 0) {
