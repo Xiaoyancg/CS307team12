@@ -127,8 +127,9 @@ namespace Core
         /// \brief Create a default Script object
         /// *For editor, binding to create button in script editor
         ///
+        /// \param name
         /// \return Script*
-        Script *createScript();
+        Script *createScript(std::string name);
 
         /// \brief Create a default Logic object
         /// *For editor, binding to create button in logic editor

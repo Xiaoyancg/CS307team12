@@ -137,6 +137,11 @@ namespace Core
         ///
         Script();
 
+        /// \brief Construct a new Script object
+        ///
+        /// \param name
+        Script(std::string name);
+
         Script(int scriptId, ScriptType scriptType, std::string scriptName, ScriptUnion script);
         ~Script();
     };

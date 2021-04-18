@@ -1,8 +1,8 @@
 #include "windows/ScriptEditor.h"
 
-
-void ScriptEditor::draw() {
-	// Script editor
+void ScriptEditor::draw()
+{
+    // Script editor
     if (visible)
     {
         // set the windows default size
@@ -16,6 +16,7 @@ void ScriptEditor::draw() {
             ImGui::InputText("##script_name", script_name, IM_ARRAYSIZE(script_name));
             if (ImGui::Button("Create Script"))
             {
+                editor->getGamePtr()->createScript();
             }
             ImGui::SameLine();
             if (ImGui::Button("Delete Script"))

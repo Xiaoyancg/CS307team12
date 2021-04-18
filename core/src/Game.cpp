@@ -32,32 +32,33 @@ namespace Core
         this->parse(json);
     }
 
-    Game::Game(const Game& other) :
-        gameName(other.gameName),
-        author(other.author),
-        version(other.version),
-        lMTime(other.lMTime),
-        note(other.note),
-        _logicManager(other._logicManager),
-        mCamera(new Camera(*other.mCamera)),
-        currPageIdx(other.currPageIdx),
-        pageList(other.pageList.size()),
-        currMapPageIdx(other.currMapPageIdx),
-        inDisplayList(other.inDisplayList),
-        window(other.window),
-        gl_context(other.gl_context),
-        shaderProgram(other.shaderProgram),
-        mGameSprites(other.mGameSprites)
+    Game::Game(const Game &other) : gameName(other.gameName),
+                                    author(other.author),
+                                    version(other.version),
+                                    lMTime(other.lMTime),
+                                    note(other.note),
+                                    _logicManager(other._logicManager),
+                                    mCamera(new Camera(*other.mCamera)),
+                                    currPageIdx(other.currPageIdx),
+                                    pageList(other.pageList.size()),
+                                    currMapPageIdx(other.currMapPageIdx),
+                                    inDisplayList(other.inDisplayList),
+                                    window(other.window),
+                                    gl_context(other.gl_context),
+                                    shaderProgram(other.shaderProgram),
+                                    mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
-        for (int i = 0; i < other.pageList.size(); i++) {
+        for (int i = 0; i < other.pageList.size(); i++)
+        {
             pageList[i] = new Page(*other.pageList[i]);
         }
     }
 
     Game::~Game()
     {
-        for (auto page : pageList) {
+        for (auto page : pageList)
+        {
             delete page;
         }
         delete mCamera;
@@ -270,7 +271,7 @@ namespace Core
 
     MapPage *Game::getDefaultMapPage()
     {
-        return currMapPageIdx != -1 ? (MapPage*) pageList[currMapPageIdx] : nullptr;
+        return currMapPageIdx != -1 ? (MapPage *)pageList[currMapPageIdx] : nullptr;
     }
 
     // This function is called from the Editor and will render the current Map onto the MapView window in ImGui
@@ -292,9 +293,9 @@ namespace Core
         return _logicManager.createSignal();
     }
 
-    Script *Game::createScript()
+    Script *Game::createScript(std::string name)
     {
-        return _logicManager.createScript();
+        return _logicManager.createScript(name);
     }
 
     Logic *Game::createLogic()
@@ -702,14 +703,17 @@ namespace Core
     }
     void Game::setCurrentPage(Page *p)
     {
-        for (int i = 0; i < pageList.size(); i++) {
-            if (p == pageList[i]) {
+        for (int i = 0; i < pageList.size(); i++)
+        {
+            if (p == pageList[i])
+            {
                 currPageIdx = i;
                 break;
             }
         }
     }
-    void Game::setCurrentPage(int idx) {
+    void Game::setCurrentPage(int idx)
+    {
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
     }
 

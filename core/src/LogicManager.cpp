@@ -243,9 +243,9 @@ namespace Core
         }
     }
 
-    Script *LogicManager::createScript()
+    Script *LogicManager::createScript(std::string name)
     {
-        _scriptList.push_back(Script());
+        _scriptList.push_back(Script(std::string name));
         return &(_scriptList.at(_scriptList.size() - 1));
     }
 
