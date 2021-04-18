@@ -24,18 +24,25 @@ void GameWindow::draw()
                 if (ImGui::Button("Stop")) {
                     editor->stopGame();
                 }
+                long now = std::clock();
+                float dt = (now - lastTime) / 1000.0f;
+                lastTime = now;
+                editor->getGamePtr()->update(dt);
             }
 
-            // Get size of drawable space on the window, instead of the entire size of the window
-            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
+            long now = std::clock();
+            float dtFrame = (now - lastFrame) / 1000.0f;
+            if (dtFrame > 1.0f / editor->getGamePtr()->FPS) {
+                lastFrame = now;
+                // Get size of drawable space on the window, instead of the entire size of the window
+                ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
-            glBindTexture(GL_TEXTURE_2D, mTexCBO);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, editor->getGamePtr()->width, editor->getGamePtr()->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glViewport(0, 0, editor->getGamePtr()->width, editor->getGamePtr()->height); // Set viewport to the Game dimensions
-            glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
-            editor->getGamePtr()->render(); // Render Game with new viewport size
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glViewport(0, 0, editor->getGamePtr()->width, editor->getGamePtr()->height); // Set viewport to the Game dimensions
+                glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+                editor->getGamePtr()->render(); // Render Game with new viewport size
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                dtFrame = 0;
+            }
 
             ImGui::Image((ImTextureID) mTexCBO, ImVec2(editor->getGamePtr()->width, editor->getGamePtr()->height), ImVec2(0, 1), ImVec2(1, 0));
 

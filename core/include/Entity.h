@@ -6,6 +6,7 @@
 
 namespace Core
 {
+    class Page;
     // Entity class
     class Entity
     {
@@ -23,6 +24,8 @@ namespace Core
         // This will set 'mCoords'
         void calculateCoords(glm::vec2 location, glm::vec2 scale);
 
+
+        void update(float dt);
         // Render the given entity on the current context
         // Assumes the shaders have already been setup
         void render();
@@ -83,6 +86,14 @@ namespace Core
         int getEntityId();
         void setEntityId(int entityId);
 
+        Page* getParentPage() {
+            return mParentPage;
+        }
+
+        void setParentPage(Page* page) {
+            mParentPage = page;
+        }
+
     private:
         // Basic Entity variables
         std::string mEntityName;
@@ -96,10 +107,12 @@ namespace Core
         int mSpriteID = -1;
 
 
-        int _entityId;
+        int _entityId = -1;
 
-        bool mIsInvisible;
-        bool mControlledEntity;
+        bool mIsInvisible = false;
+        bool mControlledEntity = false;
+
+        Page* mParentPage = nullptr;
 
     };
 }

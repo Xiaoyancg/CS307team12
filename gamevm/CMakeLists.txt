@@ -5,7 +5,7 @@ file(GLOB headers "include/*.h")
 add_library(gamevmlib ${srcs} ${headers})
 #target_compile_options(gamevmlib PRIVATE /w)
 target_include_directories(gamevmlib PUBLIC	${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(gamevmlib corelib editorlib glad imgui sdlmain nlohmann_json)
+target_link_libraries(gamevmlib corelib glad imgui sdlmain nlohmann_json)
 
 add_executable(gamevm "GameVMMain.cpp")
 #target_compile_options(gamevm PRIVATE /w)
