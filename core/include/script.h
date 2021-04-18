@@ -28,28 +28,34 @@ namespace Core
     class ScriptCustom
     {
     private:
-        std::vector<int> _targetSignalList;
-        std::vector<int> _targetLogicList;
-        std::vector<int> _targetScriptList;
-        /// \brief true to send, false to remove
-        ///
-        bool _action;
+        std::vector<int> _addTargetSignalList;
+        std::vector<int> _addTargetLogicList;
+        std::vector<int> _addTargetScriptList;
+        std::vector<int> _removeTargetSignalList;
+        std::vector<int> _removeTargetLogicList;
+        std::vector<int> _removeTargetScriptList;
 
     public:
-        std::vector<int> getTargetSignalList();
-        std::vector<int> getTargetLogicList();
-        std::vector<int> getTargetScriptList();
-        bool getAction();
-        void setTargetSignalList(std::vector<int> targetSignalList);
-        void setTargetLogicList(std::vector<int> targetLogicList);
-        void setTargetScriptList(std::vector<int> targetScriptList);
-        void setAction(bool action);
+        std::vector<int> getAddTargetSignalList();
+        std::vector<int> getAddTargetLogicList();
+        std::vector<int> getAddTargetScriptList();
+        void setAddTargetSignalList(std::vector<int> addTargetSignalList);
+        void setAddTargetLogicList(std::vector<int> addTargetLogicList);
+        void setAddTargetScriptList(std::vector<int> addTargetScriptList);
+        std::vector<int> getRemoveTargetSignalList();
+        std::vector<int> getRemoveTargetLogicList();
+        std::vector<int> getRemoveTargetScriptList();
+        void setRemoveTargetSignalList(std::vector<int> removeTargetSignalList);
+        void setRemoveTargetLogicList(std::vector<int> removeTargetLogicList);
+        void setRemoveTargetScriptList(std::vector<int> removeTargetScriptList);
 
         ScriptCustom();
-
-        ScriptCustom(std::vector<int> targetSignalList,
-                     std::vector<int> targetLogicList,
-                     std::vector<int> targetScriptList, bool action);
+        ScriptCustom(std::vector<int> addTargetSignalList,
+                     std::vector<int> addTargetLogicList,
+                     std::vector<int> addTargetScriptList,
+                     std::vector<int> removeTargetSignalList,
+                     std::vector<int> removeTargetLogicList,
+                     std::vector<int> removeTargetScriptList);
         ~ScriptCustom() = default;
     };
 

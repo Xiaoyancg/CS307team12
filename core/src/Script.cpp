@@ -6,48 +6,74 @@ namespace Core
 
     //* ----------------------- CUSTOM ----------------------- *//
 
-    std::vector<int> ScriptCustom::getTargetSignalList()
+    std::vector<int> ScriptCustom::getAddTargetSignalList()
     {
-        return _targetSignalList;
+        return _addTargetSignalList;
     }
-    std::vector<int> ScriptCustom::getTargetLogicList()
+    std::vector<int> ScriptCustom::getAddTargetLogicList()
     {
-        return _targetLogicList;
+        return _addTargetLogicList;
     }
-    std::vector<int> ScriptCustom::getTargetScriptList()
+    std::vector<int> ScriptCustom::getAddTargetScriptList()
     {
-        return _targetScriptList;
+        return _addTargetScriptList;
     }
-    bool ScriptCustom::getAction()
+    void ScriptCustom::setAddTargetSignalList(std::vector<int> targetSignalList)
     {
-        return _action;
+        _addTargetSignalList = targetSignalList;
     }
-    void ScriptCustom::setTargetSignalList(std::vector<int> targetSignalList)
+    void ScriptCustom::setAddTargetLogicList(std::vector<int> targetLogicList)
     {
-        _targetSignalList = targetSignalList;
+        _addTargetLogicList = targetLogicList;
     }
-    void ScriptCustom::setTargetLogicList(std::vector<int> targetLogicList)
+    void ScriptCustom::setAddTargetScriptList(std::vector<int> targetScriptList)
     {
-        _targetLogicList = targetLogicList;
+        _addTargetScriptList = targetScriptList;
     }
-    void ScriptCustom::setTargetScriptList(std::vector<int> targetScriptList)
+    std::vector<int> ScriptCustom::getRemoveTargetSignalList()
     {
-        _targetScriptList = targetScriptList;
+        return _removeTargetSignalList;
     }
-    void ScriptCustom::setAction(bool action)
+    std::vector<int> ScriptCustom::getRemoveTargetLogicList()
     {
-        _action = action;
+        return _removeTargetLogicList;
     }
+    std::vector<int> ScriptCustom::getRemoveTargetScriptList()
+    {
+        return _removeTargetScriptList;
+    }
+    void ScriptCustom::setRemoveTargetSignalList(std::vector<int> targetSignalList)
+    {
+        _removeTargetSignalList = targetSignalList;
+    }
+    void ScriptCustom::setRemoveTargetLogicList(std::vector<int> targetLogicList)
+    {
+        _removeTargetLogicList = targetLogicList;
+    }
+    void ScriptCustom::setRemoveTargetScriptList(std::vector<int> targetScriptList)
+    {
+        _removeTargetScriptList = targetScriptList;
+    }
+
     ScriptCustom::ScriptCustom() : ScriptCustom(std::vector<int>(),
                                                 std::vector<int>(),
-                                                std::vector<int>(), true) {}
-    ScriptCustom::ScriptCustom(std::vector<int> targetSignalList,
-                               std::vector<int> targetLogicList,
-                               std::vector<int> targetScriptList, bool action)
-        : _targetLogicList(targetLogicList),
-          _targetScriptList(targetScriptList),
-          _targetSignalList(targetSignalList), _action(action) {}
+                                                std::vector<int>(),
+                                                std::vector<int>(),
+                                                std::vector<int>(),
+                                                std::vector<int>()) {}
 
+    ScriptCustom::ScriptCustom(std::vector<int> addTargetSignalList,
+                               std::vector<int> addTargetLogicList,
+                               std::vector<int> addTargetScriptList,
+                               std::vector<int> removeTargetSignalList,
+                               std::vector<int> removeTargetLogicList,
+                               std::vector<int> removeTargetScriptList)
+        : _addTargetLogicList(addTargetLogicList),
+          _addTargetScriptList(addTargetScriptList),
+          _addTargetSignalList(addTargetSignalList),
+          _removeTargetLogicList(removeTargetLogicList),
+          _removeTargetScriptList(removeTargetScriptList),
+          _removeTargetSignalList(removeTargetSignalList) {}
     //* ------------------- MOVE CONSTANTLY ------------------ *//
 
     int ScriptMoveConstantly::getTargetPage() { return _targetPage; }
@@ -140,7 +166,9 @@ namespace Core
                         va_arg(args, std::vector<int>),
                         va_arg(args, std::vector<int>),
                         va_arg(args, std::vector<int>),
-                        va_arg(args, bool))));
+                        va_arg(args, std::vector<int>),
+                        va_arg(args, std::vector<int>),
+                        va_arg(args, std::vector<int>))));
             break;
         case ScriptType::MoveConstantly:
             setScript(
