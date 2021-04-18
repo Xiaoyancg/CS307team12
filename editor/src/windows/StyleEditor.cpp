@@ -1,5 +1,5 @@
-#include "string.h"
 #include "windows/StyleEditor.h"
+#include "string.h"
 #include "UndoRedo.h"
 
 extern void HelpMarker(const char*);
@@ -198,7 +198,7 @@ bool SaveStyle(const char* filename, const ImGuiStyle& style)
     for (size_t i = 0; i != ImGuiCol_COUNT; i++)
     {
         const ImVec4& c = style.Colors[i];
-        fprintf(f, "[%s]\n", ImGui::GetStyleColorName(i));//ImGuiColNames[i]);
+        fprintf(f, "[%s]\n", ImGui::GetStyleColorName((ImGuiCol) i));//ImGuiColNames[i]);
         fprintf(f, "%1.3f %1.3f %1.3f %1.3f\n", c.x, c.y, c.z, c.w);
     }
 
@@ -433,7 +433,7 @@ void ChangeStyleColors(ImGuiStyle& style, float satThresholdForInvertingLuminanc
         ImVec4& col = style.Colors[i];
         float H, S, V;
         ImGui::ColorConvertRGBtoHSV(col.x, col.y, col.z, H, S, V);
-        if (S <= satThresholdForInvertingLuminance) { V = 1.0 - V; }
+        if (S <= satThresholdForInvertingLuminance) { V = 1.0f - V; }
         if (shiftHue) { H += shiftHue;if (H > 1) H -= 1.f;else if (H < 0) H += 1.f; }
         ImGui::ColorConvertHSVtoRGB(H, S, V, col.x, col.y, col.z);
     }
@@ -548,7 +548,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_Header, 0.5f, ImVec2(0.4f, 0.8f), ImVec2(0.2f, 0.6f));
     }
     break;
@@ -619,7 +619,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.39f, 0.12f, 0.12f, 0.20f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_TitleBg, 0.9f, ImVec2(0.25f, 0.8f), ImVec2(0.15f, 0.6f));
     }
     break;
@@ -696,7 +696,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         }
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style);
     }
                                      break;
@@ -768,7 +768,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style);
     }
                         break;
@@ -822,7 +822,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style);
     }
                              break;
@@ -877,7 +877,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
 
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_Header, 0.f, ImVec2(0.0f, 1.f), ImVec2(0.0f, 0.6f));
 
     }
@@ -937,7 +937,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_ResizeGrip, 0.7f, ImVec2(0.25f, 0.8f), ImVec2(0.1f, 0.6f));
     }
                         break;
@@ -1008,7 +1008,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         }
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style);
     }
     break;
@@ -1079,7 +1079,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_HeaderHovered, 0.4f, ImVec2(0.3f, 0.7f), ImVec2(0.1f, 0.5f));
     }
                                break;
@@ -1221,7 +1221,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         }
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_ButtonHovered, 1.f, ImVec2(0.3f, 0.7f), ImVec2(0.3f, 0.7f));
     }
     break;
@@ -1304,7 +1304,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
 #       undef CHERRY_TEXT
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_HeaderHovered, 0.65f, ImVec2(0.4f, 0.6f), ImVec2(0.2f, 0.4f));
     }
                           break;
@@ -1382,7 +1382,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         }
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style);
     }
                                      break;
@@ -1468,7 +1468,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
             //style.Colors[ImGuiCol_PopupBg]	     = ImVec4(0.99f, 0.96f, 1.00f, 1.00f);
         }
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style);
     }
                                  break;
@@ -1521,7 +1521,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.18431373f, 0.39607847f, 0.79215693f, 0.90f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_Header, 1.0f, ImVec2(0.15f, 1.0f), ImVec2(0.05f, 0.9f));
     }
                            break;
@@ -1552,7 +1552,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_SeparatorActive] = ImVec4(0.32f, 0.60f, 0.35f, 1.00f);
 
         style.TabBorderSize = 0;
-        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2;
+        style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
         CreateDefaultTabColorsFor(style, ImGuiCol_Header, 0.35f);
     }
                             break;
@@ -1726,13 +1726,13 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.WindowBorderSize = 1;
         style.ChildBorderSize = 1;
         style.PopupBorderSize = 1;
-        style.FrameBorderSize = is3D;
+        style.FrameBorderSize = (float) is3D;
         style.WindowRounding = 3;
         style.ChildRounding = 3;
         style.FrameRounding = 3;
         style.ScrollbarRounding = 2;
         style.GrabRounding = 3;
-        style.TabBorderSize = is3D;
+        style.TabBorderSize = (float) is3D;
         style.TabRounding = 3;
 
         style.Colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);

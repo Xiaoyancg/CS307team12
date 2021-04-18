@@ -7,9 +7,6 @@
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 #include "editorWindows.h"
-#include "windows/StyleEditor.cpp"
-
-extern bool ResetStyle(int, ImGuiStyle&);
 
 //////////////////////////////////////////
 // GUI HANDLER FUNCTIONS
