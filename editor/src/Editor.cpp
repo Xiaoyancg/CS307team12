@@ -78,7 +78,8 @@ void Editor::initializeGraphics()
     ImGui_ImplOpenGL3_Init();
 } // initializeGraphics()
 
-void Editor::initializeFramebuffer() {
+void Editor::initializeFramebuffer()
+{
     glGenTextures(1, &mTexCBO);
     glGenFramebuffers(1, &mFBO);
     glBindTexture(GL_TEXTURE_2D, mTexCBO);
@@ -105,12 +106,14 @@ void Editor::cleanupGraphics()
     SDL_Quit();
 } // cleanupGraphics()
 
-void Editor::createWindows() {
+void Editor::createWindows()
+{
     mainMenuBar = new MainMenuBar(this);
 
     windowList.resize(SELECT_COUNT);
     windowList[GAMEVIEW] = new GameWindow(this, default_size, mTexCBO, mFBO);
     windowList[MAPVIEW] = new MapWindow(this, default_size);
+    windowList[SPRITESHEET] = new SpriteSheetWindow(this, default_size);
 
     windowList[ENTITYEDITOR] = new EntityEditor(this, default_size);
     windowList[PAGEEDITOR] = new PageEditor(this, default_size);
@@ -138,7 +141,7 @@ void Editor::processInput()
         {
             running = false;
         }
-        
+
         if (evt.type == SDL_KEYDOWN)
         {
             if (evt.key.keysym.sym == SDLK_LCTRL)
@@ -185,7 +188,6 @@ void Editor::processInput()
     }
 } // processInput()
 
-
 // ===============================
 // Main function
 void Editor::run()
@@ -224,8 +226,10 @@ void Editor::run()
         // turn the main viewport into a docking one to allow for docking
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         mainMenuBar->draw();
-        for (auto window : windowList) {
-            if (window != nullptr) {
+        for (auto window : windowList)
+        {
+            if (window != nullptr)
+            {
                 window->draw();
             }
         }
@@ -269,9 +273,11 @@ void Editor::run()
     cleanupGraphics();
 } // run()
 
-void Editor::drawPopups() {
+void Editor::drawPopups()
+{
     // Successful save popup
-    if (saveSuccessPopup) {
+    if (saveSuccessPopup)
+    {
         ImGui::OpenPopup("save_success_popup");
         saveSuccessPopup = false;
     }
@@ -282,7 +288,8 @@ void Editor::drawPopups() {
     }
 
     // Successful style save popup
-    if (styleSaveSuccessPopup) {
+    if (styleSaveSuccessPopup)
+    {
         ImGui::OpenPopup("style_save_success_popup");
         styleSaveSuccessPopup = false;
     }
@@ -293,7 +300,8 @@ void Editor::drawPopups() {
     }
 
     // Successful style load popup
-    if (styleLoadSuccessPopup) {
+    if (styleLoadSuccessPopup)
+    {
         ImGui::OpenPopup("style_load_success_popup");
         styleLoadSuccessPopup = false;
     }
@@ -304,7 +312,8 @@ void Editor::drawPopups() {
     }
 
     // Successful deletion popup
-    if (deleteSuccessPopup) {
+    if (deleteSuccessPopup)
+    {
         ImGui::OpenPopup("delete_success_popup");
         deleteSuccessPopup = false;
     }
@@ -315,27 +324,30 @@ void Editor::drawPopups() {
     }
 } // drawPopups()
 
-
-
 //////////////////////////////////////////
 // GAME HANDLER FUNCTIONS
 
-void Editor::createGame() {
-	//createTexCBO();
-	//createMapTexCBO();
-	game = new Core::Game();
-	windowList[GAMEVIEW]->setVisible(true);
-	for (int i = 0; i < COMP_COUNT; i++)
+void Editor::createGame()
+{
+    //createTexCBO();
+    //createMapTexCBO();
+    game = new Core::Game();
+    windowList[GAMEVIEW]->setVisible(true);
+    for (int i = 0; i < COMP_COUNT; i++)
     {
         currentComponent[i] = "No Component Selected";
     }
+    // -100 is registered as default
+    game->createSprite("default", "./default.png", -100);
 
-	// When user new project, it won't save
-	// User should call save manually
+    // When user new project, it won't save
+    // User should call save manually
 }
 
-void Editor::loadGame(const std::string filePath) {
-    if (game != nullptr) {
+void Editor::loadGame(const std::string filePath)
+{
+    if (game != nullptr)
+    {
         freeGame();
     }
     gameFilePath = filePath;
@@ -346,24 +358,28 @@ void Editor::loadGame(const std::string filePath) {
     windowList[GAMEVIEW]->setVisible(true);
 }
 
-void Editor::saveGame() {
+void Editor::saveGame()
+{
     nlohmann::json *content = game->serialize();
     WriteFile(gameFilePath, (content->dump(2)));
-	// pointer deletion
-	delete content;
+    // pointer deletion
+    delete content;
 }
 
-void Editor::saveGameAs(const std::string filePath) {
+void Editor::saveGameAs(const std::string filePath)
+{
     gameFilePath = filePath;
     saveGame();
 }
 
-void Editor::freeGame() {
+void Editor::freeGame()
+{
     stopGame();
     currentComponent.clear();
-    mTexCBO = 0;//TODO: FREE
+    mTexCBO = 0; //TODO: FREE
 
-    if (game != nullptr) {
+    if (game != nullptr)
+    {
         delete game;
         game = nullptr;
     }
@@ -373,8 +389,10 @@ void Editor::freeGame() {
     gameFilePath.clear();
 }
 
-void Editor::runGame() {
-    if (!gameRunning) {
+void Editor::runGame()
+{
+    if (!gameRunning)
+    {
         savedGame = game;
         game = new Core::Game(*game);
         ((GameWindow*) windowList[GAMEVIEW])->updateLastTime();
@@ -382,8 +400,10 @@ void Editor::runGame() {
     }
 }
 
-void Editor::stopGame() {
-    if (gameRunning) {
+void Editor::stopGame()
+{
+    if (gameRunning)
+    {
         gameRunning = false;
         delete game;
         game = savedGame;

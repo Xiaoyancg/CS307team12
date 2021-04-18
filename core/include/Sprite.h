@@ -2,30 +2,46 @@
 #include <string>
 #include <glm/glm.hpp>
 
+/*
+ * Sprite class is now just a base class for different types of Sprites. The different types of Sprites are created with the SpriteManager.
+ */
+
 namespace Core
 {
+	enum class SPRITE_TYPES {
+		FULL,			// Display the entire loaded image
+		PARTIAL,		// Display part of a loaded SpriteSheet
+		LOOPING			// Display a looping sequence of a SpriteSheet
+	};
+
 	// Sprite class
 	class Sprite
 	{
 	public:
-		Sprite(std::string name, std::string filename, int spriteID);
+		virtual unsigned int getOpenGLTextureID() = 0; // Make 'Sprite' pure-virtual, no 'Sprite' objects can exist, but derived Sprite classes can (like FullSprite, LoopingSprite, ...)
 
-		Sprite(std::string name, std::string filename);
-
-		unsigned int getOpenGLTextureID();
+		int getSpriteID(); // Get Parchment ID for each sprite
 
 		glm::vec2 getDimensions();
 
 		std::string getName();
 		std::string getFileName();
-		int getSpriteID();
 
-	private:
+		enum class SPRITE_TYPES getType();
+
+		float* getTextureCoordinates();
+
+	protected:
 		std::string mSpriteName;
 		std::string mFileName;
-		glm::vec2 mImageDimensions;
-		int mSpriteID;
 
-		unsigned int mTextureID; // Set by OpenGL
+		float mTextureCoordinates[8];
+
+		glm::vec2 mImageDimensions;
+
+		enum class SPRITE_TYPES mType; // Stores the type of the Sprite, set by its derived class
+
+		// The Parchment ID of the Sprite
+		int mSpriteID;
 	};
 }

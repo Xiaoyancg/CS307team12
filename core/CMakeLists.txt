@@ -20,7 +20,7 @@ target_include_directories(core
 		${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(core sdl glad sdlmain imgui glm nlohmann_json::nlohmann_json soil freetype)
+target_link_libraries(core gamevmlib sdl glad sdlmain imgui glm nlohmann_json::nlohmann_json soil freetype)
 
 add_custom_command (TARGET core POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

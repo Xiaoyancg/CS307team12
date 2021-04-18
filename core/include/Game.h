@@ -19,9 +19,10 @@
 #include "MapPage.h"
 #include "RenderTarget.h"
 #include "SpriteManager.h"
+#include "FullSprite.h" // Needed for SpriteSheets
 #include "MenuPage.h"
 #include "LogicManager.h"
-
+#include "SpriteHighlighter.h"
 
 namespace Core
 {
@@ -48,7 +49,7 @@ namespace Core
         Game() : Game("Untitled Game") {}
         Game(nlohmann::json &json);
         Game(std::string gameName);
-        explicit Game(const Game& other);
+        explicit Game(const Game &other);
         ~Game();
 
         void initialize();
@@ -97,20 +98,34 @@ namespace Core
         MenuPage *createMenuPage();
         void deletePage(Page *);
         void deletePage(std::string);
-        std::vector<Page *>& getPageList();
+        std::vector<Page *> &getPageList();
         int getNumPage();
 
         // Sprite operations
         unsigned int createSprite(std::string, std::string);
+
+        /// \brief Create a Sprite object
+        ///
+        /// \return unsigned int
         unsigned int createSprite(std::string, std::string, int);
+        unsigned int createPartialSprite(std::string name, int spriteID, int spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
+        unsigned int createLoopingSprite(std::string name, int spriteID, int spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpadding);
         void deleteSprite(int);
         Sprite *getSpriteFromID(int);
         std::unordered_map<int, Sprite *> getSprites();
+        // SpriteSheet operations
+        unsigned int createSpriteSheet(std::string, std::string);
+        unsigned int createSpriteSheet(std::string, std::string, int);
+        void deleteSpriteSheet(int);
+        SpriteSheet* getSpriteSheetFromID(int);
+        std::unordered_map<int, SpriteSheet*> getSpriteSheets();
 
         // Map operations
         std::vector<Map *> getDefaultMapPageMaps();
         MapPage *getDefaultMapPage();
         void renderDefaultMapPage();
+
+        void renderSpriteSheet(SpriteSheet*);
 
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
@@ -126,8 +141,9 @@ namespace Core
         /// \brief Create a default Script object
         /// *For editor, binding to create button in script editor
         ///
+        /// \param name
         /// \return Script*
-        Script *createScript();
+        Script *createScript(std::string name);
 
         /// \brief Create a default Logic object
         /// *For editor, binding to create button in logic editor
@@ -135,10 +151,12 @@ namespace Core
         /// \return Logic*
         Logic *createLogic();
 
-        // For editor
+        // *For editor
         void deleteLogic(int logicId);
         void deleteSignal(int signalId);
         void deleteScript(int scriptId);
+
+        std::vector<Script> *getScriptsList();
 
         // initContext SDL context
         void initContext();
@@ -163,7 +181,6 @@ namespace Core
         // the only game loop
         void mainLoop();
 
-
         void onGameCreation();
 
         bool isKeyPressed(SDL_Keycode kc);
@@ -176,14 +193,23 @@ namespace Core
         std::string lMTime;
         std::string note;
 
+        Entity *currCtrlEntity;
+
+        // page list iterator: current page iterator
+        PLitr _currPitr;
+
+        // condition of game is rendering to editor
+        // if true use cbo
+        bool editorMode;
+
         LogicManager _logicManager;
         /* ---------------------------- MEMBER VARIABLES ---------------------------- */
-
-        Camera* mCamera;
+        // Camera used to move map
+        Camera *mCamera;
 
         // page index
         int currPageIdx = -1;
-        
+
         // contains all pages
         std::vector<Page *> pageList;
 

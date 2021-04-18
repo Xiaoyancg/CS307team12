@@ -49,6 +49,8 @@ namespace Core
     Entity *Page::createEntity(std::string n)
     {
         Entity *e = new Entity(n);
+        // set id to -100 (default)
+        e->setSpriteID(-100);
         return addEntity(e);
     }
     Entity *Page::createEntity(std::string n, glm::vec2 l, glm::vec2 s, double r, int sid)
@@ -66,7 +68,8 @@ namespace Core
             if (*ptr == dp)
             {
                 entityList.erase(ptr);
-                if (ctrlEntity == dp) {
+                if (ctrlEntity == dp)
+                {
                     ctrlEntity = nullptr;
                 }
                 delete (dp);
@@ -85,7 +88,8 @@ namespace Core
             if (!(*ptr)->getName().compare(s))
             {
                 Entity *p = *ptr;
-                if (ctrlEntity == p) {
+                if (ctrlEntity == p)
+                {
                     ctrlEntity = nullptr;
                 }
                 entityList.erase(ptr);

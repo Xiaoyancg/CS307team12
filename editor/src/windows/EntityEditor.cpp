@@ -2,7 +2,7 @@
 #include "UndoRedo.h"
 #include "HelpMarker.h"
 
-extern void HelpMarker(const char*);
+extern void HelpMarker(const char *);
 
 void EntityEditor::draw()
 {
@@ -47,7 +47,7 @@ void EntityEditor::draw()
                 }
                 ImGui::EndPopup();
             }
-            
+
             ImGui::Text("");
             ImGui::Text("Current Entity: %s", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
             static int current_entity = 0;
@@ -65,9 +65,12 @@ void EntityEditor::draw()
                     bool is_selected = (current_entity == i);
                     if (ImGui::Selectable(entity->getName().c_str(), is_selected))
                     {
-                        current_entity = i; 
+                        current_entity = i;
                         x_pos = entity->getLocation().x;
                         y_pos = entity->getLocation().y;
+                        entity_width = entity->getScale().x;
+                        entity_height = entity->getScale().y;
+                        sprite_id = entity->getSpriteID();
                         editor->getCurrentComponentList()[CUR_ENTITY] = entity->getName();
                     }
 
@@ -106,7 +109,7 @@ void EntityEditor::draw()
                 int idx = -1;
                 size_t original = editor->getGamePtr()->getCurrPage()->getEntityList().size();
                 bool isCtrlEntity = false;
-                auto& eList = currPage->getEntityList();
+                auto &eList = currPage->getEntityList();
                 for (int i = 0; i < eList.size(); i++)
                 {
                     if (eList[i]->getName() == currentEntityName)
@@ -126,20 +129,18 @@ void EntityEditor::draw()
                         editor->getGamePtr()->getCurrPage()->deleteEntity(currentEntityName);
                     };
                     auto restore = [this, idx, savedEntity, isCtrlEntity]() {
-                        Core::Entity* newEntity = new Core::Entity(savedEntity);
-                        editor->getGamePtr()->getCurrPage()->getEntityList()
-                            .insert(editor->getGamePtr()->getCurrPage()->getEntityList().begin() + idx, newEntity);
+                        Core::Entity *newEntity = new Core::Entity(savedEntity);
+                        editor->getGamePtr()->getCurrPage()->getEntityList().insert(editor->getGamePtr()->getCurrPage()->getEntityList().begin() + idx, newEntity);
                         if (isCtrlEntity)
                         {
                             editor->getGamePtr()->getCurrPage()->setCtrlEntity(newEntity);
                         }
                     };
                     // Only delete if the entity was found
-                
+
                     action();
-                    editor->getCurrentComponentList()[CUR_ENTITY] = idx < currPage->getEntityList().size() ?
-                        currPage->getEntityList()[idx]->getName() : currPage->getEntityList()[idx - 1]->getName();
-                        
+                    editor->getCurrentComponentList()[CUR_ENTITY] = idx < currPage->getEntityList().size() ? currPage->getEntityList()[idx]->getName() : currPage->getEntityList()[idx - 1]->getName();
+
                     if (currPage->getEntityList().size() < original)
                     {
                         editor->getCurrentComponentList()[CUR_ENTITY] = eList[0]->getName();
@@ -216,8 +217,127 @@ void EntityEditor::draw()
                     y_pos = 0;
                 }
             }
-        }
 
+            // set size
+            //get width and height for entity's new size
+            if (editor->getCurrentComponentList()[CUR_ENTITY] == "No Component Selected")
+            {
+                entity_width = 0;
+                entity_height = 0;
+            }
+
+            Core::Entity *sized_ent = NULL;
+            ImGui::Text("");
+            ImGui::Text("Width:");
+            ImGui::PushItemWidth(80);
+            ImGui::SameLine();
+            ImGui::InputInt("##entity_width", &entity_width);
+            ImGui::SameLine();
+            HelpMarker("Choose a value between [0,1000]");
+            ImGui::Text("Height:");
+            ImGui::SameLine();
+            ImGui::InputInt("##entity_height", &entity_height);
+            ImGui::SameLine();
+            HelpMarker("Choose a value between [0,1000]");
+            if (ImGui::Button("Change Entity Size"))
+            {
+                //these are totally arbitrary #s to try to ensure entities cant be rendered outside the game view window when at max size
+                //should probably change to use monitor display settings later on
+                if (entity_width >= 0 && entity_width <= 1000 && entity_height >= 0 && entity_height <= 1000)
+                {
+                    for (Core::Entity *e : currPage->getEntityList())
+                    {
+                        if (e->getName() == editor->getCurrentComponentList()[CUR_ENTITY])
+                        {
+                            //set location as specified by user
+                            //UNDO
+                            auto newScale = glm::vec2(entity_width, entity_height);
+                            auto currentScale = e->getScale();
+                            auto action = [e, newScale, &sized_ent]() {
+                                e->setScale(newScale);
+                                sized_ent = e;
+                            };
+                            auto restore = [e, currentScale, &sized_ent]() {
+                                e->setScale(currentScale);
+                                sized_ent = e;
+                            };
+                            pushAction(action, restore);
+                            action();
+                            if (entity_height == 0 || entity_width == 0)
+                            {
+                                sized_ent->setInvisibleEntity(true);
+                            }
+                            else if (entity_height != 0 && entity_width != 0)
+                            {
+                                sized_ent->setInvisibleEntity(false);
+                            }
+                            //END UNDO
+
+                            break;
+                        }
+                    }
+                    //render the new entity location
+                    if (sized_ent != NULL)
+                    {
+                        sized_ent->render();
+                    }
+                }
+                else
+                {
+                    entity_width = 0;
+                    entity_height = 0;
+                }
+            }
+
+            Core::Entity *sprite_ent = NULL;
+            ImGui::Text("");
+            ImGui::Text("SpriteID:");
+            ImGui::PushItemWidth(80);
+            ImGui::SameLine();
+            ImGui::InputInt("##sprite_id", &sprite_id);
+            ImGui::SameLine();
+            HelpMarker("Choose a int value between [0,1000], negatives is default");
+            if (ImGui::Button("Change Entity Id"))
+            {
+                if (sprite_id >= 0 && sprite_id <= 1000 || sprite_id < 0)
+                {
+                    if (sprite_id < 0)
+                        sprite_id = -100;
+                    for (Core::Entity *e : currPage->getEntityList())
+                    {
+                        if (e->getName() == editor->getCurrentComponentList()[CUR_ENTITY])
+                        {
+                            //set location as specified by user
+                            //UNDO
+                            auto newId = sprite_id;
+                            auto currentId = e->getSpriteID();
+                            auto action = [e, newId, &sprite_ent]() {
+                                e->setSpriteID(newId);
+                                sprite_ent = e;
+                            };
+                            auto restore = [e, currentId, &sprite_ent]() {
+                                e->setSpriteID(currentId);
+                                sprite_ent = e;
+                            };
+                            pushAction(action, restore);
+                            action();
+                            //END UNDO
+
+                            break;
+                        }
+                    }
+                    //render the new entity location
+                    if (sprite_ent != NULL)
+                    {
+                        sprite_ent->render();
+                    }
+                }
+                else
+                {
+                    sprite_id = -100;
+                }
+            }
+        }
         if (entityInfo)
         {
             ImGui::OpenPopup("Entity Information");
@@ -229,6 +349,8 @@ void EntityEditor::draw()
         {
             ImGui::Text("Entity Name: %s", editor->getCurrentComponentList()[CUR_ENTITY].c_str());
             ImGui::Text("Entity Position: %d, %d", x_pos, y_pos);
+            ImGui::Text("Entity Scale: %d, %d", entity_width, entity_height);
+
             ImGui::EndPopup();
         }
 

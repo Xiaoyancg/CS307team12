@@ -52,7 +52,8 @@ namespace Core
         mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
-        for (int i = 0; i < other.pageList.size(); i++) {
+        for (int i = 0; i < other.pageList.size(); i++)
+        {
             pageList[i] = new Page(*other.pageList[i]);
             pageList[i]->setGame(this);
         }
@@ -60,7 +61,8 @@ namespace Core
 
     Game::~Game()
     {
-        for (auto page : pageList) {
+        for (auto page : pageList)
+        {
             delete page;
         }
         delete mCamera;
@@ -245,9 +247,20 @@ namespace Core
         // Return OpenGL ID of the new sprite
         return mGameSprites.createSprite(name, filename);
     }
+
     unsigned int Game::createSprite(std::string name, std::string filename, int id)
     {
         return mGameSprites.createSprite(name, filename, id);
+    }
+
+    unsigned int Game::createPartialSprite(std::string name, int spriteID, int spritesheet, glm::ivec2 location, glm::ivec2 dimensions)
+    {
+        // Return OpenGL ID of the new sprite
+        return mGameSprites.createPartialSprite(name, spriteID, mGameSprites.atSheetID(spritesheet), location, dimensions);
+    }
+    unsigned int Game::createLoopingSprite(std::string name, int spriteID, int spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpad)
+    {
+        return mGameSprites.createLoopingSprite(name, spriteID, mGameSprites.atSheetID(spritesheet), numImages, speed, loc, dims, xpad);
     }
 
     void Game::deleteSprite(int id)
@@ -265,6 +278,32 @@ namespace Core
         return mGameSprites.getSprites();
     }
 
+    // SpriteSheet stuff
+    unsigned int Game::createSpriteSheet(std::string name, std::string filename)
+    {
+        // Return OpenGL ID of the new sprite
+        return mGameSprites.createSpriteSheet(name, filename);
+    }
+    unsigned int Game::createSpriteSheet(std::string name, std::string filename, int id)
+    {
+        return mGameSprites.createSpriteSheet(name, filename, id);
+    }
+
+    void Game::deleteSpriteSheet(int id)
+    {
+        mGameSprites.deleteSpriteSheet(id);
+    }
+
+    SpriteSheet *Game::getSpriteSheetFromID(int id)
+    {
+        return mGameSprites.atSheetID(id);
+    }
+
+    std::unordered_map<int, SpriteSheet *> Game::getSpriteSheets()
+    {
+        return mGameSprites.getSpriteSheets();
+    }
+
     std::vector<Map *> Game::getDefaultMapPageMaps()
     {
         return getDefaultMapPage()->getMaps();
@@ -272,7 +311,7 @@ namespace Core
 
     MapPage *Game::getDefaultMapPage()
     {
-        return currMapPageIdx != -1 ? (MapPage*) pageList[currMapPageIdx] : nullptr;
+        return currMapPageIdx != -1 ? (MapPage *)pageList[currMapPageIdx] : nullptr;
     }
 
     // This function is called from the Editor and will render the current Map onto the MapView window in ImGui
@@ -287,6 +326,60 @@ namespace Core
         getDefaultMapPage()->render();
     }
 
+    void Game::renderSpriteSheet(SpriteSheet *spritesheet)
+    {
+        if (spritesheet->getOpenGLTextureID() >= 0)
+        {
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            // Create camera and set it to fit the spritesheet perfectly
+            Camera *camera = new Camera();
+            glm::vec2 dims = spritesheet->getDimensions();
+            camera->setDimensions(dims.x, dims.y);
+            camera->offsetPosition(glm::ivec2(dims.x / 2, dims.y / 2));
+
+            // Set the camera in the shader
+            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(camera->getMatrix()));
+
+            glBindTexture(GL_TEXTURE_2D, spritesheet->getOpenGLTextureID());
+
+            float verts[16];
+            // P1
+            verts[0] = 0;      // Top left x
+            verts[1] = dims.y; // Top left y
+            verts[2] = 0;
+            verts[3] = 1;
+
+            // P2
+            verts[4] = 0; // Bottom left x
+            verts[5] = 0; // Bottom left y
+            verts[6] = 0;
+            verts[7] = 0;
+
+            // P3
+            verts[8] = dims.x; // Top right x
+            verts[9] = dims.y; // Top right y
+            verts[10] = 1;
+            verts[11] = 1;
+
+            // P4
+            verts[12] = dims.x; // Bottom right x
+            verts[13] = 0;      // Bottom right y
+            verts[14] = 1;
+            verts[15] = 0;
+
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), verts, GL_DYNAMIC_DRAW);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            // Unbind the current sprite
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            // Set line color
+            GLfloat color[] = {1.0f, 0.0f, 0.0f};
+            glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
+        }
+    }
+
     //* -------------------- LOGIC WRAPPER ------------------- *//
 
     Signal *Game::createSignal()
@@ -294,9 +387,9 @@ namespace Core
         return _logicManager.createSignal();
     }
 
-    Script *Game::createScript()
+    Script *Game::createScript(std::string name)
     {
-        return _logicManager.createScript();
+        return _logicManager.createScript(name);
     }
 
     Logic *Game::createLogic()
@@ -316,6 +409,12 @@ namespace Core
     {
         _logicManager.deleteSignal(scriptId);
     }
+
+    std::vector<Script> *Game::getScriptsList()
+    {
+        return _logicManager.getScriptList();
+    }
+
     Game *Game::parse(nlohmann::json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
@@ -484,12 +583,13 @@ namespace Core
             in vec2 TexCoord;
 
             uniform sampler2D texture1;
+            uniform vec3 color;
 
 		    out vec4 FragColor;
 
 		    void main()
 		    {
-		      FragColor = texture(texture1, TexCoord);
+		      FragColor = texture(texture1, TexCoord) * vec4(color, 1.0);
 		    }
 	    )glsl";
 
@@ -554,15 +654,15 @@ namespace Core
         // The arguments are
         // 0 to denote the 'position' vertex attribute in the vertex shader
         // 2 ints are read at a time (x, y)
-        // The the type is float (GL_INT)
+        // The the type is int (GL_INT)
         // GL_FALSE means the data should not be normalized
         // Spread between each set of attributes (4 * sizeof(int))
         //// Offset isn't used yet since there's only one attribute in 'vertices'
 
         // attribute ptr for position coords
-        glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)0);
         // attribute ptr for texture coords
-        glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void *)(2 * sizeof(int)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *)(2 * sizeof(float)));
 
         // Enable the vertex attributes
         glEnableVertexAttribArray(0);
@@ -578,6 +678,13 @@ namespace Core
 
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
+        // Make the default texture white. This allows any non-textured objects using the default texture to be rendered in color with the color uniform
+        glBindTexture(GL_TEXTURE_2D, 0);
+        GLubyte texData[] = {255, 255, 255, 255};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     void Game::initContext()
@@ -662,7 +769,7 @@ namespace Core
         // use 2 to look the next page
         case SDLK_2:
             break;
-            
+
         // Theses are here for test purposes
         case SDLK_a:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
@@ -690,14 +797,17 @@ namespace Core
     }
     void Game::setCurrentPage(Page *p)
     {
-        for (int i = 0; i < pageList.size(); i++) {
-            if (p == pageList[i]) {
+        for (int i = 0; i < pageList.size(); i++)
+        {
+            if (p == pageList[i])
+            {
                 currPageIdx = i;
                 break;
             }
         }
     }
-    void Game::setCurrentPage(int idx) {
+    void Game::setCurrentPage(int idx)
+    {
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
     }
 
@@ -718,7 +828,10 @@ namespace Core
         // Set Camera matrix uniform
         glUniformMatrix4fv(mCameraUniform, 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
 
-        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
+        GLfloat color[] = {1.0f, 1.0f, 1.0f};
+        glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
+
+        glClearColor(0.1, 0.2, 0.59, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (getCurrPage() != nullptr)
@@ -778,7 +891,6 @@ namespace Core
 
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                         glViewport(0, 0, width, height);
-
 
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }

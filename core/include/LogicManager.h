@@ -128,8 +128,9 @@ namespace Core
         /// *For editor, used in Game::createScript(), binding with create
         /// button in script editor
         ///
+        /// \param name
         /// \return Script*
-        Script *createScript();
+        Script *createScript(std::string name);
 
         /// \brief delete a script from list by id
         ///
@@ -166,7 +167,7 @@ namespace Core
         /// \param js
         LogicManager parse(nlohmann::json root);
         LogicManager();
-        LogicManager(std::vector<Page *>* pageList);
+        LogicManager(std::vector<Page *> *pageList);
         ~LogicManager();
     };
 
