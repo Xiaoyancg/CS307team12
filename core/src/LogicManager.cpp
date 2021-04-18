@@ -316,37 +316,31 @@ namespace Core
 
     void LogicManager::runCustom(ScriptCustom script)
     {
-        if (script.getAction())
+        // true to send
+        for (auto signalId : script.getAddTargetSignalList())
         {
-            // true to send
-            for (auto signalId : script.getTargetSignalList())
-            {
-                sendSignal(signalId);
-            }
-            for (auto logicId : script.getTargetLogicList())
-            {
-                sendLogic(logicId);
-            }
-            for (auto scriptId : script.getTargetScriptList())
-            {
-                sendScript(scriptId);
-            }
+            sendSignal(signalId);
         }
-        else
+        for (auto logicId : script.getAddTargetLogicList())
         {
-            // false to remove
-            for (auto signalId : script.getTargetSignalList())
-            {
-                removeSignal(signalId);
-            }
-            for (auto logicId : script.getTargetLogicList())
-            {
-                removeLogic(logicId);
-            }
-            for (auto scriptId : script.getTargetScriptList())
-            {
-                removeScript(scriptId);
-            }
+            sendLogic(logicId);
+        }
+        for (auto scriptId : script.getAddTargetScriptList())
+        {
+            sendScript(scriptId);
+        }
+        // false to remove
+        for (auto signalId : script.getRemoveTargetSignalList())
+        {
+            removeSignal(signalId);
+        }
+        for (auto logicId : script.getRemoveTargetLogicList())
+        {
+            removeLogic(logicId);
+        }
+        for (auto scriptId : script.getRemoveTargetScriptList())
+        {
+            removeScript(scriptId);
         }
     }
     //* -------------------- LOGICMANAGER -------------------- *//
@@ -374,7 +368,7 @@ namespace Core
     }
 
     LogicManager::LogicManager() {}
-    LogicManager::LogicManager(std::vector<Page *>* pageList)
+    LogicManager::LogicManager(std::vector<Page *> *pageList)
         : _pageList(pageList) {}
 
     LogicManager::~LogicManager() {}
