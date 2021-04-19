@@ -3,7 +3,7 @@ file(GLOB srcs "src/*.cpp")
 
 add_library(corelib ${srcs})
 target_include_directories(corelib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(corelib PUBLIC sdl glad nlohmann_json::nlohmann_json glm soil freetype)
+target_link_libraries(corelib PUBLIC sdl glad nlohmann_json::nlohmann_json glm soil freetype gamevmlib)
 
 # Core exe
 add_executable(core "CoreMain.cpp")
