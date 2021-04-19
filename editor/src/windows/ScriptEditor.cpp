@@ -14,21 +14,31 @@ void ScriptEditor::draw()
         {
             ImGui::PushItemWidth(200);
             ImGui::InputText("##script_name", script_name, IM_ARRAYSIZE(script_name));
+
             if (ImGui::Button("Create Script"))
             {
-                editor->getGamePtr()->createScript(std::string(script_name));
+                if (std::string(script_name).size() != 0)
+                    editor->getGamePtr()->createScript(std::string(script_name));
+                else
+                {
+                    ImGui::SameLine();
+                    ImGui::Text("empty name");
+                }
             }
+
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
-                std::vector<Core::Script> *t = nullptr;
+                // script list
+                std::vector<Core::Script> *t = editor->getGamePtr()->getScriptsList();
                 // Set default selected entity to be the first in the entity list
-                if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && (t = editor->getGamePtr()->getScriptsList())->size() > 0)
+                if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && t->size() > 0)
                 {
                     editor->getCurrentComponentList()[CUR_SCRIPT] = editor->getGamePtr()->getScriptsList()->at(0).getScriptName();
                 }
 
-                for (int i = 0; t && i < t->size(); i++)
+                for (int i = 0; t != nullptr && i < t->size(); i++)
                 {
+                    // script
                     auto s = t->at(i);
                     bool is_selected = (currScriptId == i);
                     if (ImGui::Selectable(s.getScriptName().c_str(), is_selected))
