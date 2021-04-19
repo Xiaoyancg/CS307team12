@@ -245,6 +245,8 @@ namespace Core
 
     void Entity::render()
     {
+        calculateCoords(mLocation, mScale);
+
         glActiveTexture(GL_TEXTURE0);
 
         if (mIsInvisible)
@@ -275,8 +277,6 @@ namespace Core
                 mCoords[15] = texcoords[7];
             }
         }
-
-        calculateCoords(mLocation, mScale);
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
         // Draw the bound buffer (coords)
@@ -307,6 +307,9 @@ namespace Core
 
         entity->setRotation(root.at("rotation").get<double>());
         entity->setSpriteID(root.at("spriteID").get<int>());
+        if (entity->getSpriteID() != -1) {
+            entity->setInvisibleEntity(false);
+        }
         if (root.contains("control") && root.at("control").get<bool>() == true)
         {
             entity->setControlledEntity(true);

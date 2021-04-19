@@ -1,7 +1,7 @@
 #pragma once
 
 #include "windows/Window.h"
-#include <ctime>
+#include <chrono>
 
 class GameWindow : public Window {
 public:
@@ -11,15 +11,14 @@ public:
         glBindTexture(GL_TEXTURE_2D, mTexCBO);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, editor->getGamePtr()->width, editor->getGamePtr()->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
         glBindTexture(GL_TEXTURE_2D, 0);
+        updateLastTime();
     }
     void draw();
     void updateLastTime() {
-        lastTime = std::clock();
-        lastFrame = 0;
+        lastTime = std::chrono::steady_clock::now();
     }
 private:
     unsigned int mTexCBO;
     unsigned int mFBO;
-    long lastTime = 0;
-    long lastFrame = 0;
+    std::chrono::steady_clock::time_point lastTime;
 };
