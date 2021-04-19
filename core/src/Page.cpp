@@ -166,15 +166,20 @@ namespace Core
 
     Page *Page::fromJSON(json &root)
     {
-        std::string pageType = root.at("type").get<std::string>();
         Page* page;
-        if (pageType == "menu") {
-            page = new MenuPage;
-        } else if (pageType == "map") {
-            page = new MapPage;
+        if (root.contains("type")) {
+            std::string pageType = root.at("type").get<std::string>();
+            if (pageType == "menu") {
+                page = new MenuPage;
+            } else if (pageType == "map") {
+                page = new MapPage;
+            } else {
+                page = new Page;
+            }
         } else {
             page = new Page;
         }
+        
         page->parse(root);
         return page;
     }

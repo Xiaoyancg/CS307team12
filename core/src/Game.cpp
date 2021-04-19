@@ -416,7 +416,8 @@ namespace Core
         return _logicManager.getScriptList();
     }
 
-    Game *Game::parse(nlohmann::json &root)
+    using json = nlohmann::json;
+    Game *Game::parse(json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
         this->setAuthor(root.at("Author").get<std::string>());
@@ -425,13 +426,14 @@ namespace Core
         this->setNote(root.at("Note").get<std::string>());
         try
         {
-            auto pageVec = root.at("pageList").get<std::vector<nlohmann::json>>();
-            for (nlohmann::json pageJson : pageVec)
+            auto pageVec = root.at("pageList").get<std::vector<json>>();
+            for (auto& pageJson : pageVec)
             {
                 Page* page = Page::fromJSON(pageJson);
                 page->setGame(this);
                 this->pageList.push_back(page);
             }
+            setCurrentPage(0);
         }
         catch (const std::exception &e)
         {
@@ -460,7 +462,6 @@ namespace Core
         return this;
     }
 
-    using json = nlohmann::json;
     json Game::serialize()
     {
         json j;
