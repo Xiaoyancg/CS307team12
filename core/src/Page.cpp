@@ -211,7 +211,6 @@ namespace Core
     json Page::serialize() {
         json root;
         root["PageName"] = name;
-        root["type"] = "page";
         std::vector<json> entityVector;
         for (Entity *e : entityList)
         {
