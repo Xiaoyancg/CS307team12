@@ -130,7 +130,7 @@ void Editor::createWindows()
 void Editor::processInput()
 {
     SDL_Event evt;
-    if (SDL_PollEvent(&evt))
+    while (SDL_PollEvent(&evt))
     {
         ImGui_ImplSDL2_ProcessEvent(&evt);
         if (evt.type == SDL_QUIT)

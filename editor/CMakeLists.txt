@@ -7,7 +7,7 @@ add_library(editorlib ${srcs} ${headers}  "include/windows/SpriteSheetWindow.h")
 target_include_directories(editorlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(editorlib corelib gamevmlib sdlmain imfb sdl imgui glm)
 
-add_executable(editor "EditorMain.cpp" "include/windows/SpriteSheetWindow.h")
+add_executable(editor WIN32 "EditorMain.cpp" "include/windows/SpriteSheetWindow.h")
 #target_compile_options( editor PRIVATE /w )
 target_link_libraries(editor editorlib)
 

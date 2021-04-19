@@ -7,7 +7,7 @@ add_library(gamevmlib ${srcs} ${headers})
 target_include_directories(gamevmlib PUBLIC	${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(gamevmlib corelib glad imgui sdlmain nlohmann_json)
 
-add_executable(gamevm "GameVMMain.cpp")
+add_executable(gamevm WIN32 "GameVMMain.cpp")
 #target_compile_options(gamevm PRIVATE /w)
 target_link_libraries(gamevm gamevmlib)
 
