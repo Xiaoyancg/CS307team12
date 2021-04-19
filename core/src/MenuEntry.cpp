@@ -44,7 +44,7 @@ namespace Core {
 		return mText;
 	}
 	int Menu::MenuEntry::getSize() {
-		return mSize * 48; // Multiplied by default font size (48) to get size in pixels 
+		return (int) (mSize * 48); // Multiplied by default font size (48) to get size in pixels 
 	}
 	void* Menu::MenuEntry::getButton1Callback() {
 		return mButton1.callback;
@@ -105,7 +105,7 @@ namespace Core {
 		// If the text is not empty
 		if (mText.compare("")) {
 			// Draw text
-			mFont->renderText(mText, mTextPos, mSize, glm::vec3(1.0f, 1.0f, 1.0f));
+			mFont->renderText(mText, glm::vec2(mTextPos), mSize, glm::vec3(1.0f, 1.0f, 1.0f));
 		}
 
 		if (mButton1.callback) {

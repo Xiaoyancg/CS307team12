@@ -1,15 +1,12 @@
 # editor
 file(GLOB_RECURSE srcs "src/*.cpp")
-file(GLOB_RECURSE headers "include/*.h")
 
-add_library(editorlib ${srcs} ${headers}  "include/windows/SpriteSheetWindow.h")
-#target_compile_options(editorlib PRIVATE /w)
+add_library(editorlib ${srcs})
 target_include_directories(editorlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(editorlib corelib gamevmlib sdlmain imfb sdl imgui glm)
+target_link_libraries(editorlib PUBLIC corelib gamevmlib sdl imgui imfb glm)
 
-add_executable(editor WIN32 "EditorMain.cpp" "include/windows/SpriteSheetWindow.h")
-#target_compile_options( editor PRIVATE /w )
-target_link_libraries(editor editorlib)
+add_executable(editor WIN32 "EditorMain.cpp")
+target_link_libraries(editor editorlib sdlmain)
 
 add_custom_command (TARGET editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -19,5 +16,11 @@ add_custom_command (TARGET editor POST_BUILD
 add_custom_command (TARGET editor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_SOURCE_DIR}/resource
+    $<TARGET_FILE_DIR:editor>
+)
+
+add_custom_command (TARGET editor POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/gdata
     $<TARGET_FILE_DIR:editor>
 )

@@ -164,10 +164,10 @@ namespace Core
         {
             // Parse the lower and upper coordinates for x and y from the Tile's coords array
             float *coords = mTileArray[i].getCoords();
-            int lowX = coords[0];
-            int lowY = coords[5];
-            int highX = coords[8];
-            int highY = coords[1];
+            float lowX = coords[0];
+            float lowY = coords[5];
+            float highX = coords[8];
+            float highY = coords[1];
 
             if ((lowX <= click.x) && (click.x <= highX) &&
                 (lowY <= click.y) && (click.y <= highY))

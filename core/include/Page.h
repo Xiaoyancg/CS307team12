@@ -36,8 +36,10 @@ namespace Core
         virtual void update(float dt);
         virtual void render();
 
-        static Page *parse(nlohmann::json &root);
-        nlohmann::json serialize();
+        static Page* fromJSON(nlohmann::json &root);
+
+        virtual void parse(nlohmann::json& root);
+        virtual nlohmann::json serialize();
 
         Entity *addEntity(Entity *);
         Entity *createEntity(std::string);

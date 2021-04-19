@@ -142,7 +142,7 @@ namespace Core {
         }
     }
 
-    int Font::renderText(std::string text, glm::ivec2 pos, float size, glm::vec3 color) {
+    int Font::renderText(std::string text, glm::vec2 pos, float size, glm::vec3 color) {
         // Preserve previous opengl bindings
         int prevVAO, prevVBO, prevShader;
         glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &prevVAO);
@@ -171,14 +171,14 @@ namespace Core {
         {
             Character ch = mCharacters[*c];
 
-            int xpos = pos.x + ch.Bearing.x * size;
-            int ypos = pos.y - (ch.Size.y - ch.Bearing.y) * size;
+            float xpos = pos.x + ch.Bearing.x * size;
+            float ypos = pos.y - (ch.Size.y - ch.Bearing.y) * size;
 
-            int w = ch.Size.x * size;
-            int h = ch.Size.y * size;
+            float w = ch.Size.x * size;
+            float h = ch.Size.y * size;
 
             // update VBO for each character
-            int vertices[4][4] = {
+            float vertices[4][4] = {
                 { xpos,     ypos,       0, 1 },
                 { xpos,     ypos + h,   0, 0 },
                 { xpos + w, ypos,       1, 1 },
@@ -190,7 +190,7 @@ namespace Core {
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 
             //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
-            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(int), vertices, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
             // render quad
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

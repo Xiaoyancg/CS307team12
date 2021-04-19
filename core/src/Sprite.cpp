@@ -28,4 +28,12 @@ namespace Core
 	enum class SPRITE_TYPES Sprite::getType() {
 		return mType;
 	}
+
+	nlohmann::json Sprite::serialize() {
+		nlohmann::json j;
+		j["SpriteName"] = mSpriteName;
+		j["FileName"] = mFileName;
+		j["SpriteID"] = mSpriteID;
+		return j;
+	}
 }

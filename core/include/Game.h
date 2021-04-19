@@ -75,7 +75,7 @@ namespace Core
         // parse json to game data for both editor and vm
         Game *parse(nlohmann::json &root);
         // serialize the game data to json for usage in editor
-        nlohmann::json *serialize();
+        nlohmann::json serialize();
 
         // =========================
         // PROPERTY OPERATION ( Properties are the variables that may change the performance, like the size of the window or IDK )

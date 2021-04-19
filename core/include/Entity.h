@@ -30,7 +30,8 @@ namespace Core
         // Assumes the shaders have already been setup
         void render();
 
-        static Entity *parse(nlohmann::json &root);
+        static Entity* fromJSON(nlohmann::json& root);
+        void parse(nlohmann::json& root);
         nlohmann::json serialize();
 
         // =========================
@@ -40,7 +41,6 @@ namespace Core
         // ATTRIBUTES OPERATION
         std::string getName();
         void setName(std::string);  // For variable name (setName(x);)
-        void setName(const char *); // For constant "Name" (setName("EntityAHHHHH");)
         // =========================
         // PROPERTY OPERATION
 
