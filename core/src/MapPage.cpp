@@ -64,8 +64,8 @@ namespace Core
     // The coordinate is a float between 0 and 1 because the MapView window can be stretched, 
     // and we need a predictable scale (0->1 is simple)
     Tile* MapPage::getTileFromClick(int x, int y) {
-        float dimx = ((mMap->getDimensions().x + 1) * mMap->getTileSize()) / 2;
-        float dimy = ((mMap->getDimensions().y + 1) * mMap->getTileSize()) / 2;
+        float dimx = ((mMap->getDimensions().x + 1) * mMap->getTileSize()) / 2.0f;
+        float dimy = ((mMap->getDimensions().y + 1) * mMap->getTileSize()) / 2.0f;
 
         // Get click as ortho matrix
         glm::vec4 ret = glm::ortho(-dimx, dimx, -dimy, dimy) * glm::vec4(x, y, 0.0f, 1.0f);
@@ -80,5 +80,15 @@ namespace Core
         
         glm::ivec2 c(ret.x, ret.y);
         return mMap->checkTileCollision(c); // Returns either a ptr to a Tile or nullptr
+    }
+
+    void MapPage::parse(nlohmann::json& root) {
+        Page::parse(root);
+    }
+
+    nlohmann::json MapPage::serialize() {
+        nlohmann::json& root = Page::serialize();
+        root["type"] = "map";
+        return root;
     }
 }

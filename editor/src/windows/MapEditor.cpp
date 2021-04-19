@@ -21,13 +21,15 @@ void MapEditor::draw() {
 			ImGui::Text("Current Map");
 			ImGui::SameLine();
 			if (ImGui::BeginCombo("##currentMap", mapLabel.c_str(), 0)) {
-				for (auto map : editor->getGamePtr()->getDefaultMapPageMaps()) {
-					const bool isSelected = (map == editor->getCurrentMap());
-					if (ImGui::Selectable(map->getName().c_str(), isSelected)) {
-						editor->setCurrentMap(map);
-					}
-					if (isSelected) {
-						ImGui::SetItemDefaultFocus();
+				if (editor->getGamePtr()->getDefaultMapPage() != nullptr) {
+					for (auto map : editor->getGamePtr()->getDefaultMapPageMaps()) {
+						const bool isSelected = (map == editor->getCurrentMap());
+						if (ImGui::Selectable(map->getName().c_str(), isSelected)) {
+							editor->setCurrentMap(map);
+						}
+						if (isSelected) {
+							ImGui::SetItemDefaultFocus();
+						}
 					}
 				}
 				ImGui::EndCombo();

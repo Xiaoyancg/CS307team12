@@ -41,6 +41,9 @@ namespace Core
 
         Tile* getTileFromClick(int x, int y);
 
+        void parse(nlohmann::json& root);
+        nlohmann::json serialize();
+
         // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
         // This is set by Game.cpp when a Game object is created
         // Any class that renders sprites needs a way to translate between Parchment Sprite IDs and imported OpenGL IDs.

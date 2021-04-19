@@ -359,10 +359,8 @@ void Editor::loadGame(const std::string filePath)
 
 void Editor::saveGame()
 {
-    nlohmann::json *content = game->serialize();
-    WriteFile(gameFilePath, (content->dump(2)));
-    // pointer deletion
-    delete content;
+    nlohmann::json content = game->serialize();
+    WriteFile(gameFilePath, (content.dump(2)));
 }
 
 void Editor::saveGameAs(const std::string filePath)

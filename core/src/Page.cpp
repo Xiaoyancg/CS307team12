@@ -1,4 +1,6 @@
 #include "Page.h"
+#include "MapPage.h"
+#include "MenuPage.h"
 
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -162,32 +164,55 @@ namespace Core
 
     using json = nlohmann::json;
 
-    Page *Page::parse(json &root)
+    Page *Page::fromJSON(json &root)
     {
-        Page *page = new Page;
-        page->setName(root.at("PageName").get<std::string>());
-        //std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
-        //page->SetBackgroundColor(
-        //    colorVec[0].get<float>(),
-        //    colorVec[1].get<float>(),
-        //    colorVec[2].get<float>(),
-        //    colorVec[3].get<float>()
-        //);
+        std::string pageType = root.at("type").get<std::string>();
+        Page* page;
+        if (pageType == "menu") {
+            page = new MenuPage;
+        } else if (pageType == "map") {
+            page = new MapPage;
+        } else {
+            page = new Page;
+        }
+        page->parse(root);
+        return page;
+    }
+
+    void Page::parse(json& root) {
+        setName(root.at("PageName").get<std::string>());
+        if (root.contains("BackgroundColor")) {
+            std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
+            SetBackgroundColor(
+                colorVec[0].get<float>(),
+                colorVec[1].get<float>(),
+                colorVec[2].get<float>(),
+                colorVec[3].get<float>()
+            );    
+        }
+        
         auto entityVec = root.at("entityList").get<std::vector<json>>();
         for (json entityJson : entityVec)
         {
-            Entity* ent = Entity::parse(entityJson);
-            ent->setParentPage(page);
+            Entity* ent = Entity::fromJSON(entityJson);
+            ent->setParentPage(this);
             if (ent->isControlledEntity()) {
-                page->setCtrlEntity(ent);
+                setCtrlEntity(ent);
             }
-            page->entityList.push_back(ent);
+            entityList.push_back(ent);
         }
+    }
 
-        // Doing nothing with this as of now, just parsing
-        // TODO: Have a MenuPage be created when this boolean is true
-        root.at("isMenu").get<bool>();
-
-        return page;
+    json Page::serialize() {
+        json root;
+        root["PageName"] = name;
+        root["type"] = "page";
+        std::vector<json> entityVector;
+        for (Entity *e : entityList)
+        {
+            entityVector.push_back(e->serialize());
+        }
+        root["entityList"] = entityVector;
+        return root;
     }
 }

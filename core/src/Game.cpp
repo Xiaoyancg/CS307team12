@@ -428,7 +428,7 @@ namespace Core
             auto pageVec = root.at("pageList").get<std::vector<nlohmann::json>>();
             for (nlohmann::json pageJson : pageVec)
             {
-                Page* page = Page::parse(pageJson);
+                Page* page = Page::fromJSON(pageJson);
                 page->setGame(this);
                 this->pageList.push_back(page);
             }
@@ -460,11 +460,10 @@ namespace Core
         return this;
     }
 
-    nlohmann::json *Game::serialize()
+    using json = nlohmann::json;
+    json Game::serialize()
     {
-        // TODO: bg color ? I don't think that's necessary
-        nlohmann::json *ret = new nlohmann::json;
-        nlohmann::json &j = *ret;
+        json j;
         j["FileType"] = "Parchment Game Data";
         j["GameName"] = getGameName();
         j["Author"] = getAuthor();
@@ -472,76 +471,34 @@ namespace Core
         j["LastModifiedTime"] = getLMTime();
         j["Note"] = getNote();
         // pages
-        std::vector<nlohmann::json> pageVector;
-        for (Page *p : this->pageList)
+        std::vector<json> pageVector;
+        for (Page *p : pageList)
         {
-            nlohmann::json pj;
-            pj["PageName"] = p->getName();
-
-            // Determine if Page is a MenuPage. Kinda junk implementation
-            if (!strcmp(typeid(*p).name(), "class Core::MenuPage"))
-            {
-                pj["isMenu"] = true;
-            }
-            else
-            {
-                pj["isMenu"] = false;
-            }
-
-            // entities
-            std::vector<nlohmann::json> entityVector;
-            for (Entity *e : p->getEntityList())
-            {
-                nlohmann::json ej;
-                ej["EntityName"] = e->getName();
-                ej["location"] = {e->getLocation().x, e->getLocation().y};
-                ej["scale"] = {e->getScale().x, e->getScale().y};
-                ej["rotation"] = e->getRotation();
-                ej["spriteID"] = e->getSpriteID();
-                if (e->isControlledEntity())
-                {
-                    ej["control"] = true;
-                }
-                entityVector.push_back(ej);
-            }
-            pj["entityList"] = entityVector;
-            pageVector.push_back(pj);
+            pageVector.push_back(p->serialize());
         }
         j["pageList"] = pageVector;
 
         // Sprites
-        std::vector<nlohmann::json> spriteVector;
-        for (auto &[key, value] : mGameSprites.getSprites())
-        {
-            Sprite &s = *value;
-            nlohmann::json sj;
-            sj["SpriteName"] = s.getName();
-            sj["FileName"] = s.getFileName();
-            sj["SpriteID"] = s.getSpriteID();
-            spriteVector.push_back(sj);
-        }
-        if (spriteVector.size() > 0)
-        {
-            j["spriteList"] = spriteVector;
-        }
+        std::vector<json> spriteVector = mGameSprites.serialize();
+        j["spriteList"] = spriteVector;
 
         //TODO LogicManager
-        nlohmann::json logicManagerjs;
-        std::vector<nlohmann::json> logicVector;
+        json logicManagerjs;
+        std::vector<json> logicVector;
         //TODO for each logic push to logic vector
         logicManagerjs["logicList"] = logicVector;
-        std::vector<nlohmann::json> scriptVector;
+        std::vector<json> scriptVector;
         //TODO for each script push to script Vector
         logicManagerjs["scriptList"] = scriptVector;
-        std::vector<nlohmann::json> signalVector;
+        std::vector<json> signalVector;
         // TODO for each signal ...
         logicManagerjs["signalList"] = signalVector;
         j["logicManager"] = logicManagerjs;
 
         // TODO start point
-        nlohmann::json startPoint;
+        json startPoint;
         j["startPoint"] = startPoint;
-        return ret;
+        return j;
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
