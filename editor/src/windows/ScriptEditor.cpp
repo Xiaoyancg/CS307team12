@@ -7,21 +7,21 @@ void ScriptEditor::draw()
     {
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-
-        static char script_name[128] = "";
-        bool script_info = false;
+        scriptInfo = false;
         if (ImGui::Begin("Script Editor", &visible))
         {
             ImGui::PushItemWidth(200);
-            ImGui::InputText("##script_name", script_name, IM_ARRAYSIZE(script_name));
+            ImGui::InputText("##script_name", scriptName, IM_ARRAYSIZE(scriptName));
             if (ImGui::Button("Create Script"))
             {
-                editor->getGamePtr()->createScript(std::string(script_name));
+                std::string s = scriptName;
+                editor->getGamePtr()->createScript(s);
             }
+            ImGui::Text("Current Script: %s", editor->getCurrentComponentList()[CUR_SCRIPT].c_str());
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
-                std::vector<Core::Script> *t = nullptr;
-                // Set default selected entity to be the first in the entity list
+                std::vector<Core::Script>* t = nullptr;
+                // Set default selected script to be the first in the entity list
                 if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && (t = editor->getGamePtr()->getScriptsList())->size() > 0)
                 {
                     editor->getCurrentComponentList()[CUR_SCRIPT] = editor->getGamePtr()->getScriptsList()->at(0).getScriptName();
@@ -55,7 +55,7 @@ void ScriptEditor::draw()
             ImGui::SameLine();
             if (ImGui::Button("Show Information"))
             {
-                script_info = true;
+                scriptInfo = true;
             }
         }
 
