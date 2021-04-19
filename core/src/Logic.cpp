@@ -1,5 +1,7 @@
 #include <cstdarg>
+#include <cstring>
 #include "Logic.h"
+
 namespace Core
 {
 
@@ -22,14 +24,12 @@ namespace Core
     //* --------------------- LOGIC UNION -------------------- *//
     LogicUnion &LogicUnion::operator=(const LogicUnion &other)
     {
-        customLogic = other.customLogic;
-        keyLogic = other.keyLogic;
+        std::memcpy(this, &other, sizeof(LogicUnion));
         return *this;
     }
     LogicUnion::LogicUnion(const LogicUnion &other)
     {
-        customLogic = other.customLogic;
-        keyLogic = other.keyLogic;
+        std::memcpy(this, &other, sizeof(LogicUnion));
     }
     LogicUnion::LogicUnion() : LogicUnion(LogicCustom()) {}
     LogicUnion::LogicUnion(LogicCustom customLogic)
