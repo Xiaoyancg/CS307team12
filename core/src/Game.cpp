@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <algorithm>
+#include <chrono>
 
 #include "Camera.h"
 
@@ -816,7 +817,6 @@ namespace Core
     }
 
     void Game::update(float dt) {
-        std::cout << dt << std::endl;
         keyboardState = SDL_GetKeyboardState(nullptr);
         getCurrPage()->update(dt);
     }
@@ -865,8 +865,7 @@ namespace Core
 
     void Game::mainLoop()
     {
-        long lastTime = std::clock();
-        long lastFrame = lastTime;
+        auto lastTime = std::chrono::steady_clock::now();
         SDL_Event event;
         bool close_window = false;
         while (!close_window)
@@ -900,17 +899,11 @@ namespace Core
                     handleWindowEvent(event);
                 }
             }
-            long now = std::clock();
-            float dt = (now - lastTime) / 1000.0f;
+            auto now = std::chrono::steady_clock::now();
+            float dt = (float) (now - lastTime).count() / std::chrono::steady_clock::period::den;
             lastTime = now;
             update(dt);
-            now = std::clock();
-            float dtFrame = (now - lastFrame) / 1000.0f;
-            if (dtFrame > 1.0f / FPS) {
-                lastFrame = now;
-                render();
-                dtFrame = 0;
-            }
+            render();
 
             // Show the entities by bringing showing the back buffer
             SDL_GL_SwapWindow(window);

@@ -27,9 +27,6 @@
 namespace Core
 {
 
-    typedef std::vector<Page *>::iterator PLitr;
-    typedef std::vector<Page *> PL;
-
     //Game *game; // initContext in editor or vm, used by logic
 
     class Game
@@ -194,9 +191,6 @@ namespace Core
         std::string note;
 
         Entity *currCtrlEntity;
-
-        // page list iterator: current page iterator
-        PLitr _currPitr;
 
         // condition of game is rendering to editor
         // if true use cbo
