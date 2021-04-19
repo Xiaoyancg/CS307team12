@@ -23,7 +23,7 @@ void ScriptEditor::draw()
                     ImGui::Text("empty name");
                 }
             }
-
+            ImGui::Text("Current Script: %s", editor->getCurrentComponentList()[CUR_SCRIPT].c_str());
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 // script list
