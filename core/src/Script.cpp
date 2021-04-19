@@ -1,5 +1,6 @@
 #include <cstdarg>
 #include "Script.h"
+#include <cstring>
 
 namespace Core
 {
@@ -112,13 +113,11 @@ namespace Core
 
     ScriptUnion::ScriptUnion(const ScriptUnion &other)
     {
-        scriptCustom = other.scriptCustom;
-        scriptMoveConstantly = other.scriptMoveConstantly;
+        std::memcpy(this, &other, sizeof(ScriptUnion));
     }
     ScriptUnion &ScriptUnion::operator=(const ScriptUnion &other)
     {
-        scriptCustom = other.scriptCustom;
-        scriptMoveConstantly = other.scriptMoveConstantly;
+        std::memcpy(this, &other, sizeof(ScriptUnion));
         return *this;
     }
     ScriptUnion::ScriptUnion() : ScriptUnion(ScriptCustom()) {}
