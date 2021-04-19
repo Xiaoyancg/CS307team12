@@ -7,18 +7,16 @@ void ScriptEditor::draw()
     {
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-
-        static char script_name[128] = "";
-        bool script_info = false;
+        scriptInfo = false;
         if (ImGui::Begin("Script Editor", &visible))
         {
             ImGui::PushItemWidth(200);
-            ImGui::InputText("##script_name", script_name, IM_ARRAYSIZE(script_name));
+            ImGui::InputText("##scriptName", scriptName, IM_ARRAYSIZE(scriptName));
 
             if (ImGui::Button("Create Script"))
             {
-                if (std::string(script_name).size() != 0)
-                    editor->getGamePtr()->createScript(std::string(script_name));
+                if (std::string(scriptName).size() != 0)
+                    editor->getGamePtr()->createScript(std::string(scriptName));
                 else
                 {
                     ImGui::SameLine();
@@ -65,7 +63,7 @@ void ScriptEditor::draw()
             ImGui::SameLine();
             if (ImGui::Button("Show Information"))
             {
-                script_info = true;
+                scriptInfo = true;
             }
         }
 
