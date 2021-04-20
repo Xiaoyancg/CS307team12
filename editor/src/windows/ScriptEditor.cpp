@@ -24,6 +24,7 @@ void ScriptEditor::draw()
                 }
             }
             ImGui::Text("Current Script: %s", editor->getCurrentComponentList()[CUR_SCRIPT].c_str());
+
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 // script list
@@ -31,18 +32,20 @@ void ScriptEditor::draw()
                 // Set default selected entity to be the first in the entity list
                 if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && t->size() > 0)
                 {
-                    editor->getCurrentComponentList()[CUR_SCRIPT] = editor->getGamePtr()->getScriptsList()->at(0).getScriptName();
+                    currScript_ptr = &(t->at(0));
+                    editor->getCurrentComponentList()[CUR_SCRIPT] = currScript_ptr->getScriptName();
                 }
 
                 for (int i = 0; t != nullptr && i < t->size(); i++)
                 {
                     // script
-                    auto s = t->at(i);
-                    bool is_selected = (currScriptId == i);
+                    auto &s = t->at(i);
+                    bool is_selected = (currScriptIdx == i);
                     if (ImGui::Selectable(s.getScriptName().c_str(), is_selected))
                     {
-                        currScriptId = i;
+                        currScriptIdx = i;
                         editor->getCurrentComponentList()[CUR_SCRIPT] = s.getScriptName().c_str();
+                        currScript_ptr = &(t->at(i));
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -53,11 +56,17 @@ void ScriptEditor::draw()
                 }
                 ImGui::EndListBox();
             }
+
             //ImGui::SameLine();
             if (ImGui::Button("Delete Script"))
             {
+
+                editor->getGamePtr()->deleteScript(currScript_ptr->getScriptId());
+                currScriptIdx = -1;
+                currScript_ptr = nullptr;
+                editor->getCurrentComponentList()[CUR_SCRIPT] = "No Component Selected";
             }
-            if (ImGui::Button("Link Script"))
+            if (ImGui::Button("Update Script"))
             {
             }
             ImGui::SameLine();

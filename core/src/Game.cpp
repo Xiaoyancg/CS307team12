@@ -403,7 +403,7 @@ namespace Core
     }
     void Game::deleteScript(int scriptId)
     {
-        _logicManager.deleteSignal(scriptId);
+        _logicManager.deleteScript(scriptId);
     }
 
     std::vector<Script> *Game::getScriptsList()

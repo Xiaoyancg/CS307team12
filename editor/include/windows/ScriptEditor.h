@@ -13,7 +13,8 @@ public:
     void draw();
 
 private:
-	int currScriptId = 0;
-	char scriptName[128];
-	bool scriptInfo;
+    int currScriptIdx = 0;
+    Core::Script *currScript_ptr;
+    char scriptName[128];
+    bool scriptInfo;
 };
