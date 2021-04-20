@@ -61,7 +61,7 @@ namespace Core
 	// This may never be used, but if you need the whole list of sprites here it is!
 	// This might be used to iterate through all sprites, but be warned that iteration with maps is in no specific order
 	// Leaving it commented until a use case for it comes up
-	std::unordered_map<int, Sprite *>& SpriteManager::getSprites()
+	std::unordered_map<int, Sprite *> &SpriteManager::getSprites()
 	{
 		return this->mSprites;
 	}
@@ -69,7 +69,14 @@ namespace Core
 	// Returns to a pointer to the sprite with the requested ID
 	Sprite *SpriteManager::atID(int spriteID)
 	{
-		return mSprites[spriteID];
+		try
+		{
+			return mSprites.at(spriteID);
+		}
+		catch (std::out_of_range e)
+		{
+			return nullptr;
+		}
 	}
 
 	using json = nlohmann::json;
@@ -78,14 +85,31 @@ namespace Core
 		auto jSpriteList = j.get<std::vector<json>>();
 		for (json& sj : jSpriteList)
 		{
+<<<<<<< HEAD
 			createSprite(
 				sj.at("SpriteName").get<std::string>(),
 				sj.at("FileName").get<std::string>(),
 				sj.at("SpriteID").get<int>()
 			);
+=======
+			auto jSpriteList = j.get<std::vector<nlohmann::json>>();
+			for (nlohmann::json &sj : jSpriteList)
+			{
+				createSprite(
+					sj.at("SpriteName").get<std::string>(),
+					sj.at("FileName").get<std::string>(),
+					sj.at("SpriteID").get<int>());
+			}
+		}
+		catch (const std::exception &e)
+		{
+			std::cerr << e.what() << '\n';
+			return 1;
+>>>>>>> origin/main
 		}
 	}
 
+<<<<<<< HEAD
 	json SpriteManager::serialize() {
 		std::vector<json> jSpriteList;
 		for (auto [id, sprite] : mSprites) {
@@ -94,9 +118,12 @@ namespace Core
 		return jSpriteList;
 	}
 
+=======
+>>>>>>> origin/main
 	// SPRITESHEET STUFF
 
-	int SpriteManager::createSpriteSheet(std::string name, std::string filename) {
+	int SpriteManager::createSpriteSheet(std::string name, std::string filename)
+	{
 		unsigned int id = mCurrSpriteSheetID;
 
 		// This will loop as long as it needs to until it finds the closest valid ID
@@ -106,7 +133,7 @@ namespace Core
 			if (mSpriteSheets[id] == nullptr)
 			{
 				// init id for sprite
-				SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
+				SpriteSheet *newSpriteSheet = new SpriteSheet(name, filename, id);
 				this->mSpriteSheets[id] = newSpriteSheet;
 				mCurrSpriteSheetID = id + 1;
 				return id; // Return ID of the new sprite
@@ -121,33 +148,33 @@ namespace Core
 	}
 
 	// This will overwrite the given id with a new spritesheet
-	int SpriteManager::createSpriteSheet(std::string name, std::string filename, int id) {
+	int SpriteManager::createSpriteSheet(std::string name, std::string filename, int id)
+	{
 		// init id for sprite
-		SpriteSheet* newSpriteSheet = new SpriteSheet(name, filename, id);
+		SpriteSheet *newSpriteSheet = new SpriteSheet(name, filename, id);
 		this->mSpriteSheets[id] = newSpriteSheet;
 		return id; // Return ID of the new sprite
 	}
-	void SpriteManager::deleteSpriteSheet(int spritesheetID) {
+	void SpriteManager::deleteSpriteSheet(int spritesheetID)
+	{
 		delete this->mSpriteSheets[spritesheetID];
 		mSpriteSheets.erase(spritesheetID);
 	}
-	std::unordered_map<int, SpriteSheet*>& SpriteManager::getSpriteSheets() {
+	std::unordered_map<int, SpriteSheet *> &SpriteManager::getSpriteSheets()
+	{
 		return this->mSpriteSheets;
 	}
-	SpriteSheet* SpriteManager::atSheetID(int spritesheetID) {
+	SpriteSheet *SpriteManager::atSheetID(int spritesheetID)
+	{
 		return mSpriteSheets[spritesheetID];
 	}
 
-
-
-
-
-
-
-	unsigned int SpriteManager::createPartialSprite(std::string name, int spriteID, SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions) {
+	unsigned int SpriteManager::createPartialSprite(std::string name, int spriteID, SpriteSheet *spritesheet, glm::ivec2 location, glm::ivec2 dimensions)
+	{
 		// init id for sprite
 		int id = spriteID;
-		if (id == -1) {
+		if (id == -1)
+		{
 			// Find next available id starting at 0
 			id = 0;
 			// This will loop as long as it needs to until it finds the closest valid ID
@@ -170,19 +197,21 @@ namespace Core
 		}
 
 		// init name for sprite
-		if (name == "") {
+		if (name == "")
+		{
 			name = spritesheet->getName();
 		}
 
-
-		Sprite* newSprite = new PartialSprite(name, id, spritesheet, location, dimensions);
+		Sprite *newSprite = new PartialSprite(name, id, spritesheet, location, dimensions);
 		this->mSprites[id] = newSprite;
 		return id; // Return ID of the new sprite
 	}
-	unsigned int SpriteManager::createLoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpad) {
+	unsigned int SpriteManager::createLoopingSprite(std::string name, int spriteID, SpriteSheet *spritesheet, int numImages, float speed, glm::ivec2 loc, glm::ivec2 dims, int xpad)
+	{
 		// init id for sprite
 		int id = spriteID;
-		if (id == -1) {
+		if (id == -1)
+		{
 			// Find next available id starting at 0
 			id = 0;
 			// This will loop as long as it needs to until it finds the closest valid ID
@@ -205,11 +234,12 @@ namespace Core
 		}
 
 		// init name for sprite
-		if (name == "") {
+		if (name == "")
+		{
 			name = spritesheet->getName();
 		}
 
-		Sprite* newSprite = new LoopingSprite(name, id, spritesheet, numImages, speed, loc, dims, xpad);
+		Sprite *newSprite = new LoopingSprite(name, id, spritesheet, numImages, speed, loc, dims, xpad);
 		this->mSprites[id] = newSprite;
 		return id; // Return ID of the new sprite
 	}
