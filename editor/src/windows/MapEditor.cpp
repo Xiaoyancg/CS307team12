@@ -21,15 +21,13 @@ void MapEditor::draw() {
 			ImGui::Text("Current Map");
 			ImGui::SameLine();
 			if (ImGui::BeginCombo("##currentMap", mapLabel.c_str(), 0)) {
-				if (editor->getGamePtr()->getDefaultMapPage() != nullptr) {
-					for (auto map : editor->getGamePtr()->getDefaultMapPageMaps()) {
-						const bool isSelected = (map == editor->getCurrentMap());
-						if (ImGui::Selectable(map->getName().c_str(), isSelected)) {
-							editor->setCurrentMap(map);
-						}
-						if (isSelected) {
-							ImGui::SetItemDefaultFocus();
-						}
+				for (auto map : editor->getGamePtr()->getMapList()) {
+					const bool isSelected = (map == editor->getCurrentMap());
+					if (ImGui::Selectable(map->getName().c_str(), isSelected)) {
+						editor->setCurrentMap(map);
+					}
+					if (isSelected) {
+						ImGui::SetItemDefaultFocus();
 					}
 				}
 				ImGui::EndCombo();
@@ -40,7 +38,7 @@ void MapEditor::draw() {
 			drawCreateMapPopup();
 			ImGui::SameLine();
 			if (ImGui::Button("Delete Map")) {
-				game->deleteDefaultMapPageCurrentMap();
+				game->deleteMap(editor->getCurrentMap());
 				editor->setCurrentMap(nullptr);
 				editor->showDeleteSuccessPopup();
 			}
@@ -100,18 +98,16 @@ void MapEditor::drawCreateMapPopup() {
 			// dimensions as specified by user UNDO
 			std::string mname = map_name;
 			glm::ivec2 dimensions = glm::ivec2(dim1, dim2);
-			auto action = [this, mname, dimensions]() {
-				Core::Map *new_map = new Core::Map(mname, dimensions, 64);
-				Core::MapPage *map_page =
-					editor->getGamePtr()->createMapPage(mname, new_map);
-				new_map->setName(mname);
-				new_map->setDimensions(dimensions);
-				editor->setCurrentMap(
-					editor->getGamePtr()->createMapOnDefaultMapPage(
-						map_name, dim2, dim1, tileSize));
+			int savedTileSize = tileSize;
+			auto action = [this, mname, dimensions, savedTileSize]() {
+				Core::Map *newMap = new Core::Map(mname, dimensions, savedTileSize);
+				newMap->setName(mname);
+				newMap->setDimensions(dimensions);
+				editor->setCurrentMap(newMap);
+				int mapIndex = editor->getGamePtr()->addMap(newMap);
 			};
 			auto restore = [this, mname]() {
-				editor->getGamePtr()->deletePage(mname);
+				editor->getGamePtr()->deleteMap(mname);
 			};
 			pushAction(action, restore);
 			action();

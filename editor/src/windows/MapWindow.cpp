@@ -31,12 +31,13 @@ Core::Tile *MapWindow::handleClick()
             // Get x and y of the click based on their distance from the center of the MapView screen.
             // This lets MapPage::getTileFromClick() understand the click as a point in its coordinate system without orthographic projection / zoom.
             // The orthographic projection is calculated on the click later in MapPage::getTileFromClick() based on the current Map's Camera.
-            float x = (click_pos.x - min.x);
-            float y = canvasDimensions.y - (click_pos.y - min.y);
-            glm::ivec2 diff(x - center.x, y - center.y);
+            glm::vec2 windowClick = glm::vec2(
+                (click_pos.x - min.x) / canvasDimensions.x,
+                1 - (click_pos.y - min.y) / canvasDimensions.y
+            );
 
             // NOTE: Right now the code just gets the clicked Tile and sets its sprite ID to 1. It should probably do something else...
-            Core::Tile *clicked_tile = editor->getGamePtr()->getDefaultMapPage()->getTileFromClick(diff.x, diff.y);
+            Core::Tile *clicked_tile = editor->getCurrentMap()->getTileFromClick(cam, windowClick.x, windowClick.y);
 
             if (clicked_tile)
             {
@@ -55,14 +56,13 @@ Core::Tile *MapWindow::handleClick()
         if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y))
         {
             // The click is valid within the MapView window.
-            Core::Camera *cam = editor->getCurrentMap()->getCamera();
             if (wheel > 0)
             {
-                cam->setZoom(cam->getZoom() - 0.05f); // Zoom in
+                cam->setZoom(cam->getZoom() + 0.05f); // Zoom in
             }
             else if (wheel < 0)
             {
-                cam->setZoom(cam->getZoom() + 0.05f); // Zoom out
+                cam->setZoom(cam->getZoom() - 0.05f); // Zoom out
             }
         }
     }
@@ -72,9 +72,8 @@ Core::Tile *MapWindow::handleClick()
         // If click is within the coordinates of the MapView window (in global coords based on top right corner)
         ImVec2 click_pos = ImGui::GetMousePos();
         // The click is valid within the MapView window.
-        Core::Camera *cam = editor->getCurrentMap()->getCamera();
         // Move the position to the offset of the drag. Using ImGui::GetMouseDrag messed things up here, so I'm doing it this way
-        cam->offsetPosition(glm::ivec2(-(click_pos.x - prevClick.x), click_pos.y - prevClick.y));
+        cam->offsetPosition(glm::vec2(-(click_pos.x - prevClick.x), click_pos.y - prevClick.y));
         // Set previous click position to calculate next drag
         prevClick.x = click_pos.x;
         prevClick.y = click_pos.y;
@@ -118,9 +117,6 @@ void MapWindow::draw()
             int mapWidth = (dims.x + 1) * tileSize;
             int mapHeight = (dims.y + 1) * tileSize;
 
-            Core::MapPage *mapPage = editor->getGamePtr()->getDefaultMapPage();
-            glm::vec4 &bgCol = mapPage->GetBackgroundColor();
-
             // set texture size to map dimensions so that we don't get quality loss
             // --initially I thought about only rendering the visible part of the map
             // --but that won't work without a shader rework
@@ -128,20 +124,19 @@ void MapWindow::draw()
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, icanvas_size.x, icanvas_size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glBindTexture(GL_TEXTURE_2D, 0);
 
-            Core::Camera *cam = mapPage->getCurrCamera();
-            glm::ivec2 lastDims = cam->getDimensions();
             cam->setDimensions(icanvas_size.x, icanvas_size.y);
+            cam->setPosition(-mapWidth/2.0f, -mapHeight/2.0f);
+            cam->use();
 
             // render the map
             glBindFramebuffer(GL_FRAMEBUFFER, mMapFBO);
             // and make sure the viewport knows the size of the output texture
+            glm::vec4 bgCol(0.1f, 0.9f, 0.59f, 1.0f);
             glViewport(0, 0, icanvas_size.x, icanvas_size.y);
             glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             glClear(GL_COLOR_BUFFER_BIT);
-            editor->getGamePtr()->renderDefaultMapPage(); // Render Game with new viewport size
+            currMap->render(false);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-            cam->setDimensions(lastDims.x, lastDims.y);
 
             // draw the rendered image to the window
             ImGui::Image((ImTextureID)mMapTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));

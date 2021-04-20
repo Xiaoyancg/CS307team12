@@ -24,13 +24,13 @@ namespace Core
     Game::Game(std::string gameName) : gameName(gameName)
     {
         initialize();
-        this->setCurrentPage(this->createPage("emptyPage"));
+        setCurrentPage(addPage(new Page("emptyPage")));
     }
 
     Game::Game(nlohmann::json &json)
     {
         initialize();
-        this->parse(json);
+        parse(json);
     }
 
     Game::Game(const Game& other) :
@@ -43,13 +43,11 @@ namespace Core
         mCamera(new Camera(*other.mCamera)),
         currPageIdx(other.currPageIdx),
         pageList(other.pageList.size()),
-        currMapPageIdx(other.currMapPageIdx),
         inDisplayList(other.inDisplayList),
         window(other.window),
         gl_context(other.gl_context),
         keyboardState(other.keyboardState),
         shaderProgram(other.shaderProgram),
-        mCameraUniform(other.mCameraUniform),
         mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
@@ -57,6 +55,10 @@ namespace Core
         {
             pageList[i] = new Page(*other.pageList[i]);
             pageList[i]->setGame(this);
+        }
+        for (int i = 0; i < other.mapList.size(); i++)
+        {
+            mapList[i] = new Map(*other.mapList[i]);
         }
     }
 
@@ -155,57 +157,6 @@ namespace Core
         this->pageList.push_back(p);
         return p;
     }
-    Page *Core::Game::createPage(std::string n)
-    {
-        Page *p = new Page(n);
-        return addPage(p);
-    }
-    MapPage *Game::createMapPage()
-    {
-        MapPage *mp = new MapPage();
-        return (MapPage *)addPage(mp);
-    }
-    MapPage *Game::createMapPage(std::string n)
-    {
-        MapPage *mp = new MapPage(n);
-        return (MapPage *)addPage(mp);
-    }
-    MapPage *Game::createMapPage(std::string n, Map *m)
-    {
-        MapPage *mp = new MapPage(n, m);
-        return (MapPage *)addPage(mp);
-    }
-    Map *Game::createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize)
-    {
-        if (currMapPageIdx != -1)
-        {
-            return getDefaultMapPage()->addMap(new Map(name, glm::ivec2(cols, rows), tilesize));
-        }
-        return nullptr;
-    }
-    void Game::deleteDefaultMapPageCurrentMap()
-    {
-        getDefaultMapPage()->deleteCurrMap();
-    }
-    MenuPage *Game::createMenuPage(std::string name, Menu *menu)
-    {
-        MenuPage *mp = new MenuPage(name, menu);
-        return (MenuPage *)addPage(mp);
-    }
-    MenuPage *Game::createMenuPage(std::string name)
-    {
-        MenuPage *mp = new MenuPage(name);
-        return (MenuPage *)addPage(mp);
-    }
-    MenuPage *Game::createMenuPage()
-    {
-        MenuPage *mp = new MenuPage();
-        return (MenuPage *)addPage(mp);
-    }
-    std::vector<Page *> &Game::getPageList()
-    {
-        return pageList;
-    }
 
     void Game::deletePage(Page *dp)
     {
@@ -239,6 +190,33 @@ namespace Core
                 delete (p);
                 p = nullptr;
                 break;
+            }
+        }
+    }
+
+    int Game::addMap(Map* map) {
+        mapList.push_back(map);
+        return mapList.size() - 1;
+    }
+
+    Map* Game::getMap(int idx) {
+        return mapList[idx];
+    }
+
+    void Game::deleteMap(std::string name) {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
+            if ((*iter)->getName() == name) {
+                mapList.erase(iter);
+                return;
+            }
+        }
+    }
+
+    void Game::deleteMap(Map* map) {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
+            if ((*iter) == map) {
+                mapList.erase(iter);
+                return;
             }
         }
     }
@@ -305,28 +283,6 @@ namespace Core
         return mGameSprites.getSpriteSheets();
     }
 
-    std::vector<Map *> Game::getDefaultMapPageMaps()
-    {
-        return getDefaultMapPage()->getMaps();
-    }
-
-    MapPage *Game::getDefaultMapPage()
-    {
-        return currMapPageIdx != -1 ? (MapPage *)pageList[currMapPageIdx] : nullptr;
-    }
-
-    // This function is called from the Editor and will render the current Map onto the MapView window in ImGui
-    void Game::renderDefaultMapPage()
-    {
-        glm::ivec2 dims = getDefaultMapPage()->getCurrMap()->getCamera()->getDimensions();
-        //glViewport(0, 0, dims.x, dims.y);
-        // Use the Map's Camera as opposed to the Game's camera. This lets each Map be centered and unaffected by the Game's Camera's movement
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(getDefaultMapPage()->getCurrCamera()->getMatrix()));
-
-        // Render the Map onto the MapPage's Framebuffer set by Editor. (TODO: Fix this approach)
-        getDefaultMapPage()->render();
-    }
-
     void Game::renderSpriteSheet(SpriteSheet *spritesheet)
     {
         if (spritesheet->getOpenGLTextureID() >= 0)
@@ -337,10 +293,10 @@ namespace Core
             Camera *camera = new Camera();
             glm::vec2 dims = spritesheet->getDimensions();
             camera->setDimensions(dims.x, dims.y);
-            camera->offsetPosition(glm::ivec2(dims.x / 2, dims.y / 2));
+            camera->offsetPosition(glm::vec2(dims.x / 2, dims.y / 2));
 
             // Set the camera in the shader
-            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(camera->getMatrix()));
+            camera->use();
 
             glBindTexture(GL_TEXTURE_2D, spritesheet->getOpenGLTextureID());
 
@@ -431,7 +387,7 @@ namespace Core
             {
                 Page* page = Page::fromJSON(pageJson);
                 page->setGame(this);
-                this->pageList.push_back(page);
+                pageList.push_back(page);
             }
             setCurrentPage(0);
         }
@@ -439,6 +395,18 @@ namespace Core
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
+        try {
+            auto mapVec = root.at("maps").get<std::vector<json>>();
+            for (json& mapJson : mapVec)
+            {
+                Map* map = Map::fromJSON(mapJson);
+                mapList.push_back(map);
+            }
+        }
+        catch (const std::exception &e) {
+            std::cerr << "error: " << e.what() << std::endl;
+        }
+
         mGameSprites = SpriteManager::SpriteManager();
 
         if (root.contains("spriteList"))
@@ -633,8 +601,6 @@ namespace Core
         // Enable the Vertex Object Array
         glBindVertexArray(vao);
 
-        mCameraUniform = glGetUniformLocation(shaderProgram, "camera");
-
         glUniform1i(glGetUniformLocation(shaderProgram, "texture1"), 0); // Set texture uniform
 
         // Make the default texture white. This allows any non-textured objects using the default texture to be rendered in color with the color uniform
@@ -732,19 +698,19 @@ namespace Core
         // Theses are here for test purposes
         case SDLK_a:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
-            mCamera->offsetPosition(glm::ivec2(move_camera, 0));
+            mCamera->offsetPosition(glm::vec2(move_camera, 0));
             break;
         case SDLK_d:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
-            mCamera->offsetPosition(glm::ivec2(-move_camera, 0));
+            mCamera->offsetPosition(glm::vec2(-move_camera, 0));
             break;
         case SDLK_w:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
-            mCamera->offsetPosition(glm::ivec2(0, -move_camera));
+            mCamera->offsetPosition(glm::vec2(0, -move_camera));
             break;
         case SDLK_s:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
-            mCamera->offsetPosition(glm::ivec2(0, move_camera));
+            mCamera->offsetPosition(glm::vec2(0, move_camera));
             break;
         case SDLK_q:
             mCamera->setZoom(mCamera->getZoom() - 0.1f);
@@ -784,12 +750,12 @@ namespace Core
     void Game::render()
     {
         // Set Camera matrix uniform
-        glUniformMatrix4fv(mCameraUniform, 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
+        mCamera->use();
 
         GLfloat color[] = {1.0f, 1.0f, 1.0f};
         glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
 
-        glClearColor(0.1, 0.2, 0.59, 1.0);
+        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (getCurrPage() != nullptr)

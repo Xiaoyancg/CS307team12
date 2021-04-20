@@ -83,20 +83,19 @@ namespace Core
         // =========================
         // MEMBER OPERATION ( functions that targeting )
 
-        Page *addPage(Page *p);
-        Page *createPage(std::string n);
-        MapPage *createMapPage(std::string, Map *);
-        MapPage *createMapPage(std::string);
-        MapPage *createMapPage();
-        Map *createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize);
-        void deleteDefaultMapPageCurrentMap();
-        MenuPage *createMenuPage(std::string, Menu *);
-        MenuPage *createMenuPage(std::string);
-        MenuPage *createMenuPage();
-        void deletePage(Page *);
-        void deletePage(std::string);
-        std::vector<Page *> &getPageList();
-        int getNumPage();
+        Page* addPage(Page *ptr);
+        void deletePage(Page *ptr);
+        void deletePage(std::string name);
+        int addMap(Map* map);
+        void deleteMap(Map* ptr);
+        void deleteMap(std::string name);
+        Map* getMap(int index);
+        std::vector<Page*>& getPageList() {
+            return pageList;
+        }
+        std::vector<Map*>& getMapList() {
+            return mapList;
+        }
 
         // Sprite operations
         unsigned int createSprite(std::string, std::string);
@@ -116,11 +115,6 @@ namespace Core
         void deleteSpriteSheet(int);
         SpriteSheet* getSpriteSheetFromID(int);
         std::unordered_map<int, SpriteSheet*> getSpriteSheets();
-
-        // Map operations
-        std::vector<Map *> getDefaultMapPageMaps();
-        MapPage *getDefaultMapPage();
-        void renderDefaultMapPage();
 
         void renderSpriteSheet(SpriteSheet*);
 
@@ -207,8 +201,7 @@ namespace Core
         // contains all pages
         std::vector<Page *> pageList;
 
-        // Each game needs at least one MapPage, so heres a pointer to the default one
-        int currMapPageIdx = -1;
+        std::vector<Map *> mapList;
 
         // the current in display pagelist
         // FIXME: why use int?
@@ -224,7 +217,6 @@ namespace Core
 
         // The shaders, set by initShaders before entering the game loop
         unsigned int shaderProgram = -1;
-        unsigned int mCameraUniform = -1;
 
         // FIXME: to Core
         // Holds pointers to all the game's sprites and handles ID's properly
