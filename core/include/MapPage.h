@@ -10,36 +10,29 @@ namespace Core
     class MapPage: public Page
     {
     public:
-        
-        // Needs the current window to make a new opengl context, in the Page constructor 
-        MapPage::MapPage() : MapPage("New Map Page") {}
-        MapPage::MapPage(const std::string name) : MapPage(name, nullptr) {}
-        
         // Users can specify a map if it's already created
-        MapPage::MapPage(const std::string s, Map* map) : Page(s), mMap(map)
+        MapPage::MapPage(const std::string s = "New Map Page", int mapIndex = -1)
+            : Page(s), mMapIndex(mapIndex)
         {
             SetBackgroundColor(0.1f, 0.9f, 0.59f, 1.0f);
+            mCamera = new Camera;
         }
 
 
         // Sets mMap to the map created by the user
-        Map* addMap ( Map *map );
+        void setMapIndex(int index);
+        int getMapIndex();
+        // Returns the map
+        Map* getMap();
 
-        // Returns mMap
-        Map* getCurrMap();
-
-        void deleteCurrMap();
-
-        // Returns mMap
-        std::vector<Map*> getMaps();
-
-        // Returns the camera for the current Map
-        Camera* getCurrCamera();
+        // Returns the camera
+        Camera* getCamera();
 
         // Render the current map!
         void render();
-
-        Tile* getTileFromClick(int x, int y);
+        
+        void parse(nlohmann::json& root);
+        nlohmann::json serialize();
 
         // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
         // This is set by Game.cpp when a Game object is created
@@ -50,9 +43,7 @@ namespace Core
         static inline SpriteManager* mGameSprites;
 
     private:
-        std::vector<Map*> mMaps;
-
-        // The current map
-        Map *mMap;
+        Camera* mCamera = nullptr;
+        int mMapIndex = -1;
     };
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 
 /*
  * Sprite class is now just a base class for different types of Sprites. The different types of Sprites are created with the SpriteManager.
@@ -30,6 +31,8 @@ namespace Core
 		enum class SPRITE_TYPES getType();
 
 		float* getTextureCoordinates();
+
+		virtual nlohmann::json serialize();
 
 	protected:
 		std::string mSpriteName;

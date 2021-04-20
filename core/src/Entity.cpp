@@ -1,11 +1,14 @@
 #include "Entity.h"
 #include <glad/glad.h>
+#include "Game.h"
 #ifdef __TEST_CORE
 #include <TestCore.h>
 #endif // __TEST_CORE
 
 namespace Core
 {
+    static const float SPEED = 200.0f;
+
     int Entity::getEntityId()
     {
         return _entityId;
@@ -20,12 +23,8 @@ namespace Core
           mLocation(location),
           mScale(scale),
           mRotation(rotation),
-          mSpriteID(spriteID),
-          mIsInvisible(false)
-    {
-        // All this constructor does is calculate the coordinates of the 4 corners of the entity, based on location and scale
-        calculateCoords(location, scale);
-    }
+          mSpriteID(spriteID)
+    {}
 
     Entity::Entity(const Entity& other) :
         mEntityName(other.mEntityName),
@@ -34,11 +33,9 @@ namespace Core
         mRotation(other.mRotation),
         mSpriteID(other.mSpriteID),
         mIsInvisible(other.mIsInvisible),
-        mControlledEntity(other.mControlledEntity)
-    {
-        // TODO: restore _entityId
-        calculateCoords(mLocation, mScale);
-    }
+        mControlledEntity(other.mControlledEntity),
+        mParentPage(other.mParentPage)
+    {} // TODO: restore _entityId
 
     // CONSTRUCTOR
 
@@ -50,9 +47,9 @@ namespace Core
     }
 
     // Sets name based on a constant string, for example setName("Entity1")
-    void Entity::setName(const char *name)
+    void Entity::setName(const std::string name)
     {
-        this->mEntityName = std::string(name);
+        this->mEntityName = name;
     }
     // =========================
     // PROPERTY OPERATION
@@ -62,7 +59,6 @@ namespace Core
         this->mScale = s;
         this->mRotation = r;
         this->mSpriteID = sid;
-        calculateCoords(mLocation, mScale);
     }
     // =========================
     // MEMBER OPERATION
@@ -114,14 +110,14 @@ namespace Core
     void Entity::calculateCoords(glm::vec2 location, glm::vec2 scale)
     {
         // Get the distances to the left/right and top/bottom of the entity from the center
-        int halfScaleWidth = scale.x / 2;
-        int halfScaleHeight = scale.y / 2;
+        float halfScaleWidth = scale.x / 2;
+        float halfScaleHeight = scale.y / 2;
 
         // Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
-        int lowX = location.x - halfScaleWidth;
-        int highX = location.x + halfScaleWidth;
-        int lowY = location.y - halfScaleHeight;
-        int highY = location.y + halfScaleHeight;
+        float lowX = location.x - halfScaleWidth;
+        float highX = location.x + halfScaleWidth;
+        float lowY = location.y - halfScaleHeight;
+        float highY = location.y + halfScaleHeight;
 
         if (mGameSprites->atID(mSpriteID)) {
             float* texcoords = mGameSprites->atID(mSpriteID)->getTextureCoordinates();
@@ -228,8 +224,43 @@ namespace Core
         mControlledEntity = value;
     }
 
+    void Entity::update(float dt) {
+        if (mControlledEntity) {
+            bool doCollide = false;
+            MapPage* mapPage = dynamic_cast<MapPage*>(mParentPage);
+            glm::vec2 newLoc = mLocation;
+            if (mapPage != nullptr) {
+                doCollide = true;
+            }
+            Game* game = getParentPage()->getGame();
+            if (game->isKeyPressed(SDLK_RIGHT)) {
+                
+                newLoc.x += dt * SPEED;
+            }
+            if (game->isKeyPressed(SDLK_LEFT)) {
+                newLoc.x -= dt * SPEED;
+            }
+            if (game->isKeyPressed(SDLK_DOWN)) {
+                newLoc.y -= dt * SPEED;
+            }
+            if (game->isKeyPressed(SDLK_UP)) {
+                newLoc.y += dt * SPEED;
+            }
+            if (doCollide) {
+                Tile* collidingTile = mapPage->getMap()->checkTileCollision(newLoc);
+                if (collidingTile == nullptr) {
+                    mLocation = newLoc;
+                }
+            } else {
+                mLocation = newLoc;
+            }
+        }
+    }
+
     void Entity::render()
     {
+        calculateCoords(mLocation, mScale);
+
         glActiveTexture(GL_TEXTURE0);
 
         if (mIsInvisible)
@@ -260,7 +291,6 @@ namespace Core
                 mCoords[15] = texcoords[7];
             }
         }
-
         // Load the data of the 'coords' buffer into the currently bound array buffer, VBO
         glBufferData(GL_ARRAY_BUFFER, sizeof(mCoords), mCoords, GL_DYNAMIC_DRAW);
         // Draw the bound buffer (coords)
@@ -275,31 +305,50 @@ namespace Core
     }
 
     using json = nlohmann::json;
+    Entity* Entity::fromJSON(json& root) {
+        Entity* entity = new Entity("");
+        entity->parse(root);
+        return entity;
+    }
 
-    Entity *Entity::parse(json &root)
+    void Entity::parse(json &root)
     {
-        Entity *entity = new Entity(root.at("EntityName").get<std::string>());
-
+        setName(root.at("EntityName").get<std::string>());
         std::vector<json> locVec = root.at("location").get<std::vector<json>>();
-        entity->setLocation(glm::vec2(
+        setLocation(glm::vec2(
             locVec[0].get<float>(),
             locVec[1].get<float>()));
         std::vector<json> scaleVec = root.at("scale").get<std::vector<json>>();
-        entity->setScale(glm::vec2(
+        setScale(glm::vec2(
             scaleVec[0].get<float>(),
             scaleVec[1].get<float>()));
 
-        entity->setRotation(root.at("rotation").get<double>());
-        entity->setSpriteID(root.at("spriteID").get<int>());
+        setRotation(root.at("rotation").get<double>());
+        setSpriteID(root.at("spriteID").get<int>());
+        if (getSpriteID() != -1) {
+            setInvisibleEntity(false);
+        }
         if (root.contains("control") && root.at("control").get<bool>() == true)
         {
-            entity->setControlledEntity(true);
+            setControlledEntity(true);
         }
         else
         {
-            entity->setControlledEntity(false);
+            setControlledEntity(false);
         }
+    }
 
-        return entity;
+    nlohmann::json Entity::serialize() {
+        nlohmann::json root;
+        root["EntityName"] = mEntityName;
+        root["location"] = { mLocation.x, mLocation.y };
+        root["scale"] = { mScale.x, mScale.y };
+        root["rotation"] = mRotation;
+        root["spriteID"] = mSpriteID;
+        if (mControlledEntity)
+        {
+            root["control"] = true;
+        }
+        return root;
     }
 }
