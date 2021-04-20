@@ -15,9 +15,9 @@ public:
 private:
     char entityName[128];
 
-    bool entityInfo;
-    int x_pos;
-    int y_pos;
+    bool entityInfo = false;
+    int x_pos = 0;
+    int y_pos = 0;
     int entity_width = 0, entity_height = 0;
     int sprite_id = -1;
 };

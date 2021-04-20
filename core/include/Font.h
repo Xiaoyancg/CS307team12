@@ -18,7 +18,7 @@ namespace Core
 
         // Render the given text with the specified location and size
         // Returns the number of pixels wide the text is
-        int renderText(std::string text, glm::ivec2 pos, float size, glm::vec3 color);
+        int renderText(std::string text, glm::vec2 pos, float size, glm::vec3 color);
 
         int calcTextWidth(std::string text, float size);
         int calcTextHeight(std::string text, float size);

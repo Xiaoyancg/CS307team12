@@ -31,6 +31,9 @@ namespace Core
         // Render the current Menu!
         void render();
 
+        void parse(nlohmann::json& root);
+        nlohmann::json serialize();
+
     private:
         Menu* mMenu;
 

@@ -55,7 +55,8 @@ namespace Core
 		SpriteSheet* atSheetID(int spriteID);
 
 		// parse json
-		int parse(nlohmann::json);
+		void parse(nlohmann::json j);
+		nlohmann::json serialize();
 
 	private:
 		int mCurrSpriteID; // The current sprite ID, which will be set to whatever sprite is created next
