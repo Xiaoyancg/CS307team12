@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 namespace Core
 {
@@ -10,27 +11,30 @@ namespace Core
     class Camera
     {
     public:
-        Camera();
         Camera(
-            glm::ivec2 dimensions,
-            glm::ivec2 position,
-            float zoom);
+            glm::vec2 dimensions = glm::vec2(1280, 720),
+            glm::vec2 position = glm::vec2(0, 0),
+            float zoom = 1.0
+        );
 
         // Position
-        glm::ivec2 getPosition();
-        void setPosition(glm::ivec2 position);
-        void offsetPosition(glm::ivec2 offset);
+        glm::vec2 getPosition();
+        void setPosition(float x, float y) {
+            setPosition(glm::vec2(x, y));
+        }
+        void setPosition(glm::vec2 position);
+        void offsetPosition(glm::vec2 offset);
 
         // Dimensions
-        void setDimensions(int x, int y)
+        void setDimensions(float x, float y)
         {
-            setDimensions(glm::ivec2(x, y));
+            setDimensions(glm::vec2(x, y));
         }
-        void setDimensions(glm::ivec2 dimensions)
+        void setDimensions(glm::vec2 dimensions)
         {
             mDimensions = dimensions;
         }
-        glm::ivec2 getDimensions()
+        glm::vec2 getDimensions()
         {
             return mDimensions;
         }
@@ -48,15 +52,19 @@ namespace Core
             return mZoom;
         }
 
+        glm::vec2 projectToWorld(glm::vec2 coords);
         glm::mat4 getTranslate();
         glm::mat4 getOrtho();
         // Returns the matrix transformation used in the main shader
         glm::mat4 getMatrix(); // getOrtho * getTranslate
 
+        void use();
+
     private:
-        glm::ivec2 mPosition;
-        glm::ivec2 mDimensions;
+        glm::vec2 mPosition;
+        glm::vec2 mDimensions;
         float mZoom; // Defaults to 1, meaning no zoom. <1 means zoom out, >1 means zoom in
+        GLuint cameraUniform;
     };
 
 }

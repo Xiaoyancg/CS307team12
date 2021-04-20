@@ -1,41 +1,28 @@
 #include "Camera.h"
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 
 namespace Core
 {
-    Camera::Camera()
-    {
-        // Set position of the camera, defaults to (0, 0)
-        mPosition = glm::ivec2(0, 0);
-
-        // Set dimensions of camera, defaults to (1280, 720) which is the size of the Game viewport
-        // This can be changed, but I think it might be assumed to be these dimensions somewhere else in the code
-        mDimensions = glm::ivec2(1280, 720);
-
-        // Set zoom of the camera, defaults to 1.0f
-        // zoom < 1 will shrink the image, zoom > 1 will enlarge image
-        mZoom = 1.0f;
-    }
-    Camera::Camera(
-        glm::ivec2 dimensions = glm::ivec2(1280, 720),
-        glm::ivec2 position = glm::ivec2(0, 0),
-        float zoom = 1.0f) : mPosition(position), mDimensions(dimensions), mZoom(zoom)
+    Camera::Camera(glm::vec2 dimensions, glm::vec2 position, float zoom)
+        : mPosition(position), mDimensions(dimensions), mZoom(zoom)
     {
     }
 
     // Position
-    glm::ivec2 Camera::getPosition()
+    glm::vec2 Camera::getPosition()
     {
         return mPosition;
     }
 
-    void Camera::setPosition(glm::ivec2 position)
+    void Camera::setPosition(glm::vec2 position)
     {
         mPosition = position;
     }
 
     // Offsets the position of the camera based on a click-drag offset in pixels. The pixels are scaled based on the cameras variables
-    void Camera::offsetPosition(glm::ivec2 offset)
+    void Camera::offsetPosition(glm::vec2 offset)
     {
         // If there's nothing to offset, return
         if (offset.x == 0 && offset.y == 0)
@@ -44,8 +31,8 @@ namespace Core
         }
 
         // Scale the position in pixels to the expected dimensions
-        float dimx = mDimensions.x / 2;
-        float dimy = mDimensions.y / 2;
+        float dimx = mDimensions.x / 2.0f;
+        float dimy = mDimensions.y / 2.0f;
         glm::vec4 ret = glm::ortho(dimx, -dimx, dimy, -dimy) * glm::vec4(offset.x, offset.y, 0.0f, 1.0f);
 
         // Rescale the offset to the Camera's projection (this just means the offset will considered with the zoom of the camera)
@@ -56,6 +43,14 @@ namespace Core
         mPosition.y += ret.y;
     }
 
+    // Given coordinates that fulfill `(0,0) < (x,y) < (1,1)`,
+    // project to world coordinates at that position
+    glm::vec2 Camera::projectToWorld(glm::vec2 coords) {
+        glm::vec4 normalized = glm::vec4(coords.x * 2 - 1, coords.y * 2 - 1, 0, 1);
+        glm::vec4 transformed = glm::inverse(getMatrix()) * normalized;
+        return glm::vec2(transformed.x, transformed.y);
+    }
+
     // Get matrices
     glm::mat4 Camera::getTranslate()
     {
@@ -63,9 +58,9 @@ namespace Core
     }
     glm::mat4 Camera::getOrtho()
     {
-        glm::vec2 dims = glm::vec2(mDimensions.x * mZoom, mDimensions.y * mZoom);
-        float dimX = dims.x / 2;
-        float dimY = dims.y / 2;
+        glm::vec2 dims = glm::vec2(mDimensions.x / mZoom, mDimensions.y / mZoom);
+        float dimX = dims.x / 2.0f;
+        float dimY = dims.y / 2.0f;
         glm::mat4 ortho = glm::ortho(-dimX, dimX, -dimY, dimY);
         return ortho;
     }
@@ -73,5 +68,12 @@ namespace Core
     glm::mat4 Camera::getMatrix()
     {
         return getOrtho() * getTranslate();
+    }
+
+    void Camera::use() {
+        GLint program;
+        glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+        cameraUniform = glGetUniformLocation(program, "camera");
+        glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, glm::value_ptr(getMatrix()));
     }
 }
