@@ -191,6 +191,28 @@ namespace Core
         }
     }
 
+    void Map::renderCollisionHelper(GLuint texture) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        for (auto& tile : mTileVector)
+        {
+            if (tile.isSolid()) {
+                // Render each tile of the map!
+                float *coords = tile.getCoords(); // Get ptr to the tile coordinates
+
+                // Buffer and draw tile
+                // NOTE: Change the int multiplier whenever new data will be added to the shaders.
+                //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
+                glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), coords, GL_DYNAMIC_DRAW);
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
+            }
+        }
+
+        // Unbind the current sprite
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     using json = nlohmann::json;
     Map* Map::fromJSON(json& root) {
         Map* map = new Map;

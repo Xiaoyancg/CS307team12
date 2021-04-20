@@ -1,4 +1,5 @@
 #include "windows/MapWindow.h"
+#include "windows/MapEditor.h"
 
 ImVec2 prevClick(0, 0);
 
@@ -22,8 +23,15 @@ Core::Tile *MapWindow::handleClick()
 
     //////////// Mouse handling within the MapView window ////////////
     // If mouse left is currently pressed and the MapView is focused
-    if (ImGui::IsMouseDown(0) && ImGui::IsWindowFocused())
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
     {
+        ImGui::GetIO();
+    }
+    if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+    {
+        lastTile = nullptr;
+    }
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowFocused()) {
         // If click is within the coordinates of the MapView window (in global coords based on top right corner)
         ImVec2 click_pos = ImGui::GetMousePos();
         if ((min.x < click_pos.x && click_pos.x < max.x) && (min.y < click_pos.y && click_pos.y < max.y))
@@ -39,16 +47,24 @@ Core::Tile *MapWindow::handleClick()
             // NOTE: Right now the code just gets the clicked Tile and sets its sprite ID to 1. It should probably do something else...
             Core::Tile *clicked_tile = editor->getCurrentMap()->getTileFromClick(cam, windowClick.x, windowClick.y);
 
-            if (clicked_tile)
+            if (clicked_tile && clicked_tile != lastTile)
             {
-                // TODO: DO something else here
-                clicked_tile->setSpriteID(1);
+                MapEditor* mapEditor = static_cast<MapEditor*>(editor->getWindowList()[MAPEDITOR]);
+                switch (mapEditor->getEditMode()) {
+                    case EditMode::Collision:
+                        clicked_tile->setSolid(!clicked_tile->isSolid());
+                        break;
+                    case EditMode::Sprite:
+                        clicked_tile->setSpriteID(mapEditor->getSelectedSpriteID());
+                        break;
+                }
+                lastTile = clicked_tile;
                 return clicked_tile;
             }
         }
     }
     // Handle mouse wheel zoom
-    else if (ImGui::GetIO().MouseWheel != 0.0f)
+    if (ImGui::GetIO().MouseWheel != 0.0f)
     {
         float wheel = ImGui::GetIO().MouseWheel;
         // If click is within the coordinates of the MapView window (in global coords based on top right corner)
@@ -66,8 +82,8 @@ Core::Tile *MapWindow::handleClick()
             }
         }
     }
-    // Handle right-click drag
-    else if (ImGui::IsMouseDown(1) && ImGui::IsMouseDragging(1) && ImGui::IsWindowFocused())
+    // Handle middle-click drag
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Middle) && ImGui::IsMouseDragging(ImGuiMouseButton_Middle) && ImGui::IsWindowFocused())
     {
         // If click is within the coordinates of the MapView window (in global coords based on top right corner)
         ImVec2 click_pos = ImGui::GetMousePos();
@@ -79,7 +95,7 @@ Core::Tile *MapWindow::handleClick()
         prevClick.y = click_pos.y;
     }
     // Handle initial right-click
-    else if (ImGui::IsMouseDown(1) && ImGui::IsWindowFocused())
+    if (ImGui::IsMouseDown(ImGuiMouseButton_Middle) && ImGui::IsWindowFocused())
     {
         ImVec2 click_pos = ImGui::GetMousePos();
         // Set prevClick in case of dragging
@@ -135,7 +151,10 @@ void MapWindow::draw()
             glViewport(0, 0, icanvas_size.x, icanvas_size.y);
             glClearColor(bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             glClear(GL_COLOR_BUFFER_BIT);
-            currMap->render(false);
+            currMap->render();
+            if (static_cast<MapEditor*>(editor->getWindowList()[MAPEDITOR])->getEditMode() == EditMode::Collision) {
+                currMap->renderCollisionHelper(mTintTexture);
+            }
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             // draw the rendered image to the window

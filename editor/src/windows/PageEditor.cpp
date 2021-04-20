@@ -93,6 +93,7 @@ void PageEditor::draw() {
                     if (ImGui::Selectable(page->getName().c_str(), is_selected))
                     {
                         current_page = i;
+                        editor->getGamePtr()->setCurrentPage(page);
                         editor->getCurrentComponentList()[CUR_PAGE] = page->getName();
                     }
 
