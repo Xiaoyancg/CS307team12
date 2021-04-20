@@ -85,31 +85,14 @@ namespace Core
 		auto jSpriteList = j.get<std::vector<json>>();
 		for (json& sj : jSpriteList)
 		{
-<<<<<<< HEAD
 			createSprite(
 				sj.at("SpriteName").get<std::string>(),
 				sj.at("FileName").get<std::string>(),
 				sj.at("SpriteID").get<int>()
 			);
-=======
-			auto jSpriteList = j.get<std::vector<nlohmann::json>>();
-			for (nlohmann::json &sj : jSpriteList)
-			{
-				createSprite(
-					sj.at("SpriteName").get<std::string>(),
-					sj.at("FileName").get<std::string>(),
-					sj.at("SpriteID").get<int>());
-			}
-		}
-		catch (const std::exception &e)
-		{
-			std::cerr << e.what() << '\n';
-			return 1;
->>>>>>> origin/main
 		}
 	}
 
-<<<<<<< HEAD
 	json SpriteManager::serialize() {
 		std::vector<json> jSpriteList;
 		for (auto [id, sprite] : mSprites) {
@@ -118,8 +101,6 @@ namespace Core
 		return jSpriteList;
 	}
 
-=======
->>>>>>> origin/main
 	// SPRITESHEET STUFF
 
 	int SpriteManager::createSpriteSheet(std::string name, std::string filename)
