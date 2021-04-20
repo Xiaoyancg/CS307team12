@@ -89,6 +89,7 @@ namespace Core
     {
         ScriptCustom scriptCustom;
         ScriptMoveConstantly scriptMoveConstantly;
+        char space[1000];
         ScriptUnion(const ScriptUnion &other);
         ScriptUnion &operator=(const ScriptUnion &other);
         ScriptUnion();

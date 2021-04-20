@@ -7,28 +7,36 @@ void ScriptEditor::draw()
     {
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-
-        static char script_name[128] = "";
-        bool script_info = false;
+        scriptInfo = false;
         if (ImGui::Begin("Script Editor", &visible))
         {
             ImGui::PushItemWidth(200);
-            ImGui::InputText("##script_name", script_name, IM_ARRAYSIZE(script_name));
+            ImGui::InputText("##scriptName", scriptName, IM_ARRAYSIZE(scriptName));
+
             if (ImGui::Button("Create Script"))
             {
-                editor->getGamePtr()->createScript(std::string(script_name));
+                if (std::string(scriptName).size() != 0)
+                    editor->getGamePtr()->createScript(std::string(scriptName));
+                else
+                {
+                    ImGui::SameLine();
+                    ImGui::Text("empty name");
+                }
             }
+            ImGui::Text("Current Script: %s", editor->getCurrentComponentList()[CUR_SCRIPT].c_str());
             if (ImGui::BeginListBox("", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
-                std::vector<Core::Script> *t = nullptr;
+                // script list
+                std::vector<Core::Script> *t = editor->getGamePtr()->getScriptsList();
                 // Set default selected entity to be the first in the entity list
-                if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && (t = editor->getGamePtr()->getScriptsList())->size() > 0)
+                if (editor->getCurrentComponentList()[CUR_SCRIPT] == "No Component Selected" && t->size() > 0)
                 {
                     editor->getCurrentComponentList()[CUR_SCRIPT] = editor->getGamePtr()->getScriptsList()->at(0).getScriptName();
                 }
 
-                for (int i = 0; t && i < t->size(); i++)
+                for (int i = 0; t != nullptr && i < t->size(); i++)
                 {
+                    // script
                     auto s = t->at(i);
                     bool is_selected = (currScriptId == i);
                     if (ImGui::Selectable(s.getScriptName().c_str(), is_selected))
@@ -55,7 +63,7 @@ void ScriptEditor::draw()
             ImGui::SameLine();
             if (ImGui::Button("Show Information"))
             {
-                script_info = true;
+                scriptInfo = true;
             }
         }
 

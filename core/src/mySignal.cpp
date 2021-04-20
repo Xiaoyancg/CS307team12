@@ -1,4 +1,5 @@
 #pragma once
+#include <cstring>
 #include "mySignal.h"
 #include <cstdarg>
 namespace Core
@@ -34,14 +35,12 @@ namespace Core
 
     SignalUnion &SignalUnion::operator=(const SignalUnion &other)
     {
-        keySignal = other.keySignal;
-        customSignal = other.customSignal;
+        std::memcpy(this, &other, sizeof(SignalUnion));
         return *this;
     }
-    SignalUnion::SignalUnion(const SignalUnion &signal)
+    SignalUnion::SignalUnion(const SignalUnion &other)
     {
-        keySignal = signal.keySignal;
-        customSignal = signal.customSignal;
+        std::memcpy(this, &other, sizeof(SignalUnion));
     }
     SignalUnion::SignalUnion() : customSignal(SignalCustom()) {}
     SignalUnion::SignalUnion(SignalKey keySignal) : keySignal(keySignal) {}
