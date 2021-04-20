@@ -1,4 +1,5 @@
 #include "windows/MapEditor.h"
+#include "windows/MapWindow.h"
 #include "UndoRedo.h"
 #include <string>
 
@@ -64,6 +65,26 @@ void MapEditor::draw() {
 
 				if (currMap != nullptr) {
 					ImGui::Text("Tile size: %i", currMap->getTileSize());
+
+					switch (mode) {
+						case EditMode::Collision:
+							ImGui::Text("Edit Mode: Collision");
+							break;
+						case EditMode::Sprite:
+							ImGui::Text("Edit Mode: Sprite");
+							break;
+					}
+
+					if (ImGui::Button("Collision Mode")) {
+						mode = EditMode::Collision;
+					}
+
+					if (ImGui::Button("Sprite Mode")) {
+						mode = EditMode::Sprite;
+					}
+					ImGui::Indent();
+					ImGui::InputInt("Sprite ID", &mSelectedSpriteID, 1, 5);
+					ImGui::Unindent();
 				} else {
 					ImGui::Text("Tile size: 0");
 				}
@@ -120,7 +141,7 @@ void MapEditor::drawCreateMapPopup() {
 			tileSize = 0;
 			editor->getWindowList()[MAPVIEW]->setVisible(true);
 
-			// ImGui::CloseCurrentPopup();
+			ImGui::CloseCurrentPopup();
 		}
 
 		ImGui::EndPopup();

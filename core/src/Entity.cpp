@@ -225,20 +225,34 @@ namespace Core
     }
 
     void Entity::update(float dt) {
-
         if (mControlledEntity) {
+            bool doCollide = false;
+            MapPage* mapPage = dynamic_cast<MapPage*>(mParentPage);
+            glm::vec2 newLoc = mLocation;
+            if (mapPage != nullptr) {
+                doCollide = true;
+            }
             Game* game = getParentPage()->getGame();
             if (game->isKeyPressed(SDLK_RIGHT)) {
-                mLocation.x += dt * SPEED;
+                
+                newLoc.x += dt * SPEED;
             }
             if (game->isKeyPressed(SDLK_LEFT)) {
-                mLocation.x -= dt * SPEED;
+                newLoc.x -= dt * SPEED;
             }
             if (game->isKeyPressed(SDLK_DOWN)) {
-                mLocation.y -= dt * SPEED;
+                newLoc.y -= dt * SPEED;
             }
             if (game->isKeyPressed(SDLK_UP)) {
-                mLocation.y += dt * SPEED;
+                newLoc.y += dt * SPEED;
+            }
+            if (doCollide) {
+                Tile* collidingTile = mapPage->getMap()->checkTileCollision(newLoc);
+                if (collidingTile == nullptr) {
+                    mLocation = newLoc;
+                }
+            } else {
+                mLocation = newLoc;
             }
         }
     }

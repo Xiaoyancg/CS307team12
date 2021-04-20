@@ -32,7 +32,8 @@ namespace Core
 		void setName(std::string);
 		std::string getName();
 
-		void render(bool withBorder);
+		void render(bool withBorder = false);
+		void renderCollisionHelper(GLuint texture);
 
 		Tile* checkTileCollision(glm::vec2);
 

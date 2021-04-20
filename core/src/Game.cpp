@@ -207,6 +207,12 @@ namespace Core
         for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
             if ((*iter)->getName() == name) {
                 mapList.erase(iter);
+                for (auto page : pageList) {
+                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+                        mapPage->setMapIndex(-1);
+                    }
+                }
                 return;
             }
         }
@@ -216,6 +222,12 @@ namespace Core
         for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
             if ((*iter) == map) {
                 mapList.erase(iter);
+                for (auto page : pageList) {
+                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+                        mapPage->setMapIndex(-1);
+                    }
+                }
                 return;
             }
         }
