@@ -139,6 +139,7 @@ void EntityEditor::draw() {
 				y_pos = 0;
 			} else {
                 
+				ImGui::NewLine();
 			    ImGui::Text("Position: %d, %d", x_pos, y_pos);
 			    ImGui::Text("Scale: %d, %d", entity_width, entity_height);
 
@@ -235,13 +236,18 @@ void EntityEditor::draw() {
 						entity_height = 0;
 					}
 				}
-
-				ImGui::NewLine();
+				ImGui::Text("");
+				bool controllable = getCurrentEntity()->isControlledEntity();
+				ImGui::Checkbox("Controllable", &controllable);
+				if (controllable != getCurrentEntity()->isControlledEntity()) {
+					getCurrentEntity()->setControlledEntity(controllable);
+				}
 				bool invisible = getCurrentEntity()->isInvisible();
 				ImGui::Checkbox("Invisible", &invisible);
 				if (invisible != getCurrentEntity()->isInvisible()) {
 					getCurrentEntity()->setInvisible(invisible);
 				}
+				ImGui::Text("");
 				if (!getCurrentEntity()->isInvisible()) {
 					ImGui::Text("SpriteID:");
 					ImGui::PushItemWidth(80);
@@ -278,12 +284,6 @@ void EntityEditor::draw() {
 							sprite_id = -100;
 						}
 					}
-				}
-
-                bool controllable = getCurrentEntity()->isControlledEntity();
-				ImGui::Checkbox("Controllable", &controllable);
-				if (controllable != getCurrentEntity()->isControlledEntity()) {
-					getCurrentEntity()->setControlledEntity(controllable);
 				}
 			}
 		}
