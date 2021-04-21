@@ -172,7 +172,8 @@ namespace Core
         {
             if (*ptr == dp)
             {
-                if (ptr - pageList.begin() == currPageIdx) {
+                if (ptr - pageList.begin() == currPageIdx)
+                {
                     currPageIdx = -1;
                 }
                 pageList.erase(ptr);
@@ -191,7 +192,8 @@ namespace Core
         {
             if (!(*ptr)->getName().compare(s))
             {
-                if (ptr - pageList.begin() == currPageIdx) {
+                if (ptr - pageList.begin() == currPageIdx)
+                {
                     currPageIdx = -1;
                 }
                 Page *p = *ptr;
@@ -892,13 +894,17 @@ namespace Core
 
     void Game::mainLoop()
     {
-        auto lastTime = std::chrono::steady_clock::now();
+        //auto lastTime = std::chrono::steady_clock::now();
         SDL_Event event;
         bool close_window = false;
         while (!close_window)
         {
+            if (coreTimer.getPassedTimeFromStampInSec() < deltaCoreTime)
+            {
+                continue;
+            }
             // Input handling!
-            if (SDL_PollEvent(&event))
+            while (SDL_PollEvent(&event))
             {
                 switch (event.type)
                 {
@@ -917,24 +923,33 @@ namespace Core
 
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                         glViewport(0, 0, width, height);
-
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }
                     break;
                 case SDL_KEYDOWN:
                     // Handle Keypresses
-                    handleWindowEvent(event);
+                    _logicManager.sendSignal(Signal(-100, SignalType::Key, "SDL_KEY",
+                                                    SignalUnion(SignalKey(event.key))));
+                    //handleWindowEvent(event);
+                    // TODO: Mouse
                 }
             }
-            auto now = std::chrono::steady_clock::now();
-            float dt = (float)(now - lastTime).count() / std::chrono::steady_clock::period::den;
-            lastTime = now;
-            update(dt);
+            _logicManager.checkCurrSignalList();
+            _logicManager.runCurrScriptList();
+            coreTimer.stamp();
+            // auto now = std::chrono::steady_clock::now();
+            //float dt = (float)(now - lastTime).count() / std::chrono::steady_clock::period::den;
+            //lastTime = now;
+            //update(dt);
+            if (FPSTimer.getPassedTimeFromStampInSec() < deltaFPSTime)
+            {
+                continue;
+            }
             render();
 
             // Show the entities by bringing showing the back buffer
             SDL_GL_SwapWindow(window);
-
+            FPSTimer.stamp();
             // Error checking! This will only print out an error if one is detected each loop
             GLenum err(glGetError());
             if (err != GL_NO_ERROR)

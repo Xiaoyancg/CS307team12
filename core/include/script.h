@@ -107,6 +107,8 @@ namespace Core
         ScriptType _scriptType;
         std::string _scriptName;
         ScriptUnion _script;
+        // for now, every thing only run once
+        int life;
 
     public:
         std::string getScriptTypeString();
