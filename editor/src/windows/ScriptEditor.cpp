@@ -239,7 +239,7 @@ void ScriptEditor::getInfo(Core::Script *s)
         break;
     case Core::ScriptType::MoveConstantly:
         type = 1;
-        targetPageId = su.scriptMoveConstantly.getTargetPage();
+        targetPageId = su.scriptMoveConstantly.getTargetPageId();
         x = su.scriptMoveConstantly.getMovement().x;
         y = su.scriptMoveConstantly.getMovement().y;
         targetEntityList = su.scriptMoveConstantly.getTargetEntityList();

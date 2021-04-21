@@ -529,7 +529,11 @@ namespace Core
                 sci["removeTargetScriptList"] =
                     s.getScript().scriptCustom.getRemoveTargetScriptList();
                 break;
-
+            case ScriptType::MoveConstantly:
+                sci["targetPageId"] = s.getScript().scriptMoveConstantly.getTargetPageId();
+                sci["targetEntityList"] = s.getScript().scriptMoveConstantly.getTargetEntityList();
+                sci["movement"] = {s.getScript().scriptMoveConstantly.getMovement().x,
+                                   s.getScript().scriptMoveConstantly.getMovement().y};
             default:
                 break;
             }
