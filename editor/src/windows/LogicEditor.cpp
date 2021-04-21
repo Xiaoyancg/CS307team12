@@ -37,7 +37,9 @@ void LogicEditor::draw()
 
             ImGui::Text("Type:      ");
             ImGui::SameLine();
-            const char* logic_types[] = { "Key", "Custom" };
+            // The order of these options should be preserved for now
+            // They are somewhat hardcoded based on the Core::SignalType enum
+            const char* logic_types[] = { "Custom", "Key" };
             static int logic_type_idx = 0; // Here we store our selection data as an index.
             const char* combo_label = logic_types[logic_type_idx];
             if (ImGui::BeginCombo("##logic_type", logic_types[logic_type_idx]))
@@ -60,7 +62,15 @@ void LogicEditor::draw()
             // Render different UI options based on logic type selected
             switch (logic_type_idx)
             {
-                case 0: // Key type
+                
+                case 0: // Custom type
+                {
+                    ImGui::Text("Target Script List:");
+                    ImGui::SameLine();
+                    ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
+                }
+                    break;
+                case 1: // Key type
                 {
                     ImGui::Text("Key Code:  ");
                     ImGui::SameLine();
@@ -91,14 +101,7 @@ void LogicEditor::draw()
                     ImGui::SameLine();
                     ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
                 }
-                    break;
-                case 1: // Custom type
-                {
-                    ImGui::Text("Target Script List:");
-                    ImGui::SameLine();
-                    ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
-                }
-                    break;
+                break;
             }
 
             ImGui::PopItemWidth();
@@ -113,6 +116,7 @@ void LogicEditor::draw()
                 {
                     editor->getCurrentComponentList()[CUR_LOGIC] = logic_list[0].getLogicName();
                 }
+
                 for (int i = 0; i < logic_list.size(); i++)
                 {
                     auto logic = logic_list[i];
@@ -141,8 +145,19 @@ void LogicEditor::draw()
             {
                 if (strlen(logic_name) != 0)
                 {
+                    std::string lname = logic_name;
                     Core::Logic * new_logic = game->createLogic();
                     new_logic->setLogicName(std::string(logic_name));
+                    new_logic->setLogicId(logicIDInput);
+                    switch (logic_type_idx)
+                    {
+                        case 0: // Custom type
+                            new_logic->setSignalType(Core::SignalType::Custom);
+                            break;
+                        case 1: // Key type
+                            new_logic->setSignalType(Core::SignalType::Key);
+                            break;
+                    }
 
                     //UNDO
                     /*std::string pname = page_name;
@@ -159,6 +174,7 @@ void LogicEditor::draw()
 
                     // memset to clear the buffer after use
                     memset(logic_name, 0, 128);
+                    logicIDInput = -1;
                 }
                 
             }
@@ -168,9 +184,21 @@ void LogicEditor::draw()
 
             }
             ImGui::SameLine();
-            if (ImGui::Button("Delete"))
+            std::string currentLogicName = editor->getCurrentComponentList()[CUR_LOGIC];
+            if (ImGui::Button("Delete") && currentLogicName != "No Component Selected")
             {
-            
+                int idx = -1;
+                auto logic_list = *game->getLogicList();
+                for (auto logic : logic_list) 
+                {
+                    if (logic.getLogicName() == currentLogicName)
+                    {
+                        game->deleteLogic(logic.getLogicId());
+                    }
+                }
+
+                // memset to clear the buffer after use
+                memset(logic_name, 0, 128);
             }
 
             // Open logic info popup when "Show Information" is clicked
