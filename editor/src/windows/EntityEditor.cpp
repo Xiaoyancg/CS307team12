@@ -251,7 +251,7 @@ void EntityEditor::draw() {
 					ImGui::SameLine();
 					HelpMarker("Choose a int value between [0,1000], negatives "
 							   "is default");
-					if (ImGui::Button("Change Sprite Id")) {
+					if (ImGui::Button("Change Sprite ID")) {
 						if (sprite_id >= 0 && sprite_id <= 1000 ||
 							sprite_id < 0) {
 							if (sprite_id < 0)
@@ -288,8 +288,6 @@ void EntityEditor::draw() {
 				}
 			}
 		}
-
-
 		ImGui::End();
 	}
 }
