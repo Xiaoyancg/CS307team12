@@ -43,6 +43,7 @@ namespace Core
         mCamera(new Camera(*other.mCamera)),
         currPageIdx(other.currPageIdx),
         pageList(other.pageList.size()),
+        mapList(other.mapList.size()),
         inDisplayList(other.inDisplayList),
         window(other.window),
         gl_context(other.gl_context),
@@ -154,6 +155,7 @@ namespace Core
     // MEMBER OPERATION
     Page *Game::addPage(Page *p)
     {
+        p->setGame(this);
         this->pageList.push_back(p);
         return p;
     }
@@ -200,19 +202,19 @@ namespace Core
     }
 
     Map* Game::getMap(int idx) {
-        return mapList[idx];
+        return idx >= 0 && idx < mapList.size() ? mapList[idx] : nullptr;
     }
 
     void Game::deleteMap(std::string name) {
         for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
             if ((*iter)->getName() == name) {
-                mapList.erase(iter);
                 for (auto page : pageList) {
                     Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
                     if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
@@ -221,13 +223,13 @@ namespace Core
     void Game::deleteMap(Map* map) {
         for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
             if ((*iter) == map) {
-                mapList.erase(iter);
                 for (auto page : pageList) {
                     Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
                     if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
