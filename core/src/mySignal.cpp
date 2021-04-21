@@ -66,20 +66,23 @@ namespace Core
     SignalUnion Signal::getSignal() { return _signal; }
     void Signal::setSignal(SignalUnion signal) { _signal = signal; }
 
-    void Signal::updateSignal(SignalType signalType, ...)
+    void Signal::updateSignal(SignalType signalType, int id, std::string name, ...)
     {
         // no error when lacking std::
+        setSignalType(signalType);
+        setSignalId(id);
+        setSignalName(name);
         std::va_list args;
         va_start(args, signalType);
-        setSignalType(signalType);
-        setSignalId(va_arg(args, int));
-        setSignalName(va_arg(args, std::string));
         switch (signalType)
         {
         case SignalType::Custom:
+        {
+            std::vector<int> targetList = va_arg(args, std::vector<int>);
             setSignal(SignalUnion(SignalCustom(
-                va_arg(args, std::vector<int>))));
+                targetList)));
             break;
+        }
         default:
             break;
         }

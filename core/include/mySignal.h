@@ -116,10 +116,12 @@ namespace Core
         /// *For editor, binding with the update button in signal editor
         ///
         /// \param signalType
-        /// \param ... id, name, rest are signal variable. List of different type:
+        /// \param id
+        /// \param name
+        /// \param ... rest are signal variable. List of different type:
         /// \param Custom: std::vector<int>
         ///
-        void updateSignal(SignalType signalType, ...);
+        void updateSignal(SignalType signalType, int id, std::string name, ...);
 
         /// \brief Construct a new Signal object by default.
         /// Id is -1, type is custom, name is "".
