@@ -1,12 +1,9 @@
 #include "windows/SignalEditor.h"
 #include "UndoRedo.h"
 
-
 void SignalEditor::draw() {
     if (visible)
     {
-        // possibly implement a new function here for readability purposes
-
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
 
@@ -14,6 +11,7 @@ void SignalEditor::draw() {
         static int sigid = 0;
         static int current_item = 0;
         static int current_item_2 = 0;
+
         if (ImGui::Begin("Signal Editor", &visible))
         {
             ImGui::PushItemWidth(200);
@@ -25,6 +23,7 @@ void SignalEditor::draw() {
             ImGui::InputInt("##signal_id", &sigid);
             ImGui::Text("Type:");
             ImGui::SameLine();
+
             //TODO: update the following with signal options
             //The following code allows us to select a signal type from a dropdown.
             const char* signal_types[] = { "Custom", "[PLACEHOLDER]" };
@@ -44,6 +43,7 @@ void SignalEditor::draw() {
                 }
                 ImGui::EndCombo();
             }
+
             //The following code will display the list of current logics that have been created by the user.
             //The idea is that the user can select a target logic to bind a signal with.
             ImGui::Separator();
@@ -71,6 +71,7 @@ void SignalEditor::draw() {
                 }
                 ImGui::EndListBox();
             }
+
             //Here, we can create a signal. The user can choose between types of signals.
             if (ImGui::Button("Create Signal"))
             {
@@ -88,7 +89,9 @@ void SignalEditor::draw() {
                     }
                 }
             }
+
             ImGui::Separator();
+            //This code displays the list of current signals.
             ImGui::Text("Current Signal: %s", editor->getCurrentComponentList()[CUR_SIGNAL].c_str());
             static int current_signal_idx = 0;
             if (ImGui::BeginListBox("##signal_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
@@ -110,7 +113,6 @@ void SignalEditor::draw() {
                         current_signal_idx = i;
                         editor->getCurrentComponentList()[CUR_SIGNAL] = signal.getSignalName();
                     }
-
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     if (is_selected)
                     {
@@ -120,10 +122,13 @@ void SignalEditor::draw() {
                 ImGui::EndListBox();
             }
 
+            //Update a signal
             if (ImGui::Button("Update"))
             {
                 //TODO: change signal id/name
             }
+
+            //Delete a signal
             ImGui::SameLine();
             std::string currentSignalName = editor->getCurrentComponentList()[CUR_SIGNAL];
             if (ImGui::Button("Delete") && editor->getCurrentComponentList()[CUR_PAGE] != "No Component Selected")
