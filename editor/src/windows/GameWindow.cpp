@@ -23,10 +23,10 @@ void GameWindow::draw()
                 if (ImGui::Button("Stop")) {
                     editor->stopGame();
                 }
-                auto now = std::chrono::steady_clock::now();
-                float dt = (float) (now - lastTime).count() / std::chrono::steady_clock::period::den;
-                lastTime = now;
-                editor->getGamePtr()->update(dt);
+                // auto now = std::chrono::steady_clock::now();
+                // float dt = (float) (now - lastTime).count() / std::chrono::steady_clock::period::den;
+                // lastTime = now;
+                editor->getGamePtr()->logicLoop();
             }
             
             ImGui::Separator();

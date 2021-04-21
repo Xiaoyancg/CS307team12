@@ -90,6 +90,7 @@ namespace Core
             initContext();
         }
         mCamera = new Camera();
+        keyboardState = SDL_GetKeyboardState(nullptr);
         initShader();
     }
 
@@ -792,44 +793,12 @@ namespace Core
     {
         glm::vec2 loc;
         glm::vec2 scale;
-        if (getCurrPage()->getCtrlEntity() != nullptr)
-        {
-            auto currCtrlEntity = getCurrPage()->getCtrlEntity();
-            loc = currCtrlEntity->getLocation();
-            scale = currCtrlEntity->getScale();
-            int scaleBy = 3;
-
-            // Control entity movement and reshape
-            switch (event.key.keysym.sym)
-            {
-                // Control Entity scaling in the interactive demo
-            case SDLK_z: // z key is Scale up, for now
-                currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
-                break;
-
-            case SDLK_x: // x key is Scale down, for now
-                // Make sure not to scale into the negatives
-                if (scale.x - scaleBy >= 0 && scale.y - scaleBy >= 0)
-                {
-                    currCtrlEntity->setScale(glm::vec2(scale.x - scaleBy, scale.y - scaleBy));
-                }
-                break;
-            }
-        }
 
         int move_camera = 10;
 
         // Control pages switch.
         switch (event.key.keysym.sym)
         {
-        // use 1 to look the previous page
-        case SDLK_1:
-            // have to check begin and end here
-            break;
-        // use 2 to look the next page
-        case SDLK_2:
-            break;
-
         // Theses are here for test purposes
         case SDLK_a:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
@@ -862,7 +831,7 @@ namespace Core
             if (p == pageList[i])
             {
                 currPageIdx = i;
-                break;
+                return;
             }
         }
     }
@@ -881,12 +850,6 @@ namespace Core
     bool Game::isKeyPressed(SDL_Keycode kc)
     {
         return keyboardState[SDL_GetScancodeFromKey(kc)] == 1;
-    }
-
-    void Game::update(float dt)
-    {
-        keyboardState = SDL_GetKeyboardState(nullptr);
-        getCurrPage()->update(dt);
     }
 
     // only render graphics so can be used in editor

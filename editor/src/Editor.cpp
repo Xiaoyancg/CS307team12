@@ -190,10 +190,6 @@ void Editor::processInput()
             }
         }*/
     }
-    if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
-    {
-        game->logicLoop();
-    }
 } // processInput()
 
 // ===============================

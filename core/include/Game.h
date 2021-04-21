@@ -168,8 +168,6 @@ namespace Core
         void sdl_die(const char *err_msg);
         void handleWindowEvent(SDL_Event event);
 
-        // update all objects with a delta time
-        void update(float dt);
         // render the all currpage with entities
         void render();
 

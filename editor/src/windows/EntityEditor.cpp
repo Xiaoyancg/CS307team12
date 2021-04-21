@@ -102,17 +102,12 @@ void EntityEditor::draw()
 				int idx = -1;
 				size_t original =
 					editor->getGamePtr()->getCurrPage()->getEntityList().size();
-				bool isCtrlEntity = false;
 				auto &eList = currPage->getEntityList();
 				for (int i = 0; i < eList.size(); i++)
 				{
 					if (i == currentEntityIdx)
 					{
 						idx = i;
-						if (eList[i] == currPage->getCtrlEntity())
-						{
-							isCtrlEntity = true;
-						}
 						break;
 					}
 				}
@@ -122,7 +117,7 @@ void EntityEditor::draw()
 					auto action = [this]() {
 						editor->getGamePtr()->getCurrPage()->deleteEntity(getCurrentEntity());
 					};
-					auto restore = [this, idx, savedEntity, isCtrlEntity]() {
+					auto restore = [this, idx, savedEntity]() {
 						Core::Entity *newEntity = new Core::Entity(savedEntity);
 						editor->getGamePtr()
 							->getCurrPage()
@@ -133,11 +128,6 @@ void EntityEditor::draw()
 											.begin() +
 										idx,
 									newEntity);
-						if (isCtrlEntity)
-						{
-							editor->getGamePtr()->getCurrPage()->setCtrlEntity(
-								newEntity);
-						}
 						currentEntityIdx = idx;
 					};
 					// Only delete if the entity was found
@@ -274,62 +264,55 @@ void EntityEditor::draw()
 						entity_height = 0;
 					}
 				}
-				ImGui::Text("");
-				bool controllable = true; // FIXME = getCurrentEntity()->isControlledEntity();
-				ImGui::Checkbox("Controllable", &controllable);
-				if (controllable != getCurrentEntity()->isControlledEntity())
-				{
-					getCurrentEntity()->setControlledEntity(controllable);
-				}
+				ImGui::NewLine();
 				bool invisible = getCurrentEntity()->isInvisible();
 				ImGui::Checkbox("Invisible", &invisible);
 				if (invisible != getCurrentEntity()->isInvisible())
 				{
 					getCurrentEntity()->setInvisible(invisible);
 				}
-				ImGui::Text("");
+				ImGui::NewLine();
 				if (!getCurrentEntity()->isInvisible())
 				{
-					ImGui::Text("SpriteID:");
-					ImGui::PushItemWidth(80);
+					ImGui::Text("Sprite:");
 					ImGui::SameLine();
-					ImGui::InputInt("##sprite_id", &sprite_id);
-					ImGui::SameLine();
-					HelpMarker("Choose a int value between [0,1000], negatives "
-							   "is default");
-					if (ImGui::Button("Change Sprite ID"))
-					{
-						if (sprite_id >= 0 && sprite_id <= 1000 ||
-							sprite_id < 0)
-						{
-							if (sprite_id < 0)
-								sprite_id = -100;
-							for (Core::Entity *e : currPage->getEntityList())
-							{
-								if (e == getCurrentEntity())
-								{
-									// set location as specified by user
-									// UNDO
-									auto newId = sprite_id;
-									auto currentId = e->getSpriteID();
-									auto action = [e, newId]() {
-										e->setSpriteID(newId);
-									};
-									auto restore = [e, currentId]() {
-										e->setSpriteID(currentId);
-									};
-									pushAction(action, restore);
-									action();
-									// END UNDO
-
-									break;
-								}
+					std::string spriteLabel = "";
+					auto& sprites = editor->getGamePtr()->getSprites();
+					auto currentEntity = getCurrentEntity();
+					if (currentEntity->getSpriteID() == -100) {
+						spriteLabel = "Default";
+					} else if (sprites.find(currentEntity->getSpriteID()) != sprites.end()) {
+						spriteLabel = sprites[currentEntity->getSpriteID()]->getName();
+					}
+					if (ImGui::BeginCombo("##entitySprite", spriteLabel.c_str())) {
+						if (ImGui::Selectable("Default", currentEntity->getSpriteID() == -100)) {
+							int newID = -100;
+							int currentID = currentEntity->getSpriteID();
+							auto action = [this, newID]() {
+								getCurrentEntity()->setSpriteID(newID);
+							};
+							auto restore = [this, currentID]() {
+								getCurrentEntity()->setSpriteID(currentID);
+							};
+							pushAction(action, restore);
+							action();
+						}
+						for (auto [id, sprite] : sprites) {
+							bool selected = (id == currentEntity->getSpriteID());
+							if (ImGui::Selectable(sprite->getName().c_str(), selected)) {
+								int newID = id;
+								int currentID = currentEntity->getSpriteID();
+								auto action = [this, newID]() {
+									getCurrentEntity()->setSpriteID(newID);
+								};
+								auto restore = [this, currentID]() {
+									getCurrentEntity()->setSpriteID(currentID);
+								};
+								pushAction(action, restore);
+								action();
 							}
 						}
-						else
-						{
-							sprite_id = -100;
-						}
+						ImGui::EndCombo();
 					}
 					ImGui::InputInt("entity id", &entity_id);
 					if (ImGui::Button("update Entity id"))
