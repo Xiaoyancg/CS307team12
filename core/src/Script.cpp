@@ -69,12 +69,12 @@ namespace Core
                                std::vector<int> removeTargetSignalList,
                                std::vector<int> removeTargetLogicList,
                                std::vector<int> removeTargetScriptList)
-        : _addTargetLogicList(addTargetLogicList),
+        : _addTargetSignalList(addTargetSignalList),
+          _addTargetLogicList(addTargetLogicList),
           _addTargetScriptList(addTargetScriptList),
-          _addTargetSignalList(addTargetSignalList),
+          _removeTargetSignalList(removeTargetSignalList),
           _removeTargetLogicList(removeTargetLogicList),
-          _removeTargetScriptList(removeTargetScriptList),
-          _removeTargetSignalList(removeTargetSignalList) {}
+          _removeTargetScriptList(removeTargetScriptList) {}
     //* ------------------- MOVE CONSTANTLY ------------------ *//
 
     int ScriptMoveConstantly::getTargetPage() { return _targetPage; }
