@@ -33,22 +33,21 @@ namespace Core
         parse(json);
     }
 
-    Game::Game(const Game& other) :
-        gameName(other.gameName),
-        author(other.author),
-        version(other.version),
-        lMTime(other.lMTime),
-        note(other.note),
-        _logicManager(other._logicManager),
-        mCamera(new Camera(*other.mCamera)),
-        currPageIdx(other.currPageIdx),
-        pageList(other.pageList.size()),
-        inDisplayList(other.inDisplayList),
-        window(other.window),
-        gl_context(other.gl_context),
-        keyboardState(other.keyboardState),
-        shaderProgram(other.shaderProgram),
-        mGameSprites(other.mGameSprites)
+    Game::Game(const Game &other) : gameName(other.gameName),
+                                    author(other.author),
+                                    version(other.version),
+                                    lMTime(other.lMTime),
+                                    note(other.note),
+                                    _logicManager(other._logicManager),
+                                    mCamera(new Camera(*other.mCamera)),
+                                    currPageIdx(other.currPageIdx),
+                                    pageList(other.pageList.size()),
+                                    inDisplayList(other.inDisplayList),
+                                    window(other.window),
+                                    gl_context(other.gl_context),
+                                    keyboardState(other.keyboardState),
+                                    shaderProgram(other.shaderProgram),
+                                    mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
         for (int i = 0; i < other.pageList.size(); i++)
@@ -194,22 +193,29 @@ namespace Core
         }
     }
 
-    int Game::addMap(Map* map) {
+    int Game::addMap(Map *map)
+    {
         mapList.push_back(map);
         return mapList.size() - 1;
     }
 
-    Map* Game::getMap(int idx) {
+    Map *Game::getMap(int idx)
+    {
         return mapList[idx];
     }
 
-    void Game::deleteMap(std::string name) {
-        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
-            if ((*iter)->getName() == name) {
+    void Game::deleteMap(std::string name)
+    {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++)
+        {
+            if ((*iter)->getName() == name)
+            {
                 mapList.erase(iter);
-                for (auto page : pageList) {
-                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
-                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+                for (auto page : pageList)
+                {
+                    Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin())
+                    {
                         mapPage->setMapIndex(-1);
                     }
                 }
@@ -218,13 +224,18 @@ namespace Core
         }
     }
 
-    void Game::deleteMap(Map* map) {
-        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
-            if ((*iter) == map) {
+    void Game::deleteMap(Map *map)
+    {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++)
+        {
+            if ((*iter) == map)
+            {
                 mapList.erase(iter);
-                for (auto page : pageList) {
-                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
-                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+                for (auto page : pageList)
+                {
+                    Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin())
+                    {
                         mapPage->setMapIndex(-1);
                     }
                 }
@@ -395,9 +406,9 @@ namespace Core
         try
         {
             auto pageVec = root.at("pageList").get<std::vector<json>>();
-            for (auto& pageJson : pageVec)
+            for (auto &pageJson : pageVec)
             {
-                Page* page = Page::fromJSON(pageJson);
+                Page *page = Page::fromJSON(pageJson);
                 page->setGame(this);
                 pageList.push_back(page);
             }
@@ -407,15 +418,17 @@ namespace Core
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
-        try {
+        try
+        {
             auto mapVec = root.at("maps").get<std::vector<json>>();
-            for (json& mapJson : mapVec)
+            for (json &mapJson : mapVec)
             {
-                Map* map = Map::fromJSON(mapJson);
+                Map *map = Map::fromJSON(mapJson);
                 mapList.push_back(map);
             }
         }
-        catch (const std::exception &e) {
+        catch (const std::exception &e)
+        {
             std::cerr << "error: " << e.what() << std::endl;
         }
 
@@ -465,20 +478,70 @@ namespace Core
 
         //TODO LogicManager
         json logicManagerjs;
+        std::vector<json> signalVector;
+        // TODO for each signal ...
+        for (auto s : *(_logicManager.getSignalList()))
+        {
+            nlohmann::json sj;
+            sj["SignalName"] = s.getSignalName();
+            sj["signalId"] = s.getSignalId();
+            sj["SignalType"] = s.getTypeString();
+            nlohmann::json si;
+            switch (s.getSignalType())
+            {
+            case SignalType::Custom:
+                si["targetLogicList"] = s.getSignal().customSignal.getTargetLogicList();
+                break;
+
+            default:
+                break;
+            }
+            sj["signal"] = si;
+            signalVector.push_back(sj);
+        }
+        logicManagerjs["signalList"] = signalVector;
+
         std::vector<json> logicVector;
         //TODO for each logic push to logic vector
         logicManagerjs["logicList"] = logicVector;
         std::vector<json> scriptVector;
         //TODO for each script push to script Vector
-        logicManagerjs["scriptList"] = scriptVector;
-        std::vector<json> signalVector;
-        // TODO for each signal ...
-        logicManagerjs["signalList"] = signalVector;
-        j["logicManager"] = logicManagerjs;
+        for (auto s : *(_logicManager.getScriptList()))
+        {
+            nlohmann::json scj;
+            scj["ScriptName"] = s.getScriptName();
+            scj["scriptId"] = s.getScriptId();
+            scj["ScriptType"] = s.getScriptTypeString();
+            nlohmann::json sci;
+            switch (s.getScriptType())
+            {
+            case ScriptType::Custom:
+                sci["addTargetSignalList"] =
+                    s.getScript().scriptCustom.getAddTargetSignalList();
+                sci["addTargetLogicList"] =
+                    s.getScript().scriptCustom.getAddTargetLogicList();
+                sci["addTargetScriptList"] =
+                    s.getScript().scriptCustom.getAddTargetScriptList();
+                sci["removeTargetSignalList"] =
+                    s.getScript().scriptCustom.getRemoveTargetSignalList();
+                sci["removeTargetLogicList"] =
+                    s.getScript().scriptCustom.getRemoveTargetLogicList();
+                sci["removeTargetScriptList"] =
+                    s.getScript().scriptCustom.getRemoveTargetScriptList();
+                break;
 
+            default:
+                break;
+            }
+            scj["script"] = sci;
+            scriptVector.push_back(scj);
+        }
+        logicManagerjs["scriptList"] = scriptVector;
+        j["logicManager"] = logicManagerjs;
         // TODO start point
         json startPoint;
-        j["startPoint"] = startPoint;
+        // TODO
+        // j["startPoint"] = startPoint;
         return j;
     }
 
@@ -748,11 +811,13 @@ namespace Core
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
     }
 
-    bool Game::isKeyPressed(SDL_Keycode kc) {
+    bool Game::isKeyPressed(SDL_Keycode kc)
+    {
         return keyboardState[SDL_GetScancodeFromKey(kc)] == 1;
     }
 
-    void Game::update(float dt) {
+    void Game::update(float dt)
+    {
         keyboardState = SDL_GetKeyboardState(nullptr);
         getCurrPage()->update(dt);
     }
@@ -836,7 +901,7 @@ namespace Core
                 }
             }
             auto now = std::chrono::steady_clock::now();
-            float dt = (float) (now - lastTime).count() / std::chrono::steady_clock::period::den;
+            float dt = (float)(now - lastTime).count() / std::chrono::steady_clock::period::den;
             lastTime = now;
             update(dt);
             render();

@@ -109,6 +109,7 @@ namespace Core
         ScriptUnion _script;
 
     public:
+        std::string getScriptTypeString();
         int getScriptId();
         void setScriptId(int scripId);
         ScriptType getScriptType();
@@ -123,6 +124,7 @@ namespace Core
         /// \param root
         /// \return Script
         static Script parse(nlohmann::json root);
+        static ScriptType getScriptTypeFromString(std::string);
 
         /// \brief update all information of script
         /// *For use in editor, binding with update button in script editor.
