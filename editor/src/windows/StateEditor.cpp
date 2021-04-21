@@ -9,12 +9,10 @@ void StateEditor::draw() {
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
         static char state_name[128] = "";
+        static bool on_collision = false;
+        static bool on_property_change = false;
         if (ImGui::Begin("State Editor", &visible))
         {
-            ImGui::Text("Enter name:");
-            ImGui::SameLine();
-            ImGui::PushItemWidth(200);
-            ImGui::InputText("##state_name", state_name, IM_ARRAYSIZE(state_name));
             if (ImGui::Button("Create Score Tracker"))
             {
 
@@ -26,8 +24,14 @@ void StateEditor::draw() {
 
             }
             ImGui::SameLine();
-            HelpMarker("Entity properties include entity characteristics like HP and speed that can be affected by in-game events such as score changes or collisions.");
-            //ImGui::Checkbox("Controllable", &controllable);
+            HelpMarker("Entity properties include characteristics such as health and speed that can be affected by in-game events.");
+            ImGui::NewLine();
+            ImGui::Checkbox("Change State On Collision", &on_collision);
+            ImGui::SameLine();
+            HelpMarker("Update a state if a collision between two entities occurs.");
+            ImGui::Checkbox("Change State On Existing State Change", &on_property_change);
+            ImGui::SameLine();
+            HelpMarker("Update an existing state based on the outcome of another state (e.g. change the game's score if an entity's health is depleted).");
         }
         ImGui::End();
     }
