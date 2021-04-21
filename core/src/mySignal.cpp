@@ -49,12 +49,14 @@ namespace Core
 
     //* ----------------------- SIGNAL ----------------------- *//
 
-    std::string Signal::getTypeString()
+    std::string Signal::getSignalTypeString()
     {
         switch (_signalType)
         {
         case SignalType::Custom:
             return std::string("Custom");
+        default:
+            return std::string();
         }
     }
     int Signal::getSignalId() { return _signalId; }

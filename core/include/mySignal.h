@@ -96,7 +96,7 @@ namespace Core
         std::string _signalName;
 
     public:
-        std::string getTypeString();
+        std::string getSignalTypeString();
         int getSignalId();
         void setSignalId(int signalId);
         SignalType getSignalType();
