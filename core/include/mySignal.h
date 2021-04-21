@@ -111,6 +111,7 @@ namespace Core
         /// \param root
         /// \return Signal
         static Signal parse(nlohmann::json root);
+        static SignalType getSignalTypeFromString(std::string);
 
         /// \brief update all information of Signal
         /// *For editor, binding with the update button in signal editor

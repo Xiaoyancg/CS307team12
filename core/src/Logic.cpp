@@ -164,10 +164,53 @@ namespace Core
     }
     Logic Logic::parse(nlohmann::json root)
     {
-        //TODO
-        return Logic();
+        Logic l;
+        l.setLogicName(root.at("LogicName").get<std::string>());
+        l.setLogicId(root.at("logicId").get<int>());
+        l.setSignalType(
+            getSignalTypeFromString(root.at("SignalType").get<std::string>()));
+        l.setScriptType(
+            getScriptTypeFromString(root.at("ScriptType").get<std::string>()));
+        l.setTargetScriptList(root.at("targetScriptList").get<std::vector<int>>());
+        nlohmann::json logicJ = root.at("logic").get<nlohmann::json>();
+        switch (l.getSignalType())
+        {
+        case SignalType::Custom:
+            l.setLogic(LogicUnion(LogicCustom()));
+            break;
+        case SignalType::Key:
+            l.setLogic(LogicUnion(LogicKey(
+                logicJ.at("key").get<Sint32>(),
+                logicJ.at("keyType").get<Uint32>())));
+            break;
+
+        default:
+            break;
+        }
+        return l;
     }
 
+    SignalType Logic::getSignalTypeFromString(std::string s)
+    {
+        if (s.compare("Custom"))
+        {
+            return SignalType::Custom;
+        }
+        else
+            return SignalType::Custom;
+    }
+
+    ScriptType Logic::getScriptTypeFromString(std::string typeString)
+    {
+        if (typeString.compare("Custom") == 0)
+        {
+            return ScriptType::Custom;
+        }
+        else if (typeString.compare("MoveConstantly") == 0)
+        {
+            return ScriptType::MoveConstantly;
+        }
+    }
     Logic::Logic() : Logic(-1, SignalType::Custom, ScriptType::Custom,
                            std::string(), std::vector<int>(), LogicUnion()) {}
     Logic::Logic(int logicId, SignalType signalType, ScriptType scriptType,

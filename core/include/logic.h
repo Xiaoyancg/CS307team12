@@ -90,6 +90,8 @@ namespace Core
         /// \param root
         /// \return Logic
         static Logic parse(nlohmann::json root);
+        static SignalType getSignalTypeFromString(std::string s);
+        static ScriptType getScriptTypeFromString(std::string);
 
         /// \brief Construct a new default Logic object and add it to list
         /// *For editor, used in Game::createLogic().
