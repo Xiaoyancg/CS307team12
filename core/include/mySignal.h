@@ -96,7 +96,7 @@ namespace Core
         std::string _signalName;
 
     public:
-        std::string getTypeString();
+        std::string getSignalTypeString();
         int getSignalId();
         void setSignalId(int signalId);
         SignalType getSignalType();
@@ -111,6 +111,7 @@ namespace Core
         /// \param root
         /// \return Signal
         static Signal parse(nlohmann::json root);
+        static SignalType getSignalTypeFromString(std::string);
 
         /// \brief update all information of Signal
         /// *For editor, binding with the update button in signal editor

@@ -49,12 +49,14 @@ namespace Core
 
     //* ----------------------- SIGNAL ----------------------- *//
 
-    std::string Signal::getTypeString()
+    std::string Signal::getSignalTypeString()
     {
         switch (_signalType)
         {
         case SignalType::Custom:
             return std::string("Custom");
+        default:
+            return std::string();
         }
     }
     int Signal::getSignalId() { return _signalId; }
@@ -101,8 +103,8 @@ namespace Core
     Signal Signal::parse(nlohmann::json root)
     {
         int id = root.at("signalId").get<int>();
-        SignalType type = static_cast<SignalType>(
-            root.at("signalType").get<int>());
+        SignalType type = getSignalTypeFromString(
+            root.at("SignalType").get<std::string>());
         std::string signalName = root.at("signalName").get<std::string>();
         SignalUnion signal_u;
         switch (type)
@@ -110,9 +112,19 @@ namespace Core
         case SignalType::Custom:
             signal_u.customSignal = SignalCustom::parse(root);
             break;
+        // key signal is system signal, will not be stored
         default:
             break;
         }
         return Signal(id, type, signalName, signal_u);
+    }
+    SignalType Signal::getSignalTypeFromString(std::string s)
+    {
+        if (s.compare("Custom"))
+        {
+            return SignalType::Custom;
+        }
+        else
+            return SignalType::Custom;
     }
 }

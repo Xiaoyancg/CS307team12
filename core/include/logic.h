@@ -28,6 +28,10 @@ namespace Core
 
     public:
         bool check(SignalKey keySignal);
+        SDL_Keycode getKey();
+        void setKey(SDL_Keycode);
+        Uint32 getKeyType();
+        void setKeyType(Uint32);
         LogicKey();
         LogicKey(SDL_Keycode key, Uint32 keyType);
         ~LogicKey();
@@ -58,6 +62,9 @@ namespace Core
         LogicUnion _logic;
 
     public:
+        std::string getSignalTypeString();
+        std::string getScriptTypeString();
+
         void setLogicId(int logicId);
         int getLogicId();
         void setSignalType(SignalType signalType);
@@ -83,6 +90,8 @@ namespace Core
         /// \param root
         /// \return Logic
         static Logic parse(nlohmann::json root);
+        static SignalType getSignalTypeFromString(std::string s);
+        static ScriptType getScriptTypeFromString(std::string);
 
         /// \brief Construct a new default Logic object and add it to list
         /// *For editor, used in Game::createLogic().
