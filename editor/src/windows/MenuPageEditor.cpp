@@ -13,9 +13,10 @@ void MenuPageEditor::draw() {
 
 	if (visible)
 	{
+		/*
 		if (editor->getCurrentComponentList()[CUR_SPRITESHEET] != "")
 		{
-
+			
 
 			int ss = editor->getCurrentSpriteSheet();
 			Core::SpriteSheet* spritesheet = editor->getGamePtr()->getSpriteSheetFromID(ss);
@@ -107,6 +108,6 @@ void MenuPageEditor::draw() {
 
 			ImGui::End();
 			ImGui::PopStyleVar();
-		}
+		}*/
 	}
 }

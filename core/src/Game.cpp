@@ -262,6 +262,24 @@ namespace Core
         }
     }
 
+    void Game::createMenuButton(std::string text, int size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) {
+        // If the current page is a menu page, create a button on it
+        if (Core::MenuPage* menuPage = dynamic_cast<Core::MenuPage*>(getCurrPage())) {
+            if (menuPage->getMenu()) {
+                menuPage->getMenu()->createButton(text, size, textColor, location, dimensions, buttonColor);
+            }
+        }
+    }
+
+    void Game::createMenuTextBox(std::string text, int size, glm::vec2 location, glm::vec3 color) {
+        // If the current page is a menu page, create a textbox on it
+        if (Core::MenuPage* menuPage = dynamic_cast<Core::MenuPage*>(getCurrPage())) {
+            if (menuPage->getMenu()) {
+                menuPage->getMenu()->createTextBox(text, size, location, color);
+            }
+        }
+    }
+
     unsigned int Game::createSprite(std::string name, std::string filename)
     {
         // Return OpenGL ID of the new sprite
