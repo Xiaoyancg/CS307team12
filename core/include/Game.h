@@ -178,6 +178,7 @@ namespace Core
         void onGameCreation();
 
         bool isKeyPressed(SDL_Keycode kc);
+        void keyHandler(SDL_KeyboardEvent);
 
     private:
         int FPS = 60;

@@ -5,6 +5,16 @@
 namespace Core
 {
 
+    static std::unordered_map<ScriptType, std::string> scriptTypeStringList = {
+        {ScriptType::Custom, "Custom"},
+        {ScriptType::MoveConstantly, "MoveConstantly"},
+        {ScriptType::SwitchPage, "SwitchPage"},
+        {ScriptType::GameEnd, "GameEnd"}};
+    std::string getScriptTypeStringByScriptType(ScriptType type)
+    {
+        // no error should be found here
+        return scriptTypeStringList.at(type);
+    }
     //* ----------------------- CUSTOM ----------------------- *//
 
     std::vector<int> ScriptCustom::getAddTargetSignalList()
