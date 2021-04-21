@@ -124,7 +124,7 @@ void Editor::createWindows()
     windowList[STYLEEDITOR] = new StyleEditor(this, default_size);
     windowList[SIGNALEDITOR] = new SignalEditor(this, default_size);
     windowList[STATUSEDITOR] = new StatusEditor(this, default_size);
-   // windowList[MENUPAGEEDITOR] = new MenuPageEditor(this, default_size);
+    windowList[MENUPAGEEDITOR] = new MenuPageEditor(this, default_size);
 
     windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
