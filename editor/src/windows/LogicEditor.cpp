@@ -17,8 +17,6 @@ void LogicEditor::draw()
         Core::Logic current_logic;
 
         // For "key type" logic
-        char key_code[2] = "";
-        static int key_idx = 0;
 
         char target_script_list[128] = "";
         if (ImGui::Begin("Logic Editor", &visible))
@@ -73,13 +71,28 @@ void LogicEditor::draw()
                 ImGui::Text("Key Code:  ");
                 ImGui::SameLine();
                 ImGui::PushItemWidth(25);
-                if (ImGui::InputText("##key_code", key_code, IM_ARRAYSIZE(key_code), ImGuiInputTextFlags_ReadOnly))
+                ImGui::InputText("##key_code", keyCodeString, IM_ARRAYSIZE(keyCodeString),
+                                 ImGuiInputTextFlags_ReadOnly);
+                if (ImGui::IsItemFocused())
+
                 {
                     ImGuiIO &io = ImGui::GetIO();
                     for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++)
                     {
                         if (io.KeysDown[i])
                         {
+                            // sdl keycode
+                            // 0 is 48 a is 49
+                            // a is 97
+                            // b is 98
+
+                            // imgui use SDL_SCANCODE
+                            // 1 si 30
+                            // 0 is 39
+                            // a is 4
+                            // b is 5
+                            strcpy_s(keyCodeString, (SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)i))));
+                            break;
                         }
                     }
                 }
@@ -88,14 +101,14 @@ void LogicEditor::draw()
                 ImGui::Text("Key Type:  ");
                 ImGui::SameLine();
                 const char *key_types[] = {"Pressed", "Released"};
-                const char *combo_label = key_types[key_idx];
-                if (ImGui::BeginCombo("##key_type", key_types[key_idx]))
+                const char *combo_label = key_types[keyType];
+                if (ImGui::BeginCombo("##key_type", key_types[keyType]))
                 {
                     for (int n = 0; n < IM_ARRAYSIZE(key_types); n++)
                     {
-                        const bool is_selected = (key_idx == n);
+                        const bool is_selected = (keyType == n);
                         if (ImGui::Selectable(key_types[n], is_selected))
-                            key_idx = n;
+                            keyType = n;
 
                         // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                         if (is_selected)
