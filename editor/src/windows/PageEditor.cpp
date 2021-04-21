@@ -46,7 +46,7 @@ void PageEditor::draw() {
                         //UNDO
                         std::string pname = page_name;
                         auto action = [this, pname]() {
-                            editor->getGamePtr()->createMenuPage(pname);
+                            editor->getGamePtr()->addPage(new Core::MenuPage(pname));
                         };
                         auto restore = [this, pname]() {
                             editor->getGamePtr()->deletePage(pname);
@@ -62,7 +62,7 @@ void PageEditor::draw() {
                         //UNDO
                         std::string pname = page_name;
                         auto action = [this, pname]() {
-                            editor->getGamePtr()->createPage(pname);
+                            editor->getGamePtr()->addPage(new Core::Page(pname));
                         };
                         auto restore = [this, pname]() {
                             editor->getGamePtr()->deletePage(pname);
@@ -93,6 +93,7 @@ void PageEditor::draw() {
                     if (ImGui::Selectable(page->getName().c_str(), is_selected))
                     {
                         current_page = i;
+                        editor->getGamePtr()->setCurrentPage(page);
                         editor->getCurrentComponentList()[CUR_PAGE] = page->getName();
                     }
 

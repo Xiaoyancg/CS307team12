@@ -6,6 +6,7 @@
 
 namespace Core
 {
+    class Page;
     // Entity class
     class Entity
     {
@@ -23,11 +24,14 @@ namespace Core
         // This will set 'mCoords'
         void calculateCoords(glm::vec2 location, glm::vec2 scale);
 
+
+        void update(float dt);
         // Render the given entity on the current context
         // Assumes the shaders have already been setup
         void render();
 
-        static Entity *parse(nlohmann::json &root);
+        static Entity* fromJSON(nlohmann::json& root);
+        void parse(nlohmann::json& root);
         nlohmann::json serialize();
 
         // =========================
@@ -37,7 +41,6 @@ namespace Core
         // ATTRIBUTES OPERATION
         std::string getName();
         void setName(std::string);  // For variable name (setName(x);)
-        void setName(const char *); // For constant "Name" (setName("EntityAHHHHH");)
         // =========================
         // PROPERTY OPERATION
 
@@ -83,6 +86,13 @@ namespace Core
         int getEntityId();
         void setEntityId(int entityId);
 
+        Page* getParentPage() {
+            return mParentPage;
+        }
+
+        void setParentPage(Page* page) {
+            mParentPage = page;
+        }
         void setInScriptId(int);
         int getInScriptId();
         void setOutScriptId(int);
@@ -100,13 +110,18 @@ namespace Core
         // This isn't used yet though, I'm just adding it for later
         int mSpriteID = -1;
 
-        int _entityId;
 
-        bool mIsInvisible;
-        bool mControlledEntity;
+        int _entityId = -1;
+
+        bool mIsInvisible = false;
+        bool mControlledEntity = false;
+
+        Page* mParentPage = nullptr;
+
         /// \brief when the entity enter, game should run this (custom) script
         ///
         int mInScriptId = -1;
         int mOutScriptId = -1;
+
     };
 }

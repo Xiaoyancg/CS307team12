@@ -8,10 +8,11 @@
 #include <glad/glad.h>
 #include <nlohmann/json.hpp>
 #include <iterator>
-#include <Entity.h>
+#include "Entity.h"
 
 namespace Core
 {
+    class Game;
     // Page class
     // Pages can be menu, settings, HUD, map, Cutscene, ...
     // Each page contains its own context and render function
@@ -32,10 +33,13 @@ namespace Core
         void SetBackgroundColor(float r, float g, float b, float a);
         glm::vec4 GetBackgroundColor();
         std::vector<Entity *> &getEntityList();
+        virtual void update(float dt);
         virtual void render();
 
-        static Page *parse(nlohmann::json &root);
-        nlohmann::json serialize();
+        static Page* fromJSON(nlohmann::json &root);
+
+        virtual void parse(nlohmann::json& root);
+        virtual nlohmann::json serialize();
 
         Entity *addEntity(Entity *);
         Entity *createEntity(std::string);
@@ -49,6 +53,14 @@ namespace Core
         // TODO: should have error checking
         void setCtrlEntity(Entity *);
 
+        Game* getGame() {
+            return mGame;
+        }
+
+        void setGame(Game* game) {
+            mGame = game;
+        }
+        
         void setInScriptId(int);
         int getInScriptId();
         void setOutScriptId(int);
@@ -63,6 +75,8 @@ namespace Core
         std::string name;
         glm::vec4 backgroundColor;
         std::vector<Entity *> entityList;
+
+        Game* mGame = nullptr;
         int mInScriptId;
         int mOutScriptId;
     };

@@ -1,4 +1,4 @@
- #include "Sprint2.h"
+#include "Sprint2.h"
 #include "VMTool.h"
 
 namespace Core
@@ -9,8 +9,7 @@ namespace Core
         game->setGameName("s2Game");
 
         // FIXME: use relative directory. also remove from here
-        std::vector<std::string> spriteList =
-            searchAllFileWithExtension("./", ".png");
+        std::vector<std::string> spriteList = searchAllFileWithExtension("./", ".png");
         /*
         for (auto s : spriteList)
         {
@@ -41,8 +40,9 @@ namespace Core
         game->createLoopingSprite("guy", 1, ss, 4, 1.0, glm::ivec2(1, 4), glm::ivec2(13, 21), 3);
         //game->createLoopingSprite("guy", 1, ss, 9, 1.0, glm::ivec2(0, 0), glm::ivec2(32, 32), 0);
 
-        game->mainLoop();
-        game->destroy();
-        return game;
+        // game->mainLoop();
+        // game->destroy();
+        // return game;
+        return nullptr;
     }
 }

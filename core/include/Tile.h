@@ -1,4 +1,7 @@
 #pragma once
+
+#include <glm/glm.hpp>
+
 /*
  * Tile class
  * Just stores a depth and sprite ID.
@@ -11,6 +14,9 @@ namespace Core
 	class Tile
 	{
 	public:
+		Tile() {}
+		Tile(bool invisible, bool solid) : mIsInvisible(invisible), mSolid(solid) {}
+
 		void setSpriteID(int id)
 		{
 			mSpriteID = id;
@@ -23,6 +29,8 @@ namespace Core
 
 		void setCoords(int *coords); // coords points to an array of 8 ints, 4 pairs of coordinates
 		float *getCoords();
+
+		void calculateSquareCoords(glm::vec2 position, glm::vec2 size);
 
 		bool isInvisibleTile()
 		{

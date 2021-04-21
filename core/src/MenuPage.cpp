@@ -26,4 +26,14 @@ namespace Core {
             printf("No Menu is set for this MenuPage :(\n");
         }
     }
+
+    void MenuPage::parse(nlohmann::json& root) {
+        Page::parse(root);
+    }
+
+    nlohmann::json MenuPage::serialize() {
+        nlohmann::json& root = Page::serialize();
+        root["type"] = "menu";
+        return root;
+    }
 }
