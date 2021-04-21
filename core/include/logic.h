@@ -63,7 +63,7 @@ namespace Core
         void setSignalType(SignalType signalType);
         SignalType getSignalType();
         void setScriptType(ScriptType scriptType);
-        ScriptType getScritType();
+        ScriptType getScriptType();
         void setLogicName(std::string logicName);
         std::string getLogicName();
         void setTargetScriptList(std::vector<int> targetScriptList);
