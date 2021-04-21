@@ -498,10 +498,8 @@ namespace Core
         std::vector<json> spriteVector = mGameSprites.serialize();
         j["spriteList"] = spriteVector;
 
-        //TODO LogicManager
         json logicManagerjs;
         std::vector<json> signalVector;
-        // TODO for each signal ...
         for (auto s : *(_logicManager.getSignalList()))
         {
             nlohmann::json sj;
