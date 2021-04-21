@@ -12,7 +12,7 @@
 #include "windows/LogicEditor.h"
 #include "windows/StyleEditor.h"
 #include "windows/SignalEditor.h"
-#include "windows/StateEditor.h"
+#include "windows/StatusEditor.h"
 
 #include "windows/ObjectTree.h"
 #include "windows/SplashWindow.h"
