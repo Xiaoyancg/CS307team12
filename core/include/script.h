@@ -69,7 +69,7 @@ namespace Core
         int _targetPage;
 
     public:
-        int getTargetPage();
+        int getTargetPageId();
         void setTargetPage(int targetPage);
         std::vector<int> getTargetEntityList();
         void setTargetEntityList(std::vector<int> targetEntityList);
@@ -109,6 +109,7 @@ namespace Core
         ScriptUnion _script;
 
     public:
+        std::string getScriptTypeString();
         int getScriptId();
         void setScriptId(int scripId);
         ScriptType getScriptType();
@@ -123,6 +124,7 @@ namespace Core
         /// \param root
         /// \return Script
         static Script parse(nlohmann::json root);
+        static ScriptType getScriptTypeFromString(std::string);
 
         /// \brief update all information of script
         /// *For use in editor, binding with update button in script editor.
@@ -131,7 +133,7 @@ namespace Core
         /// \param ... scriptId, scriptName, other variables. List of types:
         /// \param Custom std::vector<int> signal, std::vector<int>
         ///
-        void updateScript(ScriptType scriptType, ...);
+        void updateScript(ScriptType scriptType, int id, std::string name...);
 
         /// \brief Construct a new Script object
         /// *For editor, used in Game::createScript()

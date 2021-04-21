@@ -15,7 +15,7 @@ namespace Core
 	{
 	public:
 		Tile() {}
-		Tile(bool invisible, bool solid) : mIsInvisible(invisible), mSolid(solid) {}
+		Tile(int spriteID, bool solid) : mSpriteID(spriteID), mSolid(solid) {}
 
 		void setSpriteID(int id)
 		{
@@ -32,15 +32,6 @@ namespace Core
 
 		void calculateSquareCoords(glm::vec2 position, glm::vec2 size);
 
-		bool isInvisibleTile()
-		{
-			return mIsInvisible;
-		}
-		void setInvisibleTile(bool value)
-		{
-			mIsInvisible = value;
-		}
-
 		bool isSolid()
 		{
 			return mSolid;
@@ -56,11 +47,10 @@ namespace Core
 		// Basic Tile variables
 		int mCurrentDepth = 0; // Not implemented yet, but saving for later
 
-		bool mIsInvisible = false;
 		bool mSolid = false;
 
 		// Sprite ID used to index sprites loaded into memory from the Game class
 		// This isn't used yet though, I'm just adding it for later
-		int mSpriteID = -1;
+		int mSpriteID = -2;
 	};
 }
