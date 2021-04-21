@@ -162,20 +162,20 @@ void LogicEditor::draw()
 
             if (ImGui::Button("Create"))
             {
-                bool dupeID = false;
-                // Enforce unique IDs for each logic
+                bool duped_property = false;
+                // Enforce unique names and IDs for each logic
+                std::string lname = logic_name;
                 for (auto logic : *editor->getGamePtr()->getLogicList())
                 {
-                    if (logic.getLogicId() == logicIDInput)
+                    if (logic.getLogicName() == lname || logic.getLogicId() == logicIDInput)
                     {
-                        dupeID = true;
+                        duped_property = true;
                     }
                 }
 
-                if (strlen(logic_name) != 0 && !dupeID)
+                if (strlen(logic_name) != 0 && !duped_property)
                 {
                     // UNDO
-                    std::string lname = logic_name;
                     int lID = logicIDInput;
                     int ltype = logic_type_idx;
                     auto action = [this, lname, lID, ltype]() {
