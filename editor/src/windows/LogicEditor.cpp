@@ -145,36 +145,43 @@ void LogicEditor::draw()
             {
                 if (strlen(logic_name) != 0)
                 {
+                    // UNDO
                     std::string lname = logic_name;
-                    Core::Logic * new_logic = game->createLogic();
-                    new_logic->setLogicName(std::string(logic_name));
-                    new_logic->setLogicId(logicIDInput);
-                    switch (logic_type_idx)
-                    {
+                    int lID = logicIDInput;
+                    int ltype = logic_type_idx;
+                    auto action = [this, lname, lID, ltype]() {
+                        Core::Logic* new_logic = editor->getGamePtr()->createLogic();
+                        new_logic->setLogicName(lname);
+                        new_logic->setLogicId(lID);
+                        switch (ltype)
+                        {
                         case 0: // Custom type
                             new_logic->setSignalType(Core::SignalType::Custom);
                             break;
                         case 1: // Key type
                             new_logic->setSignalType(Core::SignalType::Key);
                             break;
-                    }
+                        }
+                    };
 
-                    //UNDO
-                    /*std::string pname = page_name;
-                    auto action = [this, pname]() {
-                        editor->getGamePtr()->createMenuPage(pname);
+                    auto restore = [this, lname]() {
+                        // Find the logic to delete
+                        auto logic_list = *editor->getGamePtr()->getLogicList();
+                        for (auto logic : logic_list)
+                        {
+                            if (logic.getLogicName() == lname)
+                            {
+                                editor->getGamePtr()->deleteLogic(logic.getLogicId());
+                            }
+                        }
+                        
                     };
-                    auto restore = [this, pname]() {
-                        editor->getGamePtr()->deletePage(pname);
-                    };
+
                     pushAction(action, restore);
                     action();
-                    //ENDUNDO
-                    */
 
                     // memset to clear the buffer after use
                     memset(logic_name, 0, 128);
-                    logicIDInput = -1;
                 }
                 
             }
