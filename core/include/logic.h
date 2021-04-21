@@ -22,7 +22,7 @@ namespace Core
     private:
         SDL_Keycode _key;
 
-        /// \brief SDL_PRESSED or SDL_RELEASED
+        /// \brief SDL_KEYDOWN or SDL_KEYUP
         ///
         Uint32 _keyType;
 

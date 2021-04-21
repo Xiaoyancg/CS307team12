@@ -12,6 +12,7 @@ private:
     bool logicInfo = false;
     char keyCodeString[20] = "";
     SDL_Keycode keyCode;
+    int keyTypeIdx = 0;
     Uint32 keyType = 0;
     std::vector<int> targetScriptList;
     int newTargetScript = 0;

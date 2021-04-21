@@ -163,6 +163,7 @@ namespace Core
         Page **_currPage;
 
     public:
+        void setPageList(std::vector<Page *> *pageList);
         /// \brief load all signals, logics and scripts to the corresponding
         /// unordered_map
         ///

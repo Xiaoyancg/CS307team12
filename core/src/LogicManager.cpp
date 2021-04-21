@@ -306,16 +306,19 @@ namespace Core
 
     void LogicManager::runMoveConstantly(ScriptMoveConstantly script)
     {
-        if ((*_currPage)->getID() == script.getTargetPageId())
+        for (auto page_ptr : *_pageList)
         {
-            //TODO: add entity id in parse and in Entity constructor
-            for (auto &entity : (*_currPage)->getEntityList())
+            if (page_ptr->getID() == script.getTargetPageId())
             {
-                for (auto &entityId : script.getTargetEntityList())
+                //TODO: add entity id in parse and in Entity constructor
+                for (auto &entity : page_ptr->getEntityList())
                 {
-                    if (entity->getEntityId() == entityId)
+                    for (auto &entityId : script.getTargetEntityList())
                     {
-                        entity->setLocation(entity->getLocation() + script.getMovement());
+                        if (entity->getEntityId() == entityId)
+                        {
+                            entity->setLocation(entity->getLocation() + script.getMovement());
+                        }
                     }
                 }
             }
@@ -376,6 +379,10 @@ namespace Core
         return *this;
     }
 
+    void LogicManager::setPageList(std::vector<Page *> *pageList)
+    {
+        _pageList = pageList;
+    }
     LogicManager::LogicManager() {}
     LogicManager::LogicManager(std::vector<Page *> *pageList)
         : _pageList(pageList) {}

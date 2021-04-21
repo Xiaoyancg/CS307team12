@@ -163,7 +163,7 @@ void Editor::processInput()
             }
             if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
             {
-                game->keyHandler(evt.key);
+                game->keyEventHandler(evt.key);
             }
         }
         if (evt.type == SDL_KEYUP)
@@ -187,6 +187,10 @@ void Editor::processInput()
                     
             }
         }*/
+    }
+    if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
+    {
+        game->logicLoop();
     }
 } // processInput()
 
@@ -400,6 +404,7 @@ void Editor::runGame()
     {
         savedGame = game;
         game = new Core::Game(*game);
+
         ((GameWindow *)windowList[GAMEVIEW])->updateLastTime();
         gameRunning = true;
     }

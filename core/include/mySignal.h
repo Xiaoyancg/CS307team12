@@ -52,7 +52,7 @@ namespace Core
         ///
         SDL_Keycode _key;
 
-        /// \brief key type ( SDL_PRESSED or SDL_RELEASED )
+        /// \brief key type ( SDL_KEYDOWN or SDL_KEYUP )
         ///
         Uint32 _keyType;
 

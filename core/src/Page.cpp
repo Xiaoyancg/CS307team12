@@ -11,26 +11,32 @@ namespace Core
     // =========================
     // CONSTRUCTOR
     Page::Page() : Page("empty")
-    {}
+    {
+    }
     Page::Page(std::string name) : name(name)
-    {}
-    Page::Page(const Page& other) :
-        name(other.name),
-        backgroundColor(other.backgroundColor),
-        entityList(other.entityList.size()),
-        mGame(other.mGame)
+    {
+        _id = -1;
+    }
+    Page::Page(const Page &other) : name(other.name),
+                                    backgroundColor(other.backgroundColor),
+                                    entityList(other.entityList.size()),
+                                    mGame(other.mGame), _id(other._id)
     {
         // TODO: restore ctrl entity and _id
-        for (int i = 0; i < other.entityList.size(); i++) {
+        for (int i = 0; i < other.entityList.size(); i++)
+        {
             entityList[i] = new Entity(*other.entityList[i]);
             entityList[i]->setParentPage(this);
-            if (entityList[i]->isControlledEntity()) {
+            if (entityList[i]->isControlledEntity())
+            {
                 ctrlEntity = entityList[i];
             }
         }
     }
-    Page::~Page() {
-        for (auto entity : entityList) {
+    Page::~Page()
+    {
+        for (auto entity : entityList)
+        {
             delete entity;
         }
     }
@@ -145,8 +151,10 @@ namespace Core
         return this->entityList;
     }
 
-    void Page::update(float dt) {
-        for (auto entity : entityList) {
+    void Page::update(float dt)
+    {
+        for (auto entity : entityList)
+        {
             entity->update(dt);
         }
     }
@@ -167,49 +175,60 @@ namespace Core
 
     Page *Page::fromJSON(json &root)
     {
-        Page* page;
-        if (root.contains("type")) {
+        Page *page;
+        if (root.contains("type"))
+        {
             std::string pageType = root.at("type").get<std::string>();
-            if (pageType == "menu") {
+            if (pageType == "menu")
+            {
                 page = new MenuPage;
-            } else if (pageType == "map") {
+            }
+            else if (pageType == "map")
+            {
                 page = new MapPage;
-            } else {
+            }
+            else
+            {
                 page = new Page;
             }
-        } else {
+        }
+        else
+        {
             page = new Page;
         }
-        
+
         page->parse(root);
         return page;
     }
 
-    void Page::parse(json& root) {
+    void Page::parse(json &root)
+    {
         setName(root.at("PageName").get<std::string>());
-        if (root.contains("BackgroundColor")) {
+        if (root.contains("BackgroundColor"))
+        {
             std::vector<json> colorVec = root.at("BackgroundColor").get<std::vector<json>>();
             SetBackgroundColor(
                 colorVec[0].get<float>(),
                 colorVec[1].get<float>(),
                 colorVec[2].get<float>(),
-                colorVec[3].get<float>()
-            );    
+                colorVec[3].get<float>());
         }
-        
+
         auto entityVec = root.at("entityList").get<std::vector<json>>();
         for (json entityJson : entityVec)
         {
-            Entity* ent = Entity::fromJSON(entityJson);
+            Entity *ent = Entity::fromJSON(entityJson);
             ent->setParentPage(this);
-            if (ent->isControlledEntity()) {
+            if (ent->isControlledEntity())
+            {
                 setCtrlEntity(ent);
             }
             entityList.push_back(ent);
         }
     }
 
-    json Page::serialize() {
+    json Page::serialize()
+    {
         json root;
         root["PageName"] = name;
         std::vector<json> entityVector;
