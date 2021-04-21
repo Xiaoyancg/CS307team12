@@ -509,6 +509,7 @@ void ConvertToGlFloat(ImVec4 vec) {
     clear_color[1] = vec.y;
     clear_color[2] = vec.z;
     clear_color[3] = vec.w;
+    temp = vec;
 }
 
 bool ResetStyle(int styleEnum, ImGuiStyle& style) {
