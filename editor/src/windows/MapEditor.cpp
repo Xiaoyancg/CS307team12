@@ -19,8 +19,19 @@ void MapEditor::draw() {
 			if (editor->getCurrentMap() != nullptr) {
 				mapLabel = editor->getCurrentMap()->getName();
 			}
+			if (ImGui::Button("Create Map")) {
+				ImGui::OpenPopup("create_map_popup");
+			}
+			drawCreateMapPopup();
+			ImGui::SameLine();
+			if (ImGui::Button("Delete Map")) {
+				game->deleteMap(editor->getCurrentMap());
+				editor->setCurrentMap(nullptr);
+				editor->showDeleteSuccessPopup();
+			}
 			ImGui::Text("Current Map");
 			ImGui::SameLine();
+			ImGui::PushItemWidth(200);
 			if (ImGui::BeginCombo("##currentMap", mapLabel.c_str(), 0)) {
 				for (auto map : editor->getGamePtr()->getMapList()) {
 					const bool isSelected = (map == editor->getCurrentMap());
@@ -33,17 +44,6 @@ void MapEditor::draw() {
 				}
 				ImGui::EndCombo();
 			}
-			if (ImGui::Button("Create Map")) {
-				ImGui::OpenPopup("create_map_popup");
-			}
-			drawCreateMapPopup();
-			ImGui::SameLine();
-			if (ImGui::Button("Delete Map")) {
-				game->deleteMap(editor->getCurrentMap());
-				editor->setCurrentMap(nullptr);
-				editor->showDeleteSuccessPopup();
-			}
-
 			Core::Map *currMap = editor->getCurrentMap();
 			if (currMap != nullptr) {
 				ImGui::Text("Map Name:");
@@ -61,11 +61,10 @@ void MapEditor::draw() {
 				} else {
 					dims = glm::ivec2(0, 0);
 				}
-				ImGui::Text("%i Columns x %i Rows", dims.x, dims.y);
-
+				ImGui::Text("%i Columns x %i Rows", dims.x, dims.y, currMap->getTileSize());
+				ImGui::Text("Tile Size: %i", currMap->getTileSize());
+				ImGui::Text("");
 				if (currMap != nullptr) {
-					ImGui::Text("Tile size: %i", currMap->getTileSize());
-
 					switch (mode) {
 						case EditMode::Collision:
 							ImGui::Text("Edit Mode: Collision");
@@ -82,9 +81,10 @@ void MapEditor::draw() {
 					if (ImGui::Button("Sprite Mode")) {
 						mode = EditMode::Sprite;
 					}
-					ImGui::Indent();
-					ImGui::InputInt("Sprite ID", &mSelectedSpriteID, 1, 5);
-					ImGui::Unindent();
+					ImGui::Text("Sprite ID");
+					ImGui::SameLine();
+					ImGui::PushItemWidth(100);
+					ImGui::InputInt("", &mSelectedSpriteID, 1, 5);
 				} else {
 					ImGui::Text("Tile size: 0");
 				}
@@ -133,7 +133,6 @@ void MapEditor::drawCreateMapPopup() {
 			pushAction(action, restore);
 			action();
 			// ENDUNDO
-			// TODO: render new map
 			// SETUP THE MAP CBO IF NEEDED
 			map_name[0] = '\0';
 			dim1 = 0;
