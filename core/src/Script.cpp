@@ -69,12 +69,12 @@ namespace Core
                                std::vector<int> removeTargetSignalList,
                                std::vector<int> removeTargetLogicList,
                                std::vector<int> removeTargetScriptList)
-        : _addTargetLogicList(addTargetLogicList),
+        : _addTargetSignalList(addTargetSignalList),
+          _addTargetLogicList(addTargetLogicList),
           _addTargetScriptList(addTargetScriptList),
-          _addTargetSignalList(addTargetSignalList),
+          _removeTargetSignalList(removeTargetSignalList),
           _removeTargetLogicList(removeTargetLogicList),
-          _removeTargetScriptList(removeTargetScriptList),
-          _removeTargetSignalList(removeTargetSignalList) {}
+          _removeTargetScriptList(removeTargetScriptList) {}
     //* ------------------- MOVE CONSTANTLY ------------------ *//
 
     int ScriptMoveConstantly::getTargetPage() { return _targetPage; }
@@ -129,6 +129,18 @@ namespace Core
 
     //* ----------------------- SCRIPT ----------------------- *//
 
+    std::string Script::getScriptTypeString()
+    {
+        switch (_scriptType)
+        {
+        case ScriptType::Custom:
+            return std::string("Custom");
+            break;
+
+        default:
+            break;
+        }
+    }
     int Script::getScriptId() { return _scriptId; }
     void Script::setScriptId(int scriptId) { _scriptId = scriptId; }
     ScriptType Script::getScriptType() { return _scriptType; }
@@ -147,7 +159,36 @@ namespace Core
     Script Script::parse(nlohmann::json root)
     {
         // TODO
-        return Script();
+        Script s;
+        s.setScriptName(root.at("ScriptName").get<std::string>());
+        s.setScriptId(root.at("scriptId").get<int>());
+        s.setScriptType(
+            getScriptTypeFromString(root.at("ScriptType").get<std::string>()));
+        nlohmann::json script = root.at("script").get<nlohmann::json>();
+        switch (s.getScriptType())
+        {
+        case ScriptType::Custom:
+            s.setScript(ScriptUnion(ScriptCustom(
+                script.at("addTargetSignalList").get<std::vector<int>>(),
+                script.at("addTargetLogicList").get<std::vector<int>>(),
+                script.at("addTargetScriptList").get<std::vector<int>>(),
+                script.at("removeTargetSignalList").get<std::vector<int>>(),
+                script.at("removeTargetLogicList").get<std::vector<int>>(),
+                script.at("removeTargetScriptList").get<std::vector<int>>())));
+            break;
+
+        default:
+            break;
+        }
+        return s;
+    }
+
+    ScriptType Script::getScriptTypeFromString(std::string typeString)
+    {
+        if (typeString.compare("Custom") == 0)
+        {
+            return ScriptType::Custom;
+        }
     }
     void Script::updateScript(ScriptType scriptType, ...)
     {

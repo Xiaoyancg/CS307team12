@@ -347,17 +347,18 @@ namespace Core
     LogicManager LogicManager::parse(nlohmann::json root)
     {
         //TODO
-        auto signalVector = root.at("signalList")
-                                .get<std::vector<nlohmann::json>>();
-        for (auto signal_js : signalVector)
-        {
-            _signalList.push_back(Signal::parse(signal_js));
-        }
-        auto logicVector = root.at("logicList")
-                               .get<std::vector<nlohmann::json>>();
-        for (auto logic_js : logicVector)
-        {
-        }
+        // FIXME auto signalVector = root.at("signalList")
+        //.get<std::vector<nlohmann::json>>();
+        //for (auto signal_js : signalVector)
+        //{
+        //    //FIXME _signalList.push_back(Signal::parse(signal_js));
+        //}
+        ////FIXME auto logicVector = root.at("logicList")
+        ////.get<std::vector<nlohmann::json>>();
+        //for (auto logic_js : logicVector)
+        //{
+        //    // FIXME
+        //}
         auto scriptVector = root.at("scriptList")
                                 .get<std::vector<nlohmann::json>>();
         for (auto script_js : scriptVector)

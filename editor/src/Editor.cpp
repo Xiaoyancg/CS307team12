@@ -123,6 +123,7 @@ void Editor::createWindows()
     windowList[LOGICEDITOR] = new LogicEditor(this, default_size);
     windowList[STYLEEDITOR] = new StyleEditor(this, default_size);
     windowList[SIGNALEDITOR] = new SignalEditor(this, default_size);
+    windowList[STATEEDITOR] = new StateEditor(this, default_size);
 
     windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);

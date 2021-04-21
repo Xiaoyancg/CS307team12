@@ -18,7 +18,7 @@ void StyleEditor::draw() {
         ImGuiStyle& style = ImGui::GetStyle();
 		// set the windows default size
 		ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-        ImGui::Begin("Style Editor", &visible);
+        ImGui::Begin("Editor Theme", &visible);
         ImGui::ShowStyleSelector("Color Selector");
         if (ImGui::Button("Save my current theme"))
         {
