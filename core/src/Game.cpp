@@ -15,6 +15,8 @@
 #include <TestCore.h>
 #endif // __TEST_CORE
 
+static GLfloat clear_color[4];
+
 namespace Core
 {
     const int Game::FPS = 60;
@@ -577,7 +579,7 @@ namespace Core
             in vec2 TexCoord;
 
             uniform sampler2D texture1;
-            uniform vec3 color;
+            uniform vec3 color ;
 
 		    out vec4 FragColor;
 
@@ -824,7 +826,7 @@ namespace Core
         GLfloat color[] = {1.0f, 1.0f, 1.0f};
         glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
 
-        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
+        glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (getCurrPage() != nullptr)
