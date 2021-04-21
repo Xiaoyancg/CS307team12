@@ -19,7 +19,6 @@ void SpriteEditor::draw() {
         bool spritesheet_info = false;
         if (ImGui::Begin("Sprite Editor", &visible))
         {
-            /////////////////////////////////
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Sprite Name:");
             ImGui::InputText("##sprite_name", sprite_name, IM_ARRAYSIZE(sprite_name));
@@ -87,6 +86,7 @@ void SpriteEditor::draw() {
             ImGui::OpenPopup("Sprite Information");
             sprite_info = false;
         }
+
         // Sprite information popup
         if (ImGui::BeginPopup("Sprite Information"))
         {
@@ -118,6 +118,7 @@ void SpriteEditor::draw() {
             ImGui::OpenPopup("SpriteSheet Information");
             spritesheet_info = false;
         }
+
         // SpriteSheet information popup
         if (ImGui::BeginPopup("SpriteSheet Information"))
         {
