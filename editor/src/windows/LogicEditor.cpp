@@ -21,7 +21,6 @@ void LogicEditor::draw()
         static int key_idx = 0;
 
         char target_script_list[128] = "";
-
         if (ImGui::Begin("Logic Editor", &visible))
         {
             // Set input widget widths to 200
@@ -39,7 +38,7 @@ void LogicEditor::draw()
             ImGui::SameLine();
             // The order of these options should be preserved for now
             // They are somewhat hardcoded based on the Core::SignalType enum
-            const char *logic_types[] = { "Custom", "Key" };
+            const char *logic_types[] = {"Custom", "Key"};
             static int logic_type_idx = 0; // Here we store our selection data as an index.
             const char *combo_label = logic_types[logic_type_idx];
             if (ImGui::BeginCombo("##logic_type", logic_types[logic_type_idx]))
@@ -62,45 +61,54 @@ void LogicEditor::draw()
             // Render different UI options based on logic type selected
             switch (logic_type_idx)
             {
-                case 0: // Custom type
+            case 0: // Custom type
+            {
+                ImGui::Text("Target Script List:");
+                ImGui::SameLine();
+                ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
+            }
+            break;
+            case 1: // Key type
+            {
+                ImGui::Text("Key Code:  ");
+                ImGui::SameLine();
+                ImGui::PushItemWidth(25);
+                if (ImGui::InputText("##key_code", key_code, IM_ARRAYSIZE(key_code), ImGuiInputTextFlags_ReadOnly))
                 {
-                    ImGui::Text("Target Script List:");
-                    ImGui::SameLine();
-                    ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
-                }
-                break;
-                case 1: // Key type
-                {
-                    ImGui::Text("Key Code:  ");
-                    ImGui::SameLine();
-                    ImGui::PushItemWidth(25);
-                    ImGui::InputText("##key_code", key_code, IM_ARRAYSIZE(key_code));
-                    ImGui::PopItemWidth();
-
-                    ImGui::Text("Key Type:  ");
-                    ImGui::SameLine();
-                    const char *key_types[] = {"Pressed", "Released"};
-                    const char *combo_label = key_types[key_idx];
-                    if (ImGui::BeginCombo("##key_type", key_types[key_idx]))
+                    ImGuiIO &io = ImGui::GetIO();
+                    for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++)
                     {
-                        for (int n = 0; n < IM_ARRAYSIZE(key_types); n++)
+                        if (io.KeysDown[i])
                         {
-                            const bool is_selected = (key_idx == n);
-                            if (ImGui::Selectable(key_types[n], is_selected))
-                                key_idx = n;
-
-                            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                            if (is_selected)
-                                ImGui::SetItemDefaultFocus();
                         }
-                        ImGui::EndCombo();
                     }
-
-                    ImGui::Text("Target Script List:");
-                    ImGui::SameLine();
-                    ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
                 }
-                break;
+                ImGui::PopItemWidth();
+
+                ImGui::Text("Key Type:  ");
+                ImGui::SameLine();
+                const char *key_types[] = {"Pressed", "Released"};
+                const char *combo_label = key_types[key_idx];
+                if (ImGui::BeginCombo("##key_type", key_types[key_idx]))
+                {
+                    for (int n = 0; n < IM_ARRAYSIZE(key_types); n++)
+                    {
+                        const bool is_selected = (key_idx == n);
+                        if (ImGui::Selectable(key_types[n], is_selected))
+                            key_idx = n;
+
+                        // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                        if (is_selected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+                    ImGui::EndCombo();
+                }
+
+                ImGui::Text("Target Script List:");
+                ImGui::SameLine();
+                ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
+            }
+            break;
             }
 
             ImGui::PopItemWidth();
@@ -124,7 +132,7 @@ void LogicEditor::draw()
             if (current_logic.getSignalType() == Core::SignalType::Custom)
             {
                 ImGui::Text("Logic Type: Custom");
-            }                
+            }
             else if (current_logic.getSignalType() == Core::SignalType::Key)
             {
                 ImGui::Text("Logic Type: Key");
