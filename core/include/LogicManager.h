@@ -65,6 +65,7 @@ namespace Core
 
         /// \brief traverse the current signal list and call the corresponding
         /// logic
+        /// *in loop
         ///
         void checkCurrSignalList();
 
@@ -143,6 +144,7 @@ namespace Core
         std::vector<Script> *getScriptList();
 
         /// \brief traverse and run all current script in the order
+        /// *in Loop
         ///
         void runCurrScriptList();
 
@@ -161,6 +163,7 @@ namespace Core
         Page **_currPage;
 
     public:
+        void setPageList(std::vector<Page *> *pageList);
         /// \brief load all signals, logics and scripts to the corresponding
         /// unordered_map
         ///

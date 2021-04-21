@@ -74,6 +74,8 @@ namespace Core
                         {
                             sendScript(scriptId);
                         }
+                        // TODO: run forever
+                        //removeLogic(logic->getLogicId());
                     }
                 }
                 break;
@@ -90,6 +92,8 @@ namespace Core
                             {
                                 sendScript(scriptId);
                             }
+                            // TODO: run once
+                            removeLogic(logic->getLogicId());
                         }
                     }
                 }
@@ -111,6 +115,8 @@ namespace Core
             default:
                 break;
             }
+            // TODO: Run once
+            removeSignal(signal.getSignalId());
         }
     }
 
@@ -285,6 +291,8 @@ namespace Core
             default:
                 break;
             }
+            // only run once
+            removeScript(script->getScriptId());
         }
 
         for (auto &script : _currPageScriptList)
@@ -298,16 +306,19 @@ namespace Core
 
     void LogicManager::runMoveConstantly(ScriptMoveConstantly script)
     {
-        if ((*_currPage)->getID() == script.getTargetPage())
+        for (auto page_ptr : *_pageList)
         {
-            //TODO: add entity id in parse and in Entity constructor
-            for (auto &entity : (*_currPage)->getEntityList())
+            if (page_ptr->getID() == script.getTargetPageId())
             {
-                for (auto &entityId : script.getTargetEntityList())
+                //TODO: add entity id in parse and in Entity constructor
+                for (auto &entity : page_ptr->getEntityList())
                 {
-                    if (entity->getEntityId() == entityId)
+                    for (auto &entityId : script.getTargetEntityList())
                     {
-                        entity->setLocation(entity->getLocation() + script.getMovement());
+                        if (entity->getEntityId() == entityId)
+                        {
+                            entity->setLocation(entity->getLocation() + script.getMovement());
+                        }
                     }
                 }
             }
@@ -347,18 +358,18 @@ namespace Core
     LogicManager LogicManager::parse(nlohmann::json root)
     {
         //TODO
-        // FIXME auto signalVector = root.at("signalList")
-        //.get<std::vector<nlohmann::json>>();
-        //for (auto signal_js : signalVector)
-        //{
-        //    //FIXME _signalList.push_back(Signal::parse(signal_js));
-        //}
-        ////FIXME auto logicVector = root.at("logicList")
-        ////.get<std::vector<nlohmann::json>>();
-        //for (auto logic_js : logicVector)
-        //{
-        //    // FIXME
-        //}
+        auto signalVector = root.at("signalList")
+                                .get<std::vector<nlohmann::json>>();
+        for (auto signal_js : signalVector)
+        {
+            _signalList.push_back(Signal::parse(signal_js));
+        }
+        auto logicVector = root.at("logicList")
+                               .get<std::vector<nlohmann::json>>();
+        for (auto logic_js : logicVector)
+        {
+            _logicList.push_back(Logic::parse(logic_js));
+        }
         auto scriptVector = root.at("scriptList")
                                 .get<std::vector<nlohmann::json>>();
         for (auto script_js : scriptVector)
@@ -368,6 +379,10 @@ namespace Core
         return *this;
     }
 
+    void LogicManager::setPageList(std::vector<Page *> *pageList)
+    {
+        _pageList = pageList;
+    }
     LogicManager::LogicManager() {}
     LogicManager::LogicManager(std::vector<Page *> *pageList)
         : _pageList(pageList) {}

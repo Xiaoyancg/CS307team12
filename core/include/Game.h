@@ -32,8 +32,6 @@ namespace Core
     class Game
     {
     public:
-        static const int FPS;
-
         // =========================
         // PUBLIC VARIABLE
         static int width;
@@ -43,7 +41,7 @@ namespace Core
         // CONSTRUCTOR
 
         // Game ();
-        Game() : Game("Untitled Game") {}
+        Game();
         Game(nlohmann::json &json);
         Game(std::string gameName);
         explicit Game(const Game &other);
@@ -83,17 +81,20 @@ namespace Core
         // =========================
         // MEMBER OPERATION ( functions that targeting )
 
-        Page* addPage(Page *ptr);
+        void Game::updatePageLogic(Page *p);
+        Page *addPage(Page *ptr);
         void deletePage(Page *ptr);
         void deletePage(std::string name);
-        int addMap(Map* map);
-        void deleteMap(Map* ptr);
+        int addMap(Map *map);
+        void deleteMap(Map *ptr);
         void deleteMap(std::string name);
-        Map* getMap(int index);
-        std::vector<Page*>& getPageList() {
+        Map *getMap(int index);
+        std::vector<Page *> &getPageList()
+        {
             return pageList;
         }
-        std::vector<Map*>& getMapList() {
+        std::vector<Map *> &getMapList()
+        {
             return mapList;
         }
 
@@ -113,10 +114,10 @@ namespace Core
         unsigned int createSpriteSheet(std::string, std::string);
         unsigned int createSpriteSheet(std::string, std::string, int);
         void deleteSpriteSheet(int);
-        SpriteSheet* getSpriteSheetFromID(int);
-        std::unordered_map<int, SpriteSheet*> getSpriteSheets();
+        SpriteSheet *getSpriteSheetFromID(int);
+        std::unordered_map<int, SpriteSheet *> getSpriteSheets();
 
-        void renderSpriteSheet(SpriteSheet*);
+        void renderSpriteSheet(SpriteSheet *);
 
         // set the currpage pointer and iterator to target
         void setCurrentPage(Page *p);
@@ -149,12 +150,15 @@ namespace Core
         /// \return Logic*
         Logic *createLogic();
 
-        // *For editor
-        void deleteLogic(int logicId);
+        // For logic deletion
         void deleteSignal(int signalId);
+        void deleteLogic(int logicId);
         void deleteScript(int scriptId);
 
+        std::vector<Signal> *getSignalList();
         std::vector<Script> *getScriptsList();
+        // Return logic list
+        std::vector<Logic> *getLogicList();
 
         // initContext SDL context
         void initContext();
@@ -182,8 +186,18 @@ namespace Core
         void onGameCreation();
 
         bool isKeyPressed(SDL_Keycode kc);
+        void keyEventHandler(SDL_KeyboardEvent);
+        void logicLoop();
 
     private:
+        int FPS = 60;
+        // delta time in s
+        double deltaFPSTime = 1.0 / 60.0;
+        // the Core (logic) rate/ be same as fps rn
+        const int coreRate = 60;
+        double deltaCoreTime = 1.0 / (double)coreRate;
+        Timer FPSTimer;
+        Timer coreTimer;
         std::string gameName;
         std::string author;
         std::string version;
@@ -220,7 +234,7 @@ namespace Core
         // The context of this Game
         SDL_GLContext gl_context;
 
-        const Uint8* keyboardState;
+        const Uint8 *keyboardState;
 
         // The shaders, set by initShaders before entering the game loop
         unsigned int shaderProgram = -1;

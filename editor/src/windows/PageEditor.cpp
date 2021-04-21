@@ -1,9 +1,9 @@
 #include "windows/PageEditor.h"
 #include "UndoRedo.h"
 
-
-void PageEditor::draw() {
-	if (visible)
+void PageEditor::draw()
+{
+    if (visible)
     {
         // possibly implement a new function here for readability purposes
 
@@ -14,65 +14,66 @@ void PageEditor::draw() {
         static char chosen_type[128] = "";
         static int current_item = 0;
         static int current_page = 0;
-        const char *page_options[] = {"Page", "Menu"};
+        const char *page_options[] = {"Page", "Menu", "Map"};
         bool page_info = false;
-		Core::Game* game = editor->getGamePtr();
+        Core::Game *game = editor->getGamePtr();
         if (ImGui::Begin("Page Editor", &visible))
         {
             ImGui::PushItemWidth(200);
             ImGui::Text("Input Page Name & Type:");
             ImGui::InputText("##page_name", page_name, IM_ARRAYSIZE(page_name));
-            if (ImGui::BeginListBox("##page_type", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
+            const char *combo_label = page_options[current_item];
+            if (ImGui::BeginCombo("##page_type", page_options[current_item]))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
                 {
                     const bool is_selected = (current_item == n);
                     if (ImGui::Selectable(page_options[n], is_selected))
                         current_item = n;
-
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     if (is_selected)
                         ImGui::SetItemDefaultFocus();
                 }
-                ImGui::EndListBox();
+                ImGui::EndCombo();
             }
 
             if (ImGui::Button("Create Page"))
             {
                 if (strlen(page_name) != 0)
                 {
+                    std::string pname = page_name;
+                    std::function<void()> action;
+                    std::function<void()> restore;
                     if (strcmp(page_options[current_item], "Menu") == 0)
                     {
-                        //UNDO
-                        std::string pname = page_name;
-                        auto action = [this, pname]() {
+                        action = [this, pname]() {
                             editor->getGamePtr()->addPage(new Core::MenuPage(pname));
                         };
-                        auto restore = [this, pname]() {
+                        restore = [this, pname]() {
                             editor->getGamePtr()->deletePage(pname);
                         };
-                        pushAction(action, restore);
-                        action();
-                        //ENDUNDO
-                        // memset to clear the buffer after use
-                        memset(page_name, 0, 128);
+                    }
+                    else if (strcmp(page_options[current_item], "Map") == 0)
+                    {
+                        action = [this, pname]() {
+                            editor->getGamePtr()->addPage(new Core::MapPage(pname));
+                        };
+                        restore = [this, pname]() {
+                            editor->getGamePtr()->deletePage(pname);
+                        };
                     }
                     else
                     {
-                        //UNDO
-                        std::string pname = page_name;
-                        auto action = [this, pname]() {
+                        action = [this, pname]() {
                             editor->getGamePtr()->addPage(new Core::Page(pname));
                         };
-                        auto restore = [this, pname]() {
+                        restore = [this, pname]() {
                             editor->getGamePtr()->deletePage(pname);
                         };
-                        pushAction(action, restore);
-                        action();
-                        //ENDUNDO
-                        // memset to clear the buffer after use
-                        memset(page_name, 0, 128);
                     }
+                    pushAction(action, restore);
+                    action();
+                    page_name[0] = '\0';
                 }
             }
 
@@ -80,7 +81,7 @@ void PageEditor::draw() {
             ImGui::Text("Current Page: %s", editor->getCurrentComponentList()[CUR_PAGE].c_str());
             if (ImGui::BeginListBox("##page_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
-                auto& pList = game->getPageList();
+                auto &pList = game->getPageList();
                 // Set default selected page to be the first in the page list
                 if (editor->getCurrentComponentList()[CUR_PAGE] == "No Component Selected" && game->getPageList().size() > 0)
                 {
@@ -95,6 +96,7 @@ void PageEditor::draw() {
                         current_page = i;
                         editor->getGamePtr()->setCurrentPage(page);
                         editor->getCurrentComponentList()[CUR_PAGE] = page->getName();
+                        page_id = page->getID();
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -110,7 +112,7 @@ void PageEditor::draw() {
             {
                 if (editor->getCurrentComponentList()[CUR_PAGE] != "No Component Selected")
                 {
-                    auto& pList = game->getPageList();
+                    auto &pList = game->getPageList();
                     for (int i = 0; i < pList.size(); i++)
                     {
                         if (pList[i]->getName() == editor->getCurrentComponentList()[CUR_PAGE])
@@ -155,40 +157,56 @@ void PageEditor::draw() {
                     editor->getCurrentComponentList()[CUR_PAGE] = pList[0]->getName();
                 }
             }
-            if (ImGui::Button("Show Information"))
+
+            if (editor->getGamePtr()->getCurrPage() != nullptr)
             {
-                page_info = true;
+                Core::Page *page = editor->getGamePtr()->getCurrPage();
+                if (typeid(*page) == typeid(Core::MenuPage))
+                {
+                    ImGui::Text("Page Type: Menu");
+                }
+                else if (typeid(*page) == typeid(Core::MapPage))
+                {
+                    Core::MapPage *mapPage = static_cast<Core::MapPage *>(page);
+                    ImGui::Text("Page Type: Map");
+                    std::string mapLabel = "";
+                    if (mapPage->getMap() != nullptr)
+                    {
+                        mapLabel = mapPage->getMap()->getName();
+                    }
+                    if (ImGui::BeginCombo("##mapSelect", mapLabel.c_str()))
+                    {
+                        auto &mapList = editor->getGamePtr()->getMapList();
+                        for (int i = 0; i < mapList.size(); i++)
+                        {
+                            bool selected = (i == mapPage->getMapIndex());
+                            if (ImGui::Selectable(mapList[i]->getName().c_str(), selected))
+                            {
+                                mapPage->setMapIndex(i);
+                            }
+                        }
+                        ImGui::EndCombo();
+                    }
+                }
+                else
+                {
+                    ImGui::Text("Page Type: Page");
+                }
             }
         }
 
-        if (page_info)
+        ImGui::InputInt("page id", &page_id);
+        if (ImGui::Button("update page id"))
         {
-            ImGui::OpenPopup("Page Information");
-            page_info = false;
-        }
-
-        // Page information popup
-        if (ImGui::BeginPopup("Page Information"))
-        {
-            auto& pList = game->getPageList();
-            ImGui::Text("Page Name: %s", editor->getCurrentComponentList()[CUR_PAGE].c_str());
+            auto pList = editor->getGamePtr()->getPageList();
             for (int i = 0; i < pList.size(); i++)
             {
                 if (pList[i]->getName() == editor->getCurrentComponentList()[CUR_PAGE])
                 {
-                    if (!strcmp(typeid(*pList[i]).name(), "class Core::MenuPage"))
-                    {
-                        ImGui::Text("Page Type: Menu");
-                    }             
-                    else
-                    {
-                        ImGui::Text("Page Type: Page");
-                    }
+                    pList[i]->setID(page_id);
                 }
             }
-            ImGui::EndPopup();
         }
-
         ImGui::End();
     }
 }

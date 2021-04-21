@@ -1,4 +1,5 @@
 #include <vector>
+#include <unordered_map>
 #include <string>
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
@@ -20,6 +21,8 @@ namespace Core
         GameEnd = 20000,
 
     };
+    extern std::unordered_map<ScriptType, std::string> scriptTypeStringList;
+    std::string getScriptTypeStringByScriptType(ScriptType type);
 
     //* ----------------- ANCHOR SCRIPT TYPES ---------------- *//
 
@@ -69,7 +72,7 @@ namespace Core
         int _targetPage;
 
     public:
-        int getTargetPage();
+        int getTargetPageId();
         void setTargetPage(int targetPage);
         std::vector<int> getTargetEntityList();
         void setTargetEntityList(std::vector<int> targetEntityList);
@@ -107,6 +110,8 @@ namespace Core
         ScriptType _scriptType;
         std::string _scriptName;
         ScriptUnion _script;
+        // for now, every thing only run once
+        int life;
 
     public:
         std::string getScriptTypeString();
@@ -133,7 +138,7 @@ namespace Core
         /// \param ... scriptId, scriptName, other variables. List of types:
         /// \param Custom std::vector<int> signal, std::vector<int>
         ///
-        void updateScript(ScriptType scriptType, ...);
+        void updateScript(ScriptType scriptType, int id, std::string name...);
 
         /// \brief Construct a new Script object
         /// *For editor, used in Game::createScript()

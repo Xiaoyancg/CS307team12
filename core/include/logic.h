@@ -22,12 +22,16 @@ namespace Core
     private:
         SDL_Keycode _key;
 
-        /// \brief SDL_PRESSED or SDL_RELEASED
+        /// \brief SDL_KEYDOWN or SDL_KEYUP
         ///
         Uint32 _keyType;
 
     public:
         bool check(SignalKey keySignal);
+        SDL_Keycode getKey();
+        void setKey(SDL_Keycode);
+        Uint32 getKeyType();
+        void setKeyType(Uint32);
         LogicKey();
         LogicKey(SDL_Keycode key, Uint32 keyType);
         ~LogicKey();
@@ -58,12 +62,15 @@ namespace Core
         LogicUnion _logic;
 
     public:
+        std::string getSignalTypeString();
+        std::string getScriptTypeString();
+
         void setLogicId(int logicId);
         int getLogicId();
         void setSignalType(SignalType signalType);
         SignalType getSignalType();
         void setScriptType(ScriptType scriptType);
-        ScriptType getScritType();
+        ScriptType getScriptType();
         void setLogicName(std::string logicName);
         std::string getLogicName();
         void setTargetScriptList(std::vector<int> targetScriptList);
@@ -74,15 +81,17 @@ namespace Core
         /// \brief update all information of a logic
         /// *For editor, bindint to the button "update" in logic editor
         ///
-        /// \param signalType
+        /// \param signalType, scriptType, id, name, targetScriptList
         /// \param ...
-        void updateLogic(SignalType signalType, ...);
+        void updateLogic(SignalType signalType, ScriptType scriptType, int id, std::string name, std::vector<int> targetList, ...);
 
         /// \brief Parse function
         ///
         /// \param root
         /// \return Logic
         static Logic parse(nlohmann::json root);
+        static SignalType getSignalTypeFromString(std::string s);
+        static ScriptType getScriptTypeFromString(std::string);
 
         /// \brief Construct a new default Logic object and add it to list
         /// *For editor, used in Game::createLogic().

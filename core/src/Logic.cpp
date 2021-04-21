@@ -16,6 +16,22 @@ namespace Core
     {
         return keySignal.getKey() == _key && keySignal.getKeyType() == _keyType;
     }
+    SDL_Keycode LogicKey::getKey()
+    {
+        return _key;
+    }
+    void LogicKey::setKey(SDL_Keycode key)
+    {
+        _key = key;
+    }
+    Uint32 LogicKey::getKeyType()
+    {
+        return _keyType;
+    }
+    void LogicKey::setKeyType(Uint32 keyType)
+    {
+        _keyType = keyType;
+    }
     LogicKey::LogicKey() : LogicKey(SDLK_SPACE, SDL_PRESSED) {}
     LogicKey::LogicKey(SDL_Keycode key, Uint32 keyType)
         : _key(key), _keyType(keyType) {}
@@ -60,7 +76,7 @@ namespace Core
     {
         _scriptType = scriptType;
     }
-    ScriptType Logic::getScritType()
+    ScriptType Logic::getScriptType()
     {
         return _scriptType;
     }
@@ -88,16 +104,44 @@ namespace Core
     {
         return _logic;
     }
-
-    void Logic::updateLogic(SignalType signalType, ...)
+    std::string Logic::getSignalTypeString()
     {
-        std::va_list args;
-        va_start(args, signalType);
+        switch (_signalType)
+        {
+        case SignalType::Custom:
+            return std::string("Custom");
+        case SignalType::Key:
+            return std::string("Key");
+        default:
+            return std::string();
+        }
+    }
+    std::string Logic::getScriptTypeString()
+    {
+        switch (_scriptType)
+        {
+        case ScriptType::Custom:
+            return std::string("Custom");
+            break;
+        case ScriptType::MoveConstantly:
+            return std::string("MoveConstantly");
+            break;
+
+        default:
+            return std::string();
+            break;
+        }
+    }
+
+    void Logic::updateLogic(SignalType signalType, ScriptType scriptType, int id, std::string name, std::vector<int> targetList, ...)
+    {
         setSignalType(signalType);
-        setLogicId(va_arg(args, int));
-        setScriptType(va_arg(args, ScriptType));
-        setLogicName(va_arg(args, std::string));
-        setTargetScriptList(va_arg(args, std::vector<int>));
+        setScriptType(scriptType);
+        setLogicId(id);
+        setLogicName(name);
+        setTargetScriptList(targetList);
+        std::va_list args;
+        va_start(args, targetList);
         switch (signalType)
         {
         case SignalType::Custom:
@@ -106,12 +150,14 @@ namespace Core
                     LogicCustom()));
             break;
         case SignalType::Key:
+        {
+            SDL_Keycode keycode = va_arg(args, SDL_Keycode);
+            Uint32 keyType = va_arg(args, Uint32);
             setLogic(
                 LogicUnion(
-                    LogicKey(
-                        va_arg(args, SDL_Keycode),
-                        va_arg(args, Uint32))));
+                    LogicKey(keycode, keyType)));
             break;
+        }
 
         default:
             break;
@@ -120,10 +166,59 @@ namespace Core
     }
     Logic Logic::parse(nlohmann::json root)
     {
-        //TODO
-        return Logic();
+        Logic l;
+        l.setLogicName(root.at("LogicName").get<std::string>());
+        l.setLogicId(root.at("logicId").get<int>());
+        l.setSignalType(
+            getSignalTypeFromString(root.at("SignalType").get<std::string>()));
+        l.setScriptType(
+            getScriptTypeFromString(root.at("ScriptType").get<std::string>()));
+        l.setTargetScriptList(root.at("targetScriptList").get<std::vector<int>>());
+        nlohmann::json logicJ = root.at("logic").get<nlohmann::json>();
+        switch (l.getSignalType())
+        {
+        case SignalType::Custom:
+            l.setLogic(LogicUnion(LogicCustom()));
+            break;
+        case SignalType::Key:
+        {
+            std::string keyTypeString = logicJ.at("KeyType").get<std::string>();
+            l.setLogic(LogicUnion(LogicKey(
+                logicJ.at("key").get<Sint32>(),
+                (Uint32)(keyTypeString == std::string("Released") ? 0 : 1))));
+            break;
+        }
+        default:
+            break;
+        }
+        return l;
     }
 
+    SignalType Logic::getSignalTypeFromString(std::string s)
+    {
+        if (s.compare("Custom") == 0)
+        {
+            return SignalType::Custom;
+        }
+        else if (s.compare("Key") == 0)
+        {
+            return SignalType::Key;
+        }
+        else
+            return SignalType::Custom;
+    }
+
+    ScriptType Logic::getScriptTypeFromString(std::string typeString)
+    {
+        if (typeString.compare("Custom") == 0)
+        {
+            return ScriptType::Custom;
+        }
+        else if (typeString.compare("MoveConstantly") == 0)
+        {
+            return ScriptType::MoveConstantly;
+        }
+    }
     Logic::Logic() : Logic(-1, SignalType::Custom, ScriptType::Custom,
                            std::string(), std::vector<int>(), LogicUnion()) {}
     Logic::Logic(int logicId, SignalType signalType, ScriptType scriptType,

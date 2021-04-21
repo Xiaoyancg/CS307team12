@@ -123,7 +123,7 @@ void Editor::createWindows()
     windowList[LOGICEDITOR] = new LogicEditor(this, default_size);
     windowList[STYLEEDITOR] = new StyleEditor(this, default_size);
     windowList[SIGNALEDITOR] = new SignalEditor(this, default_size);
-    windowList[STATEEDITOR] = new StateEditor(this, default_size);
+    windowList[STATUSEDITOR] = new StatusEditor(this, default_size);
 
     windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
@@ -163,7 +163,7 @@ void Editor::processInput()
             }
             if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
             {
-                game->handleWindowEvent(evt);
+                game->keyEventHandler(evt.key);
             }
         }
         if (evt.type == SDL_KEYUP)
@@ -187,6 +187,10 @@ void Editor::processInput()
                     
             }
         }*/
+    }
+    if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
+    {
+        game->logicLoop();
     }
 } // processInput()
 
@@ -333,7 +337,8 @@ void Editor::createGame()
 {
     //createTexCBO();
     //createMapTexCBO();
-    if (game != nullptr) {
+    if (game != nullptr)
+    {
         freeGame();
     }
     game = new Core::Game();
@@ -399,7 +404,8 @@ void Editor::runGame()
     {
         savedGame = game;
         game = new Core::Game(*game);
-        ((GameWindow*) windowList[GAMEVIEW])->updateLastTime();
+
+        ((GameWindow *)windowList[GAMEVIEW])->updateLastTime();
         gameRunning = true;
     }
 }

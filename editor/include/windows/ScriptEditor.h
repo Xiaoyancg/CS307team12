@@ -14,16 +14,21 @@ public:
 
 private:
     void customWidgets();
+    void MoveConstantlyWidgets();
     void getInfo(Core::Script *);
-    void listTreeNode(std::string, int);
+    void customTargetListTreeNode(std::string, int);
     int currScriptIdx = -1;
     Core::Script *currScript_ptr = nullptr;
-    char scriptName[128];
     bool scriptInfo = false;
-    // info
+
+    //* ------------------------ INFO ------------------------ *//
+    char scriptName[128];
     int scriptId = -1;
     int type = 0;
-    const char *typeNameList[1] = {"Custom"}; //, "MoveConstantly"};
+    const char *typeNameList[2] = {"Custom", "MoveConstantly"};
+
+    //* ----------------------- CUSTOM ----------------------- *//
+
     std::vector<int> addTargetSignalList;
     int newAddSignal = 0;
     std::vector<int> addTargetLogicList;
@@ -36,4 +41,10 @@ private:
     int newRemoveLogic = 0;
     std::vector<int> removeTargetScriptList;
     int newRemoveScript = 0;
+
+    //* ------------------- MOVE CONSTANTLY ------------------ *//
+    int x = 0, y = 0;
+    int targetPageId = -1;
+    std::vector<int> targetEntityList;
+    int newEntity = 0;
 };

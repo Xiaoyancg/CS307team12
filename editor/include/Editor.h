@@ -32,7 +32,7 @@ enum SelectionEnum
 	LOGICEDITOR,
 	STYLEEDITOR,
 	SIGNALEDITOR,
-	STATEEDITOR,
+	STATUSEDITOR,
 
 	// LEAVE THIS AT THE END OF THE LIST OR ELSE THIS IS A THREAT
 	SELECT_COUNT,
@@ -48,7 +48,7 @@ enum CurrentComponent
 	CUR_SPRITE,
 	CUR_SPRITESHEET,
 	CUR_SIGNAL,
-	CUR_STATE,
+	CUR_STATUS,
 	COMP_COUNT,
 };
 
@@ -165,7 +165,6 @@ private:
 
 	// currently selected game component
 	std::vector<std::string> currentComponent;
-	//std::string currentComponent = "No Component Selected";
 
 	ImVec2 default_size = ImVec2(600, 400);
 };

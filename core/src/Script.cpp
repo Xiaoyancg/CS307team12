@@ -5,6 +5,16 @@
 namespace Core
 {
 
+    static std::unordered_map<ScriptType, std::string> scriptTypeStringList = {
+        {ScriptType::Custom, "Custom"},
+        {ScriptType::MoveConstantly, "MoveConstantly"},
+        {ScriptType::SwitchPage, "SwitchPage"},
+        {ScriptType::GameEnd, "GameEnd"}};
+    std::string getScriptTypeStringByScriptType(ScriptType type)
+    {
+        // no error should be found here
+        return scriptTypeStringList.at(type);
+    }
     //* ----------------------- CUSTOM ----------------------- *//
 
     std::vector<int> ScriptCustom::getAddTargetSignalList()
@@ -77,7 +87,7 @@ namespace Core
           _removeTargetScriptList(removeTargetScriptList) {}
     //* ------------------- MOVE CONSTANTLY ------------------ *//
 
-    int ScriptMoveConstantly::getTargetPage() { return _targetPage; }
+    int ScriptMoveConstantly::getTargetPageId() { return _targetPage; }
     void ScriptMoveConstantly::setTargetPage(int targetPage)
     {
         _targetPage = targetPage;
@@ -136,8 +146,12 @@ namespace Core
         case ScriptType::Custom:
             return std::string("Custom");
             break;
+        case ScriptType::MoveConstantly:
+            return std::string("MoveConstantly");
+            break;
 
         default:
+            return std::string();
             break;
         }
     }
@@ -176,7 +190,16 @@ namespace Core
                 script.at("removeTargetLogicList").get<std::vector<int>>(),
                 script.at("removeTargetScriptList").get<std::vector<int>>())));
             break;
-
+        case ScriptType::MoveConstantly:
+        {
+            std::vector tv = (script.at("movement").get<std::vector<int>>());
+            glm::vec2 movement = glm::vec2(tv.at(0), tv.at(1));
+            s.setScript(ScriptUnion(ScriptMoveConstantly(
+                script.at("targetPageId"),
+                script.at("targetEntityList"),
+                movement)));
+            break;
+        }
         default:
             break;
         }
@@ -189,35 +212,48 @@ namespace Core
         {
             return ScriptType::Custom;
         }
+        else if (typeString.compare("MoveConstantly") == 0)
+        {
+            return ScriptType::MoveConstantly;
+        }
     }
-    void Script::updateScript(ScriptType scriptType, ...)
+    void Script::updateScript(ScriptType scriptType, int id, std::string name...)
     {
         std::va_list args;
-        va_start(args, scriptType);
-        setScriptId(va_arg(args, int));
         setScriptType(scriptType);
-        setScriptName(va_arg(args, std::string));
+        setScriptId(id);
+        setScriptName(name);
+        va_start(args, name);
         switch (scriptType)
         {
         case ScriptType::Custom:
+        {
+            std::vector<int> addsig = va_arg(args, std::vector<int>);
+            std::vector<int> addlog = va_arg(args, std::vector<int>);
+            std::vector<int> addscr = va_arg(args, std::vector<int>);
+            std::vector<int> remsig = va_arg(args, std::vector<int>);
+            std::vector<int> remlog = va_arg(args, std::vector<int>);
+            std::vector<int> remscr = va_arg(args, std::vector<int>);
             setScript(
                 ScriptUnion(
-                    ScriptCustom(
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>))));
+                    ScriptCustom(addsig, addlog, addscr,
+                                 remsig, remlog, remscr)));
             break;
+        }
         case ScriptType::MoveConstantly:
+        {
+            int pageId = va_arg(args, int);
+            std::vector<int> entityList = va_arg(args, std::vector<int>);
+            glm::vec2 movement = va_arg(args, glm::vec2);
             setScript(
                 ScriptUnion(
                     ScriptMoveConstantly(
-                        va_arg(args, int),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, glm::vec2))));
+                        pageId,
+                        entityList,
+                        movement)));
+
             break;
+        }
         default:
             break;
         }

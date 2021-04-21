@@ -1,15 +1,19 @@
 #include "windows/StyleEditor.h"
 #include "string.h"
 #include "UndoRedo.h"
+#include "../../core/src/game.cpp"
 
 extern void HelpMarker(const char*);
+extern GLfloat clear_color[4];
 
 bool SaveStyle(const char* filename, const ImGuiStyle& style);
 bool LoadStyle(const char* filename, ImGuiStyle& style);
 bool ResetStyle(int styleEnum, ImGuiStyle& style);
 static const char* DefaultStyleNames[ImGuiStyle_Count] = { "DefaultClassic","DefaultDark","DefaultLight","Gray","Light","BlackCodz01","DarkCodz01","GrayCodz01","Purple","Cherry","DarkOpaque","Soft","EdinBlack","EdinWhite","Maya","LightGreen","Design","Dracula","Greenish","C64","PhotoStore","CorporateGreyFlat","CorporateGreyFramed","VisualDark","SteamingLife","SoftLife","GoldenBlack","Windowed","OverShiftedBlack","AieKickGreenBlue","AieKickRedDark","DarkOpaqueInverse","GrayCodz01Inverse","PurpleInverse","LightGreenInverse","DesignInverse","Custom" };
 const char** GetDefaultStyleNames();
+void ConvertToGlFloat(ImVec4);
 static int style_idx = 1;
+ImVec4 temp;
 
 void StyleEditor::draw() {
 	if (visible)
@@ -105,16 +109,29 @@ void StyleEditor::draw() {
 
                     ImGui::BeginChild("##colors", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NavFlattened);
                     ImGui::PushItemWidth(-160);
-                    for (int i = 0; i < ImGuiCol_COUNT; i++)
+                    for (int i = 0; i <= ImGuiCol_COUNT; i++)
                     {
-                        const char* name = ImGui::GetStyleColorName(i);
-                        if (!filter.PassFilter(name))
-                            continue;
-                        ImGui::PushID(i);
-                        ImGui::ColorEdit4("##color", (float*)&style.Colors[i], ImGuiColorEditFlags_AlphaBar | alpha_flags);
-                        ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
-                        ImGui::TextUnformatted(name);
-                        ImGui::PopID();
+                        if (i == ImGuiCol_COUNT)
+                        {
+                            const char* name = "GameViewBg";
+                            if (!filter.PassFilter(name))
+                                continue;
+                            ImGui::ColorEdit4("##color", (float*)&temp, ImGuiColorEditFlags_AlphaBar | alpha_flags);
+                            ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+                            ImGui::TextUnformatted(name);
+                            ConvertToGlFloat(temp);
+                        }
+                        else
+                        {
+                            const char* name = ImGui::GetStyleColorName(i);
+                            if (!filter.PassFilter(name))
+                                continue;
+                            ImGui::PushID(i);
+                            ImGui::ColorEdit4("##color", (float*)&style.Colors[i], ImGuiColorEditFlags_AlphaBar | alpha_flags);
+                            ImGui::SameLine(0.0f, style.ItemInnerSpacing.x);
+                            ImGui::TextUnformatted(name);
+                            ImGui::PopID();
+                        }
                     }
                     ImGui::PopItemWidth();
                     ImGui::EndChild();
@@ -195,11 +212,19 @@ bool SaveStyle(const char* filename, const ImGuiStyle& style)
     fprintf(f, "[CurveTessellationTol]\n%1.3f\n", style.CurveTessellationTol);
     fprintf(f, "[CircleTessellationMaxError]\n%1.3f\n", style.CircleTessellationMaxError);
 
-    for (size_t i = 0; i != ImGuiCol_COUNT; i++)
+    for (size_t i = 0; i <= ImGuiCol_COUNT; i++)
     {
-        const ImVec4& c = style.Colors[i];
-        fprintf(f, "[%s]\n", ImGui::GetStyleColorName((ImGuiCol) i));//ImGuiColNames[i]);
-        fprintf(f, "%1.3f %1.3f %1.3f %1.3f\n", c.x, c.y, c.z, c.w);
+        if (i == ImGuiCol_COUNT)
+        {
+            fprintf(f, "[%s]\n", "GameViewBg");
+            fprintf(f, "%1.3f %1.3f %1.3f %1.3f\n", temp.x, temp.y, temp.z, temp.w);
+        }
+        else
+        {
+            const ImVec4& c = style.Colors[i];
+            fprintf(f, "[%s]\n", ImGui::GetStyleColorName((ImGuiCol)i));//ImGuiColNames[i]);
+            fprintf(f, "%1.3f %1.3f %1.3f %1.3f\n", c.x, c.y, c.z, c.w);
+        }
     }
 
     fprintf(f, "\n");
@@ -274,6 +299,8 @@ bool LoadStyle(const char* filename, ImGuiStyle& style)
                     strcmp(name, "TabMinWidthForCloseButton") == 0) {
                     npf = 1;pf[0] = &style.TabMinWidthForCloseButton;
                 } else if (strcmp(name, "ColorButtonPosition") == 0) { npi = 1;pi[0] = &style.ColorButtonPosition; } else if (strcmp(name, "SelectableTextAlign") == 0) { npf = 2;pf[0] = &style.SelectableTextAlign.x;pf[1] = &style.SelectableTextAlign.y; }
+                else if (strcmp(name, "GameViewBg") == 0) { npf = 4;pf[0] = &clear_color[0];pf[1] = &clear_color[1];pf[2] = &clear_color[2];pf[3] = &clear_color[3]; }
+                
                 // all the colors here
                 else {
                     for (int j = 0;j < ImGuiCol_COUNT;j++) {
@@ -429,13 +456,23 @@ bool LoadStyle(const char* filename, ImGuiStyle& style)
 
 void ChangeStyleColors(ImGuiStyle& style, float satThresholdForInvertingLuminance, float shiftHue) {
     if (satThresholdForInvertingLuminance >= 1.f && shiftHue == 0.f) return;
-    for (int i = 0; i < ImGuiCol_COUNT; i++) {
-        ImVec4& col = style.Colors[i];
-        float H, S, V;
-        ImGui::ColorConvertRGBtoHSV(col.x, col.y, col.z, H, S, V);
-        if (S <= satThresholdForInvertingLuminance) { V = 1.0f - V; }
-        if (shiftHue) { H += shiftHue;if (H > 1) H -= 1.f;else if (H < 0) H += 1.f; }
-        ImGui::ColorConvertHSVtoRGB(H, S, V, col.x, col.y, col.z);
+    for (int i = 0; i <= ImGuiCol_COUNT; i++) {
+        if (i == ImGuiCol_COUNT)
+        {
+            float H, S, V;
+            ImGui::ColorConvertRGBtoHSV(clear_color[0], clear_color[1], clear_color[2], H, S, V);
+            if (S <= satThresholdForInvertingLuminance) { V = 1.0f - V; }
+            if (shiftHue) { H += shiftHue;if (H > 1) H -= 1.f;else if (H < 0) H += 1.f; }
+            ImGui::ColorConvertHSVtoRGB(H, S, V, clear_color[0], clear_color[1], clear_color[2]);
+        } else
+        {
+            ImVec4& col = style.Colors[i];
+            float H, S, V;
+            ImGui::ColorConvertRGBtoHSV(col.x, col.y, col.z, H, S, V);
+            if (S <= satThresholdForInvertingLuminance) { V = 1.0f - V; }
+            if (shiftHue) { H += shiftHue;if (H > 1) H -= 1.f;else if (H < 0) H += 1.f; }
+            ImGui::ColorConvertHSVtoRGB(H, S, V, col.x, col.y, col.z);
+        }
     }
 }
 static inline void InvertStyleColors(ImGuiStyle& style) { ChangeStyleColors(style, .1f, 0.f); }
@@ -465,6 +502,14 @@ bool SelectStyleCombo(const char* label, int* selectedIndex, int maxNumItemsToDi
         ResetStyle(*selectedIndex, *styleToChange);
     }
     return changed;
+}
+
+void ConvertToGlFloat(ImVec4 vec) {
+    clear_color[0] = vec.x;
+    clear_color[1] = vec.y;
+    clear_color[2] = vec.z;
+    clear_color[3] = vec.w;
+    temp = vec;
 }
 
 bool ResetStyle(int styleEnum, ImGuiStyle& style) {
@@ -546,6 +591,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.00f, 0.00f, 0.66f, 0.34f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.67f, 0.58f, 0.00f, 1.00f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -617,6 +663,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.00f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.48f, 0.61f, 0.98f, 1.00f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.39f, 0.12f, 0.12f, 0.20f);
+        ConvertToGlFloat(ImVec4(0.61f, 0.60f, 0.26f, 1.00f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -689,10 +736,12 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.77f, 0.41f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.26f, 0.63f, 1.00f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.64f, 0.64f, 0.80f, 0.59f));
 
         if (styleEnum == ImGuiStyle_DarkOpaqueInverse) {
             InvertStyleColors(style);
             style.Colors[ImGuiCol_PopupBg] = ImVec4(0.99f, 0.96f, 1.00f, 1.00f);
+            ConvertToGlFloat(ImVec4(1.91f, 1.91f, 1.75f, 0.59f));
         }
 
         style.TabBorderSize = 0;
@@ -766,6 +815,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+        ConvertToGlFloat(ImVec4(0.00f, 0.00f, 0.00f, 0.21f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -820,6 +870,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.27f, 0.36f, 0.59f, 0.61f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.80f, 0.80f, 0.80f, 0.30f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -874,6 +925,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.37f, 0.22f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.46f, 0.61f, 1.00f, 0.61f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.75f, 0.75f, 0.75f, 1.00f));
 
 
         style.TabBorderSize = 0;
@@ -935,6 +987,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.32f, 0.52f, 0.65f, 1.00f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
+        ConvertToGlFloat(ImVec4(0.36f, 0.36f, 0.36f, 1.00f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -1001,6 +1054,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.71f, 0.72f, 0.73f, 0.57f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
         style.Colors[ImGuiCol_DragDropTarget] = ImVec4(0.16f, 0.16f, 0.17f, 0.95f);
+        ConvertToGlFloat(ImVec4(0.69f, 0.69f, 0.69f, 0.80f));
 
         if (styleEnum == ImGuiStyle_GrayCodz01Inverse) {
             InvertStyleColors(style);
@@ -1077,6 +1131,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.00f, 0.00f, 1.00f, 0.35f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.55f, 0.53f, 0.55f, 0.51f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -1154,10 +1209,11 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_TabActive] = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
         style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
         style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.19f, 0.19f, 0.19f, 1.00f);
-#       ifdef IMGUI_DOCKING_BRANCH     // incorrect definition... for now
+        ConvertToGlFloat(ImVec4(0.31f, 0.31f, 0.31f, 1.00f));
+#       ifdef IMGUI_HAS_DOCK
         style.Colors[ImGuiCol_DockingPreview] = ImVec4(0.38f, 0.48f, 0.60f, 1.00f);
         style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
-#       endif //IMGUI_DOCKING_BRANCH
+#       endif //IMGUI_HAS_DOCK
 
     }
                               break;
@@ -1214,9 +1270,11 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
         style.Colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
         style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+        ConvertToGlFloat(ImVec4(0.13f, 0.13f, 0.13f, 1.00f));
 
         if (styleEnum == ImGuiStyle_PurpleInverse) {
             InvertStyleColors(style);
+            ConvertToGlFloat(ImVec4(2.42f, 2.42f, 2.42f, 1.00f));
             //style.Colors[ImGuiCol_PopupBg]	     = ImVec4(0.99f, 0.96f, 1.00f, 1.00f);
         }
 
@@ -1296,6 +1354,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         // [...]
         style.Colors[ImGuiCol_ModalWindowDimBg] = CHERRY_BG(0.73f);
         style.Colors[ImGuiCol_Border] = ImVec4(0.539f, 0.479f, 0.255f, 0.162f);
+        ConvertToGlFloat(ImVec4(0.09f, 0.15f, 0.16f, 1.00f));
 
 #       undef CHERRY_HI
 #       undef CHERRY_MED
@@ -1375,9 +1434,11 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_DragDropTarget] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
         style.Colors[ImGuiCol_NavHighlight] = style.Colors[ImGuiCol_HeaderHovered];
         style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
+        ConvertToGlFloat(ImVec4(0.90f, 0.90f, 0.90f, 0.30f));
 
         if (styleEnum == ImGuiStyle_LightGreenInverse) {
             InvertStyleColors(style);
+            ConvertToGlFloat(ImVec4(1.65f, 1.65f, 1.65f, 0.30f));
             //style.Colors[ImGuiCol_PopupBg]	     = ImVec4(0.99f, 0.96f, 1.00f, 1.00f);
         }
 
@@ -1461,10 +1522,12 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_TitleBg] = ImVec4(0.94f, 0.94f, 0.94f, 1.00f);
         style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.94f, 0.94f, 0.94f, 0.20f);
         style.Colors[ImGuiCol_TitleBgActive] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+        ConvertToGlFloat(ImVec4(0.69f, 0.69f, 0.69f, 1.00f));
 
 
         if (styleEnum == ImGuiStyle_DesignInverse) {
             InvertStyleColors(style);
+            ConvertToGlFloat(ImVec4(1.86f, 1.86f, 1.86f, 1.00f));
             //style.Colors[ImGuiCol_PopupBg]	     = ImVec4(0.99f, 0.96f, 1.00f, 1.00f);
         }
         style.TabBorderSize = 0;
@@ -1519,6 +1582,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.18431373f, 0.39607847f, 0.79215693f, 0.90f);
+        ConvertToGlFloat(ImVec4(0.21960786f, 0.30980393f, 0.41960788f, 0.51f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -1550,6 +1614,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.77f, 0.22f, 0.62f, 1.00f);
         style.Colors[ImGuiCol_SeparatorHovered] = ImVec4(0.77f, 0.22f, 0.62f, 0.78f);
         style.Colors[ImGuiCol_SeparatorActive] = ImVec4(0.32f, 0.60f, 0.35f, 1.00f);
+        ConvertToGlFloat(ImVec4(0.02f, 0.80f, 0.58f, 0.40f));
 
         style.TabBorderSize = 0;
         style.TabRounding = (int)(style.WindowRounding + style.ChildRounding) / 2.0f;
@@ -1639,6 +1704,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_TabActive] = style.Colors[ImGuiCol_FrameBgHovered];
         style.Colors[ImGuiCol_TabUnfocused] = style.Colors[ImGuiCol_TitleBg];
         style.Colors[ImGuiCol_TabUnfocusedActive] = style.Colors[ImGuiCol_TitleBgActive];
+        ConvertToGlFloat(ImVec4(0, 0, 0, 0));
 
         style.TabBorderSize = style.TabRounding = 0;
     }
@@ -1705,10 +1771,12 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.000f, 0.391f, 0.000f, 1.000f);
         style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.000f, 0.000f, 0.000f, 0.586f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.000f, 0.000f, 0.000f, 0.586f);
+        ConvertToGlFloat(ImVec4(0.277f, 0.277f, 0.277f, 1.000f));
 
-        // I guess these two are only available in the Docking Branch
-        //style.Colors[ImGuiCol_DockingPreview]         = ImVec4(1.000f, 0.391f, 0.000f, 0.781f);
-        //style.Colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.180f, 0.180f, 0.180f, 1.000f);
+#       ifdef IMGUI_HAS_DOCK
+        style.Colors[ImGuiCol_DockingPreview]         = ImVec4(1.000f, 0.391f, 0.000f, 0.781f);
+        style.Colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.180f, 0.180f, 0.180f, 1.000f);
+#       endif //IMGUI_HAS_DOCK
 
     }
                               break;
@@ -1784,6 +1852,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.Colors[ImGuiCol_TabActive] = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
         style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
         style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.33f, 0.33f, 0.33f, 1.00f);
+        ConvertToGlFloat(ImVec4(0.41f, 0.41f, 0.41f, 1.00f));
 
 
 #       ifdef IMGUI_HAS_DOCK
@@ -1855,6 +1924,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
         style.WindowMenuButtonPosition = ImGuiDir_Right;
+        ConvertToGlFloat(ImVec4(0.41f, 0.41f, 0.41f, 0.75f));
 
 #       ifdef IMGUI_HAS_DOCK
         colors[ImGuiCol_DockingPreview] = ImVec4(0.26f, 0.59f, 0.98f, 0.50f);
@@ -1914,6 +1984,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.28f, 0.32f, 0.24f, 1.00f));
 
         ImGuiStyle& style = ImGui::GetStyle();
         style.FrameBorderSize = 1.0f;
@@ -1983,6 +2054,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.90f, 0.90f, 0.90f, 0.70f);
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.71f, 0.71f, 0.71f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.68f, 0.68f, 0.68f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.51f, 0.68f, 0.55f, 1.00f));
 
         ImGuiStyle& style = ImGui::GetStyle();
         style.FrameBorderSize = 1.0f;
@@ -2052,6 +2124,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.21f, 0.21f, 0.21f, 1.00f));
 
         ImGuiStyle& style = ImGui::GetStyle();
         style.FramePadding = ImVec2(4, 2);
@@ -2072,8 +2145,8 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         style.DisplaySafeAreaPadding = ImVec2(4, 4);
 
 #       ifdef IMGUI_HAS_DOCK
-        //colors[ImGuiCol_DockingPreview]         = ImVec4(0.59f, 0.54f, 0.18f, 1.00f);
-        //colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+        colors[ImGuiCol_DockingPreview]         = ImVec4(0.59f, 0.54f, 0.18f, 1.00f);
+        colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
 #       endif
     }
                                break;
@@ -2137,6 +2210,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.70f, 0.70f, 0.70f, 0.70f);
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.69f, 0.69f, 0.69f, 0.80f));
 
     }
                             break;
@@ -2194,6 +2268,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
         style.GrabRounding = style.FrameRounding = 2.3f;
+        ConvertToGlFloat(ImVec4(0.31f, 0.31f, 0.31f, 1.00f));
 
 #       ifdef IMGUI_HAS_DOCK
         colors[ImGuiCol_DockingPreview] = ImVec4(0.26f, 0.59f, 0.98f, 0.70f);
@@ -2267,6 +2342,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.31f, 0.31f, 0.31f, 1.00f));
 
 #       ifdef IMGUI_HAS_DOCK
         colors[ImGuiCol_DockingPreview] = ImVec4(0.13f, 0.75f, 0.55f, 0.80f);
@@ -2340,6 +2416,7 @@ bool ResetStyle(int styleEnum, ImGuiStyle& style) {
         colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
         colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
         colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+        ConvertToGlFloat(ImVec4(0.31f, 0.31f, 0.31f, 1.00f));
 
 #       ifdef IMGUI_HAS_DOCK
         colors[ImGuiCol_DockingPreview] = ImVec4(0.47f, 0.47f, 0.47f, 0.47f);

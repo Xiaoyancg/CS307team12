@@ -16,7 +16,7 @@ namespace Core
         // 'scale' is the (width, height) of the Entity in pixels
         // 'rotation' is the rotation of the entity
         // spriteID is unimplemented, but will reference a specific loaded sprite
-        Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
+        Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID, bool invisible);
         Entity(std::string);
         explicit Entity(const Entity &other);
 
@@ -24,14 +24,13 @@ namespace Core
         // This will set 'mCoords'
         void calculateCoords(glm::vec2 location, glm::vec2 scale);
 
-
         void update(float dt);
         // Render the given entity on the current context
         // Assumes the shaders have already been setup
         void render();
 
-        static Entity* fromJSON(nlohmann::json& root);
-        void parse(nlohmann::json& root);
+        static Entity *fromJSON(nlohmann::json &root);
+        void parse(nlohmann::json &root);
         nlohmann::json serialize();
 
         // =========================
@@ -40,7 +39,7 @@ namespace Core
         // =========================
         // ATTRIBUTES OPERATION
         std::string getName();
-        void setName(std::string);  // For variable name (setName(x);)
+        void setName(std::string); // For variable name (setName(x);)
         // =========================
         // PROPERTY OPERATION
 
@@ -62,8 +61,14 @@ namespace Core
         void setSpriteID(int);
         int getSpriteID();
 
-        bool isInvisibleEntity();
-        void setInvisibleEntity(bool value);
+        bool isInvisible()
+        {
+            return mIsInvisible;
+        }
+        void setInvisible(bool value)
+        {
+            mIsInvisible = value;
+        }
 
         bool isControlledEntity();
         void setControlledEntity(bool value);
@@ -86,11 +91,13 @@ namespace Core
         int getEntityId();
         void setEntityId(int entityId);
 
-        Page* getParentPage() {
+        Page *getParentPage()
+        {
             return mParentPage;
         }
 
-        void setParentPage(Page* page) {
+        void setParentPage(Page *page)
+        {
             mParentPage = page;
         }
         void setInScriptId(int);
@@ -110,18 +117,16 @@ namespace Core
         // This isn't used yet though, I'm just adding it for later
         int mSpriteID = -1;
 
-
         int _entityId = -1;
 
         bool mIsInvisible = false;
         bool mControlledEntity = false;
 
-        Page* mParentPage = nullptr;
+        Page *mParentPage = nullptr;
 
         /// \brief when the entity enter, game should run this (custom) script
         ///
         int mInScriptId = -1;
         int mOutScriptId = -1;
-
     };
 }

@@ -52,7 +52,7 @@ namespace Core
         ///
         SDL_Keycode _key;
 
-        /// \brief key type ( SDL_PRESSED or SDL_RELEASED )
+        /// \brief key type ( SDL_KEYDOWN or SDL_KEYUP )
         ///
         Uint32 _keyType;
 
@@ -96,7 +96,7 @@ namespace Core
         std::string _signalName;
 
     public:
-        std::string getTypeString();
+        std::string getSignalTypeString();
         int getSignalId();
         void setSignalId(int signalId);
         SignalType getSignalType();
@@ -111,15 +111,18 @@ namespace Core
         /// \param root
         /// \return Signal
         static Signal parse(nlohmann::json root);
+        static SignalType getSignalTypeFromString(std::string);
 
         /// \brief update all information of Signal
         /// *For editor, binding with the update button in signal editor
         ///
         /// \param signalType
-        /// \param ... id, name, rest are signal variable. List of different type:
+        /// \param id
+        /// \param name
+        /// \param ... rest are signal variable. List of different type:
         /// \param Custom: std::vector<int>
         ///
-        void updateSignal(SignalType signalType, ...);
+        void updateSignal(SignalType signalType, int id, std::string name, ...);
 
         /// \brief Construct a new Signal object by default.
         /// Id is -1, type is custom, name is "".

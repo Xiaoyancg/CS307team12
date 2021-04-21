@@ -15,9 +15,10 @@
 #include <TestCore.h>
 #endif // __TEST_CORE
 
+static GLfloat clear_color[4];
+
 namespace Core
 {
-    const int Game::FPS = 60;
     int Game::width = 1280;
     int Game::height = 720;
 
@@ -42,6 +43,7 @@ namespace Core
                                     mCamera(new Camera(*other.mCamera)),
                                     currPageIdx(other.currPageIdx),
                                     pageList(other.pageList.size()),
+                                    mapList(other.mapList.size()),
                                     inDisplayList(other.inDisplayList),
                                     window(other.window),
                                     gl_context(other.gl_context),
@@ -59,6 +61,12 @@ namespace Core
         {
             mapList[i] = new Map(*other.mapList[i]);
         }
+        // solved bug: previously, pagelist Pointer points to the pageList in savedGame
+        _logicManager.setPageList(&pageList);
+        updatePageLogic(getCurrPage());
+    }
+    Game::Game() : Game("Untitled Game")
+    {
     }
 
     Game::~Game()
@@ -153,6 +161,7 @@ namespace Core
     // MEMBER OPERATION
     Page *Game::addPage(Page *p)
     {
+        p->setGame(this);
         this->pageList.push_back(p);
         return p;
     }
@@ -168,6 +177,10 @@ namespace Core
         {
             if (*ptr == dp)
             {
+                if (ptr - pageList.begin() == currPageIdx)
+                {
+                    currPageIdx = -1;
+                }
                 pageList.erase(ptr);
                 delete (dp);
                 dp = nullptr;
@@ -184,6 +197,10 @@ namespace Core
         {
             if (!(*ptr)->getName().compare(s))
             {
+                if (ptr - pageList.begin() == currPageIdx)
+                {
+                    currPageIdx = -1;
+                }
                 Page *p = *ptr;
                 pageList.erase(ptr);
                 delete (p);
@@ -201,7 +218,7 @@ namespace Core
 
     Map *Game::getMap(int idx)
     {
-        return mapList[idx];
+        return idx >= 0 && idx < mapList.size() ? mapList[idx] : nullptr;
     }
 
     void Game::deleteMap(std::string name)
@@ -210,7 +227,6 @@ namespace Core
         {
             if ((*iter)->getName() == name)
             {
-                mapList.erase(iter);
                 for (auto page : pageList)
                 {
                     Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
@@ -219,6 +235,7 @@ namespace Core
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
@@ -230,7 +247,6 @@ namespace Core
         {
             if ((*iter) == map)
             {
-                mapList.erase(iter);
                 for (auto page : pageList)
                 {
                     Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
@@ -239,6 +255,7 @@ namespace Core
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
@@ -385,14 +402,15 @@ namespace Core
         return _logicManager.createLogic();
     }
 
-    void Game::deleteLogic(int logicId)
-    {
-        _logicManager.deleteLogic(logicId);
-    }
     void Game::deleteSignal(int signalId)
     {
         _logicManager.deleteSignal(signalId);
     }
+    void Game::deleteLogic(int logicId)
+    {
+        _logicManager.deleteLogic(logicId);
+    }
+
     void Game::deleteScript(int scriptId)
     {
         _logicManager.deleteScript(scriptId);
@@ -403,8 +421,19 @@ namespace Core
         return _logicManager.getScriptList();
     }
 
+    std::vector<Logic> *Game::getLogicList()
+    {
+        return _logicManager.getLogicList();
+    }
+    std::vector<Signal> *Game::getSignalList()
+    {
+        return _logicManager.getSignalList();
+    }
     using json = nlohmann::json;
-    Game *Game::parse(json &root)
+
+    //* -------------------- JSON PARSING ------------------- *//
+
+    Game *Game::parse(nlohmann::json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
         this->setAuthor(root.at("Author").get<std::string>());
@@ -446,7 +475,6 @@ namespace Core
         {
             mGameSprites.parse(root.at("spriteList"));
         }
-        // TODO: Logic
         if (root.contains("logicManager"))
         {
             // TODO
@@ -484,22 +512,21 @@ namespace Core
         std::vector<json> spriteVector = mGameSprites.serialize();
         j["spriteList"] = spriteVector;
 
-        //TODO LogicManager
         json logicManagerjs;
         std::vector<json> signalVector;
-        // TODO for each signal ...
         for (auto s : *(_logicManager.getSignalList()))
         {
             nlohmann::json sj;
             sj["SignalName"] = s.getSignalName();
             sj["signalId"] = s.getSignalId();
-            sj["SignalType"] = s.getTypeString();
+            sj["SignalType"] = s.getSignalTypeString();
             nlohmann::json si;
             switch (s.getSignalType())
             {
             case SignalType::Custom:
                 si["targetLogicList"] = s.getSignal().customSignal.getTargetLogicList();
                 break;
+                // key signal is system signal, will not be stored
 
             default:
                 break;
@@ -510,10 +537,31 @@ namespace Core
         logicManagerjs["signalList"] = signalVector;
 
         std::vector<json> logicVector;
-        //TODO for each logic push to logic vector
+        for (auto l : *(_logicManager.getLogicList()))
+        {
+            nlohmann::json lj;
+            lj["LogicName"] = l.getLogicName();
+            lj["logicId"] = l.getLogicId();
+            lj["SignalType"] = l.getSignalTypeString();
+            lj["ScriptType"] = l.getScriptTypeString();
+            lj["targetScriptList"] = l.getTargetScriptList();
+            nlohmann::json loi;
+            switch (l.getSignalType())
+            {
+            case SignalType::Custom:
+                break;
+            case SignalType::Key:
+                loi["key"] = (Sint32)(l.getLogic().keyLogic.getKey());
+                loi["KeyType"] = (l.getLogic().keyLogic.getKeyType() == SDL_PRESSED) ? std::string("Press") : std::string("Release");
+            default:
+                break;
+            }
+            lj["logic"] = loi;
+            logicVector.push_back(lj);
+        }
+
         logicManagerjs["logicList"] = logicVector;
         std::vector<json> scriptVector;
-        //TODO for each script push to script Vector
         for (auto s : *(_logicManager.getScriptList()))
         {
             nlohmann::json scj;
@@ -537,7 +585,11 @@ namespace Core
                 sci["removeTargetScriptList"] =
                     s.getScript().scriptCustom.getRemoveTargetScriptList();
                 break;
-
+            case ScriptType::MoveConstantly:
+                sci["targetPageId"] = s.getScript().scriptMoveConstantly.getTargetPageId();
+                sci["targetEntityList"] = s.getScript().scriptMoveConstantly.getTargetEntityList();
+                sci["movement"] = {s.getScript().scriptMoveConstantly.getMovement().x,
+                                   s.getScript().scriptMoveConstantly.getMovement().y};
             default:
                 break;
             }
@@ -593,7 +645,7 @@ namespace Core
             in vec2 TexCoord;
 
             uniform sampler2D texture1;
-            uniform vec3 color;
+            uniform vec3 color ;
 
 		    out vec4 FragColor;
 
@@ -814,6 +866,13 @@ namespace Core
             }
         }
     }
+    void Game::updatePageLogic(Page *p)
+    {
+        for (auto e : p->getEntityList())
+        {
+            _logicManager.sendScript(e->getInScriptId());
+        }
+    }
     void Game::setCurrentPage(int idx)
     {
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
@@ -840,7 +899,7 @@ namespace Core
         GLfloat color[] = {1.0f, 1.0f, 1.0f};
         glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
 
-        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
+        glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (getCurrPage() != nullptr)
@@ -872,15 +931,30 @@ namespace Core
 
     /* -------------------------------- Game loop ------------------------------- */
 
+    void Game::keyEventHandler(SDL_KeyboardEvent keyEvent)
+    {
+        // Handle Keypresses
+        _logicManager.sendSignal(Signal(-100, SignalType::Key, "SDL_KEY",
+                                        SignalUnion(SignalKey(keyEvent))));
+    }
+    void Game::logicLoop()
+    {
+        _logicManager.checkCurrSignalList();
+        _logicManager.runCurrScriptList();
+    }
     void Game::mainLoop()
     {
-        auto lastTime = std::chrono::steady_clock::now();
+        //auto lastTime = std::chrono::steady_clock::now();
         SDL_Event event;
         bool close_window = false;
         while (!close_window)
         {
+            if (coreTimer.getPassedTimeFromStampInSec() < deltaCoreTime)
+            {
+                continue;
+            }
             // Input handling!
-            if (SDL_PollEvent(&event))
+            while (SDL_PollEvent(&event))
             {
                 switch (event.type)
                 {
@@ -899,24 +973,30 @@ namespace Core
 
                         // Set the new viewport size (this determines the size of the opengl -1 < pt < 1 coordinate system)
                         glViewport(0, 0, width, height);
-
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }
                     break;
                 case SDL_KEYDOWN:
-                    // Handle Keypresses
-                    handleWindowEvent(event);
+                    keyEventHandler(event.key);
+                    //handleWindowEvent(event);
+                    // TODO: Mouse
                 }
             }
-            auto now = std::chrono::steady_clock::now();
-            float dt = (float)(now - lastTime).count() / std::chrono::steady_clock::period::den;
-            lastTime = now;
-            update(dt);
+            logicLoop();
+            coreTimer.stamp();
+            // auto now = std::chrono::steady_clock::now();
+            //float dt = (float)(now - lastTime).count() / std::chrono::steady_clock::period::den;
+            //lastTime = now;
+            //update(dt);
+            if (FPSTimer.getPassedTimeFromStampInSec() < deltaFPSTime)
+            {
+                continue;
+            }
             render();
 
             // Show the entities by bringing showing the back buffer
             SDL_GL_SwapWindow(window);
-
+            FPSTimer.stamp();
             // Error checking! This will only print out an error if one is detected each loop
             GLenum err(glGetError());
             if (err != GL_NO_ERROR)
