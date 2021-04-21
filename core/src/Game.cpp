@@ -19,7 +19,6 @@ static GLfloat clear_color[4];
 
 namespace Core
 {
-    const int Game::FPS = 60;
     int Game::width = 1280;
     int Game::height = 720;
 
