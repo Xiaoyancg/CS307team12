@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+#include "Entity.h"
 
 namespace Core
 {
@@ -57,6 +58,14 @@ namespace Core
         glm::mat4 getOrtho();
         // Returns the matrix transformation used in the main shader
         glm::mat4 getMatrix(); // getOrtho * getTranslate
+
+        void lockToEntity(Entity* ent) {
+            mLockedEntity = ent;
+        }
+
+        void setLockBounds(int x, int y) {
+            mLockBounds = glm::ivec2(x, y);
+        }
 
         void use();
 

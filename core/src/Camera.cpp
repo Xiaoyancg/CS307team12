@@ -6,7 +6,7 @@
 namespace Core
 {
     Camera::Camera(glm::vec2 dimensions, glm::vec2 position, float zoom)
-        : mPosition(position), mDimensions(dimensions), mZoom(zoom)
+        : mPosition(position), mDimensions(dimensions), mZoom(zoom), mLockedEntity(nullptr), mLockBounds(0, 0)
     {
     }
 
@@ -58,12 +58,7 @@ namespace Core
         mPosition.y += y;
     }
 
-    // Dimensions
-    void Camera::setDimensions(int x, int y) {
-        mDimensions = glm::ivec2(x, y);
-    }
-    glm::ivec2 Camera::getDimensions() {
-        return mDimensions;
+
     // Given coordinates that fulfill `(0,0) < (x,y) < (1,1)`,
     // project to world coordinates at that position
     glm::vec2 Camera::projectToWorld(glm::vec2 coords) {

@@ -11,20 +11,20 @@ namespace Core
 		mCoords[1] = coords[1];
 		// P1 texture coords
 		mCoords[2] = 0;
-		mCoords[3] = 0;
+		mCoords[3] = 1;
 
 		// P2
 		mCoords[4] = coords[2];
 		mCoords[5] = coords[3];
 		// P2 texture coords
-		mCoords[6] = 1;
+		mCoords[6] = 0;
 		mCoords[7] = 0;
 
 		// P3
 		mCoords[8] = coords[4];
 		mCoords[9] = coords[5];
 		// P3 texture coords
-		mCoords[10] = 0;
+		mCoords[10] = 1;
 		mCoords[11] = 1;
 
 		// P4
@@ -32,7 +32,7 @@ namespace Core
 		mCoords[13] = coords[7];
 		// P4 texture coords
 		mCoords[14] = 1;
-		mCoords[15] = 1;
+		mCoords[15] = 0;
 	}
 
 	float *Tile::getCoords ()
@@ -44,16 +44,16 @@ namespace Core
 	void Tile::calculateSquareCoords(glm::vec2 position, glm::vec2 size) {
 		int coords[8];
 		coords[0] = position.x;
-		coords[1] = position.y;
+		coords[1] = position.y + size.y;
 
-		coords[2] = position.x + size.x;
+		coords[2] = position.x;
 		coords[3] = position.y;
 
-		coords[4] = position.x;
+		coords[4] = position.x + size.x;
 		coords[5] = position.y + size.y;
 
 		coords[6] = position.x + size.x;
-		coords[7] = position.y + size.y;
+		coords[7] = position.y;
 		setCoords(coords);
 	}
 }
