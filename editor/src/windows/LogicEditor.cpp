@@ -227,7 +227,30 @@ void LogicEditor::draw()
             // Logic information popup
             if (ImGui::BeginPopup("Logic Information"))
             {
-                ImGui::Text("Logic Name: ");
+                // Locate the current logic in the logic list
+                std::string currentLogicName = editor->getCurrentComponentList()[CUR_LOGIC];
+                auto logic_list = *game->getLogicList();
+                Core::Logic current_logic;
+                for (auto logic : logic_list)
+                {
+                    if (logic.getLogicName() == currentLogicName)
+                    {
+                        current_logic = logic;
+                    }
+                }
+
+                // Display info
+                ImGui::Text("Logic Name: %s", currentLogicName.c_str());
+                ImGui::Text("ID: %d", current_logic.getLogicId());
+                if (current_logic.getSignalType() == Core::SignalType::Custom)
+                {
+                    ImGui::Text("Type: Custom");
+                }
+                else if (current_logic.getSignalType() == Core::SignalType::Key)
+                {
+                    ImGui::Text("Type: Key");
+                }
+
                 ImGui::EndPopup();
             }
         }
