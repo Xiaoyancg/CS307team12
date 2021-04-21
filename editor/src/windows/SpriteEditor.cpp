@@ -59,6 +59,10 @@ void SpriteEditor::draw() {
             {
                 spritesheet_info = true;
             }
+            if (ImGui::Button("Edit Sprite in Pixel Editor"))
+            {
+                // TODO: Implement pixel editor
+            }
             if (ImGui::Button("Delete Sprite"))
             {
                 // TODO: Implement sprite deletion
