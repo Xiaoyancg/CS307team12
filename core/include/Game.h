@@ -41,7 +41,7 @@ namespace Core
         // CONSTRUCTOR
 
         // Game ();
-        Game() : Game("Untitled Game") {}
+        Game();
         Game(nlohmann::json &json);
         Game(std::string gameName);
         explicit Game(const Game &other);
@@ -81,6 +81,7 @@ namespace Core
         // =========================
         // MEMBER OPERATION ( functions that targeting )
 
+        void Game::updatePageLogic(Page *p);
         Page *addPage(Page *ptr);
         void deletePage(Page *ptr);
         void deletePage(std::string name);
@@ -178,7 +179,8 @@ namespace Core
         void onGameCreation();
 
         bool isKeyPressed(SDL_Keycode kc);
-        void keyHandler(SDL_KeyboardEvent);
+        void keyEventHandler(SDL_KeyboardEvent);
+        void logicLoop();
 
     private:
         int FPS = 60;

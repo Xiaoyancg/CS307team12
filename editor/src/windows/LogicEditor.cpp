@@ -125,16 +125,18 @@ void LogicEditor::draw()
 
                 ImGui::Text("Key Type:  ");
                 ImGui::SameLine();
-                const char *key_types[] = {"Released", "Pressed"};
-                if (ImGui::BeginCombo("##key_type", key_types[keyType]))
+                const char *key_types[] = {"KeyDown", "KeyUp"};
+                if (ImGui::BeginCombo("##key_type", key_types[keyTypeIdx]))
                 {
 
                     for (int n = 0; n < IM_ARRAYSIZE(key_types); n++)
                     {
-                        const bool is_selected = (keyType == n);
+                        const bool is_selected = (keyTypeIdx == n);
                         if (ImGui::Selectable(key_types[n], is_selected))
-                            keyType = n;
-
+                        {
+                            keyTypeIdx = n;
+                            keyType = keyTypeIdx == 0 ? SDL_KEYDOWN : SDL_KEYUP;
+                        }
                         // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                         if (is_selected)
                             ImGui::SetItemDefaultFocus();
@@ -205,6 +207,7 @@ void LogicEditor::draw()
                         case 1:
                             keyCode = current_logic->getLogic().keyLogic.getKey();
                             keyType = current_logic->getLogic().keyLogic.getKeyType();
+                            keyTypeIdx = keyType == SDL_KEYDOWN ? 0 : 1;
                             std::strcpy(keyCodeString, SDL_GetKeyName(keyCode));
                         }
                     }

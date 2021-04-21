@@ -1,9 +1,9 @@
 #include "windows/PageEditor.h"
 #include "UndoRedo.h"
 
-
-void PageEditor::draw() {
-	if (visible)
+void PageEditor::draw()
+{
+    if (visible)
     {
         // possibly implement a new function here for readability purposes
 
@@ -16,13 +16,13 @@ void PageEditor::draw() {
         static int current_page = 0;
         const char *page_options[] = {"Page", "Menu", "Map"};
         bool page_info = false;
-		Core::Game* game = editor->getGamePtr();
+        Core::Game *game = editor->getGamePtr();
         if (ImGui::Begin("Page Editor", &visible))
         {
             ImGui::PushItemWidth(200);
             ImGui::Text("Input Page Name & Type:");
             ImGui::InputText("##page_name", page_name, IM_ARRAYSIZE(page_name));
-            const char* combo_label = page_options[current_item];
+            const char *combo_label = page_options[current_item];
             if (ImGui::BeginCombo("##page_type", page_options[current_item]))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
@@ -81,7 +81,7 @@ void PageEditor::draw() {
             ImGui::Text("Current Page: %s", editor->getCurrentComponentList()[CUR_PAGE].c_str());
             if (ImGui::BeginListBox("##page_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
-                auto& pList = game->getPageList();
+                auto &pList = game->getPageList();
                 // Set default selected page to be the first in the page list
                 if (editor->getCurrentComponentList()[CUR_PAGE] == "No Component Selected" && game->getPageList().size() > 0)
                 {
@@ -96,6 +96,7 @@ void PageEditor::draw() {
                         current_page = i;
                         editor->getGamePtr()->setCurrentPage(page);
                         editor->getCurrentComponentList()[CUR_PAGE] = page->getName();
+                        page_id = page->getID();
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -111,7 +112,7 @@ void PageEditor::draw() {
             {
                 if (editor->getCurrentComponentList()[CUR_PAGE] != "No Component Selected")
                 {
-                    auto& pList = game->getPageList();
+                    auto &pList = game->getPageList();
                     for (int i = 0; i < pList.size(); i++)
                     {
                         if (pList[i]->getName() == editor->getCurrentComponentList()[CUR_PAGE])
@@ -159,24 +160,28 @@ void PageEditor::draw() {
 
             if (editor->getGamePtr()->getCurrPage() != nullptr)
             {
-                Core::Page* page = editor->getGamePtr()->getCurrPage();
+                Core::Page *page = editor->getGamePtr()->getCurrPage();
                 if (typeid(*page) == typeid(Core::MenuPage))
                 {
                     ImGui::Text("Page Type: Menu");
                 }
                 else if (typeid(*page) == typeid(Core::MapPage))
                 {
-                    Core::MapPage* mapPage = static_cast<Core::MapPage*>(page);
+                    Core::MapPage *mapPage = static_cast<Core::MapPage *>(page);
                     ImGui::Text("Page Type: Map");
                     std::string mapLabel = "";
-                    if (mapPage->getMap() != nullptr) {
+                    if (mapPage->getMap() != nullptr)
+                    {
                         mapLabel = mapPage->getMap()->getName();
                     }
-                    if (ImGui::BeginCombo("##mapSelect", mapLabel.c_str())) {
-                        auto& mapList = editor->getGamePtr()->getMapList();
-                        for (int i = 0; i < mapList.size(); i++) {
+                    if (ImGui::BeginCombo("##mapSelect", mapLabel.c_str()))
+                    {
+                        auto &mapList = editor->getGamePtr()->getMapList();
+                        for (int i = 0; i < mapList.size(); i++)
+                        {
                             bool selected = (i == mapPage->getMapIndex());
-                            if (ImGui::Selectable(mapList[i]->getName().c_str(), selected)) {
+                            if (ImGui::Selectable(mapList[i]->getName().c_str(), selected))
+                            {
                                 mapPage->setMapIndex(i);
                             }
                         }
@@ -189,8 +194,19 @@ void PageEditor::draw() {
                 }
             }
         }
-                    
-                
+
+        ImGui::InputInt("page id", &page_id);
+        if (ImGui::Button("update page id"))
+        {
+            auto pList = editor->getGamePtr()->getPageList();
+            for (int i = 0; i < pList.size(); i++)
+            {
+                if (pList[i]->getName() == editor->getCurrentComponentList()[CUR_PAGE])
+                {
+                    pList[i]->setID(page_id);
+                }
+            }
+        }
         ImGui::End();
     }
 }

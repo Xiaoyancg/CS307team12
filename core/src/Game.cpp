@@ -61,6 +61,12 @@ namespace Core
         {
             mapList[i] = new Map(*other.mapList[i]);
         }
+        // solved bug: previously, pagelist Pointer points to the pageList in savedGame
+        _logicManager.setPageList(&pageList);
+        updatePageLogic(getCurrPage());
+    }
+    Game::Game() : Game("Untitled Game")
+    {
     }
 
     Game::~Game()
@@ -852,6 +858,13 @@ namespace Core
             }
         }
     }
+    void Game::updatePageLogic(Page *p)
+    {
+        for (auto e : p->getEntityList())
+        {
+            _logicManager.sendScript(e->getInScriptId());
+        }
+    }
     void Game::setCurrentPage(int idx)
     {
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
@@ -910,11 +923,16 @@ namespace Core
 
     /* -------------------------------- Game loop ------------------------------- */
 
-    void Game::keyHandler(SDL_KeyboardEvent keyEvent)
+    void Game::keyEventHandler(SDL_KeyboardEvent keyEvent)
     {
         // Handle Keypresses
         _logicManager.sendSignal(Signal(-100, SignalType::Key, "SDL_KEY",
                                         SignalUnion(SignalKey(keyEvent))));
+    }
+    void Game::logicLoop()
+    {
+        _logicManager.checkCurrSignalList();
+        _logicManager.runCurrScriptList();
     }
     void Game::mainLoop()
     {
@@ -951,13 +969,12 @@ namespace Core
                     }
                     break;
                 case SDL_KEYDOWN:
-                    keyHandler(event.key);
+                    keyEventHandler(event.key);
                     //handleWindowEvent(event);
                     // TODO: Mouse
                 }
             }
-            _logicManager.checkCurrSignalList();
-            _logicManager.runCurrScriptList();
+            logicLoop();
             coreTimer.stamp();
             // auto now = std::chrono::steady_clock::now();
             //float dt = (float)(now - lastTime).count() / std::chrono::steady_clock::period::den;
