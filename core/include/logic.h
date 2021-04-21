@@ -74,9 +74,9 @@ namespace Core
         /// \brief update all information of a logic
         /// *For editor, bindint to the button "update" in logic editor
         ///
-        /// \param signalType
+        /// \param signalType, scriptType, id, name, targetScriptList
         /// \param ...
-        void updateLogic(SignalType signalType, ...);
+        void updateLogic(SignalType signalType, ScriptType scriptType, int id, std::string name, std::vector<int> targetList, ...);
 
         /// \brief Parse function
         ///

@@ -89,15 +89,15 @@ namespace Core
         return _logic;
     }
 
-    void Logic::updateLogic(SignalType signalType, ...)
+    void Logic::updateLogic(SignalType signalType, ScriptType scriptType, int id, std::string name, std::vector<int> targetList, ...)
     {
-        std::va_list args;
-        va_start(args, signalType);
         setSignalType(signalType);
-        setLogicId(va_arg(args, int));
-        setScriptType(va_arg(args, ScriptType));
-        setLogicName(va_arg(args, std::string));
-        setTargetScriptList(va_arg(args, std::vector<int>));
+        setScriptType(scriptType);
+        setLogicId(id);
+        setLogicName(name);
+        setTargetScriptList(targetList);
+        std::va_list args;
+        va_start(args, targetList);
         switch (signalType)
         {
         case SignalType::Custom:
@@ -106,12 +106,14 @@ namespace Core
                     LogicCustom()));
             break;
         case SignalType::Key:
+        {
+            SDL_Keycode keycode = va_arg(args, SDL_Keycode);
+            Uint32 keyType = va_arg(args, Uint32);
             setLogic(
                 LogicUnion(
-                    LogicKey(
-                        va_arg(args, SDL_Keycode),
-                        va_arg(args, Uint32))));
+                    LogicKey(keycode, keyType)));
             break;
+        }
 
         default:
             break;
