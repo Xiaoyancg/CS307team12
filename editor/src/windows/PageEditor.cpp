@@ -22,19 +22,19 @@ void PageEditor::draw() {
             ImGui::PushItemWidth(200);
             ImGui::Text("Input Page Name & Type:");
             ImGui::InputText("##page_name", page_name, IM_ARRAYSIZE(page_name));
-            if (ImGui::BeginListBox("##page_type", ImVec2(200, 3 * ImGui::GetTextLineHeightWithSpacing())))
+            const char* combo_label = page_options[current_item];
+            if (ImGui::BeginCombo("##page_type", page_options[current_item]))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
                 {
                     const bool is_selected = (current_item == n);
                     if (ImGui::Selectable(page_options[n], is_selected))
                         current_item = n;
-
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     if (is_selected)
                         ImGui::SetItemDefaultFocus();
                 }
-                ImGui::EndListBox();
+                ImGui::EndCombo();
             }
 
             if (ImGui::Button("Create Page"))
