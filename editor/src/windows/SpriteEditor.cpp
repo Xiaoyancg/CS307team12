@@ -37,6 +37,7 @@ void SpriteEditor::draw() {
                 importDialog.SetTypeFilters({".jpg", ".png"});
                 importDialog.Open();
             }
+            ImGui::SameLine();
             if (ImGui::Button("Import SpriteSheet"))
             {
                 sprite_sheet = true;
@@ -45,24 +46,30 @@ void SpriteEditor::draw() {
                 importDialog.SetTypeFilters({ ".jpg", ".png" });
                 importDialog.Open();
             }
+            ImGui::SameLine();
             if (ImGui::Button("Import Sprite From SpriteSheet"))
             {
                 if (editor->getCurrentSpriteSheet() >= 0) {
                     editor->getWindowList()[SPRITESHEET]->setVisible(true);
                 }
             }
+            ImGui::Separator();
+            
             if (ImGui::Button("Show Sprite Information"))
             {
                 sprite_info = true;
             }            
+            ImGui::SameLine();
             if (ImGui::Button("Show SpriteSheet Information"))
             {
                 spritesheet_info = true;
             }
+
             if (ImGui::Button("Edit Sprite in Pixel Editor"))
             {
                 // TODO: Implement pixel editor
             }
+            ImGui::SameLine();
             if (ImGui::Button("Delete Sprite"))
             {
                 // TODO: Implement sprite deletion
