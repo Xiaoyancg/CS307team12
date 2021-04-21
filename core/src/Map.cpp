@@ -123,37 +123,31 @@ namespace Core
         // Traverse all tiles in the Map
         for (auto& tile : mTileVector)
         {
-            // Render each tile of the map!
-            float *coordsPtr = tile.getCoords(); // Get ptr to the tile coordinates
-            float coords[16];
-            std::memcpy(coords, coordsPtr, sizeof(int) * 16);
-
-            if (withBorder)
+            if (tile.getSpriteID() != -1 && MapPage::mGameSprites->atID(tile.getSpriteID()))
             {
-                int border = 1;
-                // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
-                // P1
-                coords[0] += border;
-                coords[1] -= border;
+                // Render each tile of the map!
+                float *coordsPtr = tile.getCoords(); // Get ptr to the tile coordinates
+                float coords[16];
+                std::memcpy(coords, coordsPtr, sizeof(int) * 16);
 
-                // P2
-                coords[4] += border;
-                coords[5] += border;
-                // P3
-                coords[8] -= border;
-                coords[9] -= border;
-                // P4
-                coords[12] -= border;
-                coords[13] += border;
-            }
+                if (withBorder)
+                {
+                    int border = 1;
+                    // DRAW BORDER LINES ALONG MAP (this is just for testing bc all tiles are plain white right now)
+                    // P1
+                    coords[0] += border;
+                    coords[1] -= border;
+                    // P2
+                    coords[4] += border;
+                    coords[5] += border;
+                    // P3
+                    coords[8] -= border;
+                    coords[9] -= border;
+                    // P4
+                    coords[12] -= border;
+                    coords[13] += border;
+                }
 
-            // Bind the correct sprite if it exists
-            if (tile.isInvisibleTile())
-            {
-                glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible
-            }
-            else if (tile.getSpriteID() != -1 && MapPage::mGameSprites->atID(tile.getSpriteID()))
-            {
                 Sprite *sprite = MapPage::mGameSprites->atID(tile.getSpriteID());
                 glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID());
                 if (sprite->getType() != SPRITE_TYPES::FULL)
@@ -177,17 +171,17 @@ namespace Core
                     coords[14] = texcoords[6];
                     coords[15] = texcoords[7];
                 }
+
+                // Buffer and draw tile
+                // NOTE: Change the int multiplier whenever new data will be added to the shaders.
+                //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
+                glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), coords, GL_DYNAMIC_DRAW);
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
+
+                // Unbind the current sprite
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
-
-            // Buffer and draw tile
-            // NOTE: Change the int multiplier whenever new data will be added to the shaders.
-            //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
-            glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), coords, GL_DYNAMIC_DRAW);
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-            glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
-
-            // Unbind the current sprite
-            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 
@@ -223,9 +217,9 @@ namespace Core
     void Map::parse(json& root) {
         auto size = root.at("size").get<std::vector<int>>();
         mMapDimensions = glm::ivec2(size[0], size[1]);
-        auto& tileArray = root.at("tiles").get<std::vector<std::vector<int>>>();
+        auto& tileArray = root.at("tiles").get<std::vector<std::vector<json>>>();
         for (auto& tile : tileArray) {
-            mTileVector.emplace_back(tile[0], tile[1]);
+            mTileVector.emplace_back(tile[0].get<int>(), tile[1].get<bool>());
         }
     }
 
@@ -234,7 +228,7 @@ namespace Core
         map["size"] = { mMapDimensions.x, mMapDimensions.y };
         std::vector<json> jTileList;
         for (auto& tile : mTileVector) {
-            json jTile = { tile.isInvisibleTile(), tile.isSolid() };
+            json jTile = { tile.getSpriteID(), tile.isSolid() };
             jTileList.push_back(jTile);
         }
         map["tiles"] = jTileList;

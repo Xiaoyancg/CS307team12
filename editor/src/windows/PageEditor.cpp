@@ -14,7 +14,7 @@ void PageEditor::draw() {
         static char chosen_type[128] = "";
         static int current_item = 0;
         static int current_page = 0;
-        const char *page_options[] = {"Page", "Menu"};
+        const char *page_options[] = {"Page", "Menu", "Map"};
         bool page_info = false;
 		Core::Game* game = editor->getGamePtr();
         if (ImGui::Begin("Page Editor", &visible))
@@ -22,7 +22,7 @@ void PageEditor::draw() {
             ImGui::PushItemWidth(200);
             ImGui::Text("Input Page Name & Type:");
             ImGui::InputText("##page_name", page_name, IM_ARRAYSIZE(page_name));
-            if (ImGui::BeginListBox("##page_type", ImVec2(200, 2 * ImGui::GetTextLineHeightWithSpacing())))
+            if (ImGui::BeginListBox("##page_type", ImVec2(200, 3 * ImGui::GetTextLineHeightWithSpacing())))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(page_options); n++)
                 {
@@ -41,38 +41,39 @@ void PageEditor::draw() {
             {
                 if (strlen(page_name) != 0)
                 {
+                    std::string pname = page_name;
+                    std::function<void()> action;
+                    std::function<void()> restore;
                     if (strcmp(page_options[current_item], "Menu") == 0)
                     {
-                        //UNDO
-                        std::string pname = page_name;
-                        auto action = [this, pname]() {
+                        action = [this, pname]() {
                             editor->getGamePtr()->addPage(new Core::MenuPage(pname));
                         };
-                        auto restore = [this, pname]() {
+                        restore = [this, pname]() {
                             editor->getGamePtr()->deletePage(pname);
                         };
-                        pushAction(action, restore);
-                        action();
-                        //ENDUNDO
-                        // memset to clear the buffer after use
-                        memset(page_name, 0, 128);
+                    }
+                    else if (strcmp(page_options[current_item], "Map") == 0)
+                    {
+                        action = [this, pname]() {
+                            editor->getGamePtr()->addPage(new Core::MapPage(pname));
+                        };
+                        restore = [this, pname]() {
+                            editor->getGamePtr()->deletePage(pname);
+                        };
                     }
                     else
                     {
-                        //UNDO
-                        std::string pname = page_name;
-                        auto action = [this, pname]() {
+                        action = [this, pname]() {
                             editor->getGamePtr()->addPage(new Core::Page(pname));
                         };
-                        auto restore = [this, pname]() {
+                        restore = [this, pname]() {
                             editor->getGamePtr()->deletePage(pname);
                         };
-                        pushAction(action, restore);
-                        action();
-                        //ENDUNDO
-                        // memset to clear the buffer after use
-                        memset(page_name, 0, 128);
                     }
+                    pushAction(action, restore);
+                    action();
+                    page_name[0] = '\0';
                 }
             }
 
@@ -155,40 +156,41 @@ void PageEditor::draw() {
                     editor->getCurrentComponentList()[CUR_PAGE] = pList[0]->getName();
                 }
             }
-            if (ImGui::Button("Show Information"))
-            {
-                page_info = true;
-            }
-        }
 
-        if (page_info)
-        {
-            ImGui::OpenPopup("Page Information");
-            page_info = false;
-        }
-
-        // Page information popup
-        if (ImGui::BeginPopup("Page Information"))
-        {
-            auto& pList = game->getPageList();
-            ImGui::Text("Page Name: %s", editor->getCurrentComponentList()[CUR_PAGE].c_str());
-            for (int i = 0; i < pList.size(); i++)
+            if (editor->getGamePtr()->getCurrPage() != nullptr)
             {
-                if (pList[i]->getName() == editor->getCurrentComponentList()[CUR_PAGE])
+                Core::Page* page = editor->getGamePtr()->getCurrPage();
+                if (typeid(*page) == typeid(Core::MenuPage))
                 {
-                    if (!strcmp(typeid(*pList[i]).name(), "class Core::MenuPage"))
-                    {
-                        ImGui::Text("Page Type: Menu");
-                    }             
-                    else
-                    {
-                        ImGui::Text("Page Type: Page");
+                    ImGui::Text("Page Type: Menu");
+                }
+                else if (typeid(*page) == typeid(Core::MapPage))
+                {
+                    Core::MapPage* mapPage = static_cast<Core::MapPage*>(page);
+                    ImGui::Text("Page Type: Map");
+                    std::string mapLabel = "";
+                    if (mapPage->getMap() != nullptr) {
+                        mapLabel = mapPage->getMap()->getName();
+                    }
+                    if (ImGui::BeginCombo("##mapSelect", mapLabel.c_str())) {
+                        auto& mapList = editor->getGamePtr()->getMapList();
+                        for (int i = 0; i < mapList.size(); i++) {
+                            bool selected = (i == mapPage->getMapIndex());
+                            if (ImGui::Selectable(mapList[i]->getName().c_str(), selected)) {
+                                mapPage->setMapIndex(i);
+                            }
+                        }
+                        ImGui::EndCombo();
                     }
                 }
+                else
+                {
+                    ImGui::Text("Page Type: Page");
+                }
             }
-            ImGui::EndPopup();
         }
-
+                    
+                
         ImGui::End();
     }
 }

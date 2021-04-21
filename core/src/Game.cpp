@@ -15,6 +15,8 @@
 #include <TestCore.h>
 #endif // __TEST_CORE
 
+static GLfloat clear_color[4];
+
 namespace Core
 {
     const int Game::FPS = 60;
@@ -33,21 +35,23 @@ namespace Core
         parse(json);
     }
 
-    Game::Game(const Game &other) : gameName(other.gameName),
-                                    author(other.author),
-                                    version(other.version),
-                                    lMTime(other.lMTime),
-                                    note(other.note),
-                                    _logicManager(other._logicManager),
-                                    mCamera(new Camera(*other.mCamera)),
-                                    currPageIdx(other.currPageIdx),
-                                    pageList(other.pageList.size()),
-                                    inDisplayList(other.inDisplayList),
-                                    window(other.window),
-                                    gl_context(other.gl_context),
-                                    keyboardState(other.keyboardState),
-                                    shaderProgram(other.shaderProgram),
-                                    mGameSprites(other.mGameSprites)
+    Game::Game(const Game& other) :
+        gameName(other.gameName),
+        author(other.author),
+        version(other.version),
+        lMTime(other.lMTime),
+        note(other.note),
+        _logicManager(other._logicManager),
+        mCamera(new Camera(*other.mCamera)),
+        currPageIdx(other.currPageIdx),
+        pageList(other.pageList.size()),
+        mapList(other.mapList.size()),
+        inDisplayList(other.inDisplayList),
+        window(other.window),
+        gl_context(other.gl_context),
+        keyboardState(other.keyboardState),
+        shaderProgram(other.shaderProgram),
+        mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
         for (int i = 0; i < other.pageList.size(); i++)
@@ -153,6 +157,7 @@ namespace Core
     // MEMBER OPERATION
     Page *Game::addPage(Page *p)
     {
+        p->setGame(this);
         this->pageList.push_back(p);
         return p;
     }
@@ -199,46 +204,35 @@ namespace Core
         return mapList.size() - 1;
     }
 
-    Map *Game::getMap(int idx)
-    {
-        return mapList[idx];
+    Map* Game::getMap(int idx) {
+        return idx >= 0 && idx < mapList.size() ? mapList[idx] : nullptr;
     }
 
-    void Game::deleteMap(std::string name)
-    {
-        for (auto iter = mapList.begin(); iter != mapList.end(); iter++)
-        {
-            if ((*iter)->getName() == name)
-            {
-                mapList.erase(iter);
-                for (auto page : pageList)
-                {
-                    Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
-                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin())
-                    {
+    void Game::deleteMap(std::string name) {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
+            if ((*iter)->getName() == name) {
+                for (auto page : pageList) {
+                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
     }
 
-    void Game::deleteMap(Map *map)
-    {
-        for (auto iter = mapList.begin(); iter != mapList.end(); iter++)
-        {
-            if ((*iter) == map)
-            {
-                mapList.erase(iter);
-                for (auto page : pageList)
-                {
-                    Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
-                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin())
-                    {
+    void Game::deleteMap(Map* map) {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
+            if ((*iter) == map) {
+                for (auto page : pageList) {
+                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
@@ -589,7 +583,7 @@ namespace Core
             in vec2 TexCoord;
 
             uniform sampler2D texture1;
-            uniform vec3 color;
+            uniform vec3 color ;
 
 		    out vec4 FragColor;
 
@@ -836,7 +830,7 @@ namespace Core
         GLfloat color[] = {1.0f, 1.0f, 1.0f};
         glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
 
-        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
+        glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (getCurrPage() != nullptr)
