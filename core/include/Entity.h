@@ -24,7 +24,6 @@ namespace Core
         // This will set 'mCoords'
         void calculateCoords(glm::vec2 location, glm::vec2 scale);
 
-        void update(float dt);
         // Render the given entity on the current context
         // Assumes the shaders have already been setup
         void render();
@@ -70,15 +69,6 @@ namespace Core
             mIsInvisible = value;
         }
 
-        bool isControlledEntity();
-        void setControlledEntity(bool value);
-
-        // =========================
-        // MEMBER OPERATION
-
-        // =========================
-        // UTILITY OPERATION
-
         // AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
         // This is set by Game.cpp when a Game object is created
         // Any class that renders sprites needs a way to translate between Parchment Sprite IDs and imported OpenGL IDs.
@@ -120,7 +110,6 @@ namespace Core
         int _entityId = -1;
 
         bool mIsInvisible = false;
-        bool mControlledEntity = false;
 
         Page *mParentPage = nullptr;
 

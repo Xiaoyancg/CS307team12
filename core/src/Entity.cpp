@@ -20,8 +20,9 @@ namespace Core
 	Entity::Entity(const Entity &other)
 		: mEntityName(other.mEntityName), mLocation(other.mLocation),
 		  mScale(other.mScale), mRotation(other.mRotation),
-		  mSpriteID(other.mSpriteID), mControlledEntity(other.mControlledEntity),
-		  mParentPage(other.mParentPage), _entityId(other._entityId), mInScriptId(other.mInScriptId) {} // TODO:
+		  mSpriteID(other.mSpriteID), mParentPage(other.mParentPage),
+		  _entityId(other._entityId), mInScriptId(other.mInScriptId)
+		{}
 
 	// CONSTRUCTOR
 
@@ -170,54 +171,6 @@ namespace Core
 
 	glm::vec2 Entity::getScale() { return mScale; }
 
-	bool Entity::isControlledEntity() { return mControlledEntity; }
-
-	void Entity::setControlledEntity(bool value) { mControlledEntity = value; }
-
-	void Entity::update(float dt)
-	{
-		if (mControlledEntity)
-		{
-			bool doCollide = false;
-			MapPage *mapPage = dynamic_cast<MapPage *>(mParentPage);
-			glm::vec2 newLoc = mLocation;
-			if (mapPage != nullptr)
-			{
-				doCollide = true;
-			}
-			Game *game = getParentPage()->getGame();
-			if (game->isKeyPressed(SDLK_RIGHT))
-			{
-
-				newLoc.x += dt * SPEED;
-			}
-			if (game->isKeyPressed(SDLK_LEFT))
-			{
-				newLoc.x -= dt * SPEED;
-			}
-			if (game->isKeyPressed(SDLK_DOWN))
-			{
-				newLoc.y -= dt * SPEED;
-			}
-			if (game->isKeyPressed(SDLK_UP))
-			{
-				newLoc.y += dt * SPEED;
-			}
-			if (doCollide)
-			{
-				Tile *collidingTile = mapPage->getMap()->checkTileCollision(newLoc);
-				if (collidingTile == nullptr)
-				{
-					mLocation = newLoc;
-				}
-			}
-			else
-			{
-				mLocation = newLoc;
-			}
-		}
-	}
-
 	void Entity::render()
 	{
 		if (!mIsInvisible)
@@ -287,14 +240,6 @@ namespace Core
 
 		setRotation(root.at("rotation").get<double>());
 		setSpriteID(root.at("spriteID").get<int>());
-		if (root.contains("control") && root.at("control").get<bool>() == true)
-		{
-			setControlledEntity(true);
-		}
-		else
-		{
-			setControlledEntity(false);
-		}
 	}
 
 	nlohmann::json Entity::serialize()
@@ -305,10 +250,6 @@ namespace Core
 		root["scale"] = {mScale.x, mScale.y};
 		root["rotation"] = mRotation;
 		root["spriteID"] = mSpriteID;
-		if (mControlledEntity)
-		{
-			root["control"] = true;
-		}
 		return root;
 	}
 

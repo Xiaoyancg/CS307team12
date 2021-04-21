@@ -33,7 +33,6 @@ namespace Core
         void SetBackgroundColor(float r, float g, float b, float a);
         glm::vec4 GetBackgroundColor();
         std::vector<Entity *> &getEntityList();
-        virtual void update(float dt);
         virtual void render();
 
         static Page* fromJSON(nlohmann::json &root);
@@ -48,10 +47,6 @@ namespace Core
         ///
         void deleteEntity(std::string);
         void deleteEntity(Entity *);
-        Entity *getCtrlEntity();
-
-        // TODO: should have error checking
-        void setCtrlEntity(Entity *);
 
         Game* getGame() {
             return mGame;
@@ -69,7 +64,6 @@ namespace Core
     protected:
         // the entity that bind to keys of current page
 
-        Entity *ctrlEntity = nullptr;
         int _id;
 
         std::string name;

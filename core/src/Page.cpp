@@ -27,10 +27,6 @@ namespace Core
         {
             entityList[i] = new Entity(*other.entityList[i]);
             entityList[i]->setParentPage(this);
-            if (entityList[i]->isControlledEntity())
-            {
-                ctrlEntity = entityList[i];
-            }
         }
     }
     Page::~Page()
@@ -77,10 +73,6 @@ namespace Core
             if (*ptr == dp)
             {
                 entityList.erase(ptr);
-                if (ctrlEntity == dp)
-                {
-                    ctrlEntity = nullptr;
-                }
                 delete (dp);
                 dp = nullptr;
                 break;
@@ -97,30 +89,12 @@ namespace Core
             if (!(*ptr)->getName().compare(s))
             {
                 Entity *p = *ptr;
-                if (ctrlEntity == p)
-                {
-                    ctrlEntity = nullptr;
-                }
                 entityList.erase(ptr);
                 delete (p);
                 p = nullptr;
                 break;
             }
         }
-    }
-
-    // =========================
-    // STATE OPERATION
-    // Idea is that only game has the curr(current keywoard)
-    Entity *Page::getCtrlEntity()
-    {
-        return this->ctrlEntity;
-    }
-
-    // TODO: should have error checking
-    void Page::setCtrlEntity(Entity *e)
-    {
-        this->ctrlEntity = e;
     }
 
     // =========================
@@ -149,14 +123,6 @@ namespace Core
     std::vector<Entity *> &Page::getEntityList()
     {
         return this->entityList;
-    }
-
-    void Page::update(float dt)
-    {
-        for (auto entity : entityList)
-        {
-            entity->update(dt);
-        }
     }
 
     void Page::render()
@@ -219,10 +185,6 @@ namespace Core
         {
             Entity *ent = Entity::fromJSON(entityJson);
             ent->setParentPage(this);
-            if (ent->isControlledEntity())
-            {
-                setCtrlEntity(ent);
-            }
             entityList.push_back(ent);
         }
     }
