@@ -32,8 +32,6 @@ namespace Core
     class Game
     {
     public:
-        static const int FPS;
-
         // =========================
         // PUBLIC VARIABLE
         static int width;
@@ -182,6 +180,14 @@ namespace Core
         bool isKeyPressed(SDL_Keycode kc);
 
     private:
+        int FPS = 60;
+        // delta time in s
+        double deltaFPSTime = 1.0 / 60.0;
+        // the Core (logic) rate/ be same as fps rn
+        const int coreRate = 60;
+        double deltaCoreTime = 1.0 / (double)coreRate;
+        Timer FPSTimer;
+        Timer coreTimer;
         std::string gameName;
         std::string author;
         std::string version;

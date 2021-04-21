@@ -74,6 +74,8 @@ namespace Core
                         {
                             sendScript(scriptId);
                         }
+                        // TODO: run once
+                        removeLogic(logic->getLogicId());
                     }
                 }
                 break;
@@ -90,6 +92,8 @@ namespace Core
                             {
                                 sendScript(scriptId);
                             }
+                            // TODO: run once
+                            removeLogic(logic->getLogicId());
                         }
                     }
                 }
@@ -111,6 +115,8 @@ namespace Core
             default:
                 break;
             }
+            // TODO: Run once
+            removeSignal(signal.getSignalId());
         }
     }
 
@@ -285,6 +291,8 @@ namespace Core
             default:
                 break;
             }
+            // only run once
+            removeScript(script->getScriptId());
         }
 
         for (auto &script : _currPageScriptList)
