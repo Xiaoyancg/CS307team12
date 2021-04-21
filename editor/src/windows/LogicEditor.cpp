@@ -10,15 +10,10 @@ void LogicEditor::draw()
         // set the windows default size
         ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
 
-        static char logic_name[128] = "";
-        static int logicIDInput = -1;
-        static int current_logic_idx = 0;
         Core::Game *game = editor->getGamePtr();
-        Core::Logic current_logic;
 
         // For "key type" logic
 
-        char target_script_list[128] = "";
         if (ImGui::Begin("Logic Editor", &visible))
         {
             // Set input widget widths to 200
@@ -32,21 +27,38 @@ void LogicEditor::draw()
             ImGui::SameLine();
             ImGui::InputInt("##logic_id", &logicIDInput);
 
-            ImGui::Text("Type:      ");
+            ImGui::Text("Signal Type: ");
             ImGui::SameLine();
             // The order of these options should be preserved for now
             // They are somewhat hardcoded based on the Core::SignalType enum
-            const char *logic_types[] = {"Custom", "Key"};
-            static int logic_type_idx = 0; // Here we store our selection data as an index.
-            const char *combo_label = logic_types[logic_type_idx];
-            if (ImGui::BeginCombo("##logic_type", logic_types[logic_type_idx]))
+            if (ImGui::BeginCombo("##signal_type", signal_type_strings[signal_type_idx]))
             {
-                for (int n = 0; n < IM_ARRAYSIZE(logic_types); n++)
+                for (int n = 0; n < IM_ARRAYSIZE(signal_type_strings); n++)
                 {
-                    const bool is_selected = (logic_type_idx == n);
-                    if (ImGui::Selectable(logic_types[n], is_selected))
-                        logic_type_idx = n;
-
+                    bool is_selected = (signal_type_idx == n);
+                    if (ImGui::Selectable(signal_type_strings[n], is_selected))
+                    {
+                        signal_type_idx = n;
+                    }
+                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+            ImGui::Text("Script Type: ");
+            ImGui::SameLine();
+            // The order of these options should be preserved for now
+            // They are somewhat hardcoded based on the Core::ScriptType enum
+            if (ImGui::BeginCombo("##script_type", script_type_strings[script_type_idx]))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(script_type_strings); n++)
+                {
+                    bool is_selected = (script_type_idx == n);
+                    if (ImGui::Selectable(script_type_strings[n], is_selected))
+                    {
+                        script_type_idx = n;
+                    }
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
                     if (is_selected)
                         ImGui::SetItemDefaultFocus();
@@ -54,16 +66,38 @@ void LogicEditor::draw()
                 ImGui::EndCombo();
             }
 
+            if (ImGui::TreeNode("Target Script List"))
+            {
+                for (int i = 0; i < targetScriptList.size(); i++)
+                {
+                    ImGui::Text("%d", targetScriptList.at(i));
+                    ImGui::SameLine();
+                    ImGui::PushItemWidth(80);
+                    std::string deletebtnName("delete " + std::to_string(i));
+                    if (ImGui::Button(deletebtnName.c_str()))
+                    {
+                        targetScriptList.erase(targetScriptList.begin() + i);
+                    }
+                    ImGui::PopItemWidth();
+                }
+                ImGui::Text("new target Script");
+                ImGui::SameLine();
+                ImGui::InputInt("##newTargetScript", &newTargetScript);
+                ImGui::SameLine();
+                if (ImGui::Button("Add"))
+                {
+                    targetScriptList.push_back(newTargetScript);
+                }
+                ImGui::TreePop();
+            }
+
             ImGui::Separator();
 
             // Render different UI options based on logic type selected
-            switch (logic_type_idx)
+            switch (signal_type_idx)
             {
             case 0: // Custom type
             {
-                ImGui::Text("Target Script List:");
-                ImGui::SameLine();
-                ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
             }
             break;
             case 1: // Key type
@@ -74,24 +108,15 @@ void LogicEditor::draw()
                 ImGui::InputText("##key_code", keyCodeString, IM_ARRAYSIZE(keyCodeString),
                                  ImGuiInputTextFlags_ReadOnly);
                 if (ImGui::IsItemFocused())
-
                 {
                     ImGuiIO &io = ImGui::GetIO();
                     for (int i = 0; i < IM_ARRAYSIZE(io.KeysDown); i++)
                     {
                         if (io.KeysDown[i])
                         {
-                            // sdl keycode
-                            // 0 is 48 a is 49
-                            // a is 97
-                            // b is 98
-
                             // imgui use SDL_SCANCODE
-                            // 1 si 30
-                            // 0 is 39
-                            // a is 4
-                            // b is 5
-                            strcpy_s(keyCodeString, (SDL_GetKeyName(SDL_GetKeyFromScancode((SDL_Scancode)i))));
+                            keyCode = SDL_GetKeyFromScancode((SDL_Scancode)i);
+                            strcpy_s(keyCodeString, (SDL_GetKeyName(keyCode)));
                             break;
                         }
                     }
@@ -100,10 +125,10 @@ void LogicEditor::draw()
 
                 ImGui::Text("Key Type:  ");
                 ImGui::SameLine();
-                const char *key_types[] = {"Pressed", "Released"};
-                const char *combo_label = key_types[keyType];
+                const char *key_types[] = {"Released", "Pressed"};
                 if (ImGui::BeginCombo("##key_type", key_types[keyType]))
                 {
+
                     for (int n = 0; n < IM_ARRAYSIZE(key_types); n++)
                     {
                         const bool is_selected = (keyType == n);
@@ -116,10 +141,6 @@ void LogicEditor::draw()
                     }
                     ImGui::EndCombo();
                 }
-
-                ImGui::Text("Target Script List:");
-                ImGui::SameLine();
-                ImGui::InputText("##target_script_list", target_script_list, IM_ARRAYSIZE(target_script_list));
             }
             break;
             }
@@ -128,48 +149,64 @@ void LogicEditor::draw()
             ImGui::Separator();
 
             // Find the current logic in the logic list
-            if (editor->getCurrentComponentList()[CUR_LOGIC] != "No Component Selected" &&
-                current_logic.getLogicName() != editor->getCurrentComponentList()[CUR_LOGIC])
+            //if (editor->getCurrentComponentList()[CUR_LOGIC] != "No Component Selected" &&
+            //    current_logic->getLogicName() != editor->getCurrentComponentList()[CUR_LOGIC])
+            //{
+            //    for (auto logic : *game->getLogicList())
+            //    {
+            //        if (logic.getLogicName() == editor->getCurrentComponentList()[CUR_LOGIC])
+            //        {
+            //            current_logic = logic;
+            //        }
+            //    }
+            //}
+            if (current_logic != nullptr)
             {
-                for (auto logic : *game->getLogicList())
+                // Display info about current logic
+                ImGui::Text("Current Logic: %s", editor->getCurrentComponentList()[CUR_LOGIC].c_str());
+                if (current_logic->getSignalType() == Core::SignalType::Custom)
                 {
-                    if (logic.getLogicName() == editor->getCurrentComponentList()[CUR_LOGIC])
-                    {
-                        current_logic = logic;
-                    }
+                    ImGui::Text("Logic Type: Custom");
+                }
+                else if (current_logic->getSignalType() == Core::SignalType::Key)
+                {
+                    ImGui::Text("Logic Type: Key");
                 }
             }
-
-            // Display info about current logic
-            ImGui::Text("Current Logic: %s", editor->getCurrentComponentList()[CUR_LOGIC].c_str());
-            if (current_logic.getSignalType() == Core::SignalType::Custom)
-            {
-                ImGui::Text("Logic Type: Custom");
-            }
-            else if (current_logic.getSignalType() == Core::SignalType::Key)
-            {
-                ImGui::Text("Logic Type: Key");
-            }
-
             // List of all the logics in logic list
             if (ImGui::BeginListBox("##logic_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
             {
-                auto logic_list = *game->getLogicList();
+                auto logic_list = game->getLogicList();
                 // Set default selected logic to be the first in the logic list
-                if (editor->getCurrentComponentList()[CUR_LOGIC] == "No Component Selected" && logic_list.size() > 0)
+                if (editor->getCurrentComponentList()[CUR_LOGIC] == "No Component Selected" && logic_list->size() > 0)
                 {
-                    editor->getCurrentComponentList()[CUR_LOGIC] = logic_list[0].getLogicName();
+                    editor->getCurrentComponentList()[CUR_LOGIC] = logic_list->at(0).getLogicName();
                 }
 
-                for (int i = 0; i < logic_list.size(); i++)
+                for (int i = 0; i < logic_list->size(); i++)
                 {
-                    auto logic = logic_list[i];
+                    auto &logic = logic_list->at(i);
                     const bool is_selected = (current_logic_idx == i);
                     std::string selectable_name = logic.getLogicName() + " (" + std::to_string(logic.getLogicId()) + ")";
                     if (ImGui::Selectable(selectable_name.c_str(), is_selected))
                     {
                         current_logic_idx = i;
                         editor->getCurrentComponentList()[CUR_LOGIC] = logic.getLogicName();
+                        current_logic = &(logic_list->at(i));
+                        logicIDInput = current_logic->getLogicId();
+                        std::strcpy(logic_name, current_logic->getLogicName().c_str());
+                        script_type_idx = (int)(current_logic->getScriptType());
+                        signal_type_idx = (int)(current_logic->getSignalType());
+                        targetScriptList = current_logic->getTargetScriptList();
+                        switch (signal_type_idx)
+                        {
+                        case 0:
+                            break;
+                        case 1:
+                            keyCode = current_logic->getLogic().keyLogic.getKey();
+                            keyType = current_logic->getLogic().keyLogic.getKeyType();
+                            std::strcpy(keyCodeString, SDL_GetKeyName(keyCode));
+                        }
                     }
 
                     // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
@@ -198,36 +235,52 @@ void LogicEditor::draw()
                 {
                     // UNDO
                     int lID = logicIDInput;
-                    int ltype = logic_type_idx;
-                    auto action = [this, lname, lID, ltype]() {
-                        Core::Logic *new_logic = editor->getGamePtr()->createLogic();
-                        new_logic->setLogicName(lname);
-                        new_logic->setLogicId(lID);
-                        switch (ltype)
-                        {
-                        case 0: // Custom type
-                            new_logic->setSignalType(Core::SignalType::Custom);
-                            break;
-                        case 1: // Key type
-                            new_logic->setSignalType(Core::SignalType::Key);
-                            break;
-                        }
-                    };
 
-                    auto restore = [this, lname]() {
-                        // Find the logic to delete
-                        auto logic_list = *editor->getGamePtr()->getLogicList();
-                        for (auto logic : logic_list)
-                        {
-                            if (logic.getLogicName() == lname)
-                            {
-                                editor->getGamePtr()->deleteLogic(logic.getLogicId());
-                            }
-                        }
-                    };
+                    int ltype = signal_type_idx;
+                    Core::Logic *new_logic = editor->getGamePtr()->createLogic();
+                    new_logic->setLogicName(lname);
+                    new_logic->setLogicId(lID);
+                    new_logic->setSignalType((Core::SignalType)signal_type_idx);
+                    new_logic->setScriptType((Core::ScriptType)script_type_idx);
+                    new_logic->setTargetScriptList(targetScriptList);
+                    switch (ltype)
+                    {
+                    case 0: // Custom type
+                        break;
+                    case 1: // Key type
+                        new_logic->setLogic(Core::LogicUnion(Core::LogicKey(keyCode, keyType)));
+                        break;
+                    }
 
-                    pushAction(action, restore);
-                    action();
+                    //auto action = [this, lname, lID, ltype]() {
+                    //    Core::Logic *new_logic = editor->getGamePtr()->createLogic();
+                    //    new_logic->setLogicName(lname);
+                    //    new_logic->setLogicId(lID);
+                    //    switch (ltype)
+                    //    {
+                    //    case 0: // Custom type
+                    //        new_logic->setSignalType(Core::SignalType::Custom);
+                    //        break;
+                    //    case 1: // Key type
+                    //        new_logic->setSignalType(Core::SignalType::Key);
+                    //        break;
+                    //    }
+                    //};
+
+                    //auto restore = [this, lname]() {
+                    //    // Find the logic to delete
+                    //    auto logic_list = *editor->getGamePtr()->getLogicList();
+                    //    for (auto logic : logic_list)
+                    //    {
+                    //        if (logic.getLogicName() == lname)
+                    //        {
+                    //            editor->getGamePtr()->deleteLogic(logic.getLogicId());
+                    //        }
+                    //    }
+                    //};
+
+                    //pushAction(action, restore);
+                    //action();
 
                     // memset to clear the buffer after use
                     memset(logic_name, 0, 128);
@@ -236,8 +289,21 @@ void LogicEditor::draw()
 
             ImGui::SameLine();
 
-            if (ImGui::Button("Update"))
+            if (ImGui::Button("Update") && current_logic != nullptr)
             {
+                current_logic->setLogicName(logic_name);
+                current_logic->setLogicId(logicIDInput);
+                current_logic->setSignalType((Core::SignalType)signal_type_idx);
+                current_logic->setScriptType((Core::ScriptType)script_type_idx);
+                current_logic->setTargetScriptList(targetScriptList);
+                switch (signal_type_idx)
+                {
+                case 0: // Custom type
+                    break;
+                case 1: // Key type
+                    current_logic->setLogic(Core::LogicUnion(Core::LogicKey(keyCode, keyType)));
+                    break;
+                }
             }
 
             ImGui::SameLine();

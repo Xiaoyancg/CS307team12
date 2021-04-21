@@ -110,6 +110,8 @@ namespace Core
         {
         case SignalType::Custom:
             return std::string("Custom");
+        case SignalType::Key:
+            return std::string("Key");
         default:
             return std::string();
         }
@@ -179,11 +181,13 @@ namespace Core
             l.setLogic(LogicUnion(LogicCustom()));
             break;
         case SignalType::Key:
+        {
+            std::string keyTypeString = logicJ.at("KeyType").get<std::string>();
             l.setLogic(LogicUnion(LogicKey(
                 logicJ.at("key").get<Sint32>(),
-                logicJ.at("keyType").get<Uint32>())));
+                (Uint32)(keyTypeString == std::string("Released") ? 0 : 1))));
             break;
-
+        }
         default:
             break;
         }
@@ -192,9 +196,13 @@ namespace Core
 
     SignalType Logic::getSignalTypeFromString(std::string s)
     {
-        if (s.compare("Custom"))
+        if (s.compare("Custom") == 0)
         {
             return SignalType::Custom;
+        }
+        else if (s.compare("Key") == 0)
+        {
+            return SignalType::Key;
         }
         else
             return SignalType::Custom;

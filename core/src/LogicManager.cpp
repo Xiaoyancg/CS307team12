@@ -74,8 +74,8 @@ namespace Core
                         {
                             sendScript(scriptId);
                         }
-                        // TODO: run once
-                        removeLogic(logic->getLogicId());
+                        // TODO: run forever
+                        //removeLogic(logic->getLogicId());
                     }
                 }
                 break;

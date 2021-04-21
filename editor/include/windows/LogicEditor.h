@@ -13,4 +13,16 @@ private:
     char keyCodeString[20] = "";
     SDL_Keycode keyCode;
     Uint32 keyType = 0;
+    std::vector<int> targetScriptList;
+    int newTargetScript = 0;
+    char *signal_type_strings[2] = {"Custom", "Key"};
+    // also the signal type
+    int signal_type_idx = 0;
+    char *script_type_strings[2] = {"Custom", "MoveConstantly"};
+    // also the script type
+    int script_type_idx = 0;
+    Core::Logic *current_logic = nullptr;
+    char logic_name[128] = "";
+    int logicIDInput = -1;
+    int current_logic_idx = 0;
 };

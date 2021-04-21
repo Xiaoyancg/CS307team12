@@ -910,6 +910,12 @@ namespace Core
 
     /* -------------------------------- Game loop ------------------------------- */
 
+    void Game::keyHandler(SDL_KeyboardEvent keyEvent)
+    {
+        // Handle Keypresses
+        _logicManager.sendSignal(Signal(-100, SignalType::Key, "SDL_KEY",
+                                        SignalUnion(SignalKey(keyEvent))));
+    }
     void Game::mainLoop()
     {
         //auto lastTime = std::chrono::steady_clock::now();
@@ -945,9 +951,7 @@ namespace Core
                     }
                     break;
                 case SDL_KEYDOWN:
-                    // Handle Keypresses
-                    _logicManager.sendSignal(Signal(-100, SignalType::Key, "SDL_KEY",
-                                                    SignalUnion(SignalKey(event.key))));
+                    keyHandler(event.key);
                     //handleWindowEvent(event);
                     // TODO: Mouse
                 }

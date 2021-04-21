@@ -1,4 +1,5 @@
 #include <vector>
+#include <unordered_map>
 #include <string>
 #include <glm/glm.hpp>
 #include <nlohmann/json.hpp>
@@ -20,6 +21,8 @@ namespace Core
         GameEnd = 20000,
 
     };
+    extern std::unordered_map<ScriptType, std::string> scriptTypeStringList;
+    std::string getScriptTypeStringByScriptType(ScriptType type);
 
     //* ----------------- ANCHOR SCRIPT TYPES ---------------- *//
 

@@ -163,7 +163,7 @@ void Editor::processInput()
             }
             if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
             {
-                game->handleWindowEvent(evt);
+                game->keyHandler(evt.key);
             }
         }
         if (evt.type == SDL_KEYUP)
@@ -333,7 +333,8 @@ void Editor::createGame()
 {
     //createTexCBO();
     //createMapTexCBO();
-    if (game != nullptr) {
+    if (game != nullptr)
+    {
         freeGame();
     }
     game = new Core::Game();
@@ -399,7 +400,7 @@ void Editor::runGame()
     {
         savedGame = game;
         game = new Core::Game(*game);
-        ((GameWindow*) windowList[GAMEVIEW])->updateLastTime();
+        ((GameWindow *)windowList[GAMEVIEW])->updateLastTime();
         gameRunning = true;
     }
 }
