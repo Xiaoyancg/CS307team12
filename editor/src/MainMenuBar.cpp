@@ -39,7 +39,7 @@ void MainMenuBar::draw() {
 					saveAsPopup = true;
 				}
 			}
-			ImGui::MenuItem("Color Settings", "", windowList[STYLEEDITOR]->getVisiblePtr());
+			ImGui::MenuItem("Editor Theme", "", windowList[STYLEEDITOR]->getVisiblePtr());
 			ImGui::EndMenu();
 		}
 
