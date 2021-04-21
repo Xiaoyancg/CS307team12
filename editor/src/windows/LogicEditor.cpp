@@ -143,7 +143,17 @@ void LogicEditor::draw()
 
             if (ImGui::Button("Create"))
             {
-                if (strlen(logic_name) != 0)
+                bool dupeID = false;
+                // Enforce unique IDs for each logic
+                for (auto logic : *editor->getGamePtr()->getLogicList())
+                {
+                    if (logic.getLogicId() == logicIDInput)
+                    {
+                        dupeID = true;
+                    }
+                }
+
+                if (strlen(logic_name) != 0 && !dupeID)
                 {
                     // UNDO
                     std::string lname = logic_name;
@@ -174,7 +184,6 @@ void LogicEditor::draw()
                                 editor->getGamePtr()->deleteLogic(logic.getLogicId());
                             }
                         }
-                        
                     };
 
                     pushAction(action, restore);
@@ -183,14 +192,17 @@ void LogicEditor::draw()
                     // memset to clear the buffer after use
                     memset(logic_name, 0, 128);
                 }
-                
             }
+
             ImGui::SameLine();
+
             if (ImGui::Button("Update"))
             {
 
             }
+
             ImGui::SameLine();
+
             std::string currentLogicName = editor->getCurrentComponentList()[CUR_LOGIC];
             if (ImGui::Button("Delete") && currentLogicName != "No Component Selected")
             {
@@ -203,9 +215,6 @@ void LogicEditor::draw()
                         game->deleteLogic(logic.getLogicId());
                     }
                 }
-
-                // memset to clear the buffer after use
-                memset(logic_name, 0, 128);
             }
 
             // Open logic info popup when "Show Information" is clicked
