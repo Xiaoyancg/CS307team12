@@ -16,6 +16,22 @@ namespace Core
     {
         return keySignal.getKey() == _key && keySignal.getKeyType() == _keyType;
     }
+    SDL_Keycode LogicKey::getKey()
+    {
+        return _key;
+    }
+    void LogicKey::setKey(SDL_Keycode key)
+    {
+        _key = key;
+    }
+    Uint32 LogicKey::getKeyType()
+    {
+        return _keyType;
+    }
+    void LogicKey::setKeyType(Uint32 keyType)
+    {
+        _keyType = keyType;
+    }
     LogicKey::LogicKey() : LogicKey(SDLK_SPACE, SDL_PRESSED) {}
     LogicKey::LogicKey(SDL_Keycode key, Uint32 keyType)
         : _key(key), _keyType(keyType) {}
@@ -87,6 +103,32 @@ namespace Core
     LogicUnion Logic::getLogic()
     {
         return _logic;
+    }
+    std::string Logic::getSignalTypeString()
+    {
+        switch (_signalType)
+        {
+        case SignalType::Custom:
+            return std::string("Custom");
+        default:
+            return std::string();
+        }
+    }
+    std::string Logic::getScriptTypeString()
+    {
+        switch (_scriptType)
+        {
+        case ScriptType::Custom:
+            return std::string("Custom");
+            break;
+        case ScriptType::MoveConstantly:
+            return std::string("MoveConstantly");
+            break;
+
+        default:
+            return std::string();
+            break;
+        }
     }
 
     void Logic::updateLogic(SignalType signalType, ScriptType scriptType, int id, std::string name, std::vector<int> targetList, ...)

@@ -28,6 +28,10 @@ namespace Core
 
     public:
         bool check(SignalKey keySignal);
+        SDL_Keycode getKey();
+        void setKey(SDL_Keycode);
+        Uint32 getKeyType();
+        void setKeyType(Uint32);
         LogicKey();
         LogicKey(SDL_Keycode key, Uint32 keyType);
         ~LogicKey();
@@ -58,6 +62,9 @@ namespace Core
         LogicUnion _logic;
 
     public:
+        std::string getSignalTypeString();
+        std::string getScriptTypeString();
+
         void setLogicId(int logicId);
         int getLogicId();
         void setSignalType(SignalType signalType);

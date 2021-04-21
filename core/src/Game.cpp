@@ -508,7 +508,7 @@ namespace Core
             nlohmann::json sj;
             sj["SignalName"] = s.getSignalName();
             sj["signalId"] = s.getSignalId();
-            sj["SignalType"] = s.getTypeString();
+            sj["SignalType"] = s.getSignalTypeString();
             nlohmann::json si;
             switch (s.getSignalType())
             {
@@ -525,10 +525,31 @@ namespace Core
         logicManagerjs["signalList"] = signalVector;
 
         std::vector<json> logicVector;
-        //TODO for each logic push to logic vector
+        for (auto l : *(_logicManager.getLogicList()))
+        {
+            nlohmann::json lj;
+            lj["LogicName"] = l.getLogicName();
+            lj["logicId"] = l.getLogicId();
+            lj["SignalType"] = l.getSignalTypeString();
+            lj["ScriptType"] = l.getScriptTypeString();
+            lj["targetScriptList"] = l.getTargetScriptList();
+            nlohmann::json loi;
+            switch (l.getSignalType())
+            {
+            case SignalType::Custom:
+                break;
+            case SignalType::Key:
+                loi["key"] = (Sint32)(l.getLogic().keyLogic.getKey());
+                loi["KeyType"] = (l.getLogic().keyLogic.getKeyType() == SDL_PRESSED) ? std::string("Press") : std::string("Release");
+            default:
+                break;
+            }
+            lj["logic"] = loi;
+            logicVector.push_back(lj);
+        }
+
         logicManagerjs["logicList"] = logicVector;
         std::vector<json> scriptVector;
-        //TODO for each script push to script Vector
         for (auto s : *(_logicManager.getScriptList()))
         {
             nlohmann::json scj;
