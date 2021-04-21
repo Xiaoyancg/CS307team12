@@ -103,6 +103,9 @@ void PageEditor::draw()
                     if (is_selected)
                     {
                         ImGui::SetItemDefaultFocus();
+                        if (typeid(*page) == typeid(Core::MenuPage) && ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0)) {
+                            editor->getWindowList()[MENUPAGEEDITOR]->setVisible(true);
+                        }
                     }
                 }
                 ImGui::EndListBox();
