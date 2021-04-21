@@ -298,7 +298,7 @@ namespace Core
 
     void LogicManager::runMoveConstantly(ScriptMoveConstantly script)
     {
-        if ((*_currPage)->getID() == script.getTargetPage())
+        if ((*_currPage)->getID() == script.getTargetPageId())
         {
             //TODO: add entity id in parse and in Entity constructor
             for (auto &entity : (*_currPage)->getEntityList())
@@ -347,17 +347,18 @@ namespace Core
     LogicManager LogicManager::parse(nlohmann::json root)
     {
         //TODO
-        auto signalVector = root.at("signalList")
-                                .get<std::vector<nlohmann::json>>();
-        for (auto signal_js : signalVector)
-        {
-            _signalList.push_back(Signal::parse(signal_js));
-        }
-        auto logicVector = root.at("logicList")
-                               .get<std::vector<nlohmann::json>>();
-        for (auto logic_js : logicVector)
-        {
-        }
+        // FIXME auto signalVector = root.at("signalList")
+        //.get<std::vector<nlohmann::json>>();
+        //for (auto signal_js : signalVector)
+        //{
+        //    //FIXME _signalList.push_back(Signal::parse(signal_js));
+        //}
+        ////FIXME auto logicVector = root.at("logicList")
+        ////.get<std::vector<nlohmann::json>>();
+        //for (auto logic_js : logicVector)
+        //{
+        //    // FIXME
+        //}
         auto scriptVector = root.at("scriptList")
                                 .get<std::vector<nlohmann::json>>();
         for (auto script_js : scriptVector)

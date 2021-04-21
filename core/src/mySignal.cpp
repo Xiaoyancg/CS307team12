@@ -49,6 +49,14 @@ namespace Core
 
     //* ----------------------- SIGNAL ----------------------- *//
 
+    std::string Signal::getTypeString()
+    {
+        switch (_signalType)
+        {
+        case SignalType::Custom:
+            return std::string("Custom");
+        }
+    }
     int Signal::getSignalId() { return _signalId; }
     void Signal::setSignalId(int signalId) { _signalId = signalId; }
     SignalType Signal::getSignalType() { return _signalType; }

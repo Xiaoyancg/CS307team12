@@ -12,10 +12,14 @@ public:
     }
     void draw();
 
+    Core::Entity* getCurrentEntity() {
+        auto& entityList = editor->getGamePtr()->getCurrPage()->getEntityList();
+        return currentEntityIdx >= 0 && currentEntityIdx < entityList.size() ? entityList[currentEntityIdx] : nullptr;
+    }
 private:
     char entityName[128];
 
-    bool entityInfo = false;
+    int currentEntityIdx = -1;
     int x_pos = 0;
     int y_pos = 0;
     int entity_width = 0, entity_height = 0;

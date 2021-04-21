@@ -1,6 +1,6 @@
 #pragma once
 
-void HelpMarker(const char* desc)
+inline void HelpMarker(const char* desc)
 {
     ImGui::TextDisabled("(?)");
     if (ImGui::IsItemHovered())

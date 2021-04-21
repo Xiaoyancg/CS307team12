@@ -15,6 +15,8 @@
 #include <TestCore.h>
 #endif // __TEST_CORE
 
+static GLfloat clear_color[4];
+
 namespace Core
 {
     const int Game::FPS = 60;
@@ -43,6 +45,7 @@ namespace Core
         mCamera(new Camera(*other.mCamera)),
         currPageIdx(other.currPageIdx),
         pageList(other.pageList.size()),
+        mapList(other.mapList.size()),
         inDisplayList(other.inDisplayList),
         window(other.window),
         gl_context(other.gl_context),
@@ -154,6 +157,7 @@ namespace Core
     // MEMBER OPERATION
     Page *Game::addPage(Page *p)
     {
+        p->setGame(this);
         this->pageList.push_back(p);
         return p;
     }
@@ -194,25 +198,26 @@ namespace Core
         }
     }
 
-    int Game::addMap(Map* map) {
+    int Game::addMap(Map *map)
+    {
         mapList.push_back(map);
         return mapList.size() - 1;
     }
 
     Map* Game::getMap(int idx) {
-        return mapList[idx];
+        return idx >= 0 && idx < mapList.size() ? mapList[idx] : nullptr;
     }
 
     void Game::deleteMap(std::string name) {
         for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
             if ((*iter)->getName() == name) {
-                mapList.erase(iter);
                 for (auto page : pageList) {
                     Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
                     if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
@@ -221,13 +226,13 @@ namespace Core
     void Game::deleteMap(Map* map) {
         for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
             if ((*iter) == map) {
-                mapList.erase(iter);
                 for (auto page : pageList) {
                     Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
                     if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
                         mapPage->setMapIndex(-1);
                     }
                 }
+                mapList.erase(iter);
                 return;
             }
         }
@@ -376,7 +381,7 @@ namespace Core
     }
     void Game::deleteScript(int scriptId)
     {
-        _logicManager.deleteSignal(scriptId);
+        _logicManager.deleteScript(scriptId);
     }
 
     std::vector<Script> *Game::getScriptsList()
@@ -395,9 +400,9 @@ namespace Core
         try
         {
             auto pageVec = root.at("pageList").get<std::vector<json>>();
-            for (auto& pageJson : pageVec)
+            for (auto &pageJson : pageVec)
             {
-                Page* page = Page::fromJSON(pageJson);
+                Page *page = Page::fromJSON(pageJson);
                 page->setGame(this);
                 pageList.push_back(page);
             }
@@ -407,15 +412,17 @@ namespace Core
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
-        try {
+        try
+        {
             auto mapVec = root.at("maps").get<std::vector<json>>();
-            for (json& mapJson : mapVec)
+            for (json &mapJson : mapVec)
             {
-                Map* map = Map::fromJSON(mapJson);
+                Map *map = Map::fromJSON(mapJson);
                 mapList.push_back(map);
             }
         }
-        catch (const std::exception &e) {
+        catch (const std::exception &e)
+        {
             std::cerr << "error: " << e.what() << std::endl;
         }
 
@@ -465,20 +472,74 @@ namespace Core
 
         //TODO LogicManager
         json logicManagerjs;
+        std::vector<json> signalVector;
+        // TODO for each signal ...
+        for (auto s : *(_logicManager.getSignalList()))
+        {
+            nlohmann::json sj;
+            sj["SignalName"] = s.getSignalName();
+            sj["signalId"] = s.getSignalId();
+            sj["SignalType"] = s.getTypeString();
+            nlohmann::json si;
+            switch (s.getSignalType())
+            {
+            case SignalType::Custom:
+                si["targetLogicList"] = s.getSignal().customSignal.getTargetLogicList();
+                break;
+
+            default:
+                break;
+            }
+            sj["signal"] = si;
+            signalVector.push_back(sj);
+        }
+        logicManagerjs["signalList"] = signalVector;
+
         std::vector<json> logicVector;
         //TODO for each logic push to logic vector
         logicManagerjs["logicList"] = logicVector;
         std::vector<json> scriptVector;
         //TODO for each script push to script Vector
+        for (auto s : *(_logicManager.getScriptList()))
+        {
+            nlohmann::json scj;
+            scj["ScriptName"] = s.getScriptName();
+            scj["scriptId"] = s.getScriptId();
+            scj["ScriptType"] = s.getScriptTypeString();
+            nlohmann::json sci;
+            switch (s.getScriptType())
+            {
+            case ScriptType::Custom:
+                sci["addTargetSignalList"] =
+                    s.getScript().scriptCustom.getAddTargetSignalList();
+                sci["addTargetLogicList"] =
+                    s.getScript().scriptCustom.getAddTargetLogicList();
+                sci["addTargetScriptList"] =
+                    s.getScript().scriptCustom.getAddTargetScriptList();
+                sci["removeTargetSignalList"] =
+                    s.getScript().scriptCustom.getRemoveTargetSignalList();
+                sci["removeTargetLogicList"] =
+                    s.getScript().scriptCustom.getRemoveTargetLogicList();
+                sci["removeTargetScriptList"] =
+                    s.getScript().scriptCustom.getRemoveTargetScriptList();
+                break;
+            case ScriptType::MoveConstantly:
+                sci["targetPageId"] = s.getScript().scriptMoveConstantly.getTargetPageId();
+                sci["targetEntityList"] = s.getScript().scriptMoveConstantly.getTargetEntityList();
+                sci["movement"] = {s.getScript().scriptMoveConstantly.getMovement().x,
+                                   s.getScript().scriptMoveConstantly.getMovement().y};
+            default:
+                break;
+            }
+            scj["script"] = sci;
+            scriptVector.push_back(scj);
+        }
         logicManagerjs["scriptList"] = scriptVector;
-        std::vector<json> signalVector;
-        // TODO for each signal ...
-        logicManagerjs["signalList"] = signalVector;
         j["logicManager"] = logicManagerjs;
-
         // TODO start point
         json startPoint;
-        j["startPoint"] = startPoint;
+        // TODO
+        // j["startPoint"] = startPoint;
         return j;
     }
 
@@ -522,7 +583,7 @@ namespace Core
             in vec2 TexCoord;
 
             uniform sampler2D texture1;
-            uniform vec3 color;
+            uniform vec3 color ;
 
 		    out vec4 FragColor;
 
@@ -748,11 +809,13 @@ namespace Core
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
     }
 
-    bool Game::isKeyPressed(SDL_Keycode kc) {
+    bool Game::isKeyPressed(SDL_Keycode kc)
+    {
         return keyboardState[SDL_GetScancodeFromKey(kc)] == 1;
     }
 
-    void Game::update(float dt) {
+    void Game::update(float dt)
+    {
         keyboardState = SDL_GetKeyboardState(nullptr);
         getCurrPage()->update(dt);
     }
@@ -767,7 +830,7 @@ namespace Core
         GLfloat color[] = {1.0f, 1.0f, 1.0f};
         glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
 
-        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
+        glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (getCurrPage() != nullptr)
@@ -836,7 +899,7 @@ namespace Core
                 }
             }
             auto now = std::chrono::steady_clock::now();
-            float dt = (float) (now - lastTime).count() / std::chrono::steady_clock::period::den;
+            float dt = (float)(now - lastTime).count() / std::chrono::steady_clock::period::den;
             lastTime = now;
             update(dt);
             render();
