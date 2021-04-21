@@ -5,36 +5,10 @@ namespace Core
 {
     // Takes a scale, the number of tiles in the x and y direction
     Map::Map(std::string name, glm::ivec2 dimensions, int tileSize)
-        : mMapDimensions(dimensions), mTileSize(tileSize), mMapName(name)
+        : mTileSize(tileSize), mMapName(name)
     {
         // Create map
-        mNumTiles = mMapDimensions.x * mMapDimensions.y;
-        if (mNumTiles > 0)
-        {
-            mTileArray = new Tile[mNumTiles];
-            setTileCoords();
-        }
-
-        // Each map gets its own Camera. Whenever the map is drawn from Game::renderDefaultMapPage,
-        // mCamera will be used instead of
-        mCamera = new Camera();
-        mCamera->setDimensions((mMapDimensions.x + 1) * tileSize, (mMapDimensions.y + 1) * tileSize); // This is the projection the Editor expects
-        //mCamera->setDimensions(1024, 1024);
-    }
-
-    Map::~Map()
-    {
-        if (mTileArray != nullptr)
-        {
-            delete mTileArray;
-            mTileArray = nullptr;
-        }
-
-        // If the map is deleted while being used in a MapPage
-        if (mAssociatedPage != nullptr)
-        {
-            mAssociatedPage->addMap(nullptr);
-        }
+        setDimensions(dimensions);
     }
 
     // Set mMapDimensions to new dimensions
@@ -45,13 +19,9 @@ namespace Core
             // Don't set negative map dimensions >:(
             return;
         }
-
-        delete mTileArray;
-        mNumTiles = dimensions.x * dimensions.y;
-        Tile *newMap = new Tile[mNumTiles];
-        mTileArray = newMap;
         mMapDimensions = dimensions;
-        setTileCoords();
+        mTileVector.resize(mMapDimensions.x * mMapDimensions.y);
+        updateTileCoords();
     }
 
     // Get mMapDimensions
@@ -68,17 +38,12 @@ namespace Core
         }
 
         mTileSize = size;
-        setTileCoords();
+        updateTileCoords();
     }
 
     int Map::getTileSize()
     {
         return mTileSize;
-    }
-
-    int Map::getNumTiles()
-    {
-        return mNumTiles;
     }
 
     void Map::setName(std::string name)
@@ -91,88 +56,52 @@ namespace Core
         return mMapName;
     }
 
-    Camera *Map::getCamera()
-    {
-        return mCamera;
+    // This is called from the MapView window with on a mouse click.
+    // x and y are floats on a scale from 0 to 1, indicating the location of the click.
+    // The coordinate is a float between 0 and 1 because the MapView window can be stretched, 
+    // and we need a predictable scale (0->1 is simple)
+    Tile* Map::getTileFromClick(Camera* camera, float x, float y) {
+        // Click is already in terms of window coordinates, just scale to get world coords
+        glm::vec2 transformed = camera->projectToWorld(glm::vec2(x, y));
+        return checkTileCollision(transformed); // Returns either a ptr to a Tile or nullptr
     }
 
     // This will set the 4 corners of each tile of the map based on the dimensions and tilesize.
     // Having tile coordinates pre-set allows for quick map rendering, with minimal calculations.
     // These coordinates do not change often, only in the case of changing dimensions or tile size.
-    void Map::setTileCoords()
+    void Map::updateTileCoords()
     {
-        // Calculate the smallest and greatest x and y (combinations of these make the 4 corners of the entity)
-        // Starting at the top left corner
-        // Find the amount of tiles to the left/right and top/bottom (in tiles)
-        int halfXTiles = mMapDimensions.x / 2;
-        int halfYTiles = mMapDimensions.y / 2;
-
-        // Find the amount of pixels to the left/right and top/bottom from the center of the map to the edge
-        int halfXPixels = halfXTiles * mTileSize;
-        int halfYPixels = halfYTiles * mTileSize;
-
-        // Calculate the top-left corner of the centered map
-        int lowX = -halfXPixels;
-        int highX = lowX + mTileSize;
-        int highY = halfYPixels;
-        int lowY = highY - mTileSize;
-
         int border = 0; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
         int index = 0;  // An easy way to access the mTileArray without having to do any calculations
+        glm::vec2 pos = glm::vec2(0, 0);
         for (int row = mMapDimensions.y - 1; row >= 0; row--)
         {
             for (int col = 0; col < mMapDimensions.x; col++)
             {
-                // posCoords will be filled with the 4 position coordinates for each tile and will be
-                // given to Tile::setCoords() where it will be stored in a render-able buffer correctly
-                int posCoords[8];
-
-                // P1
-                posCoords[0] = lowX;  // Top left x
-                posCoords[1] = highY; // Top left y
-
-                // P2
-                posCoords[2] = lowX; // Bottom left x
-                posCoords[3] = lowY; // Bottom left y
-                // P3
-                posCoords[4] = highX; // Top right x
-                posCoords[5] = highY; // Top right y
-                // P4
-                posCoords[6] = highX; // Bottom right x
-                posCoords[7] = lowY;  // Bottom right y
-
-                // Set the coordinates for the current tile
-                mTileArray[index].setCoords(posCoords);
-
-                // Increment loop variables to find the next tile in the same row
-                lowX += mTileSize;
-                highX += mTileSize;
+                mTileVector[index].calculateSquareCoords(
+                    glm::vec2(col * mTileSize, row * mTileSize),
+                    glm::vec2(mTileSize, mTileSize)
+                );
                 index++;
             }
-
-            // Calculate the next tile in a new row
-            lowX = -halfXPixels;
-            highX = lowX + mTileSize;
-            highY -= mTileSize;
-            lowY -= mTileSize;
         }
     }
 
-    Tile *Map::checkTileCollision(glm::ivec2 click)
+    Tile *Map::checkTileCollision(glm::vec2 point)
     {
-        for (int i = 0; i < mNumTiles; i++)
+        for (auto& tile : mTileVector)
         {
             // Parse the lower and upper coordinates for x and y from the Tile's coords array
-            float *coords = mTileArray[i].getCoords();
-            int lowX = coords[0];
-            int lowY = coords[5];
-            int highX = coords[8];
-            int highY = coords[1];
+            float *coords = tile.getCoords();
+            float lowX = coords[0];
+            float lowY = coords[1];
+            float highX = coords[12];
+            float highY = coords[13];
 
-            if ((lowX <= click.x) && (click.x <= highX) &&
-                (lowY <= click.y) && (click.y <= highY))
+            if ((lowX <= point.x) && (point.x <= highX) &&
+                (lowY <= point.y) && (point.y <= highY))
             {
-                return &mTileArray[i];
+                return &tile;
             }
         }
         return nullptr;
@@ -181,23 +110,21 @@ namespace Core
     // Takes a pointer to an array of integers, containing the spriteID for each tile in the Map
     // ASSUMES THE DIMENSIONS OF ARRAY spriteIDMap ARE THE SAME AS Map::mMapDimensions
     // This will have to take a depth parameter when Tile depth gets implemented
-    void Map::setMapTileSpritesFromArray(int *spriteIDMap)
+    void Map::setMapTileSpritesFromArray(std::vector<int>& spriteIDMap)
     {
-        mNumTiles = mMapDimensions.x * mMapDimensions.y; // Get the number of tiles in the map
-
-        for (int i = 0; i < mNumTiles; i++)
+        for (int i = 0; i < mTileVector.size(); i++)
         {
-            mTileArray[i].setSpriteID(spriteIDMap[i]); // Copy the spriteID to the Map at tile 'i'
+            mTileVector[i].setSpriteID(spriteIDMap[i]); // Copy the spriteID to the Map at tile 'i'
         }
     }
 
     void Map::render(bool withBorder)
     {
         // Traverse all tiles in the Map
-        for (int i = 0; i < getNumTiles(); i++)
+        for (auto& tile : mTileVector)
         {
             // Render each tile of the map!
-            float *coordsPtr = mTileArray[i].getCoords(); // Get ptr to the tile coordinates
+            float *coordsPtr = tile.getCoords(); // Get ptr to the tile coordinates
             float coords[16];
             std::memcpy(coords, coordsPtr, sizeof(int) * 16);
 
@@ -221,13 +148,13 @@ namespace Core
             }
 
             // Bind the correct sprite if it exists
-            if (mTileArray[i].isInvisibleTile())
+            if (tile.isInvisibleTile())
             {
                 glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Make drawing invisible
             }
-            else if (mTileArray[i].getSpriteID() != -1 && MapPage::mGameSprites->atID(mTileArray[i].getSpriteID()))
+            else if (tile.getSpriteID() != -1 && MapPage::mGameSprites->atID(tile.getSpriteID()))
             {
-                Sprite *sprite = MapPage::mGameSprites->atID(mTileArray[i].getSpriteID());
+                Sprite *sprite = MapPage::mGameSprites->atID(tile.getSpriteID());
                 glBindTexture(GL_TEXTURE_2D, sprite->getOpenGLTextureID());
                 if (sprite->getType() != SPRITE_TYPES::FULL)
                 {
@@ -262,5 +189,55 @@ namespace Core
             // Unbind the current sprite
             glBindTexture(GL_TEXTURE_2D, 0);
         }
+    }
+
+    void Map::renderCollisionHelper(GLuint texture) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        for (auto& tile : mTileVector)
+        {
+            if (tile.isSolid()) {
+                // Render each tile of the map!
+                float *coords = tile.getCoords(); // Get ptr to the tile coordinates
+
+                // Buffer and draw tile
+                // NOTE: Change the int multiplier whenever new data will be added to the shaders.
+                //       Right now, there are 4 points (8 ints), with 4 texture points (8 ints) = 16 * sizeof(int)
+                glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), coords, GL_DYNAMIC_DRAW);
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+                glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable drawing (whether made invisible or not)
+            }
+        }
+
+        // Unbind the current sprite
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    using json = nlohmann::json;
+    Map* Map::fromJSON(json& root) {
+        Map* map = new Map;
+        map->parse(root);
+        return map;
+    }
+
+    void Map::parse(json& root) {
+        auto size = root.at("size").get<std::vector<int>>();
+        mMapDimensions = glm::ivec2(size[0], size[1]);
+        auto& tileArray = root.at("tiles").get<std::vector<std::vector<int>>>();
+        for (auto& tile : tileArray) {
+            mTileVector.emplace_back(tile[0], tile[1]);
+        }
+    }
+
+    json Map::serialize() {
+        json map;
+        map["size"] = { mMapDimensions.x, mMapDimensions.y };
+        std::vector<json> jTileList;
+        for (auto& tile : mTileVector) {
+            json jTile = { tile.isInvisibleTile(), tile.isSolid() };
+            jTileList.push_back(jTile);
+        }
+        map["tiles"] = jTileList;
+        return map;
     }
 }

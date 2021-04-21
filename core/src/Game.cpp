@@ -7,6 +7,7 @@
 #include <glad/glad.h>
 #include <iostream>
 #include <algorithm>
+#include <chrono>
 
 #include "Camera.h"
 
@@ -16,42 +17,48 @@
 
 namespace Core
 {
-
+    const int Game::FPS = 60;
     int Game::width = 1280;
     int Game::height = 720;
 
     Game::Game(std::string gameName) : gameName(gameName)
     {
         initialize();
-        this->setCurrentPage(this->createPage("emptyPage"));
+        setCurrentPage(addPage(new Page("emptyPage")));
     }
 
     Game::Game(nlohmann::json &json)
     {
         initialize();
-        this->parse(json);
+        parse(json);
     }
 
-    Game::Game(const Game &other) : gameName(other.gameName),
-                                    author(other.author),
-                                    version(other.version),
-                                    lMTime(other.lMTime),
-                                    note(other.note),
-                                    _logicManager(other._logicManager),
-                                    mCamera(new Camera(*other.mCamera)),
-                                    currPageIdx(other.currPageIdx),
-                                    pageList(other.pageList.size()),
-                                    currMapPageIdx(other.currMapPageIdx),
-                                    inDisplayList(other.inDisplayList),
-                                    window(other.window),
-                                    gl_context(other.gl_context),
-                                    shaderProgram(other.shaderProgram),
-                                    mGameSprites(other.mGameSprites)
+    Game::Game(const Game& other) :
+        gameName(other.gameName),
+        author(other.author),
+        version(other.version),
+        lMTime(other.lMTime),
+        note(other.note),
+        _logicManager(other._logicManager),
+        mCamera(new Camera(*other.mCamera)),
+        currPageIdx(other.currPageIdx),
+        pageList(other.pageList.size()),
+        inDisplayList(other.inDisplayList),
+        window(other.window),
+        gl_context(other.gl_context),
+        keyboardState(other.keyboardState),
+        shaderProgram(other.shaderProgram),
+        mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
         for (int i = 0; i < other.pageList.size(); i++)
         {
             pageList[i] = new Page(*other.pageList[i]);
+            pageList[i]->setGame(this);
+        }
+        for (int i = 0; i < other.mapList.size(); i++)
+        {
+            mapList[i] = new Map(*other.mapList[i]);
         }
     }
 
@@ -150,57 +157,6 @@ namespace Core
         this->pageList.push_back(p);
         return p;
     }
-    Page *Core::Game::createPage(std::string n)
-    {
-        Page *p = new Page(n);
-        return addPage(p);
-    }
-    MapPage *Game::createMapPage()
-    {
-        MapPage *mp = new MapPage();
-        return (MapPage *)addPage(mp);
-    }
-    MapPage *Game::createMapPage(std::string n)
-    {
-        MapPage *mp = new MapPage(n);
-        return (MapPage *)addPage(mp);
-    }
-    MapPage *Game::createMapPage(std::string n, Map *m)
-    {
-        MapPage *mp = new MapPage(n, m);
-        return (MapPage *)addPage(mp);
-    }
-    Map *Game::createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize)
-    {
-        if (currMapPageIdx != -1)
-        {
-            return getDefaultMapPage()->addMap(new Map(name, glm::ivec2(cols, rows), tilesize));
-        }
-        return nullptr;
-    }
-    void Game::deleteDefaultMapPageCurrentMap()
-    {
-        getDefaultMapPage()->deleteCurrMap();
-    }
-    MenuPage *Game::createMenuPage(std::string name, Menu *menu)
-    {
-        MenuPage *mp = new MenuPage(name, menu);
-        return (MenuPage *)addPage(mp);
-    }
-    MenuPage *Game::createMenuPage(std::string name)
-    {
-        MenuPage *mp = new MenuPage(name);
-        return (MenuPage *)addPage(mp);
-    }
-    MenuPage *Game::createMenuPage()
-    {
-        MenuPage *mp = new MenuPage();
-        return (MenuPage *)addPage(mp);
-    }
-    std::vector<Page *> &Game::getPageList()
-    {
-        return pageList;
-    }
 
     void Game::deletePage(Page *dp)
     {
@@ -234,6 +190,45 @@ namespace Core
                 delete (p);
                 p = nullptr;
                 break;
+            }
+        }
+    }
+
+    int Game::addMap(Map* map) {
+        mapList.push_back(map);
+        return mapList.size() - 1;
+    }
+
+    Map* Game::getMap(int idx) {
+        return mapList[idx];
+    }
+
+    void Game::deleteMap(std::string name) {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
+            if ((*iter)->getName() == name) {
+                mapList.erase(iter);
+                for (auto page : pageList) {
+                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+                        mapPage->setMapIndex(-1);
+                    }
+                }
+                return;
+            }
+        }
+    }
+
+    void Game::deleteMap(Map* map) {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
+            if ((*iter) == map) {
+                mapList.erase(iter);
+                for (auto page : pageList) {
+                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+                        mapPage->setMapIndex(-1);
+                    }
+                }
+                return;
             }
         }
     }
@@ -300,28 +295,6 @@ namespace Core
         return mGameSprites.getSpriteSheets();
     }
 
-    std::vector<Map *> Game::getDefaultMapPageMaps()
-    {
-        return getDefaultMapPage()->getMaps();
-    }
-
-    MapPage *Game::getDefaultMapPage()
-    {
-        return currMapPageIdx != -1 ? (MapPage *)pageList[currMapPageIdx] : nullptr;
-    }
-
-    // This function is called from the Editor and will render the current Map onto the MapView window in ImGui
-    void Game::renderDefaultMapPage()
-    {
-        glm::ivec2 dims = getDefaultMapPage()->getCurrMap()->getCamera()->getDimensions();
-        //glViewport(0, 0, dims.x, dims.y);
-        // Use the Map's Camera as opposed to the Game's camera. This lets each Map be centered and unaffected by the Game's Camera's movement
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(getDefaultMapPage()->getCurrCamera()->getMatrix()));
-
-        // Render the Map onto the MapPage's Framebuffer set by Editor. (TODO: Fix this approach)
-        getDefaultMapPage()->render();
-    }
-
     void Game::renderSpriteSheet(SpriteSheet *spritesheet)
     {
         if (spritesheet->getOpenGLTextureID() >= 0)
@@ -332,10 +305,10 @@ namespace Core
             Camera *camera = new Camera();
             glm::vec2 dims = spritesheet->getDimensions();
             camera->setDimensions(dims.x, dims.y);
-            camera->offsetPosition(glm::ivec2(dims.x / 2, dims.y / 2));
+            camera->offsetPosition(glm::vec2(dims.x / 2, dims.y / 2));
 
             // Set the camera in the shader
-            glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(camera->getMatrix()));
+            camera->use();
 
             glBindTexture(GL_TEXTURE_2D, spritesheet->getOpenGLTextureID());
 
@@ -411,7 +384,8 @@ namespace Core
         return _logicManager.getScriptList();
     }
 
-    Game *Game::parse(nlohmann::json &root)
+    using json = nlohmann::json;
+    Game *Game::parse(json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
         this->setAuthor(root.at("Author").get<std::string>());
@@ -420,16 +394,31 @@ namespace Core
         this->setNote(root.at("Note").get<std::string>());
         try
         {
-            auto pageVec = root.at("pageList").get<std::vector<nlohmann::json>>();
-            for (nlohmann::json pageJson : pageVec)
+            auto pageVec = root.at("pageList").get<std::vector<json>>();
+            for (auto& pageJson : pageVec)
             {
-                this->pageList.push_back(Page::parse(pageJson));
+                Page* page = Page::fromJSON(pageJson);
+                page->setGame(this);
+                pageList.push_back(page);
             }
+            setCurrentPage(0);
         }
         catch (const std::exception &e)
         {
             std::cerr << "error: " << e.what() << std::endl;
         }
+        try {
+            auto mapVec = root.at("maps").get<std::vector<json>>();
+            for (json& mapJson : mapVec)
+            {
+                Map* map = Map::fromJSON(mapJson);
+                mapList.push_back(map);
+            }
+        }
+        catch (const std::exception &e) {
+            std::cerr << "error: " << e.what() << std::endl;
+        }
+
         mGameSprites = SpriteManager::SpriteManager();
 
         if (root.contains("spriteList"))
@@ -453,11 +442,9 @@ namespace Core
         return this;
     }
 
-    nlohmann::json *Game::serialize()
+    json Game::serialize()
     {
-        // TODO: bg color ? I don't think that's necessary
-        nlohmann::json *ret = new nlohmann::json;
-        nlohmann::json &j = *ret;
+        json j;
         j["FileType"] = "Parchment Game Data";
         j["GameName"] = getGameName();
         j["Author"] = getAuthor();
@@ -465,76 +452,34 @@ namespace Core
         j["LastModifiedTime"] = getLMTime();
         j["Note"] = getNote();
         // pages
-        std::vector<nlohmann::json> pageVector;
-        for (Page *p : this->pageList)
+        std::vector<json> pageVector;
+        for (Page *p : pageList)
         {
-            nlohmann::json pj;
-            pj["PageName"] = p->getName();
-
-            // Determine if Page is a MenuPage. Kinda junk implementation
-            if (!strcmp(typeid(*p).name(), "class Core::MenuPage"))
-            {
-                pj["isMenu"] = true;
-            }
-            else
-            {
-                pj["isMenu"] = false;
-            }
-
-            // entities
-            std::vector<nlohmann::json> entityVector;
-            for (Entity *e : p->getEntityList())
-            {
-                nlohmann::json ej;
-                ej["EntityName"] = e->getName();
-                ej["location"] = {e->getLocation().x, e->getLocation().y};
-                ej["scale"] = {e->getScale().x, e->getScale().y};
-                ej["rotation"] = e->getRotation();
-                ej["spriteID"] = e->getSpriteID();
-                if (e->isControlledEntity())
-                {
-                    ej["control"] = true;
-                }
-                entityVector.push_back(ej);
-            }
-            pj["entityList"] = entityVector;
-            pageVector.push_back(pj);
+            pageVector.push_back(p->serialize());
         }
         j["pageList"] = pageVector;
 
         // Sprites
-        std::vector<nlohmann::json> spriteVector;
-        for (auto &[key, value] : mGameSprites.getSprites())
-        {
-            Sprite &s = *value;
-            nlohmann::json sj;
-            sj["SpriteName"] = s.getName();
-            sj["FileName"] = s.getFileName();
-            sj["SpriteID"] = s.getSpriteID();
-            spriteVector.push_back(sj);
-        }
-        if (spriteVector.size() > 0)
-        {
-            j["spriteList"] = spriteVector;
-        }
+        std::vector<json> spriteVector = mGameSprites.serialize();
+        j["spriteList"] = spriteVector;
 
         //TODO LogicManager
-        nlohmann::json logicManagerjs;
-        std::vector<nlohmann::json> logicVector;
+        json logicManagerjs;
+        std::vector<json> logicVector;
         //TODO for each logic push to logic vector
         logicManagerjs["logicList"] = logicVector;
-        std::vector<nlohmann::json> scriptVector;
+        std::vector<json> scriptVector;
         //TODO for each script push to script Vector
         logicManagerjs["scriptList"] = scriptVector;
-        std::vector<nlohmann::json> signalVector;
+        std::vector<json> signalVector;
         // TODO for each signal ...
         logicManagerjs["signalList"] = signalVector;
         j["logicManager"] = logicManagerjs;
 
         // TODO start point
-        nlohmann::json startPoint;
+        json startPoint;
         j["startPoint"] = startPoint;
-        return ret;
+        return j;
     }
 
     // Use sdl_die when an SDL error occurs to print out the error and exit
@@ -720,7 +665,7 @@ namespace Core
         return currPageIdx != -1 ? pageList[currPageIdx] : nullptr;
     }
 
-    void Game::handleInput(SDL_Event event)
+    void Game::handleWindowEvent(SDL_Event event)
     {
         glm::vec2 loc;
         glm::vec2 scale;
@@ -729,30 +674,11 @@ namespace Core
             auto currCtrlEntity = getCurrPage()->getCtrlEntity();
             loc = currCtrlEntity->getLocation();
             scale = currCtrlEntity->getScale();
-            float moveBy = 5;
             int scaleBy = 3;
 
             // Control entity movement and reshape
             switch (event.key.keysym.sym)
             {
-            // Control Entity movement in the interactive demo
-            // Handle left arrow key
-            case SDLK_LEFT:
-                currCtrlEntity->setLocation(glm::vec2(loc.x - moveBy, loc.y)); // Move left
-                break;
-                // Handle right arrow key
-            case SDLK_RIGHT:
-                currCtrlEntity->setLocation(glm::vec2(loc.x + moveBy, loc.y)); // Move right
-                break;
-                // Handle up arrow key
-            case SDLK_UP:
-                currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y + moveBy)); // Move up
-                break;
-                // Handle down arrow key
-            case SDLK_DOWN:
-                currCtrlEntity->setLocation(glm::vec2(loc.x, loc.y - moveBy)); // Move down
-                break;
-
                 // Control Entity scaling in the interactive demo
             case SDLK_z: // z key is Scale up, for now
                 currCtrlEntity->setScale(glm::vec2(scale.x + scaleBy, scale.y + scaleBy));
@@ -784,19 +710,19 @@ namespace Core
         // Theses are here for test purposes
         case SDLK_a:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
-            mCamera->offsetPosition(glm::ivec2(move_camera, 0));
+            mCamera->offsetPosition(glm::vec2(move_camera, 0));
             break;
         case SDLK_d:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
-            mCamera->offsetPosition(glm::ivec2(-move_camera, 0));
+            mCamera->offsetPosition(glm::vec2(-move_camera, 0));
             break;
         case SDLK_w:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicsansmsgras.ttf"));
-            mCamera->offsetPosition(glm::ivec2(0, -move_camera));
+            mCamera->offsetPosition(glm::vec2(0, -move_camera));
             break;
         case SDLK_s:
             //((MenuPage*)getCurrPage())->getMenu()->setFont(new Font("../../../../resource/comicz.ttf"));
-            mCamera->offsetPosition(glm::ivec2(0, move_camera));
+            mCamera->offsetPosition(glm::vec2(0, move_camera));
             break;
         case SDLK_q:
             mCamera->setZoom(mCamera->getZoom() - 0.1f);
@@ -822,17 +748,26 @@ namespace Core
         currPageIdx = (idx >= 0 && idx < pageList.size()) ? idx : -1;
     }
 
+    bool Game::isKeyPressed(SDL_Keycode kc) {
+        return keyboardState[SDL_GetScancodeFromKey(kc)] == 1;
+    }
+
+    void Game::update(float dt) {
+        keyboardState = SDL_GetKeyboardState(nullptr);
+        getCurrPage()->update(dt);
+    }
+
     // only render graphics so can be used in editor
     // TODO: Now we only have one currpage so there's no much different between using this render and use the renderer in page class. But in design it could render all pages in the current page list
     void Game::render()
     {
         // Set Camera matrix uniform
-        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "camera"), 1, GL_FALSE, glm::value_ptr(mCamera->getMatrix()));
+        mCamera->use();
 
         GLfloat color[] = {1.0f, 1.0f, 1.0f};
         glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
 
-        glClearColor(0.1, 0.2, 0.59, 1.0);
+        glClearColor(0.1f, 0.2f, 0.59f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         if (getCurrPage() != nullptr)
@@ -866,13 +801,13 @@ namespace Core
 
     void Game::mainLoop()
     {
-
+        auto lastTime = std::chrono::steady_clock::now();
         SDL_Event event;
         bool close_window = false;
         while (!close_window)
         {
             // Input handling!
-            while (SDL_PollEvent(&event))
+            if (SDL_PollEvent(&event))
             {
                 switch (event.type)
                 {
@@ -895,12 +830,15 @@ namespace Core
                         SDL_GL_SwapWindow(window); // Show the resized window
                     }
                     break;
-                    // Handle Keypresses
                 case SDL_KEYDOWN:
-                    handleInput(event);
+                    // Handle Keypresses
+                    handleWindowEvent(event);
                 }
             }
-
+            auto now = std::chrono::steady_clock::now();
+            float dt = (float) (now - lastTime).count() / std::chrono::steady_clock::period::den;
+            lastTime = now;
+            update(dt);
             render();
 
             // Show the entities by bringing showing the back buffer

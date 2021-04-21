@@ -96,7 +96,8 @@ void SignalEditor::draw() {
             {
                 signal_info = true;
             }
-            ImGui::End();
         }
+
+        ImGui::End();
     }
 }

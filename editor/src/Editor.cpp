@@ -7,9 +7,6 @@
 #include <imgui_impl_sdl.h>
 #include <imgui_impl_opengl3.h>
 #include "editorWindows.h"
-#include "windows/StyleEditor.cpp"
-
-extern bool ResetStyle(int, ImGuiStyle &);
 
 //////////////////////////////////////////
 // GUI HANDLER FUNCTIONS
@@ -165,7 +162,7 @@ void Editor::processInput()
             }
             if (game != nullptr && windowList[GAMEVIEW]->isFocused() && gameRunning)
             {
-                game->handleInput(evt);
+                game->handleWindowEvent(evt);
             }
         }
         if (evt.type == SDL_KEYUP)
@@ -335,12 +332,11 @@ void Editor::createGame()
 {
     //createTexCBO();
     //createMapTexCBO();
+    if (game != nullptr) {
+        freeGame();
+    }
     game = new Core::Game();
     windowList[GAMEVIEW]->setVisible(true);
-    for (int i = 0; i < COMP_COUNT; i++)
-    {
-        currentComponent[i] = "No Component Selected";
-    }
     // -100 is registered as default
     game->createSprite("default", "./default.png", -100);
 
@@ -364,10 +360,8 @@ void Editor::loadGame(const std::string filePath)
 
 void Editor::saveGame()
 {
-    nlohmann::json *content = game->serialize();
-    WriteFile(gameFilePath, (content->dump(2)));
-    // pointer deletion
-    delete content;
+    nlohmann::json content = game->serialize();
+    WriteFile(gameFilePath, (content.dump(2)));
 }
 
 void Editor::saveGameAs(const std::string filePath)
@@ -380,6 +374,11 @@ void Editor::freeGame()
 {
     stopGame();
     currentComponent.clear();
+    currentComponent.resize(COMP_COUNT);
+    for (int i = 0; i < COMP_COUNT; i++)
+    {
+        currentComponent[i] = "No Component Selected";
+    }
     mTexCBO = 0; //TODO: FREE
 
     if (game != nullptr)
@@ -399,6 +398,7 @@ void Editor::runGame()
     {
         savedGame = game;
         game = new Core::Game(*game);
+        ((GameWindow*) windowList[GAMEVIEW])->updateLastTime();
         gameRunning = true;
     }
 }

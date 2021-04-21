@@ -2,6 +2,7 @@
 
 #include "windows/Window.h"
 #include "Tile.h"
+#include "Camera.h"
 #include <glad/glad.h>
 
 class MapWindow : public Window {
@@ -16,12 +17,26 @@ class MapWindow : public Window {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		glGenTextures(1, &mTintTexture);
+		glBindTexture(GL_TEXTURE_2D, mTintTexture);
+        GLubyte texData[] = {0, 0, 0, 128};
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		cam = new Core::Camera;
+	}
+	~MapWindow() {
+		delete cam;
 	}
 	void draw();
 	Core::Tile* handleClick();
   private:
+	Core::Tile* lastTile = nullptr;
 	GLuint mMapTexCBO;
+	GLuint mTintTexture;
 	GLuint mMapFBO;
+	Core::Camera* cam;
 };

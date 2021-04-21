@@ -27,14 +27,13 @@
 namespace Core
 {
 
-    typedef std::vector<Page *>::iterator PLitr;
-    typedef std::vector<Page *> PL;
-
     //Game *game; // initContext in editor or vm, used by logic
 
     class Game
     {
     public:
+        static const int FPS;
+
         // =========================
         // PUBLIC VARIABLE
         static int width;
@@ -76,7 +75,7 @@ namespace Core
         // parse json to game data for both editor and vm
         Game *parse(nlohmann::json &root);
         // serialize the game data to json for usage in editor
-        nlohmann::json *serialize();
+        nlohmann::json serialize();
 
         // =========================
         // PROPERTY OPERATION ( Properties are the variables that may change the performance, like the size of the window or IDK )
@@ -84,20 +83,19 @@ namespace Core
         // =========================
         // MEMBER OPERATION ( functions that targeting )
 
-        Page *addPage(Page *p);
-        Page *createPage(std::string n);
-        MapPage *createMapPage(std::string, Map *);
-        MapPage *createMapPage(std::string);
-        MapPage *createMapPage();
-        Map *createMapOnDefaultMapPage(std::string name, int cols, int rows, int tilesize);
-        void deleteDefaultMapPageCurrentMap();
-        MenuPage *createMenuPage(std::string, Menu *);
-        MenuPage *createMenuPage(std::string);
-        MenuPage *createMenuPage();
-        void deletePage(Page *);
-        void deletePage(std::string);
-        std::vector<Page *> &getPageList();
-        int getNumPage();
+        Page* addPage(Page *ptr);
+        void deletePage(Page *ptr);
+        void deletePage(std::string name);
+        int addMap(Map* map);
+        void deleteMap(Map* ptr);
+        void deleteMap(std::string name);
+        Map* getMap(int index);
+        std::vector<Page*>& getPageList() {
+            return pageList;
+        }
+        std::vector<Map*>& getMapList() {
+            return mapList;
+        }
 
         // Sprite operations
         unsigned int createSprite(std::string, std::string);
@@ -117,11 +115,6 @@ namespace Core
         void deleteSpriteSheet(int);
         SpriteSheet* getSpriteSheetFromID(int);
         std::unordered_map<int, SpriteSheet*> getSpriteSheets();
-
-        // Map operations
-        std::vector<Map *> getDefaultMapPageMaps();
-        MapPage *getDefaultMapPage();
-        void renderDefaultMapPage();
 
         void renderSpriteSheet(SpriteSheet*);
 
@@ -162,8 +155,10 @@ namespace Core
         void initShader();
 
         void sdl_die(const char *err_msg);
-        void handleInput(SDL_Event event);
+        void handleWindowEvent(SDL_Event event);
 
+        // update all objects with a delta time
+        void update(float dt);
         // render the all currpage with entities
         void render();
 
@@ -179,6 +174,8 @@ namespace Core
 
         void onGameCreation();
 
+        bool isKeyPressed(SDL_Keycode kc);
+
     private:
         std::string gameName;
         std::string author;
@@ -188,9 +185,6 @@ namespace Core
         std::string note;
 
         Entity *currCtrlEntity;
-
-        // page list iterator: current page iterator
-        PLitr _currPitr;
 
         // condition of game is rendering to editor
         // if true use cbo
@@ -207,8 +201,7 @@ namespace Core
         // contains all pages
         std::vector<Page *> pageList;
 
-        // Each game needs at least one MapPage, so heres a pointer to the default one
-        int currMapPageIdx = -1;
+        std::vector<Map *> mapList;
 
         // the current in display pagelist
         // FIXME: why use int?
@@ -219,6 +212,8 @@ namespace Core
 
         // The context of this Game
         SDL_GLContext gl_context;
+
+        const Uint8* keyboardState;
 
         // The shaders, set by initShaders before entering the game loop
         unsigned int shaderProgram = -1;

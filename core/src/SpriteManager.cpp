@@ -79,26 +79,26 @@ namespace Core
 		}
 	}
 
-	int SpriteManager::parse(nlohmann::json j)
+	using json = nlohmann::json;
+	void SpriteManager::parse(json j)
 	{
-		try
+		auto jSpriteList = j.get<std::vector<json>>();
+		for (json& sj : jSpriteList)
 		{
-			auto jSpriteList = j.get<std::vector<nlohmann::json>>();
-			for (nlohmann::json &sj : jSpriteList)
-			{
-				createSprite(
-					sj.at("SpriteName").get<std::string>(),
-					sj.at("FileName").get<std::string>(),
-					sj.at("SpriteID").get<int>());
-			}
+			createSprite(
+				sj.at("SpriteName").get<std::string>(),
+				sj.at("FileName").get<std::string>(),
+				sj.at("SpriteID").get<int>()
+			);
 		}
-		catch (const std::exception &e)
-		{
-			std::cerr << e.what() << '\n';
-			return 1;
-		}
+	}
 
-		return 0;
+	json SpriteManager::serialize() {
+		std::vector<json> jSpriteList;
+		for (auto [id, sprite] : mSprites) {
+			jSpriteList.push_back(sprite->serialize());
+		}
+		return jSpriteList;
 	}
 
 	// SPRITESHEET STUFF

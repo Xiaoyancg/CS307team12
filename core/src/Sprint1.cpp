@@ -24,7 +24,7 @@ namespace Core
         // For now it's separated from a page because all rendered objects are a single color and there
         // would be no way to see a difference from a Tile on the map and an Entity
 
-        entityPage = game->createPage("entityPage");
+        entityPage = game->addPage(new Page("entityPage"));
         entityPage->SetBackgroundColor(0.1f, 0.2f, 0.59f, 1.0f);
 
         entityInteractive =
@@ -54,16 +54,16 @@ namespace Core
             1, 1, 1, 1 };
 
         Map *map1 = new Map("Map 1 woohoo!", glm::ivec2(4, 4), 64);
-        map1->setMapTileSpritesFromArray(spriteMap);
+        //map1->setMapTileSpritesFromArray(spriteMap);
         Map *map2 = new Map("Map 2 ahhh!", glm::ivec2(16, 16), 32);
 
         // Here are the 2 ways to make MapPages with set maps
-        mapPage1 = game->createMapPage("MapPage 4x4 64px", map1);
-        mapPage2 = game->createMapPage("MapPage 16x16 32px");
-        mapPage2->addMap(map2); // Sets empty map page 2's map
+        //mapPage1 = game->addPage(new MapPage("MapPage 4x4 64px", map1));
+        //mapPage2 = game->addPage(new MapPage("MapPage 16x16 32px"));
+        //mapPage2->setMap(map2); // Sets empty map page 2's map
 
         // Creating a map with only a name, no dimensions (0 x 0) or tile size
-        mapPage3 = game->createMapPage("yee"); // Should be a blank screen
+        //mapPage3 = game->createMapPage("yee"); // Should be a blank screen
 
         // Creating a map with no name, dimensions (0 x 0), or tile size
         // mapPage4 = game->createMapPage();
@@ -85,7 +85,7 @@ namespace Core
         menu->createMenuEntry("text asdf", 62, 0, (void *)123);
         menu->createMenuEntry("", 62, (void *)123, nullptr);
         menu->createMenuEntry("POG !!!!", 62, (void *)123, nullptr);
-        MenuPage *mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
+        //MenuPage *mp = game->createMenuPage("MenuPage name ahahahhsahdfhsadf", menu);
         /////////////////////////////////////////
 
         // very important

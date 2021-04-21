@@ -34,13 +34,13 @@ namespace Core
 
                 // Left side
                 // P1
-                verts[0] = x;  // Bottom left x
-                verts[1] = y; // Bottom left y
+                verts[0] = (float) x;  // Bottom left x
+                verts[1] = (float) y; // Bottom left y
                 verts[2] = 0;
                 verts[3] = 0;
                 // P2
-                verts[4] = x; // Top left x
-                verts[5] = y + mDimensions.y; // Top left y
+                verts[4] = (float) x; // Top left x
+                verts[5] = (float) y + mDimensions.y; // Top left y
                 verts[6] = 0;
                 verts[7] = 0;
                 glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), verts, GL_DYNAMIC_DRAW);
@@ -48,8 +48,8 @@ namespace Core
 
                 // Top side
                 // P1
-                verts[0] = x + mDimensions.x;  // Top right x
-                verts[1] = y + mDimensions.y; // Top right y
+                verts[0] = (float) x + mDimensions.x;  // Top right x
+                verts[1] = (float) y + mDimensions.y; // Top right y
                 verts[2] = 0;
                 verts[3] = 0;
                 glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), verts, GL_DYNAMIC_DRAW);
@@ -57,8 +57,8 @@ namespace Core
 
                 // Right side
                 // P2
-                verts[4] = x + mDimensions.x; // Bottom right x
-                verts[5] = y; // Bottom right y
+                verts[4] = (float) x + mDimensions.x; // Bottom right x
+                verts[5] = (float) y; // Bottom right y
                 verts[6] = 0;
                 verts[7] = 0;
                 glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), verts, GL_DYNAMIC_DRAW);
@@ -66,8 +66,8 @@ namespace Core
 
                 // Bottom side
                 // P1
-                verts[0] = x;  // Bottom left x
-                verts[1] = y; // Bottom left y
+                verts[0] = (float) x;  // Bottom left x
+                verts[1] = (float) y; // Bottom left y
                 verts[2] = 0;
                 verts[3] = 0;
                 glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), verts, GL_DYNAMIC_DRAW);
