@@ -60,7 +60,7 @@ namespace Core
     {
         _scriptType = scriptType;
     }
-    ScriptType Logic::getScritType()
+    ScriptType Logic::getScriptType()
     {
         return _scriptType;
     }

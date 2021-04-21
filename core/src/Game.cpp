@@ -35,23 +35,22 @@ namespace Core
         parse(json);
     }
 
-    Game::Game(const Game& other) :
-        gameName(other.gameName),
-        author(other.author),
-        version(other.version),
-        lMTime(other.lMTime),
-        note(other.note),
-        _logicManager(other._logicManager),
-        mCamera(new Camera(*other.mCamera)),
-        currPageIdx(other.currPageIdx),
-        pageList(other.pageList.size()),
-        mapList(other.mapList.size()),
-        inDisplayList(other.inDisplayList),
-        window(other.window),
-        gl_context(other.gl_context),
-        keyboardState(other.keyboardState),
-        shaderProgram(other.shaderProgram),
-        mGameSprites(other.mGameSprites)
+    Game::Game(const Game &other) : gameName(other.gameName),
+                                    author(other.author),
+                                    version(other.version),
+                                    lMTime(other.lMTime),
+                                    note(other.note),
+                                    _logicManager(other._logicManager),
+                                    mCamera(new Camera(*other.mCamera)),
+                                    currPageIdx(other.currPageIdx),
+                                    pageList(other.pageList.size()),
+                                    mapList(other.mapList.size()),
+                                    inDisplayList(other.inDisplayList),
+                                    window(other.window),
+                                    gl_context(other.gl_context),
+                                    keyboardState(other.keyboardState),
+                                    shaderProgram(other.shaderProgram),
+                                    mGameSprites(other.mGameSprites)
     {
         // TODO: restore current page, map, camera, and ctrl entity
         for (int i = 0; i < other.pageList.size(); i++)
@@ -204,16 +203,22 @@ namespace Core
         return mapList.size() - 1;
     }
 
-    Map* Game::getMap(int idx) {
+    Map *Game::getMap(int idx)
+    {
         return idx >= 0 && idx < mapList.size() ? mapList[idx] : nullptr;
     }
 
-    void Game::deleteMap(std::string name) {
-        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
-            if ((*iter)->getName() == name) {
-                for (auto page : pageList) {
-                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
-                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+    void Game::deleteMap(std::string name)
+    {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++)
+        {
+            if ((*iter)->getName() == name)
+            {
+                for (auto page : pageList)
+                {
+                    Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin())
+                    {
                         mapPage->setMapIndex(-1);
                     }
                 }
@@ -223,12 +228,17 @@ namespace Core
         }
     }
 
-    void Game::deleteMap(Map* map) {
-        for (auto iter = mapList.begin(); iter != mapList.end(); iter++) {
-            if ((*iter) == map) {
-                for (auto page : pageList) {
-                    Core::MapPage* mapPage = dynamic_cast<Core::MapPage*>(page);
-                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin()) {
+    void Game::deleteMap(Map *map)
+    {
+        for (auto iter = mapList.begin(); iter != mapList.end(); iter++)
+        {
+            if ((*iter) == map)
+            {
+                for (auto page : pageList)
+                {
+                    Core::MapPage *mapPage = dynamic_cast<Core::MapPage *>(page);
+                    if (mapPage != nullptr && mapPage->getMapIndex() == iter - mapList.begin())
+                    {
                         mapPage->setMapIndex(-1);
                     }
                 }
@@ -371,14 +381,15 @@ namespace Core
         return _logicManager.createLogic();
     }
 
-    void Game::deleteLogic(int logicId)
-    {
-        _logicManager.deleteLogic(logicId);
-    }
     void Game::deleteSignal(int signalId)
     {
         _logicManager.deleteSignal(signalId);
     }
+    void Game::deleteLogic(int logicId)
+    {
+        _logicManager.deleteLogic(logicId);
+    }
+
     void Game::deleteScript(int scriptId)
     {
         _logicManager.deleteScript(scriptId);
@@ -389,8 +400,19 @@ namespace Core
         return _logicManager.getScriptList();
     }
 
+    std::vector<Logic> *Game::getLogicList()
+    {
+        return _logicManager.getLogicList();
+    }
+    std::vector<Signal> *Game::getSignalList()
+    {
+        return _logicManager.getSignalList();
+    }
     using json = nlohmann::json;
-    Game *Game::parse(json &root)
+
+    //* -------------------- JSON PARSING ------------------- *//
+
+    Game *Game::parse(nlohmann::json &root)
     {
         this->setGameName(root.at(std::string("GameName")).get<std::string>());
         this->setAuthor(root.at("Author").get<std::string>());
