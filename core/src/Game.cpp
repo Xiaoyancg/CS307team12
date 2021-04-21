@@ -461,7 +461,6 @@ namespace Core
         {
             mGameSprites.parse(root.at("spriteList"));
         }
-        // TODO: Logic
         if (root.contains("logicManager"))
         {
             // TODO
@@ -515,6 +514,7 @@ namespace Core
             case SignalType::Custom:
                 si["targetLogicList"] = s.getSignal().customSignal.getTargetLogicList();
                 break;
+                // key signal is system signal, will not be stored
 
             default:
                 break;
