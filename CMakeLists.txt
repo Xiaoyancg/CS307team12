@@ -94,9 +94,9 @@ if(WITH_TESTS)
 endif()
 
 # practice
-option(WITH_PRACTICE_PROJECTS "Build practice projects" OFF)
-if(WITH_PRACTICE_PROJECTS)
+#option(WITH_PRACTICE_PROJECTS "Build practice projects" ON)
+#if(WITH_PRACTICE_PROJECTS)
 	add_subdirectory(practice/Demo_of_ImGui_Docking)
 	add_subdirectory(practice/Demo_of_engine)
 	add_subdirectory(practice/Demo_of_ImGui)
-endif()
+#endif()

@@ -133,7 +133,7 @@ namespace Core
         /// \param ... scriptId, scriptName, other variables. List of types:
         /// \param Custom std::vector<int> signal, std::vector<int>
         ///
-        void updateScript(ScriptType scriptType, ...);
+        void updateScript(ScriptType scriptType, int id, std::string name...);
 
         /// \brief Construct a new Script object
         /// *For editor, used in Game::createScript()

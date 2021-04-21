@@ -71,13 +71,17 @@ void ScriptEditor::draw()
                 ImGui::Text("id: ");
                 ImGui::SameLine();
                 ImGui::PushItemWidth(170.0f);
-                ImGui::InputInt(" ", &scriptId);
-                ImGui::PopItemWidth();
-                ImGui::ListBox("Script Type", &type, typeNameList, 1);
-                switch (currScript_ptr->getScriptType())
+                ImGui::InputInt("##scriptId", &scriptId);
+
+                ImGui::ListBox(" ", &type, typeNameList, 2);
+
+                switch ((Core::ScriptType)type)
                 {
                 case Core::ScriptType::Custom:
                     customWidgets();
+                    break;
+                case Core::ScriptType::MoveConstantly:
+                    MoveConstantlyWidgets();
                     break;
 
                 default:
@@ -92,8 +96,12 @@ void ScriptEditor::draw()
                 case Core::ScriptType::Custom:
                     // args's order is inverse
                     currScript_ptr->updateScript((Core::ScriptType)type, scriptId, std::string(scriptName),
-                                                 removeTargetScriptList, removeTargetLogicList, removeTargetSignalList,
-                                                 addTargetScriptList, addTargetLogicList, addTargetSignalList);
+                                                 addTargetSignalList, addTargetLogicList, addTargetScriptList,
+                                                 removeTargetSignalList, removeTargetLogicList, removeTargetScriptList);
+                    break;
+                case Core::ScriptType::MoveConstantly:
+                    currScript_ptr->updateScript((Core::ScriptType)type, scriptId, std::string(scriptName),
+                                                 targetPageId, targetEntityList, glm::vec2(x, y));
                     break;
 
                 default:
@@ -105,7 +113,7 @@ void ScriptEditor::draw()
         ImGui::End();
     }
 }
-void ScriptEditor::listTreeNode(std::string listName, int listType)
+void ScriptEditor::customTargetListTreeNode(std::string listName, int listType)
 {
     std::vector<int> *targetList;
     int *newItemId;
@@ -165,23 +173,63 @@ void ScriptEditor::listTreeNode(std::string listName, int listType)
         ImGui::TreePop();
     }
 }
+void ScriptEditor::MoveConstantlyWidgets()
+{
+    ImGui::Text("Movement:");
+    ImGui::Text("x: ");
+    ImGui::SameLine();
+    ImGui::InputInt("##x", &x);
+
+    ImGui::Text("y: ");
+    ImGui::SameLine();
+    ImGui::InputInt("##y", &y);
+
+    ImGui::Text("target page id");
+    ImGui::SameLine();
+    ImGui::InputInt("##targetPageId", &targetPageId);
+
+    if (ImGui::TreeNode("Target Entity List"))
+    {
+        for (int i = 0; i < targetEntityList.size(); i++)
+        {
+
+            ImGui::Text(std::to_string(targetEntityList.at(i)).c_str());
+            ImGui::SameLine();
+
+            if (ImGui::Button(std::string(std::string("delete ") + std::to_string(targetEntityList.at(i))).c_str()))
+            {
+                targetEntityList.erase(targetEntityList.begin() + i);
+            }
+        }
+        ImGui::Text("new Entity");
+        ImGui::SameLine();
+        ImGui::InputInt("##newEntity", &newEntity);
+        if (ImGui::Button("Add new entity"))
+        {
+            targetEntityList.push_back(newEntity);
+        }
+        ImGui::TreePop();
+    }
+}
 void ScriptEditor::customWidgets()
 {
-    listTreeNode("Add Signal", 0);
-    listTreeNode("Add Logic", 1);
-    listTreeNode("Add Script", 2);
-    listTreeNode("Remove Signal", 3);
-    listTreeNode("Remove Logic", 4);
-    listTreeNode("Remove Script", 5);
+    customTargetListTreeNode("Add Signal", 0);
+    customTargetListTreeNode("Add Logic", 1);
+    customTargetListTreeNode("Add Script", 2);
+    customTargetListTreeNode("Remove Signal", 3);
+    customTargetListTreeNode("Remove Logic", 4);
+    customTargetListTreeNode("Remove Script", 5);
 }
 void ScriptEditor::getInfo(Core::Script *s)
 {
     scriptId = s->getScriptId();
     Core::ScriptUnion su = s->getScript();
     strcpy_s(scriptName, s->getScriptName().c_str());
+
     switch (s->getScriptType())
     {
     case Core::ScriptType::Custom:
+        type = 0;
         addTargetSignalList = su.scriptCustom.getAddTargetSignalList();
         addTargetLogicList = su.scriptCustom.getAddTargetLogicList();
         addTargetScriptList = su.scriptCustom.getAddTargetScriptList();
@@ -189,8 +237,17 @@ void ScriptEditor::getInfo(Core::Script *s)
         removeTargetLogicList = su.scriptCustom.getRemoveTargetLogicList();
         removeTargetScriptList = su.scriptCustom.getRemoveTargetScriptList();
         break;
-
+    case Core::ScriptType::MoveConstantly:
+        type = 1;
+        targetPageId = su.scriptMoveConstantly.getTargetPage();
+        x = su.scriptMoveConstantly.getMovement().x;
+        y = su.scriptMoveConstantly.getMovement().y;
+        targetEntityList = su.scriptMoveConstantly.getTargetEntityList();
     default:
         break;
     }
+    newAddSignal = -1;
+    newAddScript = -1;
+    newAddLogic = -1;
+    newEntity = -1;
 }

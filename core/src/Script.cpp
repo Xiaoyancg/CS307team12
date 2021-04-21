@@ -190,34 +190,43 @@ namespace Core
             return ScriptType::Custom;
         }
     }
-    void Script::updateScript(ScriptType scriptType, ...)
+    void Script::updateScript(ScriptType scriptType, int id, std::string name...)
     {
         std::va_list args;
-        va_start(args, scriptType);
-        setScriptId(va_arg(args, int));
         setScriptType(scriptType);
-        setScriptName(va_arg(args, std::string));
+        setScriptId(id);
+        setScriptName(name);
+        va_start(args, name);
         switch (scriptType)
         {
         case ScriptType::Custom:
+        {
+            std::vector<int> addsig = va_arg(args, std::vector<int>);
+            std::vector<int> addlog = va_arg(args, std::vector<int>);
+            std::vector<int> addscr = va_arg(args, std::vector<int>);
+            std::vector<int> remsig = va_arg(args, std::vector<int>);
+            std::vector<int> remlog = va_arg(args, std::vector<int>);
+            std::vector<int> remscr = va_arg(args, std::vector<int>);
             setScript(
                 ScriptUnion(
-                    ScriptCustom(
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, std::vector<int>))));
+                    ScriptCustom(addsig, addlog, addscr,
+                                 remsig, remlog, remscr)));
             break;
+        }
         case ScriptType::MoveConstantly:
+        {
+            int pageId = va_arg(args, int);
+            std::vector<int> entityList = va_arg(args, std::vector<int>);
+            glm::vec2 movement = va_arg(args, glm::vec2);
             setScript(
                 ScriptUnion(
                     ScriptMoveConstantly(
-                        va_arg(args, int),
-                        va_arg(args, std::vector<int>),
-                        va_arg(args, glm::vec2))));
+                        pageId,
+                        entityList,
+                        movement)));
+
             break;
+        }
         default:
             break;
         }
