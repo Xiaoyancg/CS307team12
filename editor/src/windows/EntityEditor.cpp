@@ -48,17 +48,17 @@ void EntityEditor::draw() {
 					ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing()))) {
 				// Set default selected entity to be the first in the entity
 				// list
-				if (currentEntity == nullptr &&
+				if (currentEntityIdx == -1 &&
 					currPage->getEntityList().size() > 0) {
-					currentEntity = currPage->getEntityList()[0];
+					currentEntityIdx = 0;
 				}
 
 				for (int i = 0; i < currPage->getEntityList().size(); i++) {
 					auto entity = currPage->getEntityList()[i];
-					bool is_selected = (currentEntity == entity);
+					bool is_selected = (currentEntityIdx == i);
 					if (ImGui::Selectable(entity->getName().c_str(),
 										  is_selected)) {
-						currentEntity = entity;
+						currentEntityIdx = i;
 						x_pos = entity->getLocation().x;
 						y_pos = entity->getLocation().y;
 						entity_width = entity->getScale().x;
@@ -75,21 +75,21 @@ void EntityEditor::draw() {
 				ImGui::EndListBox();
 			}
 
-			if (ImGui::Button("Change Name") && currentEntity != nullptr) {
-				currentEntity->setName(entityName);
+			if (ImGui::Button("Change Name") && currentEntityIdx != -1) {
+				getCurrentEntity()->setName(entityName);
 				// clear the buffer after use
 				entityName[0] = '\0';
 			}
 			ImGui::SameLine();
 
-			if (ImGui::Button("Delete Entity") && currentEntity != nullptr) {
+			if (ImGui::Button("Delete Entity") && currentEntityIdx != -1) {
 				int idx = -1;
 				size_t original =
 					editor->getGamePtr()->getCurrPage()->getEntityList().size();
 				bool isCtrlEntity = false;
 				auto &eList = currPage->getEntityList();
 				for (int i = 0; i < eList.size(); i++) {
-					if (eList[i] == currentEntity) {
+					if (i == currentEntityIdx) {
 						idx = i;
 						if (eList[i] == currPage->getCtrlEntity()) {
 							isCtrlEntity = true;
@@ -100,8 +100,7 @@ void EntityEditor::draw() {
 				if (idx > -1) {
 					Core::Entity savedEntity(*eList[idx]);
 					auto action = [this]() {
-						editor->getGamePtr()->getCurrPage()->deleteEntity(
-							currentEntity);
+						editor->getGamePtr()->getCurrPage()->deleteEntity(getCurrentEntity());
 					};
 					auto restore = [this, idx, savedEntity, isCtrlEntity]() {
 						Core::Entity *newEntity = new Core::Entity(savedEntity);
@@ -118,14 +117,14 @@ void EntityEditor::draw() {
 							editor->getGamePtr()->getCurrPage()->setCtrlEntity(
 								newEntity);
 						}
-						currentEntity = newEntity;
+						currentEntityIdx = idx;
 					};
 					// Only delete if the entity was found
 
 					action();
 
 					if (currPage->getEntityList().size() < original) {
-						currentEntity = eList.size() > 0 ? eList[0] : nullptr;
+						currentEntityIdx = eList.size() > 0 ? 0 : -1;
 						editor->showDeleteSuccessPopup();
 						pushAction(action, restore); // UNDO
 						// memset to clear the buffer after use
@@ -135,7 +134,7 @@ void EntityEditor::draw() {
 			}
 
 			// get x pos and y pos for entity's new location
-			if (currentEntity == nullptr) {
+			if (currentEntityIdx == -1) {
 				x_pos = 0;
 				y_pos = 0;
 			} else {
@@ -163,7 +162,7 @@ void EntityEditor::draw() {
 					if (x_pos >= 0 && x_pos <= 1250 && y_pos >= 0 &&
 						y_pos <= 700) {
 						for (Core::Entity *e : currPage->getEntityList()) {
-							if (e == currentEntity) {
+							if (e == getCurrentEntity()) {
 								// set location as specified by user
 								// UNDO
 								auto pos = glm::vec2(x_pos, y_pos);
@@ -188,7 +187,7 @@ void EntityEditor::draw() {
 
 				// set size
 				// get width and height for entity's new size
-				if (currentEntity == nullptr) {
+				if (currentEntityIdx == -1) {
 					entity_width = 0;
 					entity_height = 0;
 				}
@@ -213,7 +212,7 @@ void EntityEditor::draw() {
 					if (entity_width >= 0 && entity_width <= 1000 &&
 						entity_height >= 0 && entity_height <= 1000) {
 						for (Core::Entity *e : currPage->getEntityList()) {
-							if (e == currentEntity) {
+							if (e == getCurrentEntity()) {
 								// set location as specified by user
 								// UNDO
 								auto newScale =
@@ -238,12 +237,12 @@ void EntityEditor::draw() {
 				}
 
 				ImGui::NewLine();
-				bool invisible = currentEntity->isInvisible();
+				bool invisible = getCurrentEntity()->isInvisible();
 				ImGui::Checkbox("Invisible", &invisible);
-				if (invisible != currentEntity->isInvisible()) {
-					currentEntity->setInvisible(invisible);
+				if (invisible != getCurrentEntity()->isInvisible()) {
+					getCurrentEntity()->setInvisible(invisible);
 				}
-				if (!currentEntity->isInvisible()) {
+				if (!getCurrentEntity()->isInvisible()) {
 					ImGui::Text("SpriteID:");
 					ImGui::PushItemWidth(80);
 					ImGui::SameLine();
@@ -257,7 +256,7 @@ void EntityEditor::draw() {
 							if (sprite_id < 0)
 								sprite_id = -100;
 							for (Core::Entity *e : currPage->getEntityList()) {
-								if (e == currentEntity) {
+								if (e == getCurrentEntity()) {
 									// set location as specified by user
 									// UNDO
 									auto newId = sprite_id;
@@ -281,10 +280,10 @@ void EntityEditor::draw() {
 					}
 				}
 
-                bool controllable = currentEntity->isControlledEntity();
+                bool controllable = getCurrentEntity()->isControlledEntity();
 				ImGui::Checkbox("Controllable", &controllable);
-				if (controllable != currentEntity->isControlledEntity()) {
-					currentEntity->setControlledEntity(controllable);
+				if (controllable != getCurrentEntity()->isControlledEntity()) {
+					getCurrentEntity()->setControlledEntity(controllable);
 				}
 			}
 		}

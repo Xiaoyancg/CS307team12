@@ -46,6 +46,7 @@ namespace Core
     Entity *Page::addEntity(Entity *e)
     {
         this->entityList.push_back(e);
+        e->setParentPage(this);
         return e;
     }
     Entity *Page::createEntity(std::string n)
