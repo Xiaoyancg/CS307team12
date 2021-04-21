@@ -72,7 +72,7 @@ void MainMenuBar::draw() {
 				ImGui::MenuItem("Page Editor", "", windowList[PAGEEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Script Editor", "", windowList[SCRIPTEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Signal Editor", "", windowList[SIGNALEDITOR]->getVisiblePtr());
-				ImGui::MenuItem("State Editor", "", windowList[STATEEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("Status Editor", "", windowList[STATUSEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Logic Editor", "", windowList[LOGICEDITOR]->getVisiblePtr());
 				ImGui::EndMenu();
 			}

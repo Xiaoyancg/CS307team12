@@ -19,7 +19,6 @@ void SpriteEditor::draw() {
         bool spritesheet_info = false;
         if (ImGui::Begin("Sprite Editor", &visible))
         {
-            /////////////////////////////////
             ImGui::PushItemWidth(200);
             ImGui::Text("Enter Sprite Name:");
             ImGui::InputText("##sprite_name", sprite_name, IM_ARRAYSIZE(sprite_name));
@@ -37,6 +36,7 @@ void SpriteEditor::draw() {
                 importDialog.SetTypeFilters({".jpg", ".png"});
                 importDialog.Open();
             }
+            ImGui::SameLine();
             if (ImGui::Button("Import SpriteSheet"))
             {
                 sprite_sheet = true;
@@ -45,24 +45,25 @@ void SpriteEditor::draw() {
                 importDialog.SetTypeFilters({ ".jpg", ".png" });
                 importDialog.Open();
             }
+            ImGui::SameLine();
             if (ImGui::Button("Import Sprite From SpriteSheet"))
             {
                 if (editor->getCurrentSpriteSheet() >= 0) {
                     editor->getWindowList()[SPRITESHEET]->setVisible(true);
                 }
             }
+            ImGui::Separator();
+            
             if (ImGui::Button("Show Sprite Information"))
             {
                 sprite_info = true;
             }            
+            ImGui::SameLine();
             if (ImGui::Button("Show SpriteSheet Information"))
             {
                 spritesheet_info = true;
             }
-            if (ImGui::Button("Edit Sprite in Pixel Editor"))
-            {
-                // TODO: Implement pixel editor
-            }
+            ImGui::SameLine();
             if (ImGui::Button("Delete Sprite"))
             {
                 // TODO: Implement sprite deletion
@@ -80,6 +81,7 @@ void SpriteEditor::draw() {
             ImGui::OpenPopup("Sprite Information");
             sprite_info = false;
         }
+
         // Sprite information popup
         if (ImGui::BeginPopup("Sprite Information"))
         {
@@ -111,6 +113,7 @@ void SpriteEditor::draw() {
             ImGui::OpenPopup("SpriteSheet Information");
             spritesheet_info = false;
         }
+
         // SpriteSheet information popup
         if (ImGui::BeginPopup("SpriteSheet Information"))
         {
