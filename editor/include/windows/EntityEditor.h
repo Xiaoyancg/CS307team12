@@ -15,7 +15,7 @@ public:
 private:
     char entityName[128];
 
-    bool entityInfo = false;
+    Core::Entity* currentEntity = nullptr;
     int x_pos = 0;
     int y_pos = 0;
     int entity_width = 0, entity_height = 0;

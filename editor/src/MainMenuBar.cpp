@@ -3,6 +3,7 @@
 
 
 void MainMenuBar::draw() {
+	auto& windowList = editor->getWindowList();
 	if (ImGui::BeginMainMenuBar()) {
 		// File menu
 		if (ImGui::BeginMenu("File")) {
@@ -38,6 +39,7 @@ void MainMenuBar::draw() {
 					saveAsPopup = true;
 				}
 			}
+			ImGui::MenuItem("Editor Theme", "", windowList[STYLEEDITOR]->getVisiblePtr());
 			ImGui::EndMenu();
 		}
 
@@ -56,18 +58,22 @@ void MainMenuBar::draw() {
 
 			// view menu
 			if (ImGui::BeginMenu("View")) {
-				auto& windowList = editor->getWindowList();
-				ImGui::MenuItem("Object Tree", "", windowList[OBJECTTREE]->getVisiblePtr());
 				ImGui::MenuItem("Game View", "", windowList[GAMEVIEW]->getVisiblePtr());
 				ImGui::MenuItem("Map View", "", windowList[MAPVIEW]->getVisiblePtr());
-				ImGui::MenuItem("Entity Editor", "", windowList[ENTITYEDITOR]->getVisiblePtr());
-				ImGui::MenuItem("Page Editor", "", windowList[PAGEEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("Object Tree", "", windowList[OBJECTTREE]->getVisiblePtr());
+				ImGui::EndMenu();
+			}
+
+			//add editor
+			if (ImGui::BeginMenu("Open Editor")) {
 				ImGui::MenuItem("Map Editor", "", windowList[MAPEDITOR]->getVisiblePtr());
-				ImGui::MenuItem("Script Editor", "", windowList[SCRIPTEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("Entity Editor", "", windowList[ENTITYEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Sprite Editor", "", windowList[SPRITEEDITOR]->getVisiblePtr());
-				ImGui::MenuItem("Logic Editor", "", windowList[LOGICEDITOR]->getVisiblePtr());
-				ImGui::MenuItem("Style Editor", "", windowList[STYLEEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("Page Editor", "", windowList[PAGEEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("Script Editor", "", windowList[SCRIPTEDITOR]->getVisiblePtr());
 				ImGui::MenuItem("Signal Editor", "", windowList[SIGNALEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("State Editor", "", windowList[STATEEDITOR]->getVisiblePtr());
+				ImGui::MenuItem("Logic Editor", "", windowList[LOGICEDITOR]->getVisiblePtr());
 				ImGui::EndMenu();
 			}
 		}
