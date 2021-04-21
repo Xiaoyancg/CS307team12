@@ -40,6 +40,7 @@ namespace Core
         entityOrigin =
             entityPage->createEntity("origin", glm::vec2(1000, 300),
                                      glm::vec2(128, 128), 0, 0);
+        game->setCameraEntity(entityVeryShortWide);
 
         // MAP TEST
         /*int spriteMap[] = {
@@ -89,8 +90,8 @@ namespace Core
         /////////////////////////////////////////
 
         // very important
-        //game->setCurrentPage(entityPage);
-        game->setCurrentPage(mapPage1);
+        game->setCurrentPage(entityPage);
+        //game->setCurrentPage(mapPage1);
         return game;
     }
 }

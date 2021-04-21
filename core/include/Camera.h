@@ -64,6 +64,11 @@ namespace Core
         glm::vec2 mPosition;
         glm::vec2 mDimensions;
         float mZoom; // Defaults to 1, meaning no zoom. <1 means zoom out, >1 means zoom in
+
+        Entity* mLockedEntity;
+        glm::ivec2 mLockBounds;
+
+        void offsetPositionExact(int x, int y);
         GLuint cameraUniform;
     };
 

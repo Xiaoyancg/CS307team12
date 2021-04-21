@@ -349,6 +349,14 @@ namespace Core
         }
     }
 
+    void Game::setCameraEntity(Entity* ent) {
+        mCamera->lockToEntity(ent);
+    }
+
+    void Game::setCameraEntityBounds(int x, int y) {
+        mCamera->setLockBounds(x, y);
+    }
+
     //* -------------------- LOGIC WRAPPER ------------------- *//
 
     Signal *Game::createSignal()

@@ -123,6 +123,13 @@ namespace Core
         void setCurrentPage(int idx);
         Page *getCurrPage();
 
+        // Set the entity that the Camera locks to
+        void setCameraEntity(Entity *);
+
+        // If the locked Camera Entity moves more than x/y pixels in any direction, move the camera with it.
+        // This lets the Entity move freely in the center of the screen, and lets the camera follow it when it moves farther.
+        void setCameraEntityBounds(int, int); 
+
         /// \brief Create a default Signal object
         /// *For editor, binding to create button in signal editor
         ///
