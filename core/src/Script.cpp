@@ -77,7 +77,7 @@ namespace Core
           _removeTargetScriptList(removeTargetScriptList) {}
     //* ------------------- MOVE CONSTANTLY ------------------ *//
 
-    int ScriptMoveConstantly::getTargetPage() { return _targetPage; }
+    int ScriptMoveConstantly::getTargetPageId() { return _targetPage; }
     void ScriptMoveConstantly::setTargetPage(int targetPage)
     {
         _targetPage = targetPage;
@@ -136,8 +136,12 @@ namespace Core
         case ScriptType::Custom:
             return std::string("Custom");
             break;
+        case ScriptType::MoveConstantly:
+            return std::string("MoveConstantly");
+            break;
 
         default:
+            return std::string();
             break;
         }
     }
@@ -176,7 +180,16 @@ namespace Core
                 script.at("removeTargetLogicList").get<std::vector<int>>(),
                 script.at("removeTargetScriptList").get<std::vector<int>>())));
             break;
-
+        case ScriptType::MoveConstantly:
+        {
+            std::vector tv = (script.at("movement").get<std::vector<int>>());
+            glm::vec2 movement = glm::vec2(tv.at(0), tv.at(1));
+            s.setScript(ScriptUnion(ScriptMoveConstantly(
+                script.at("targetPageId"),
+                script.at("targetEntityList"),
+                movement)));
+            break;
+        }
         default:
             break;
         }
@@ -188,6 +201,10 @@ namespace Core
         if (typeString.compare("Custom") == 0)
         {
             return ScriptType::Custom;
+        }
+        else if (typeString.compare("MoveConstantly") == 0)
+        {
+            return ScriptType::MoveConstantly;
         }
     }
     void Script::updateScript(ScriptType scriptType, int id, std::string name...)

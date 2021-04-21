@@ -69,7 +69,7 @@ namespace Core
         int _targetPage;
 
     public:
-        int getTargetPage();
+        int getTargetPageId();
         void setTargetPage(int targetPage);
         std::vector<int> getTargetEntityList();
         void setTargetEntityList(std::vector<int> targetEntityList);

@@ -298,7 +298,7 @@ namespace Core
 
     void LogicManager::runMoveConstantly(ScriptMoveConstantly script)
     {
-        if ((*_currPage)->getID() == script.getTargetPage())
+        if ((*_currPage)->getID() == script.getTargetPageId())
         {
             //TODO: add entity id in parse and in Entity constructor
             for (auto &entity : (*_currPage)->getEntityList())
