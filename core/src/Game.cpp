@@ -173,6 +173,9 @@ namespace Core
         {
             if (*ptr == dp)
             {
+                if (ptr - pageList.begin() == currPageIdx) {
+                    currPageIdx = -1;
+                }
                 pageList.erase(ptr);
                 delete (dp);
                 dp = nullptr;
@@ -189,6 +192,9 @@ namespace Core
         {
             if (!(*ptr)->getName().compare(s))
             {
+                if (ptr - pageList.begin() == currPageIdx) {
+                    currPageIdx = -1;
+                }
                 Page *p = *ptr;
                 pageList.erase(ptr);
                 delete (p);
