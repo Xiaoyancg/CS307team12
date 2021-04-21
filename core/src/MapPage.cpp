@@ -29,7 +29,7 @@ namespace Core
     void MapPage::render()
     {
         if (mMapIndex != -1) {
-            mGame->getMap(mMapIndex)->render(0);
+            mGame->getMap(mMapIndex)->render();
         }
 
         Page::render();

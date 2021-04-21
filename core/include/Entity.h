@@ -16,7 +16,7 @@ namespace Core
         // 'scale' is the (width, height) of the Entity in pixels
         // 'rotation' is the rotation of the entity
         // spriteID is unimplemented, but will reference a specific loaded sprite
-        Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID);
+        Entity(std::string, glm::vec2 location, glm::vec2 scale, double rotation, int spriteID, bool invisible);
         Entity(std::string);
         explicit Entity(const Entity &other);
 
@@ -62,8 +62,12 @@ namespace Core
         void setSpriteID(int);
         int getSpriteID();
 
-        bool isInvisibleEntity();
-        void setInvisibleEntity(bool value);
+        bool isInvisible() {
+            return mIsInvisible;
+        }
+        void setInvisible(bool value) {
+            mIsInvisible = value;
+        }
 
         bool isControlledEntity();
         void setControlledEntity(bool value);
