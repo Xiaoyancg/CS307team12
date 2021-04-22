@@ -51,6 +51,6 @@ namespace Core
 
 		// Sprite ID used to index sprites loaded into memory from the Game class
 		// This isn't used yet though, I'm just adding it for later
-		int mSpriteID = -2;
+		int mSpriteID = -100;
 	};
 }

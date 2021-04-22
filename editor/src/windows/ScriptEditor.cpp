@@ -59,6 +59,7 @@ void ScriptEditor::draw()
                 currScriptIdx = -1;
                 currScript_ptr = nullptr;
                 editor->getCurrentComponentList()[CUR_SCRIPT] = "No Component Selected";
+                editor->showDeleteSuccessPopup();
             }
             if (ImGui::Button("Show/Hide Information"))
             {
