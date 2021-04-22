@@ -185,7 +185,7 @@ namespace Core
             std::string keyTypeString = logicJ.at("KeyType").get<std::string>();
             l.setLogic(LogicUnion(LogicKey(
                 logicJ.at("key").get<Sint32>(),
-                (Uint32)(keyTypeString == std::string("Released") ? 0 : 1))));
+                keyTypeString == std::string("KEYDOWN") ? SDL_KEYDOWN : SDL_KEYUP)));
             break;
         }
         default:

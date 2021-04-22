@@ -195,6 +195,7 @@ namespace Core
                 colorVec[2].get<float>(),
                 colorVec[3].get<float>());
         }
+        _id = root.at("pageId").get<int>();
 
         auto entityVec = root.at("entityList").get<std::vector<json>>();
         for (json entityJson : entityVec)
@@ -209,6 +210,7 @@ namespace Core
     {
         json root;
         root["PageName"] = name;
+        root["pageId"] = _id;
         std::vector<json> entityVector;
         for (Entity *e : entityList)
         {

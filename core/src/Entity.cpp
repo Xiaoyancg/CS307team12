@@ -22,7 +22,8 @@ namespace Core
 		  mScale(other.mScale), mRotation(other.mRotation),
 		  mSpriteID(other.mSpriteID), mParentPage(other.mParentPage),
 		  _entityId(other._entityId), mInScriptId(other.mInScriptId)
-		{}
+	{
+	}
 
 	// CONSTRUCTOR
 
@@ -240,6 +241,8 @@ namespace Core
 
 		setRotation(root.at("rotation").get<double>());
 		setSpriteID(root.at("spriteID").get<int>());
+		setInScriptId(root.at("inScriptId").get<int>());
+		setEntityId(root.at("entityId").get<int>());
 	}
 
 	nlohmann::json Entity::serialize()
@@ -250,6 +253,8 @@ namespace Core
 		root["scale"] = {mScale.x, mScale.y};
 		root["rotation"] = mRotation;
 		root["spriteID"] = mSpriteID;
+		root["inScriptId"] = mInScriptId;
+		root["entityId"] = _entityId;
 		return root;
 	}
 
