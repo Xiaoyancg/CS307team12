@@ -141,7 +141,11 @@ void MapWindow::draw()
             glBindTexture(GL_TEXTURE_2D, 0);
 
             cam->setDimensions(icanvas_size.x, icanvas_size.y);
+<<<<<<< HEAD
             cam->setPosition(0, 0);
+=======
+            cam->setPosition(mapWidth/2.0f, mapHeight/2.0f);
+>>>>>>> 0d387bfabfb3ed7364a91f76f3b14d9d3108167f
             cam->use();
 
             // render the map

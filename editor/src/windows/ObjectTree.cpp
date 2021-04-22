@@ -127,6 +127,20 @@ void ObjectTree::draw()
                 }
                 ImGui::TreePop();
             }
+
+            // Camera
+            if (game != nullptr)
+            {
+                ImGuiTreeNodeFlags node_flags = base_flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+                ImGui::TreeNodeEx("Camera", node_flags, "Camera");
+
+                if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(0))
+                {
+                    editor->getWindowList()[CAMERAEDITOR]->setVisible(true);
+                }
+            }
+
         }
         ImGui::End();
     }

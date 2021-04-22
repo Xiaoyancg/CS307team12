@@ -32,11 +32,11 @@ namespace Core
 
             out vec2 TexCoords;
 
-		    uniform vec2 scale; // This will scale our coordinates in pixels (0 < x,y < width,height) to opengl coordinates (-1 < x,y < 1)
+            uniform mat4 projection;
 
             void main()
             {
-                gl_Position = vec4(scale * pos.xy - 1, 0.0, 1.0);
+                gl_Position = projection * vec4(pos.xy, 0.0, 1.0);
                 TexCoords = textureCoords;
             }  
 	    )glsl";

@@ -4,6 +4,9 @@
 #include <nlohmann/json.hpp>
 #include "SpriteManager.h"
 
+// constant for the default ID for entities. If this gets changed to -2, Camera code will break. This is used instead of -1 for consistency
+#define NO_ENTITY_ID -1
+
 namespace Core
 {
     class Page;
@@ -107,7 +110,7 @@ namespace Core
         // This isn't used yet though, I'm just adding it for later
         int mSpriteID = -1;
 
-        int _entityId = -1;
+        int _entityId = NO_ENTITY_ID;
 
         bool mIsInvisible = false;
 

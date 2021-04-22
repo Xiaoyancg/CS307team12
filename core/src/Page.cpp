@@ -1,7 +1,7 @@
 #include "Page.h"
 #include "MapPage.h"
 #include "MenuPage.h"
-
+#include "JsonParser.h"
 #ifdef __TEST_CORE
 #include <TestCore.h>
 #endif // __TEST_CORE
@@ -98,6 +98,21 @@ namespace Core
         }
     }
 
+    Entity* Page::getEntityWithID(int id) {
+        for (auto ent : entityList) {
+            if (ent) {
+                if (ent->getEntityId() == id) {
+                    return ent;
+                }
+            }
+            else {
+                entityList.erase(std::remove(begin(entityList), end(entityList), nullptr), end(entityList));
+            }
+        }
+        return nullptr;
+    }
+
+
     // =========================
     // UTILITY OPERATION
 
@@ -180,6 +195,7 @@ namespace Core
                 colorVec[2].get<float>(),
                 colorVec[3].get<float>());
         }
+        _id = getData<int>(root, "pageId");
 
         auto entityVec = root.at("entityList").get<std::vector<json>>();
         for (json entityJson : entityVec)
@@ -194,6 +210,7 @@ namespace Core
     {
         json root;
         root["PageName"] = name;
+        root["pageId"] = _id;
         std::vector<json> entityVector;
         for (Entity *e : entityList)
         {

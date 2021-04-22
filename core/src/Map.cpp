@@ -95,10 +95,10 @@ namespace Core
         {
             // Parse the lower and upper coordinates for x and y from the Tile's coords array
             float *coords = tile.getCoords();
-            float lowX = coords[0];
-            float lowY = coords[1];
-            float highX = coords[12];
-            float highY = coords[13];
+            float lowX = coords[4];
+            float lowY = coords[5];
+            float highX = coords[8];
+            float highY = coords[9];
 
             if ((lowX <= point.x) && (point.x <= highX) &&
                 (lowY <= point.y) && (point.y <= highY))

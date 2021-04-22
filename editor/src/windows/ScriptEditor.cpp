@@ -108,6 +108,7 @@ void ScriptEditor::draw()
                 default:
                     break;
                 }
+                editor->getCurrentComponentList()[CUR_SCRIPT] = scriptName;
             }
         }
 

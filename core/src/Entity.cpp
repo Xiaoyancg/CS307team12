@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Game.h"
+#include "JsonParser.h"
 #include <glad/glad.h>
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -22,7 +23,8 @@ namespace Core
 		  mScale(other.mScale), mRotation(other.mRotation),
 		  mSpriteID(other.mSpriteID), mParentPage(other.mParentPage),
 		  _entityId(other._entityId), mInScriptId(other.mInScriptId)
-		{}
+	{
+	}
 
 	// CONSTRUCTOR
 
@@ -240,6 +242,8 @@ namespace Core
 
 		setRotation(root.at("rotation").get<double>());
 		setSpriteID(root.at("spriteID").get<int>());
+		setInScriptId(getData<int>(root, "inScriptId"));
+		setEntityId(getData<int>(root, "entityId"));
 	}
 
 	nlohmann::json Entity::serialize()
@@ -250,6 +254,8 @@ namespace Core
 		root["scale"] = {mScale.x, mScale.y};
 		root["rotation"] = mRotation;
 		root["spriteID"] = mSpriteID;
+		root["inScriptId"] = mInScriptId;
+		root["entityId"] = _entityId;
 		return root;
 	}
 
