@@ -3,28 +3,34 @@
 #include "UndoRedo.h"
 #include <string>
 
-void MapEditor::draw() {
+void MapEditor::draw()
+{
 	// Map editor
 	bool map_info = false;
 	Core::Game *game = editor->getGamePtr();
-	if (visible) {
+	if (visible)
+	{
 		// possibly implement a new function here for readability purposes
 
 		// set the windows default size
 		ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
 
 		// map editor
-		if (ImGui::Begin("Map Editor", &visible)) {
+		if (ImGui::Begin("Map Editor", &visible))
+		{
 			std::string mapLabel;
-			if (editor->getCurrentMap() != nullptr) {
+			if (editor->getCurrentMap() != nullptr)
+			{
 				mapLabel = editor->getCurrentMap()->getName();
 			}
-			if (ImGui::Button("Create Map")) {
+			if (ImGui::Button("Create Map"))
+			{
 				ImGui::OpenPopup("create_map_popup");
 			}
 			drawCreateMapPopup();
 			ImGui::SameLine();
-			if (ImGui::Button("Delete Map")) {
+			if (ImGui::Button("Delete Map"))
+			{
 				game->deleteMap(editor->getCurrentMap());
 				editor->setCurrentMap(nullptr);
 				editor->showDeleteSuccessPopup();
@@ -32,60 +38,77 @@ void MapEditor::draw() {
 			ImGui::Text("Current Map");
 			ImGui::SameLine();
 			ImGui::PushItemWidth(200);
-			if (ImGui::BeginCombo("##currentMap", mapLabel.c_str(), 0)) {
-				for (auto map : editor->getGamePtr()->getMapList()) {
+			if (ImGui::BeginCombo("##currentMap", mapLabel.c_str(), 0))
+			{
+				for (auto map : editor->getGamePtr()->getMapList())
+				{
 					const bool isSelected = (map == editor->getCurrentMap());
-					if (ImGui::Selectable(map->getName().c_str(), isSelected)) {
+					if (ImGui::Selectable(map->getName().c_str(), isSelected))
+					{
 						editor->setCurrentMap(map);
 					}
-					if (isSelected) {
+					if (isSelected)
+					{
 						ImGui::SetItemDefaultFocus();
 					}
 				}
 				ImGui::EndCombo();
 			}
 			Core::Map *currMap = editor->getCurrentMap();
-			if (currMap != nullptr) {
+			if (currMap != nullptr)
+			{
 				ImGui::Text("Map Name:");
 				ImGui::SameLine();
-				if (currMap != nullptr) {
+				if (currMap != nullptr)
+				{
 					ImGui::Text(currMap->getName().c_str());
-				} else {
+				}
+				else
+				{
 					ImGui::Text("no map selected");
 				}
 				ImGui::Text("Dimensions:");
 				ImGui::SameLine();
 				glm::ivec2 dims;
-				if (currMap != nullptr) {
+				if (currMap != nullptr)
+				{
 					dims = currMap->getDimensions();
-				} else {
+				}
+				else
+				{
 					dims = glm::ivec2(0, 0);
 				}
 				ImGui::Text("%i Columns x %i Rows", dims.x, dims.y, currMap->getTileSize());
 				ImGui::Text("Tile Size: %i", currMap->getTileSize());
 				ImGui::Text("");
-				if (currMap != nullptr) {
-					switch (mode) {
-						case EditMode::Collision:
-							ImGui::Text("Edit Mode: Collision");
-							break;
-						case EditMode::Sprite:
-							ImGui::Text("Edit Mode: Sprite");
-							break;
+				if (currMap != nullptr)
+				{
+					switch (mode)
+					{
+					case EditMode::Collision:
+						ImGui::Text("Edit Mode: Collision");
+						break;
+					case EditMode::Sprite:
+						ImGui::Text("Edit Mode: Sprite");
+						break;
 					}
 
-					if (ImGui::Button("Collision Mode")) {
+					if (ImGui::Button("Collision Mode"))
+					{
 						mode = EditMode::Collision;
 					}
 
-					if (ImGui::Button("Sprite Mode")) {
+					if (ImGui::Button("Sprite Mode"))
+					{
 						mode = EditMode::Sprite;
 					}
 					ImGui::Text("Sprite ID");
 					ImGui::SameLine();
 					ImGui::PushItemWidth(100);
-					ImGui::InputInt("", &mSelectedSpriteID, 1, 5);
-				} else {
+					ImGui::InputInt(" ", &mSelectedSpriteID, 1, 5);
+				}
+				else
+				{
 					ImGui::Text("Tile size: 0");
 				}
 			}
@@ -94,12 +117,14 @@ void MapEditor::draw() {
 	}
 }
 
-void MapEditor::drawCreateMapPopup() {
+void MapEditor::drawCreateMapPopup()
+{
 	static char map_name[128] = "";
 	static int dim1 = 0;
 	static int dim2 = 0;
 	static int tileSize = 0;
-	if (ImGui::BeginPopup("create_map_popup")) {
+	if (ImGui::BeginPopup("create_map_popup"))
+	{
 		ImGui::Text("Enter Map Name:");
 		ImGui::PushItemWidth(200);
 		ImGui::InputText(" ", map_name, IM_ARRAYSIZE(map_name));
@@ -114,7 +139,8 @@ void MapEditor::drawCreateMapPopup() {
 		ImGui::SameLine();
 		ImGui::SliderInt("##3", &tileSize, 0, 128);
 
-		if (ImGui::Button("Create")) {
+		if (ImGui::Button("Create"))
+		{
 			// creates a new map with map_name specified by user and
 			// dimensions as specified by user UNDO
 			std::string mname = map_name;
