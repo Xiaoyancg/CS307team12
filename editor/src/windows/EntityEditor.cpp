@@ -164,20 +164,20 @@ void EntityEditor::draw()
 				ImGui::SameLine();
 				ImGui::InputInt("##x_pos", &x_pos);
 				ImGui::SameLine();
-				HelpMarker("Choose a value between [0,1250]");
+				HelpMarker("Choose a value between [-10000,10000]");
 				ImGui::Text("Y Pos:");
 				ImGui::SameLine();
 				ImGui::InputInt("##y_pos", &y_pos);
 				ImGui::SameLine();
-				HelpMarker("Choose a value between [0,700]");
+				HelpMarker("Choose a value between [-10000,10000]");
 				if (ImGui::Button("Change Entity Position"))
 				{
 					// these are totally arbitrary #s to try to ensure entities
 					// cant be rendered outside the game view window when at max
 					// size should probably change to use monitor display
 					// settings later on
-					if (x_pos >= 0 && x_pos <= 1250 && y_pos >= 0 &&
-						y_pos <= 700)
+					if (x_pos >= -10000 && x_pos <= 10000 && y_pos >= -10000 &&
+						y_pos <= 10000)
 					{
 						for (Core::Entity *e : currPage->getEntityList())
 						{
@@ -277,15 +277,20 @@ void EntityEditor::draw()
 					ImGui::Text("Sprite:");
 					ImGui::SameLine();
 					std::string spriteLabel = "";
-					auto& sprites = editor->getGamePtr()->getSprites();
+					auto &sprites = editor->getGamePtr()->getSprites();
 					auto currentEntity = getCurrentEntity();
-					if (currentEntity->getSpriteID() == -100) {
+					if (currentEntity->getSpriteID() == -100)
+					{
 						spriteLabel = "Default";
-					} else if (sprites.find(currentEntity->getSpriteID()) != sprites.end()) {
+					}
+					else if (sprites.find(currentEntity->getSpriteID()) != sprites.end())
+					{
 						spriteLabel = sprites[currentEntity->getSpriteID()]->getName();
 					}
-					if (ImGui::BeginCombo("##entitySprite", spriteLabel.c_str())) {
-						if (ImGui::Selectable("Default", currentEntity->getSpriteID() == -100)) {
+					if (ImGui::BeginCombo("##entitySprite", spriteLabel.c_str()))
+					{
+						if (ImGui::Selectable("Default", currentEntity->getSpriteID() == -100))
+						{
 							int newID = -100;
 							int currentID = currentEntity->getSpriteID();
 							auto action = [this, newID]() {
@@ -297,9 +302,11 @@ void EntityEditor::draw()
 							pushAction(action, restore);
 							action();
 						}
-						for (auto [id, sprite] : sprites) {
+						for (auto [id, sprite] : sprites)
+						{
 							bool selected = (id == currentEntity->getSpriteID());
-							if (ImGui::Selectable(sprite->getName().c_str(), selected)) {
+							if (ImGui::Selectable(sprite->getName().c_str(), selected))
+							{
 								int newID = id;
 								int currentID = currentEntity->getSpriteID();
 								auto action = [this, newID]() {

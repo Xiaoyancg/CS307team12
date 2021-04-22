@@ -55,6 +55,7 @@ namespace Core
     {
         Entity *e = new Entity(n);
         // set id to -100 (default)
+        e->setScale(glm::vec2(100, 100));
         e->setSpriteID(-100);
         return addEntity(e);
     }
