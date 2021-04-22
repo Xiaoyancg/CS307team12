@@ -73,6 +73,7 @@ namespace Core
     private:
         std::vector<Logic *> _currKeyLogicList;
         std::vector<Logic *> _currCustomLogicList;
+        std::vector<Logic *> _currCollideLogicList;
         std::vector<Logic> _logicList;
 
     public:
@@ -152,6 +153,8 @@ namespace Core
         ///
         /// \param script
         void runMoveConstantly(ScriptMoveConstantly script);
+
+        void runBounce(ScriptBounce script);
 
         /// \brief execution function for script type custom
         ///

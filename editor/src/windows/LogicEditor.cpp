@@ -174,6 +174,10 @@ void LogicEditor::draw()
                 {
                     ImGui::Text("Logic Type: Key");
                 }
+                else if (current_logic->getSignalType() == Core::SignalType::Collide)
+                {
+                    ImGui::Text("Logic Type: Collide");
+                }
             }
             // List of all the logics in logic list
             if (ImGui::BeginListBox("##logic_listbox", ImVec2(200, 8 * ImGui::GetTextLineHeightWithSpacing())))
@@ -209,6 +213,7 @@ void LogicEditor::draw()
                             keyType = current_logic->getLogic().keyLogic.getKeyType();
                             keyTypeIdx = keyType == SDL_KEYDOWN ? 0 : 1;
                             std::strcpy(keyCodeString, SDL_GetKeyName(keyCode));
+                            break;
                         }
                     }
 

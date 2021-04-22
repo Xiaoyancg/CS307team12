@@ -112,6 +112,35 @@ namespace Core
                 }
                 break;
 
+            case SignalType::Collide:
+                for (auto logic : _currCollideLogicList) {
+                    auto& entities = signal.getSignal().collideSignal.getEntities();
+                    if (entities.first->getEntityId() == logic->getLogic().collideLogic.getEntity()
+                        || entities.second->getEntityId() == logic->getLogic().collideLogic.getEntity())
+                    {
+                        for (auto& scriptId : logic->getTargetScriptList())
+                        {
+                            Entity* first = signal.getSignal().collideSignal.getEntities().first;
+                            Entity* second = signal.getSignal().collideSignal.getEntities().second;
+                            glm::vec2 loc1 = first->getLocation();
+                            glm::vec2 loc2 = second->getLocation();
+                            glm::vec2 scale1 = first->getScale();
+                            glm::vec2 scale2 = second->getScale();
+
+                            bool horizontal = false;
+                            
+                            for (auto& script : *getScriptList()) {
+                                if (script.getScriptId() == scriptId) {
+                                    script.getScript().scriptBounce.setHorizontal(horizontal);
+                                    break;
+                                }
+                            }
+                            sendScript(scriptId);
+                        }
+                    }
+                }
+                break;
+
             default:
                 break;
             }
@@ -134,6 +163,9 @@ namespace Core
                     break;
                 case SignalType::Custom:
                     _currCustomLogicList.push_back(&logic);
+                    break;
+                case SignalType::Collide:
+                    _currCollideLogicList.push_back(&logic);
                     break;
 
                 default:
@@ -160,6 +192,15 @@ namespace Core
             if ((*it)->getLogicId() == logicId)
             {
                 _currCustomLogicList.erase(it);
+                return;
+            }
+        }
+        for (std::vector<Logic *>::iterator it = _currCollideLogicList.begin();
+             it != _currCollideLogicList.end(); ++it)
+        {
+            if ((*it)->getLogicId() == logicId)
+            {
+                _currCollideLogicList.erase(it);
                 return;
             }
         }
@@ -287,6 +328,9 @@ namespace Core
             case ScriptType::Custom:
                 runCustom(script->getScript().scriptCustom);
                 break;
+            case ScriptType::Bounce:
+                runBounce(script->getScript().scriptBounce);
+                break;
 
             default:
                 break;
@@ -319,6 +363,25 @@ namespace Core
                         {
                             entity->setLocation(entity->getLocation() + script.getMovement());
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    void LogicManager::runBounce(ScriptBounce script) {
+        for (auto other : _currEntityScriptList) {
+            if (other->getScriptType() == ScriptType::MoveConstantly) {
+                auto& entities = other->getScript().scriptMoveConstantly.getTargetEntityList();
+                for (int entity : entities) {
+                    if (entity == script.getTargetEntityId()) {
+                        auto vec = other->getScript().scriptMoveConstantly.getMovement();
+                        if (script.getHorizontal()) {
+                            vec.x = -vec.x;
+                        } else {
+                            vec.y = -vec.y;
+                        }
+                        other->getScript().scriptMoveConstantly.setMovement(vec);
                     }
                 }
             }

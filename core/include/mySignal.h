@@ -3,6 +3,9 @@
 #include <nlohmann/json.hpp>
 #include <vector>
 #include <string>
+
+#include "Entity.h"
+
 namespace Core
 {
     union SignalUnion;
@@ -14,6 +17,7 @@ namespace Core
     {
         Custom = 0,
         Key = 1,
+        Collide = 2
     };
 
     //* --------------- ANCHOR TYPES OF SIGNALS -------------- *//
@@ -69,17 +73,32 @@ namespace Core
         ~SignalKey();
     };
 
+    class SignalCollide
+    {
+    public:
+        SignalCollide(std::pair<Entity*, Entity*> entities)
+            : entities(entities) {}
+        std::pair<Entity*, Entity*> getEntities() {
+            return entities;
+        }
+    private:
+        std::pair<Entity*, Entity*> entities;
+    };
+
     //* -------------------- SIGNAL UNION -------------------- *//
 
     union SignalUnion
     {
         SignalKey keySignal;
         SignalCustom customSignal;
+        SignalCollide collideSignal;
         SignalUnion &operator=(const SignalUnion &other);
         SignalUnion();
         SignalUnion(const SignalUnion &);
         SignalUnion(SignalKey keySignal);
         SignalUnion(SignalCustom customSignal);
+        SignalUnion(SignalCollide collideSignal)
+            : collideSignal(collideSignal) {}
         ~SignalUnion();
     };
 

@@ -73,7 +73,7 @@ void ScriptEditor::draw()
                 ImGui::PushItemWidth(170.0f);
                 ImGui::InputInt("##scriptId", &scriptId);
 
-                ImGui::ListBox(" ", &type, typeNameList, 2);
+                ImGui::ListBox(" ", &type, typeNameList, 3);
 
                 switch ((Core::ScriptType)type)
                 {
@@ -82,6 +82,9 @@ void ScriptEditor::draw()
                     break;
                 case Core::ScriptType::MoveConstantly:
                     MoveConstantlyWidgets();
+                    break;
+                case Core::ScriptType::Bounce:
+                    BounceWidgets();
                     break;
 
                 default:
@@ -102,6 +105,11 @@ void ScriptEditor::draw()
                 case Core::ScriptType::MoveConstantly:
                     currScript_ptr->updateScript((Core::ScriptType)type, scriptId, std::string(scriptName),
                                                  targetPageId, targetEntityList, glm::vec2(x, y));
+                    break;
+
+                case Core::ScriptType::Bounce:
+                    currScript_ptr->updateScript((Core::ScriptType)type, scriptId, std::string(scriptName),
+                                                 targetPageId, targetEntityId);
                     break;
 
                 default:
@@ -220,6 +228,14 @@ void ScriptEditor::customWidgets()
     customTargetListTreeNode("Remove Logic", 4);
     customTargetListTreeNode("Remove Script", 5);
 }
+void ScriptEditor::BounceWidgets() {
+    ImGui::Text("Target Page ID:");
+    ImGui::SameLine();
+    ImGui::InputInt("##bounceTargetPage", &targetPageId);
+    ImGui::Text("Target Entity ID:");
+    ImGui::SameLine();
+    ImGui::InputInt("##bounceTargetEntity", &targetEntityId);
+}
 void ScriptEditor::getInfo(Core::Script *s)
 {
     scriptId = s->getScriptId();
@@ -243,6 +259,11 @@ void ScriptEditor::getInfo(Core::Script *s)
         x = su.scriptMoveConstantly.getMovement().x;
         y = su.scriptMoveConstantly.getMovement().y;
         targetEntityList = su.scriptMoveConstantly.getTargetEntityList();
+    case Core::ScriptType::Bounce:
+        type = 2;
+        targetPageId = su.scriptBounce.getTargetPageId();
+        targetEntityId = su.scriptBounce.getTargetEntityId();
+        break;
     default:
         break;
     }

@@ -15,6 +15,7 @@ namespace Core
         Custom = 0,
         // entity level
         MoveConstantly = 1,
+        Bounce = 2,
         // page level
         SwitchPage = 10000,
         // game level
@@ -86,18 +87,53 @@ namespace Core
         ~ScriptMoveConstantly() = default;
     };
 
+    //* -------------------- SCRIPT COLLIDE ------------------ *//
+    
+    class ScriptBounce
+    {
+    public:
+        ScriptBounce(int targetPage, int targetEntity)
+            : targetPage(targetPage), targetEntity(targetEntity) {}
+
+        int getTargetPageId() {
+            return targetPage;
+        }
+        void setTargetPage(int targetPage) {
+            this->targetPage = targetPage;
+        }
+        int getTargetEntityId() {
+            return targetEntity;
+        }
+        void setTargetEntity(int targetEntity) {
+            this->targetEntity = targetEntity;
+        }
+        bool getHorizontal() {
+            return horizontal;
+        }
+        void setHorizontal(bool value) {
+            horizontal = value;
+        }
+        
+    private:
+        int targetEntity;
+        int targetPage;
+        bool horizontal;
+    };
+
     //* -------------------- SCRIPT UNION -------------------- *//
 
     union ScriptUnion
     {
         ScriptCustom scriptCustom;
         ScriptMoveConstantly scriptMoveConstantly;
+        ScriptBounce scriptBounce;
         char space[1000];
         ScriptUnion(const ScriptUnion &other);
         ScriptUnion &operator=(const ScriptUnion &other);
         ScriptUnion();
         ScriptUnion(ScriptCustom scriptCustom);
         ScriptUnion(ScriptMoveConstantly scriptMoveConstantly);
+        ScriptUnion(ScriptBounce scriptBounce) : scriptBounce(scriptBounce) {}
         ~ScriptUnion();
     };
 

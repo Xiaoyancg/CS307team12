@@ -15,6 +15,7 @@ public:
 private:
     void customWidgets();
     void MoveConstantlyWidgets();
+    void BounceWidgets();
     void getInfo(Core::Script *);
     void customTargetListTreeNode(std::string, int);
     int currScriptIdx = -1;
@@ -25,7 +26,7 @@ private:
     char scriptName[128];
     int scriptId = -1;
     int type = 0;
-    const char *typeNameList[2] = {"Custom", "MoveConstantly"};
+    const char *typeNameList[3] = {"Custom", "MoveConstantly", "Bounce"};
 
     //* ----------------------- CUSTOM ----------------------- *//
 
@@ -45,6 +46,7 @@ private:
     //* ------------------- MOVE CONSTANTLY ------------------ *//
     int x = 0, y = 0;
     int targetPageId = -1;
+    int targetEntityId = -1;
     std::vector<int> targetEntityList;
     int newEntity = 0;
 };

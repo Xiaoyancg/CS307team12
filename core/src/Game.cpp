@@ -894,6 +894,23 @@ namespace Core
     }
     void Game::logicLoop()
     {
+        auto& entityList = getCurrPage()->getEntityList();
+        for (int i = 0; i < entityList.size(); i++) {
+            for (int j = i + 1; j < entityList.size(); j++) {
+                glm::vec2 loc1 = entityList[i]->getLocation();
+                glm::vec2 loc2 = entityList[j]->getLocation();
+                glm::vec2 scale1 = entityList[i]->getScale();
+                glm::vec2 scale2 = entityList[j]->getScale();
+                
+                if (!(loc1.x + scale1.x < loc2.x || loc2.x + scale2.x < loc1.x
+                    || loc1.y + scale1.y < loc2.y || loc2.y + scale2.y < loc1.y))
+                {
+                    _logicManager.sendSignal(Signal(-99, SignalType::Collide, "COLLIDE",
+                                        SignalUnion(SignalCollide({ entityList[i], entityList[j] }))));
+                }
+
+            }
+        }
         _logicManager.checkCurrSignalList();
         _logicManager.runCurrScriptList();
     }

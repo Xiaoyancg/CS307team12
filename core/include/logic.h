@@ -37,16 +37,29 @@ namespace Core
         ~LogicKey();
     };
 
+    class LogicCollide
+    {
+    public:
+        LogicCollide(int entity) : entity(entity) {}
+        int getEntity() {
+            return entity;
+        }
+    private:
+        int entity;
+    };
+
     //* --------------------- LOGIC UNION -------------------- *//
     union LogicUnion
     {
         LogicCustom customLogic;
         LogicKey keyLogic;
+        LogicCollide collideLogic;
         LogicUnion &operator=(const LogicUnion &other);
         LogicUnion(const LogicUnion &other);
         LogicUnion();
         LogicUnion(LogicCustom customLogic);
         LogicUnion(LogicKey LogicKey);
+        LogicUnion(LogicCollide collideLogic) : collideLogic(collideLogic) {}
         ~LogicUnion();
     };
     //* -------------------- ANCHOR LOGIC -------------------- *//

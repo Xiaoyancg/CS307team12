@@ -8,6 +8,7 @@ namespace Core
     static std::unordered_map<ScriptType, std::string> scriptTypeStringList = {
         {ScriptType::Custom, "Custom"},
         {ScriptType::MoveConstantly, "MoveConstantly"},
+        {ScriptType::Bounce, "Bounce"},
         {ScriptType::SwitchPage, "SwitchPage"},
         {ScriptType::GameEnd, "GameEnd"}};
     std::string getScriptTypeStringByScriptType(ScriptType type)
@@ -191,6 +192,16 @@ namespace Core
                 script.at("removeTargetScriptList").get<std::vector<int>>())));
             break;
         case ScriptType::MoveConstantly:
+        {
+            std::vector tv = (script.at("movement").get<std::vector<int>>());
+            glm::vec2 movement = glm::vec2(tv.at(0), tv.at(1));
+            s.setScript(ScriptUnion(ScriptMoveConstantly(
+                script.at("targetPageId"),
+                script.at("targetEntityList"),
+                movement)));
+            break;
+        }
+        case ScriptType::Bounce:
         {
             std::vector tv = (script.at("movement").get<std::vector<int>>());
             glm::vec2 movement = glm::vec2(tv.at(0), tv.at(1));

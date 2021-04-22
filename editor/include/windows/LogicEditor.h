@@ -16,10 +16,10 @@ private:
     Uint32 keyType = 0;
     std::vector<int> targetScriptList;
     int newTargetScript = 0;
-    char *signal_type_strings[2] = {"Custom", "Key"};
+    char *signal_type_strings[3] = {"Custom", "Key", "Collide"};
     // also the signal type
     int signal_type_idx = 0;
-    char *script_type_strings[2] = {"Custom", "MoveConstantly"};
+    char *script_type_strings[3] = {"Custom", "MoveConstantly", "Bounce"};
     // also the script type
     int script_type_idx = 0;
     Core::Logic *current_logic = nullptr;
