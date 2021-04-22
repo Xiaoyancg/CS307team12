@@ -21,6 +21,15 @@ namespace Core
 
         MenuPage::MenuPage(std::string s, Menu* menu);
 
+        MenuPage(const MenuPage& other) :
+            mMenu(new Menu(*other.mMenu)),
+            Page(other)   
+        {}
+
+        ~MenuPage() {
+            delete mMenu;
+        }
+
 
         // Sets mMenu to the Menu created by the user
         void setMenu(Menu* menu);

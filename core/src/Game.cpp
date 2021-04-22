@@ -54,7 +54,13 @@ namespace Core
         // TODO: restore current page, map, camera, and ctrl entity
         for (int i = 0; i < other.pageList.size(); i++)
         {
-            pageList[i] = new Page(*other.pageList[i]);
+            if (typeid(*other.pageList[i]) == typeid(MapPage)) {
+                pageList[i] = new MapPage(*static_cast<MapPage*>(other.pageList[i]));
+            } else if (typeid(*other.pageList[i]) == typeid(MenuPage)) {
+                pageList[i] = new MenuPage(*static_cast<MenuPage*>(other.pageList[i]));
+            } else {
+                pageList[i] = new Page(*other.pageList[i]);
+            }
             pageList[i]->setGame(this);
         }
         for (int i = 0; i < other.mapList.size(); i++)

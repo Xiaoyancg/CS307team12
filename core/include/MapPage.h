@@ -11,11 +11,22 @@ namespace Core
     {
     public:
         // Users can specify a map if it's already created
-        MapPage::MapPage(const std::string s = "New Map Page", int mapIndex = -1)
+        MapPage(const std::string s = "New Map Page", int mapIndex = -1)
             : Page(s), mMapIndex(mapIndex)
         {
             SetBackgroundColor(0.1f, 0.9f, 0.59f, 1.0f);
             mCamera = new Camera;
+        }
+
+        MapPage(const MapPage& other) :
+            mMapIndex(other.mMapIndex),
+            Page(other)
+        {
+            mCamera = new Camera;
+        }
+
+        ~MapPage() {
+            delete mCamera;
         }
 
 

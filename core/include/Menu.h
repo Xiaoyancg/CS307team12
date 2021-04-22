@@ -18,6 +18,12 @@ namespace Core
 	public:
 		// Takes a scale, the number of tiles in the x and y direction
 		Menu(std::string name);
+		Menu(const Menu& other) :
+			mFont(other.mFont),
+			mTextBoxes(other.mTextBoxes),
+			mButtons(other.mButtons),
+			mMenuName(other.mMenuName)
+		{}
 		~Menu();
 
 		void setName(std::string);
