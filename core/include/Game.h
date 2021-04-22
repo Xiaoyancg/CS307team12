@@ -129,7 +129,8 @@ namespace Core
         void createMenuTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color);
 
         // Set the entity that the Camera locks to
-        void setCameraEntity(Entity *);
+        void setCameraEntityID(int);
+        int getCameraEntityID();
 
         // If the locked Camera Entity moves more than x/y pixels in any direction, move the camera with it.
         // This lets the Entity move freely in the center of the screen, and lets the camera follow it when it moves farther.

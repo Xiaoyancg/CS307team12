@@ -14,6 +14,7 @@
 #include "windows/SignalEditor.h"
 #include "windows/StatusEditor.h"
 #include "windows/MenuPageEditor.h"
+#include "windows/CameraEditor.h"
 
 #include "windows/ObjectTree.h"
 #include "windows/SplashWindow.h"

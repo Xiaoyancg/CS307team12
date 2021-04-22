@@ -61,9 +61,12 @@ namespace Core
         {
             mapList[i] = new Map(*other.mapList[i]);
         }
+
         // solved bug: previously, pagelist Pointer points to the pageList in savedGame
         _logicManager.setPageList(&pageList);
         updatePageLogic(getCurrPage());
+
+        mCamera->setPage(pageList[other.currPageIdx]);
     }
     Game::Game() : Game("Untitled Game")
     {
@@ -402,9 +405,14 @@ namespace Core
         }
     }
 
-    void Game::setCameraEntity(Entity *ent)
+    void Game::setCameraEntityID(int entID)
     {
-        mCamera->lockToEntity(ent);
+        mCamera->lockToEntity(entID);
+    }
+
+    int Game::getCameraEntityID()
+    {
+        return mCamera->getLockID();
     }
 
     void Game::setCameraEntityBounds(int x, int y)
@@ -858,6 +866,10 @@ namespace Core
             if (p == pageList[i])
             {
                 currPageIdx = i;
+                if (mCamera)
+                {
+                    mCamera->setPage(p);
+                }
                 return;
             }
         }
