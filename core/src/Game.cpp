@@ -262,19 +262,25 @@ namespace Core
         }
     }
 
-    void Game::createMenuButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) {
+    void Game::createMenuButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor)
+    {
         // If the current page is a menu page, create a button on it
-        if (MenuPage* menuPage = dynamic_cast<MenuPage*>(getCurrPage())) {
-            if (menuPage->getMenu()) {
+        if (MenuPage *menuPage = dynamic_cast<MenuPage *>(getCurrPage()))
+        {
+            if (menuPage->getMenu())
+            {
                 menuPage->getMenu()->createButton(text, size, textColor, location, dimensions, buttonColor);
             }
         }
     }
 
-    void Game::createMenuTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color) {
+    void Game::createMenuTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color)
+    {
         // If the current page is a menu page, create a textbox on it
-        if (MenuPage* menuPage = dynamic_cast<MenuPage*>(getCurrPage())) {
-            if (menuPage->getMenu()) {
+        if (MenuPage *menuPage = dynamic_cast<MenuPage *>(getCurrPage()))
+        {
+            if (menuPage->getMenu())
+            {
                 menuPage->getMenu()->createTextBox(text, size, location, color);
             }
         }
@@ -396,11 +402,13 @@ namespace Core
         }
     }
 
-    void Game::setCameraEntity(Entity* ent) {
+    void Game::setCameraEntity(Entity *ent)
+    {
         mCamera->lockToEntity(ent);
     }
 
-    void Game::setCameraEntityBounds(int x, int y) {
+    void Game::setCameraEntityBounds(int x, int y)
+    {
         mCamera->setLockBounds(x, y);
     }
 
@@ -519,6 +527,7 @@ namespace Core
         j["Version"] = getVersion();
         j["LastModifiedTime"] = getLMTime();
         j["Note"] = getNote();
+
         // pages
         std::vector<json> pageVector;
         for (Page *p : pageList)

@@ -1,7 +1,7 @@
 #include "Page.h"
 #include "MapPage.h"
 #include "MenuPage.h"
-
+#include "JsonParser.h"
 #ifdef __TEST_CORE
 #include <TestCore.h>
 #endif // __TEST_CORE
@@ -180,7 +180,7 @@ namespace Core
                 colorVec[2].get<float>(),
                 colorVec[3].get<float>());
         }
-        _id = root.at("pageId").get<int>();
+        _id = getData<int>(root, "pageId");
 
         auto entityVec = root.at("entityList").get<std::vector<json>>();
         for (json entityJson : entityVec)

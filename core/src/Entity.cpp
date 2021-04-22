@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "Game.h"
+#include "JsonParser.h"
 #include <glad/glad.h>
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -241,8 +242,8 @@ namespace Core
 
 		setRotation(root.at("rotation").get<double>());
 		setSpriteID(root.at("spriteID").get<int>());
-		setInScriptId(root.at("inScriptId").get<int>());
-		setEntityId(root.at("entityId").get<int>());
+		setInScriptId(getData<int>(root, "inScriptId"));
+		setEntityId(getData<int>(root, "entityId"));
 	}
 
 	nlohmann::json Entity::serialize()
