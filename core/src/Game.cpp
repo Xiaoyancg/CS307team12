@@ -545,7 +545,7 @@ namespace Core
                 break;
             case SignalType::Key:
                 loi["key"] = (Sint32)(l.getLogic().keyLogic.getKey());
-                loi["KeyType"] = (l.getLogic().keyLogic.getKeyType() == SDL_PRESSED) ? std::string("Press") : std::string("Release");
+                loi["KeyType"] = (l.getLogic().keyLogic.getKeyType() == SDL_KEYDOWN) ? std::string("KEYDOWN") : std::string("KEYUP");
             default:
                 break;
             }
