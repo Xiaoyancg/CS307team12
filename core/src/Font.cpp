@@ -1,6 +1,9 @@
 #include "Font.h"
 #include <glad/glad.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "Game.h"
+
 
 // NOTE: Much of this code is from learnopengl.com/In-Practice/Text-Rendering, but repurposed
 //        into the Font class to better suit our needs
@@ -79,8 +82,8 @@ namespace Core {
             glBindVertexArray(Font::VAO);
             glBindBuffer(GL_ARRAY_BUFFER, Font::VBO);
             glBufferData(GL_ARRAY_BUFFER, sizeof(int) * 16, NULL, GL_DYNAMIC_DRAW);
-            glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 4 * sizeof(int), 0);
-            glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 4 * sizeof(int), (void*)(2 * sizeof(int)));
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
             glEnableVertexAttribArray(0); // Enable attribute 0
             glEnableVertexAttribArray(1); // Enable attribute 1
 
@@ -139,6 +142,8 @@ namespace Core {
             // Reset VAO and VBO
             glBindVertexArray(prevVAO);
             glBindBuffer(GL_ARRAY_BUFFER, prevVBO);
+
+
         }
     }
 
@@ -152,11 +157,12 @@ namespace Core {
         // Use text shader
         glUseProgram(Font::textShaderProgram);
 
+        glUniform1i(glGetUniformLocation(Font::textShaderProgram, "text"), 0); // Set texture uniform
         glUniform3f(glGetUniformLocation(Font::textShaderProgram, "textColor"), color.x, color.y, color.z); // Set given color
 
-        // Set scale based on game's width/height (used to translate between pixels and opengl coords)
-        int scaleID = glGetUniformLocation(Font::textShaderProgram, "scale");
-        glUniform2f(scaleID, (float)2 / Game::width, (float)2 / Game::height);
+        glm::mat4 projection = glm::ortho(-Core::Game::width / 2.0f, Core::Game::width / 2.0f, -Core::Game::height / 2.0f, Core::Game::height / 2.0f);
+        int camera = glGetUniformLocation(Font::textShaderProgram, "projection");
+        glUniformMatrix4fv(camera, 1, GL_FALSE, glm::value_ptr(projection));
 
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(Font::VAO);
@@ -189,7 +195,6 @@ namespace Core {
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 
-            //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(int) * 16, vertices);
             glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices, GL_DYNAMIC_DRAW);
 
             // render quad
@@ -206,7 +211,6 @@ namespace Core {
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindBuffer(GL_ARRAY_BUFFER, prevVBO);
         glUseProgram(prevShader);
-        //printf("render width : %d\n", maxX - minX);
 
         return maxX - minX;
     }

@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+#include "Entity.h"
 
 namespace Core
 {
@@ -58,12 +59,25 @@ namespace Core
         // Returns the matrix transformation used in the main shader
         glm::mat4 getMatrix(); // getOrtho * getTranslate
 
+        void lockToEntity(Entity* ent) {
+            mLockedEntity = ent;
+        }
+
+        void setLockBounds(int x, int y) {
+            mLockBounds = glm::ivec2(x, y);
+        }
+
         void use();
 
     private:
         glm::vec2 mPosition;
         glm::vec2 mDimensions;
         float mZoom; // Defaults to 1, meaning no zoom. <1 means zoom out, >1 means zoom in
+
+        Entity* mLockedEntity;
+        glm::ivec2 mLockBounds;
+
+        void offsetPositionExact(int x, int y);
         GLuint cameraUniform;
     };
 

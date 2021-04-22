@@ -41,6 +41,7 @@ void ObjectTree::draw()
                         {
                             editor->getWindowList()[ENTITYEDITOR]->setVisible(true);
                             editor->getCurrentComponentList()[CUR_ENTITY] = e->getName();
+                            game->setCameraEntity(e);
                         }
                         index++;
                     }

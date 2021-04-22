@@ -36,9 +36,5 @@ namespace Core
 
     private:
         Menu* mMenu;
-
-        // These 2 sprites are used on increment/decrement buttons of MenuEntry objects
-        static Sprite* mSpriteInc;
-        static Sprite* mSpriteDec;
     };
 }

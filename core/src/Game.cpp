@@ -262,6 +262,24 @@ namespace Core
         }
     }
 
+    void Game::createMenuButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) {
+        // If the current page is a menu page, create a button on it
+        if (MenuPage* menuPage = dynamic_cast<MenuPage*>(getCurrPage())) {
+            if (menuPage->getMenu()) {
+                menuPage->getMenu()->createButton(text, size, textColor, location, dimensions, buttonColor);
+            }
+        }
+    }
+
+    void Game::createMenuTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color) {
+        // If the current page is a menu page, create a textbox on it
+        if (MenuPage* menuPage = dynamic_cast<MenuPage*>(getCurrPage())) {
+            if (menuPage->getMenu()) {
+                menuPage->getMenu()->createTextBox(text, size, location, color);
+            }
+        }
+    }
+
     unsigned int Game::createSprite(std::string name, std::string filename)
     {
         // Return OpenGL ID of the new sprite
@@ -376,6 +394,14 @@ namespace Core
             GLfloat color[] = {1.0f, 0.0f, 0.0f};
             glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
         }
+    }
+
+    void Game::setCameraEntity(Entity* ent) {
+        mCamera->lockToEntity(ent);
+    }
+
+    void Game::setCameraEntityBounds(int x, int y) {
+        mCamera->setLockBounds(x, y);
     }
 
     //* -------------------- LOGIC WRAPPER ------------------- *//
