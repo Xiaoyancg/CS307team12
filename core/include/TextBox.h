@@ -10,7 +10,7 @@ namespace Core {
 	class TextBox
 	{
 	public:
-		TextBox(std::string text, Font*& font, int size, glm::vec2 location, glm::vec3 color) :
+		TextBox(std::string text, Font*& font, float size, glm::vec2 location, glm::vec3 color) :
 			text(text), mFont(font), size(size), location(location), color(color)
 		{}
 		void render() {
@@ -19,7 +19,7 @@ namespace Core {
 
 		// All of these would have getters/setters so im just making them public
 		std::string text;
-		int size;
+		float size;
 		glm::vec2 location;
 		glm::vec3 color;
 

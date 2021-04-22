@@ -5,7 +5,7 @@ add_library(editorlib ${srcs})
 target_include_directories(editorlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(editorlib PUBLIC corelib gamevmlib sdl imgui imfb glm)
 
-add_executable(editor WIN32 "EditorMain.cpp")
+add_executable(editor "EditorMain.cpp")
 target_link_libraries(editor editorlib sdlmain)
 
 add_custom_command (TARGET editor POST_BUILD

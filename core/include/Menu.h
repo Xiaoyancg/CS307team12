@@ -25,8 +25,8 @@ namespace Core
 
 		// A MenuEntry consists of some text, and two buttons at most.
 		// If a button function pointer is null, then that button will not be created or rendered
-		void createTextBox(std::string text, int size, glm::vec2 location, glm::vec3 color);
-		void createButton(std::string text, int size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor);
+		void createTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color);
+		void createButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor);
 
 		void setMenuEntryCoords();
 
@@ -40,11 +40,11 @@ namespace Core
 		{
 
 		public:
-			Button(std::string text, Font*& font, int size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) :
+			Button(std::string text, Font*& font, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) :
 				mLocation(location), mDimensions(dimensions), mButtonColor(buttonColor)
 			{
 				if (text != "") {
-					mText = new TextBox(text, font, size, glm::vec2(-(font->calcTextWidth(text, size) / 2), -(font->calcTextWidth(text, size) / 2)), textColor);
+					mText = new TextBox(text, font, size, glm::vec2((location.x + dimensions.x/2) -(font->calcTextWidth(text, size) / 2), (location.y + dimensions.y/2) - (font->calcTextHeight(text, size) / 2)), textColor);
 				}
 				else {
 					mText = nullptr;

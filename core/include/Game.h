@@ -125,8 +125,8 @@ namespace Core
         Page *getCurrPage();
 
         // MENU PAGE STUFF
-        void createMenuButton(std::string text, int size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor);
-        void createMenuTextBox(std::string text, int size, glm::vec2 location, glm::vec3 color);
+        void createMenuButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor);
+        void createMenuTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color);
 
         // Set the entity that the Camera locks to
         void setCameraEntity(Entity *);

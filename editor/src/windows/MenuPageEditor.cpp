@@ -5,7 +5,7 @@ void MenuPageEditor::draw() {
 	Core::Game* game = editor->getGamePtr();
 
 	static char entry_text[128] = "";
-	static int size = 0;
+	static float size = 1.0f;
 	static int loc_x = 0;
 	static int loc_y = 0;
 	static int dim_x = 0;
@@ -31,7 +31,7 @@ void MenuPageEditor::draw() {
 			ImGui::Text("Text Size: ");
 			ImGui::PushItemWidth(100);
 			ImGui::SameLine();
-			ImGui::SliderInt("##size", &size, 0, 128);
+			ImGui::SliderFloat("##size", &size, 0.0f, 3.0f);
 
 
 			// Location
@@ -50,14 +50,14 @@ void MenuPageEditor::draw() {
 			ImGui::Text("Dimensions: ");
 			ImGui::PushItemWidth(100);
 			ImGui::SameLine();
-			ImGui::SliderInt("##dim_x", &dim_x, 0, Core::Game::width);
+			ImGui::SliderInt("##dim_x", &dim_x, 0, Core::Game::width / 2);
 			ImGui::SameLine();
-			ImGui::SliderInt("##dim_y", &dim_y, 0, Core::Game::height);
+			ImGui::SliderInt("##dim_y", &dim_y, 0, Core::Game::height / 2);
 
 
 			// Create text box
-			if (ImGui::Button("Create Box Entry")) {
-				game->createMenuButton(entry_text, size, glm::vec3(.24, .52, .89), glm::vec2(loc_x, loc_y), glm::vec2(dim_x, dim_y), glm::vec3(.24, .52, .89));
+			if (ImGui::Button("Create Button Entry")) {
+				game->createMenuButton(entry_text, size, glm::vec3(1, 1, 1), glm::vec2(loc_x, loc_y), glm::vec2(dim_x, dim_y), glm::vec3(.24, .52, .89));
 			}
 
 			ImGui::End();

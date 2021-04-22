@@ -24,10 +24,10 @@ namespace Core
         mFont = newFont;
     }
 
-    void Menu::createTextBox(std::string text, int size, glm::vec2 location, glm::vec3 color) {
+    void Menu::createTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color) {
         mTextBoxes.push_back(new TextBox(text, mFont, size, location, color));
     }
-    void Menu::createButton(std::string text, int size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) {
+    void Menu::createButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) {
         mButtons.push_back(new Button(text, mFont, size, textColor, location, dimensions, buttonColor));
     }
 

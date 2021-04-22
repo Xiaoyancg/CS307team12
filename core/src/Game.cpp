@@ -262,7 +262,7 @@ namespace Core
         }
     }
 
-    void Game::createMenuButton(std::string text, int size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) {
+    void Game::createMenuButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor) {
         // If the current page is a menu page, create a button on it
         if (MenuPage* menuPage = dynamic_cast<MenuPage*>(getCurrPage())) {
             if (menuPage->getMenu()) {
@@ -271,7 +271,7 @@ namespace Core
         }
     }
 
-    void Game::createMenuTextBox(std::string text, int size, glm::vec2 location, glm::vec3 color) {
+    void Game::createMenuTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color) {
         // If the current page is a menu page, create a textbox on it
         if (MenuPage* menuPage = dynamic_cast<MenuPage*>(getCurrPage())) {
             if (menuPage->getMenu()) {
