@@ -7,6 +7,7 @@ void CameraEditor::draw() {
 
 	static int x_lock_bound = 0;
 	static int y_lock_bound = 0;
+	bool none_selected = false;
 
 	if (visible && game) {
 		// set the windows default size
@@ -25,6 +26,7 @@ void CameraEditor::draw() {
 			}
 			else {
 				name = "No locked Entity...";
+				none_selected = true;
 			}
 
 			// Show list of possible Entities to lock to
@@ -33,6 +35,7 @@ void CameraEditor::draw() {
 					const bool isSelected = (game->getCameraEntityID() == CAMERA_NO_LOCKED_ENTITY);
 					if (ImGui::Selectable("None", isSelected)) {
 						game->setCameraEntityID(-2);
+						none_selected = true;
 					}
 
 					for (auto entity : game->getCurrPage()->getEntityList()) {
@@ -53,22 +56,20 @@ void CameraEditor::draw() {
 				}
 			}
 
-			
-			// Set Bounds
-			ImGui::Text("Entity Lock Bounds: ");
-			ImGui::PushItemWidth(100);
-			ImGui::SameLine();
-			ImGui::SliderInt("##x_bound", &x_lock_bound, 0, Core::Game::width / 2);
-			ImGui::SameLine();
-			ImGui::SliderInt("##y_bound", &y_lock_bound, 0, Core::Game::height / 2);
+			if (!none_selected) {
+				// Set Bounds
+				ImGui::Text("Entity Lock Bounds: ");
+				ImGui::PushItemWidth(100);
+				ImGui::SameLine();
+				ImGui::SliderInt("##x_bound", &x_lock_bound, 0, Core::Game::width / 2);
+				ImGui::SameLine();
+				ImGui::SliderInt("##y_bound", &y_lock_bound, 0, Core::Game::height / 2);
 
-			// Set Button
-			if (ImGui::Button("Set Bounds")) {
-				game->setCameraEntityBounds(x_lock_bound, y_lock_bound);
+				// Set Button
+				if (ImGui::Button("Set Bounds")) {
+					game->setCameraEntityBounds(x_lock_bound, y_lock_bound);
+				}
 			}
-
-			
-
 		}
 
 
