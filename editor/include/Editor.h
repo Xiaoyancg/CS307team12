@@ -82,6 +82,7 @@ public:
 	void loadGame(const std::string filePath);
 	void saveGame();
 	void saveGameAs(const std::string filePath);
+	void exportGame(const std::string folderPath);
 	void freeGame();
 
 	bool isGameRunning() {
@@ -116,6 +117,10 @@ public:
 	// POPUP OPENERS
 	void showSaveSuccessPopup() {
 		saveSuccessPopup = true;
+	}
+
+	void showExportSuccessPopup() {
+		exportSuccessPopup = true;
 	}
 
 	void showStyleSaveSuccessPopup() {
@@ -156,6 +161,7 @@ private:
 	
 	// popup bools
 	bool saveSuccessPopup = false;
+	bool exportSuccessPopup = false;
 	bool styleSaveSuccessPopup = false;
 	bool styleLoadSuccessPopup = false;
 	bool deleteSuccessPopup = false;

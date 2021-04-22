@@ -289,6 +289,17 @@ void Editor::drawPopups()
         ImGui::EndPopup();
     }
 
+    if (exportSuccessPopup)
+    {
+        ImGui::OpenPopup("export_success_popup");
+        exportSuccessPopup = false;
+    }
+    if (ImGui::BeginPopup("export_success_popup"))
+    {
+        ImGui::Text("Project exported successfully!");
+        ImGui::EndPopup();
+    }
+
     // Successful style save popup
     if (styleSaveSuccessPopup)
     {
@@ -370,6 +381,21 @@ void Editor::saveGameAs(const std::string filePath)
 {
     gameFilePath = filePath;
     saveGame();
+}
+
+void Editor::exportGame(const std::string folderPath) {
+    std::string fullpath = folderPath + "/" + game->getGameName();
+    if (!std::filesystem::exists(fullpath)) {
+        std::filesystem::create_directory(fullpath);
+    }
+    nlohmann::json content = game->serialize();
+    std::string gdataPath = fullpath + "/" + game->getGameName() + ".gdata";
+    WriteFile(gdataPath, content.dump());
+    for (auto& [id, sprite] : game->getSprites()) {
+        std::filesystem::copy(sprite->getFileName(), fullpath, std::filesystem::copy_options::overwrite_existing);
+    }
+    std::filesystem::copy("gamevm.exe", fullpath + "/" + game->getGameName() + ".exe", std::filesystem::copy_options::overwrite_existing);
+    std::filesystem::copy("SDL2.dll", fullpath, std::filesystem::copy_options::overwrite_existing);
 }
 
 void Editor::freeGame()

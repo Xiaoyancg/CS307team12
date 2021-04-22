@@ -13,6 +13,7 @@ public:
 	void drawOpenDialog();
 	void drawDeleteProjectPopup();
 	void drawSaveAsPopup();
+	void drawExportPopup();
 private:
 	Editor* editor;
 
@@ -23,4 +24,5 @@ private:
 	ImGui::FileBrowser openDialog;
 	ImGui::FileBrowser delDialog;
 	ImGui::FileBrowser saveDialog;
+	ImGui::FileBrowser exportDialog;
 };

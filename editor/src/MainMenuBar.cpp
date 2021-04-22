@@ -18,11 +18,6 @@ void MainMenuBar::draw() {
 			if (ImGui::MenuItem("Delete Project")) {
         		deleteProjectPopup = true;
 			}
-			/*if ( ImGui::MenuItem ( "Export Project" ) )
-			{
-				// call export function from VM team
-				// not yet implemented as of sprint 1
-			}*/
 
 			// Can't save empty game
 			// save button can be grey in the future ( no need to implement)
@@ -37,6 +32,13 @@ void MainMenuBar::draw() {
 				}
 				if (ImGui::MenuItem("Save As")) {
 					saveAsPopup = true;
+				}
+				if (ImGui::MenuItem("Export")) {
+					exportDialog = ImGui::FileBrowser(
+                		ImGuiFileBrowserFlags_NoTitleBar |
+                		ImGuiFileBrowserFlags_SelectDirectory |
+                		ImGuiFileBrowserFlags_CreateNewDir);
+					exportDialog.Open();
 				}
 			}
 			ImGui::MenuItem("Editor Theme", "", windowList[STYLEEDITOR]->getVisiblePtr());
@@ -83,6 +85,7 @@ void MainMenuBar::draw() {
 	drawOpenDialog();
 	drawSaveAsPopup();
 	drawDeleteProjectPopup();
+	drawExportPopup();
 }
 
 void MainMenuBar::drawOpenDialog() {
@@ -164,5 +167,16 @@ void MainMenuBar::drawSaveAsPopup() {
 		name[0] = '\0';
         saveDialog.ClearSelected();
         editor->showSaveSuccessPopup();
+    }
+}
+
+
+void MainMenuBar::drawExportPopup() {
+	exportDialog.Display();
+    if (exportDialog.HasSelected())
+    {
+		editor->exportGame(exportDialog.GetSelected().string());
+        editor->showExportSuccessPopup();
+        exportDialog.ClearSelected();
     }
 }
