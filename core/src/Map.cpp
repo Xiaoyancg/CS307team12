@@ -71,15 +71,14 @@ namespace Core
     // These coordinates do not change often, only in the case of changing dimensions or tile size.
     void Map::updateTileCoords()
     {
-        int border = 0; // The amount of space between tiles as they're drawn on the map (used for debugging right now)
         int index = 0;  // An easy way to access the mTileArray without having to do any calculations
-        glm::vec2 pos = glm::vec2(0, 0);
+
         for (int row = mMapDimensions.y - 1; row >= 0; row--)
         {
             for (int col = 0; col < mMapDimensions.x; col++)
             {
                 mTileVector[index].calculateSquareCoords(
-                    glm::vec2(col * mTileSize, row * mTileSize),
+                    glm::vec2(mTileSize * (col - (mMapDimensions.x / 2)), mTileSize * (row - (mMapDimensions.y / 2))),
                     glm::vec2(mTileSize, mTileSize)
                 );
                 index++;
