@@ -98,6 +98,21 @@ namespace Core
         }
     }
 
+    Entity* Page::getEntityWithID(int id) {
+        for (auto ent : entityList) {
+            if (ent) {
+                if (ent->getEntityId() == id) {
+                    return ent;
+                }
+            }
+            else {
+                entityList.erase(std::remove(begin(entityList), end(entityList), nullptr), end(entityList));
+            }
+        }
+        return nullptr;
+    }
+
+
     // =========================
     // UTILITY OPERATION
 

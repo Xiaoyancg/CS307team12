@@ -48,6 +48,8 @@ namespace Core
         void deleteEntity(std::string);
         void deleteEntity(Entity *);
 
+        Entity* getEntityWithID(int);
+
         Game* getGame() {
             return mGame;
         }

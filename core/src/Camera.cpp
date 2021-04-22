@@ -5,8 +5,10 @@
 
 namespace Core
 {
+
+
     Camera::Camera(glm::vec2 dimensions, glm::vec2 position, float zoom)
-        : mPosition(position), mDimensions(dimensions), mZoom(zoom), mLockedEntity(nullptr), mLockBounds(0, 0)
+        : mPosition(position), mDimensions(dimensions), mZoom(zoom), mLockedEntityID(CAMERA_NO_LOCKED_ENTITY), mLockBounds(0, 0), mCurrPage(nullptr)
     {
     }
 
@@ -70,26 +72,30 @@ namespace Core
     // Get matrices
     glm::mat4 Camera::getTranslate() {
         // Update Camera position based on lockedEntity location if the camera is locked
-        if (mLockedEntity) {
-            glm::vec2 entLoc = mLockedEntity->getLocation();
-            glm::vec2 diff(entLoc.x - (float)mPosition.x, entLoc.y - (float)mPosition.y);
+        if (mLockedEntityID >= 0 && mCurrPage) {
+            Entity* mLockedEntity = mCurrPage->getEntityWithID(mLockedEntityID);
+            if (mLockedEntity) {
+                glm::vec2 entLoc = mLockedEntity->getLocation();
+                glm::vec2 diff(entLoc.x - (float)mPosition.x, entLoc.y - (float)mPosition.y);
 
-            if (diff.x > mLockBounds.x) {
-                // Move camera right
-                offsetPositionExact(diff.x - mLockBounds.x, 0);
+                if (diff.x > mLockBounds.x) {
+                    // Move camera right
+                    offsetPositionExact(diff.x - mLockBounds.x, 0);
+                }             else if (diff.x < -mLockBounds.x) {
+                    // Move camera left
+                    offsetPositionExact(diff.x + mLockBounds.x, 0);
+                }
+                if (diff.y > mLockBounds.y) {
+                    // Move camera up
+                    offsetPositionExact(0, diff.y - mLockBounds.y);
+                }             else if (diff.y < -mLockBounds.y) {
+                    // Move camera down
+                    offsetPositionExact(0, diff.y + mLockBounds.y);
+                }
             }
-            else if (diff.x < -mLockBounds.x) {
-                // Move camera left
-                offsetPositionExact(diff.x + mLockBounds.x, 0);
-            }
-            if (diff.y > mLockBounds.y) {
-                // Move camera up
-                offsetPositionExact(0, diff.y - mLockBounds.y);
-            }
-            else if (diff.y < -mLockBounds.y) {
-                // Move camera down
-                offsetPositionExact(0, diff.y + mLockBounds.y);
-            }
+        }
+        else {
+            setPosition(0, 0);
         }
 
         return glm::translate(glm::mat4(1), glm::vec3(-mPosition, 0));

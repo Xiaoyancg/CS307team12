@@ -129,6 +129,8 @@ void Editor::createWindows()
     windowList[OBJECTTREE] = new ObjectTree(this, default_size);
     windowList[SPLASHSCREEN] = new SplashWindow(this, default_size);
 
+    windowList[CAMERAEDITOR] = new CameraEditor(this, default_size);
+
 } // createWindows()
 
 void Editor::processInput()

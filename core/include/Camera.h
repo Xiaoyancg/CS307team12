@@ -1,7 +1,11 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glad/glad.h>
-#include "Entity.h"
+#include "Page.h"
+
+// We can't use -1 to denote the "no locked entity" ID because Entities also default to -1.
+// This means every Entity without an ID would match to "no locked entity"
+#define CAMERA_NO_LOCKED_ENTITY -2
 
 namespace Core
 {
@@ -53,14 +57,27 @@ namespace Core
             return mZoom;
         }
 
+        void setPage(Page* page) {
+            mCurrPage = page;
+        }
+
         glm::vec2 projectToWorld(glm::vec2 coords);
         glm::mat4 getTranslate();
         glm::mat4 getOrtho();
         // Returns the matrix transformation used in the main shader
         glm::mat4 getMatrix(); // getOrtho * getTranslate
 
-        void lockToEntity(Entity* ent) {
-            mLockedEntity = ent;
+        void lockToEntity(int ent) {
+            if (ent >= 0) {
+                mLockedEntityID = ent;
+            }
+            else {
+                // 'no locked entity' defaults to this constant to prevent overlap of ID=-1 with Entities with unassigned IDs
+                mLockedEntityID = CAMERA_NO_LOCKED_ENTITY;
+            }
+        }
+        int getLockID() {
+            return mLockedEntityID;
         }
 
         void setLockBounds(int x, int y) {
@@ -74,11 +91,14 @@ namespace Core
         glm::vec2 mDimensions;
         float mZoom; // Defaults to 1, meaning no zoom. <1 means zoom out, >1 means zoom in
 
-        Entity* mLockedEntity;
+        int mLockedEntityID;
         glm::ivec2 mLockBounds;
 
         void offsetPositionExact(int x, int y);
         GLuint cameraUniform;
+
+        // Ptr to the current Game page. This is needed to do tranlsation between Entity ID and ptr with locked entities
+        Page* mCurrPage;
     };
 
 }
