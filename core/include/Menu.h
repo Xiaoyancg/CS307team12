@@ -49,6 +49,15 @@ namespace Core
 				else {
 					mText = nullptr;
 				}
+
+				mCoords[0] = mLocation.x;
+				mCoords[1] = mLocation.y + mDimensions.y;
+				mCoords[2] = mLocation.x;
+				mCoords[3] = mLocation.y;
+				mCoords[4] = mLocation.x + mDimensions.x;
+				mCoords[5] = mLocation.y + mDimensions.y;
+				mCoords[6] = mLocation.x + mDimensions.x;
+				mCoords[7] = mLocation.y;
 			}
 			void render() {
 				// Render button
@@ -61,20 +70,20 @@ namespace Core
 				glUniform3fv(glGetUniformLocation(program, "color"), 1, color);
 
 				float coords[16];
-				coords[0] = mLocation.x;
-				coords[1] = mLocation.y + mDimensions.y;
+				coords[0] = mCoords[0];
+				coords[1] = mCoords[1];
 				coords[2] = 0;
 				coords[3] = 1;
-				coords[4] = mLocation.x;
-				coords[5] = mLocation.y;
+				coords[4] = mCoords[2];
+				coords[5] = mCoords[3];
 				coords[6] = 0;
 				coords[7] = 0;
-				coords[8] = mLocation.x + mDimensions.x;
-				coords[9] = mLocation.y + mDimensions.y;
+				coords[8] = mCoords[4];
+				coords[9] = mCoords[5];
 				coords[10] = 1;
 				coords[11] = 1;
-				coords[12] = mLocation.x + mDimensions.x;
-				coords[13] = mLocation.y;
+				coords[12] = mCoords[6];
+				coords[13] = mCoords[7];
 				coords[14] = 1;
 				coords[15] = 0;
 
@@ -96,6 +105,7 @@ namespace Core
 			glm::vec2 mDimensions;
 			glm::vec3 mButtonColor;
 			TextBox* mText;
+			float mCoords[8];
 		};
 
 
