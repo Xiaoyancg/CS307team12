@@ -405,6 +405,10 @@ namespace Core
         }
     }
 
+    Camera* Game::getCamera() {
+        return mCamera;
+    }
+
     void Game::setCameraEntityID(int entID)
     {
         mCamera->lockToEntity(entID);

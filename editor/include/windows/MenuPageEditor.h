@@ -9,7 +9,6 @@ public:
 
 	}
 	void draw();
-	void handleClick();
 
 private:
 

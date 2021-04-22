@@ -31,6 +31,20 @@ namespace Core
         mButtons.push_back(new Button(text, mFont, size, textColor, location, dimensions, buttonColor));
     }
 
+    Button* Menu::getButtonFromClick(float x, float y) {
+        for (Button* button : mButtons) {
+            float* coords = button->getCoords();
+            glm::vec2 btn_min(coords[0], coords[3]);
+            glm::vec2 btn_max(coords[4], coords[1]);
+            if ((btn_min.x <= x) && (x <= btn_max.x) &&
+                (btn_min.y <= y) && (y <= btn_max.y)) {
+                return button;
+            }
+        }
+
+        return nullptr;
+    }
+
     void Menu::render()
     {
         // Loop through and render all menu entries in the menu

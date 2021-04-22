@@ -128,6 +128,8 @@ namespace Core
         void createMenuButton(std::string text, float size, glm::vec3 textColor, glm::vec2 location, glm::vec2 dimensions, glm::vec3 buttonColor);
         void createMenuTextBox(std::string text, float size, glm::vec2 location, glm::vec3 color);
 
+        Camera* getCamera();
+
         // Set the entity that the Camera locks to
         void setCameraEntityID(int);
         int getCameraEntityID();

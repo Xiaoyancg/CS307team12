@@ -14,6 +14,9 @@ public:
         updateLastTime();
     }
     void draw();
+    void handleClick(float, float, float, float);
+    void handleMenuPageClick(glm::vec2);
+    void handleMapPageClick(glm::vec2);
     void updateLastTime() {
         lastTime = std::chrono::steady_clock::now();
     }
