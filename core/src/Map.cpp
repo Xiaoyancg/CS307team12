@@ -123,7 +123,7 @@ namespace Core
         // Traverse all tiles in the Map
         for (auto& tile : mTileVector)
         {
-            if (tile.getSpriteID() != -1 && MapPage::mGameSprites->atID(tile.getSpriteID()))
+            if (MapPage::mGameSprites->atID(tile.getSpriteID()))
             {
                 // Render each tile of the map!
                 float *coordsPtr = tile.getCoords(); // Get ptr to the tile coordinates

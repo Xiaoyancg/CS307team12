@@ -69,14 +69,8 @@ namespace Core
 	// Returns to a pointer to the sprite with the requested ID
 	Sprite *SpriteManager::atID(int spriteID)
 	{
-		try
-		{
-			return mSprites.at(spriteID);
-		}
-		catch (std::out_of_range e)
-		{
-			return nullptr;
-		}
+		auto sprite = mSprites.find(spriteID);
+		return sprite != mSprites.end() ? sprite->second : nullptr;
 	}
 
 	using json = nlohmann::json;
