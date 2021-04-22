@@ -13,7 +13,7 @@ void GameWindow::handleMenuPageClick(glm::vec2 click)
     // When a menu page is clicked, the clicked button will be found
     Core::Button* clickedButton = menupage->getMenu()->getButtonFromClick(scaled.x, scaled.y);
     if (clickedButton) {
-        printf("Button %p clicked!\n", clickedButton);
+        //printf("Button %p clicked!\n", clickedButton);
     }
 }
 
