@@ -77,6 +77,7 @@ void EntityEditor::draw()
 						entity_width = entity->getScale().x;
 						entity_height = entity->getScale().y;
 						sprite_id = entity->getSpriteID();
+						invisible = entity->isInvisible();
 					}
 
 					// Set the initial focus when opening the combo (scrolling +
@@ -265,49 +266,31 @@ void EntityEditor::draw()
 					}
 				}
 				ImGui::NewLine();
-				bool invisible = getCurrentEntity()->isInvisible();
 				ImGui::Checkbox("Invisible", &invisible);
-				if (invisible != getCurrentEntity()->isInvisible())
+				if (getCurrentEntity() != nullptr)
 				{
 					getCurrentEntity()->setInvisible(invisible);
-				}
-				ImGui::NewLine();
-				if (!getCurrentEntity()->isInvisible())
-				{
-					ImGui::Text("Sprite:");
-					ImGui::SameLine();
-					std::string spriteLabel = "";
-					auto &sprites = editor->getGamePtr()->getSprites();
-					auto currentEntity = getCurrentEntity();
-					if (currentEntity->getSpriteID() == -100)
+					ImGui::NewLine();
+					if (!getCurrentEntity()->isInvisible())
 					{
-						spriteLabel = "Default";
-					}
-					else if (sprites.find(currentEntity->getSpriteID()) != sprites.end())
-					{
-						spriteLabel = sprites[currentEntity->getSpriteID()]->getName();
-					}
-					if (ImGui::BeginCombo("##entitySprite", spriteLabel.c_str()))
-					{
-						if (ImGui::Selectable("Default", currentEntity->getSpriteID() == -100))
+						ImGui::Text("Sprite:");
+						ImGui::SameLine();
+						std::string spriteLabel = "";
+						auto &sprites = editor->getGamePtr()->getSprites();
+						auto currentEntity = getCurrentEntity();
+						if (currentEntity->getSpriteID() == -100)
 						{
-							int newID = -100;
-							int currentID = currentEntity->getSpriteID();
-							auto action = [this, newID]() {
-								getCurrentEntity()->setSpriteID(newID);
-							};
-							auto restore = [this, currentID]() {
-								getCurrentEntity()->setSpriteID(currentID);
-							};
-							pushAction(action, restore);
-							action();
+							spriteLabel = "Default";
 						}
-						for (auto [id, sprite] : sprites)
+						else if (sprites.find(currentEntity->getSpriteID()) != sprites.end())
 						{
-							bool selected = (id == currentEntity->getSpriteID());
-							if (ImGui::Selectable(sprite->getName().c_str(), selected))
+							spriteLabel = sprites[currentEntity->getSpriteID()]->getName();
+						}
+						if (ImGui::BeginCombo("##entitySprite", spriteLabel.c_str()))
+						{
+							if (ImGui::Selectable("Default", currentEntity->getSpriteID() == -100))
 							{
-								int newID = id;
+								int newID = -100;
 								int currentID = currentEntity->getSpriteID();
 								auto action = [this, newID]() {
 									getCurrentEntity()->setSpriteID(newID);
@@ -318,18 +301,35 @@ void EntityEditor::draw()
 								pushAction(action, restore);
 								action();
 							}
+							for (auto [id, sprite] : sprites)
+							{
+								bool selected = (id == currentEntity->getSpriteID());
+								if (ImGui::Selectable(sprite->getName().c_str(), selected))
+								{
+									int newID = id;
+									int currentID = currentEntity->getSpriteID();
+									auto action = [this, newID]() {
+										getCurrentEntity()->setSpriteID(newID);
+									};
+									auto restore = [this, currentID]() {
+										getCurrentEntity()->setSpriteID(currentID);
+									};
+									pushAction(action, restore);
+									action();
+								}
+							}
+							ImGui::EndCombo();
 						}
-						ImGui::EndCombo();
-					}
-					ImGui::InputInt("entity id", &entity_id);
-					if (ImGui::Button("update Entity id"))
-					{
-						editor->getGamePtr()->getCurrPage()->getEntityList().at(currentEntityIdx)->setEntityId(entity_id);
-					}
-					ImGui::InputInt("in script id", &inScriptId);
-					if (ImGui::Button("update in script id"))
-					{
-						editor->getGamePtr()->getCurrPage()->getEntityList().at(currentEntityIdx)->setInScriptId(inScriptId);
+						ImGui::InputInt("entity id", &entity_id);
+						if (ImGui::Button("update Entity id"))
+						{
+							editor->getGamePtr()->getCurrPage()->getEntityList().at(currentEntityIdx)->setEntityId(entity_id);
+						}
+						ImGui::InputInt("in script id", &inScriptId);
+						if (ImGui::Button("update in script id"))
+						{
+							editor->getGamePtr()->getCurrPage()->getEntityList().at(currentEntityIdx)->setInScriptId(inScriptId);
+						}
 					}
 				}
 			}

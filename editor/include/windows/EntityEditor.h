@@ -27,4 +27,5 @@ private:
     int entity_width = 0, entity_height = 0;
     int sprite_id = -1;
     int inScriptId = -1;
+    bool invisible = true;
 };
