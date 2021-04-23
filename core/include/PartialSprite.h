@@ -12,6 +12,7 @@ namespace Core
         // Needs spritesheet holding the sprite, its location, and its dimensions
         PartialSprite(std::string name, int spriteID, SpriteSheet* spritesheet, glm::ivec2 location, glm::ivec2 dimensions);
         unsigned int getOpenGLTextureID();
+        SpriteSheet* getSpriteSheet();
 
     private:
         // The SpriteSheet that contains the sprite loop. The sprite loop is found using the given location and dimensions

@@ -359,7 +359,7 @@ namespace Core
 
     void Game::renderSpriteSheet(SpriteSheet *spritesheet)
     {
-        if (spritesheet->getOpenGLTextureID() >= 0)
+        if (mGameSprites.atSheetID(spritesheet->getSpriteID()) && spritesheet->getOpenGLTextureID() >= 0)
         {
             glClear(GL_COLOR_BUFFER_BIT);
 

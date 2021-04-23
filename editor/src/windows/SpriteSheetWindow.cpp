@@ -31,7 +31,7 @@ void SpriteSheetWindow::draw() {
 			ImGui::PushItemWidth(200);
 			ImGui::Text("Set Sprite ID:");
 			ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
-			ImGui::Text(editor->getCurrentComponentList()[CUR_SPRITE].c_str());
+			ImGui::Text(editor->getCurrentComponentList()[CUR_SPRITESHEET].c_str());
 			int spriteID = -1;
 			if (spriteIDInput[0] != 0)
 			{
@@ -68,6 +68,13 @@ void SpriteSheetWindow::draw() {
 				else if (num_img > 1) {
 					editor->getGamePtr()->createLoopingSprite(sprite_name, spriteID, ss, num_img, speed, glm::ivec2(loc_x, loc_y), glm::ivec2(dim_x, dim_y), x_pad);
 				}
+			}
+			
+			ImGui::SameLine();
+
+			if (ImGui::Button("Delete")) {
+				editor->getGamePtr()->deleteSpriteSheet(ss);
+				editor->getCurrentComponentList()[CUR_SPRITESHEET] = "";
 			}
 
 			// Set the new information of the window's highligher

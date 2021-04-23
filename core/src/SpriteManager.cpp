@@ -132,7 +132,37 @@ namespace Core
 	}
 	void SpriteManager::deleteSpriteSheet(int spritesheetID)
 	{
-		delete this->mSpriteSheets[spritesheetID];
+		SpriteSheet* ss = mSpriteSheets[spritesheetID];
+
+		// Remove any sprites that reference the spritesheet
+		for (auto it = mSprites.begin(); it != mSprites.end(); ) {
+			Sprite* sprite = it->second;
+			int id = it->first;
+			if (sprite->getType() == SPRITE_TYPES::PARTIAL) {
+				PartialSprite* s = dynamic_cast<Core::PartialSprite*>(sprite);
+				if (s && s->getSpriteSheet() == ss) {
+					auto pos = it;
+					it++;
+					mSprites.erase(pos);
+					delete sprite;
+					continue;
+				}
+			}
+			if (sprite->getType() == SPRITE_TYPES::LOOPING) {
+				LoopingSprite* s = dynamic_cast<Core::LoopingSprite*>(sprite);
+				if (s && s->getSpriteSheet() == ss) {
+					auto pos = it;
+					it++;
+					mSprites.erase(pos);
+					delete sprite;
+					continue;
+				}
+			}
+
+			it++;
+		}
+
+		delete mSpriteSheets[spritesheetID];
 		mSpriteSheets.erase(spritesheetID);
 	}
 	std::unordered_map<int, SpriteSheet *> &SpriteManager::getSpriteSheets()
