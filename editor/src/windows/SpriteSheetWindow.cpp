@@ -96,8 +96,8 @@ void SpriteSheetWindow::draw() {
             glBindTexture(GL_TEXTURE_2D, mSpriteSheetTexCBO);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, spritesheet->getDimensions().x, spritesheet->getDimensions().y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glBindTexture(GL_TEXTURE_2D, 0);
-            glViewport(0, 0, spritesheet->getDimensions().x, spritesheet->getDimensions().y); // Set viewport to the Game dimensions
-            glBindFramebuffer(GL_FRAMEBUFFER, mSpriteSheetFBO);
+			glViewport(0, 0, spritesheet->getDimensions().x, spritesheet->getDimensions().y); // Set viewport to the Game dimensions
+			glBindFramebuffer(GL_FRAMEBUFFER, mSpriteSheetFBO);
 
             editor->getGamePtr()->renderSpriteSheet(spritesheet);
             mSpriteHighlighter.highlight();
