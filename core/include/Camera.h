@@ -29,6 +29,7 @@ namespace Core
         }
         void setPosition(glm::vec2 position);
         void offsetPosition(glm::vec2 offset);
+        void offsetPositionExact(int x, int y);
 
         // Dimensions
         void setDimensions(float x, float y)
@@ -94,7 +95,6 @@ namespace Core
         int mLockedEntityID;
         glm::ivec2 mLockBounds;
 
-        void offsetPositionExact(int x, int y);
         GLuint cameraUniform;
 
         // Ptr to the current Game page. This is needed to do tranlsation between Entity ID and ptr with locked entities

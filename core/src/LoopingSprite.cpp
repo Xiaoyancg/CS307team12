@@ -26,6 +26,10 @@ namespace Core {
         return mSpriteSheet->getOpenGLTextureID();
     }
 
+    SpriteSheet* LoopingSprite::getSpriteSheet() {
+        return mSpriteSheet;
+    }
+
     void LoopingSprite::setRunning(bool run) {
         mIsRunning = run;
     }

@@ -15,6 +15,7 @@ namespace Core
         // The location is specified based on the distance from the bottom left of the screen
         LoopingSprite(std::string name, int spriteID, SpriteSheet* spritesheet, int numImages, float speed, glm::ivec2 location, glm::ivec2 dimensions, int xpadding);
         unsigned int getOpenGLTextureID();
+        SpriteSheet* getSpriteSheet();
 
         // Argument will set mIsRunning to either start or stop sprite looping
         void setRunning(bool);

@@ -37,4 +37,7 @@ namespace Core {
         return mSpriteSheet->getOpenGLTextureID();
     }
 
+    SpriteSheet* PartialSprite::getSpriteSheet() {
+        return mSpriteSheet;
+    }
 }

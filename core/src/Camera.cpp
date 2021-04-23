@@ -81,22 +81,22 @@ namespace Core
                 if (diff.x > mLockBounds.x) {
                     // Move camera right
                     offsetPositionExact(diff.x - mLockBounds.x, 0);
-                }             else if (diff.x < -mLockBounds.x) {
+                }             
+                else if (diff.x < -mLockBounds.x) {
                     // Move camera left
                     offsetPositionExact(diff.x + mLockBounds.x, 0);
                 }
                 if (diff.y > mLockBounds.y) {
                     // Move camera up
                     offsetPositionExact(0, diff.y - mLockBounds.y);
-                }             else if (diff.y < -mLockBounds.y) {
+                }             
+                else if (diff.y < -mLockBounds.y) {
                     // Move camera down
                     offsetPositionExact(0, diff.y + mLockBounds.y);
                 }
             }
         }
-        else {
-            setPosition(0, 0);
-        }
+
 
         return glm::translate(glm::mat4(1), glm::vec3(-mPosition, 0));
     }

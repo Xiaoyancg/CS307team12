@@ -31,7 +31,7 @@ void SpriteSheetWindow::draw() {
 			ImGui::PushItemWidth(200);
 			ImGui::Text("Set Sprite ID:");
 			ImGui::InputText(" ", spriteIDInput, IM_ARRAYSIZE(spriteIDInput), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank);
-			ImGui::Text(editor->getCurrentComponentList()[CUR_SPRITE].c_str());
+			ImGui::Text(editor->getCurrentComponentList()[CUR_SPRITESHEET].c_str());
 			int spriteID = -1;
 			if (spriteIDInput[0] != 0)
 			{
@@ -69,6 +69,13 @@ void SpriteSheetWindow::draw() {
 					editor->getGamePtr()->createLoopingSprite(sprite_name, spriteID, ss, num_img, speed, glm::ivec2(loc_x, loc_y), glm::ivec2(dim_x, dim_y), x_pad);
 				}
 			}
+			
+			ImGui::SameLine();
+
+			if (ImGui::Button("Delete")) {
+				editor->getGamePtr()->deleteSpriteSheet(ss);
+				editor->getCurrentComponentList()[CUR_SPRITESHEET] = "";
+			}
 
 			// Set the new information of the window's highligher
 			mSpriteHighlighter.setDimensions(glm::ivec2(dim_x, dim_y));
@@ -96,8 +103,8 @@ void SpriteSheetWindow::draw() {
             glBindTexture(GL_TEXTURE_2D, mSpriteSheetTexCBO);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, spritesheet->getDimensions().x, spritesheet->getDimensions().y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
             glBindTexture(GL_TEXTURE_2D, 0);
-            glViewport(0, 0, spritesheet->getDimensions().x, spritesheet->getDimensions().y); // Set viewport to the Game dimensions
-            glBindFramebuffer(GL_FRAMEBUFFER, mSpriteSheetFBO);
+			glViewport(0, 0, spritesheet->getDimensions().x, spritesheet->getDimensions().y); // Set viewport to the Game dimensions
+			glBindFramebuffer(GL_FRAMEBUFFER, mSpriteSheetFBO);
 
             editor->getGamePtr()->renderSpriteSheet(spritesheet);
             mSpriteHighlighter.highlight();

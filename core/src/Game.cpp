@@ -359,7 +359,7 @@ namespace Core
 
     void Game::renderSpriteSheet(SpriteSheet *spritesheet)
     {
-        if (spritesheet->getOpenGLTextureID() >= 0)
+        if (mGameSprites.atSheetID(spritesheet->getSpriteID()) && spritesheet->getOpenGLTextureID() >= 0)
         {
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -367,7 +367,8 @@ namespace Core
             Camera *camera = new Camera();
             glm::vec2 dims = spritesheet->getDimensions();
             camera->setDimensions(dims.x, dims.y);
-            camera->offsetPosition(glm::vec2(dims.x / 2, dims.y / 2));
+            camera->offsetPositionExact(dims.x / 2, dims.y / 2);
+
 
             // Set the camera in the shader
             camera->use();
@@ -402,10 +403,12 @@ namespace Core
             glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), verts, GL_DYNAMIC_DRAW);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+            delete camera;
+
             // Unbind the current sprite
             glBindTexture(GL_TEXTURE_2D, 0);
 
-            // Set line color
+            // Set line color for sprite highligher
             GLfloat color[] = {1.0f, 0.0f, 0.0f};
             glUniform3fv(glGetUniformLocation(shaderProgram, "color"), 1, color);
         }
