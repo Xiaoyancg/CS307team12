@@ -214,17 +214,22 @@ namespace Core
     }
 
     void Map::parse(json& root) {
+        mMapName = root.at("name").get<std::string>();
         auto size = root.at("size").get<std::vector<int>>();
         mMapDimensions = glm::ivec2(size[0], size[1]);
+        mTileSize = root.at("tileSize").get<int>();
         auto& tileArray = root.at("tiles").get<std::vector<std::vector<json>>>();
         for (auto& tile : tileArray) {
             mTileVector.emplace_back(tile[0].get<int>(), tile[1].get<bool>());
         }
+        updateTileCoords();
     }
 
     json Map::serialize() {
         json map;
+        map["name"] = mMapName;
         map["size"] = { mMapDimensions.x, mMapDimensions.y };
+        map["tileSize"] = mTileSize;
         std::vector<json> jTileList;
         for (auto& tile : mTileVector) {
             json jTile = { tile.getSpriteID(), tile.isSolid() };

@@ -554,6 +554,14 @@ namespace Core
         }
         j["pageList"] = pageVector;
 
+        // maps
+        std::vector<json> mapVector;
+        for (Map *m : mapList)
+        {
+            mapVector.push_back(m->serialize());
+        }
+        j["maps"] = mapVector;
+
         // Sprites
         std::vector<json> spriteVector = mGameSprites.serialize();
         j["spriteList"] = spriteVector;
