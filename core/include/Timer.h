@@ -18,7 +18,11 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> mstamp;
 
 public:
-    Timer() { mstartTick = std::chrono::steady_clock::now(); }
+    Timer()
+    {
+        mstartTick = std::chrono::steady_clock::now();
+        mstamp = std::chrono::steady_clock::now();
+    }
     ~Timer() {}
 
     double getPassedTimeInSec()

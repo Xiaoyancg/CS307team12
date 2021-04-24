@@ -13,6 +13,7 @@
 // normal libraries
 #include <any>
 #include <string>
+#include <vector>
 #include <streambuf>
 #include <fstream>
 #include <iostream>
@@ -26,45 +27,100 @@ class Base
 {
 public:
     int t = 1;
+    virtual void speak() = 0;
+    ~Base() { std::cout << "destructor in Base\n"
+                        << std::endl; }
 };
-class A
+class A : Base
 {
-   int a = 0;
+    int a = 0;
 };
 class B
 {
     int b = 0;
 };
-class derived : public Base
+class Derived : virtual public Base
 {
-    union
-    {
-        A a;
-        B b;
-    };
+public:
+    int d = 2;
+    void speak() { std::cout << "addr of d is" << &d << "\nd is " << d << std::endl; }
+    ~Derived() { std::cout << "destructor in Derived\n"
+                           << std::endl; }
 };
 class controlGroup
 {
     int a = 0;
     int b = 0;
 };
+
+#define STRING(name) #name
+template <typename T>
+void memoryPrinter(T *d, const char *name, size_t length = sizeof(T), int offset = 0)
+{
+    unsigned char *p = (unsigned char *)(d) + (offset);
+    printf("\nMemory of [%s] of type [%s]\nat: [%p]", name, typeid(d).name(), p);
+    printf(", length: [%zu], offset: [%d]\n[BEGIN]\n", length, offset);
+    for (size_t i = 0; i < length; i++)
+    {
+        printf("%02x ", p[i]);
+        if (i % 4 == 3)
+            printf("| ");
+        if (i % 16 == 15)
+            printf("\n");
+    }
+    printf("[END]\n");
+}
+class testA
+{
+public:
+    int x = 0;
+    int getX();
+    void setX(int xx);
+};
+int testA::getX() { return x; }
+void testA::setX(int xx) { x = xx; }
+class testB
+{
+
+public:
+    int x = 0;
+};
+
 int main(int argc, char **argv)
 {
-    bool test = true;
+    bool test = false;
     if (test)
     {
-        A a;
-        B b;
-        Base base;
-        std::cout << "size of Base: " << sizeof(Base)
-                  << "\nsizeof A : Base: " << sizeof(A)
-                  << "\nsizeof B : Base: " << sizeof(B)
-                  << "\nsizeof derived: " << sizeof(derived)
-                  << "\nsizeof controlGroup: " << sizeof(controlGroup)
-                  << std::endl;
+        Base *base;
+        Derived *d = new Derived();
+        base = d;
+        base->speak();
+        memoryPrinter<Derived>(d, "Derived *d");
+        memoryPrinter<Base>(base, STRING(base), sizeof(Derived), -16);
+
+        unsigned char *ptr = (unsigned char *)d;
+        memoryPrinter<unsigned char>(ptr, "ptr", sizeof(Derived));
+
+        //std::cout
+        //    << "size of Base: " << sizeof(Base)
+        //    << "\nsizeof A : Base: " << sizeof(A)
+        //    << "\nsizeof B : Base: " << sizeof(B)
+        //    << "\nsizeof derived: " << sizeof(derived)
+        //    << "\nsizeof controlGroup: " << sizeof(controlGroup)
+        //    << std::endl;
         return 0;
     }
-
+    bool test2 = true;
+    if (test2)
+    {
+        testA a;
+        a.setX(4);
+        int x = a.getX();
+        testB b;
+        std::cout << sizeof testA << "||" << sizeof testB << std::endl;
+        std::cout << sizeof a << "||" << sizeof b << std::endl;
+        return 0;
+    }
     // set up SDL2
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {
