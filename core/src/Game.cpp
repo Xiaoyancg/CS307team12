@@ -10,6 +10,7 @@
 #include <chrono>
 
 #include "Camera.h"
+#include "JsonParser.h"
 
 #ifdef __TEST_CORE
 #include <TestCore.h>
@@ -32,6 +33,7 @@ namespace Core
     {
         initialize();
         parse(json);
+        updatePageLogic(getCurrPage());
     }
 
     Game::Game(const Game &other) : gameName(other.gameName),
@@ -54,11 +56,16 @@ namespace Core
         // TODO: restore current page, map, camera, and ctrl entity
         for (int i = 0; i < other.pageList.size(); i++)
         {
-            if (typeid(*other.pageList[i]) == typeid(MapPage)) {
-                pageList[i] = new MapPage(*static_cast<MapPage*>(other.pageList[i]));
-            } else if (typeid(*other.pageList[i]) == typeid(MenuPage)) {
-                pageList[i] = new MenuPage(*static_cast<MenuPage*>(other.pageList[i]));
-            } else {
+            if (typeid(*other.pageList[i]) == typeid(MapPage))
+            {
+                pageList[i] = new MapPage(*static_cast<MapPage *>(other.pageList[i]));
+            }
+            else if (typeid(*other.pageList[i]) == typeid(MenuPage))
+            {
+                pageList[i] = new MenuPage(*static_cast<MenuPage *>(other.pageList[i]));
+            }
+            else
+            {
                 pageList[i] = new Page(*other.pageList[i]);
             }
             pageList[i]->setGame(this);
@@ -369,7 +376,6 @@ namespace Core
             camera->setDimensions(dims.x, dims.y);
             camera->offsetPositionExact(dims.x / 2, dims.y / 2);
 
-
             // Set the camera in the shader
             camera->use();
 
@@ -414,7 +420,8 @@ namespace Core
         }
     }
 
-    Camera* Game::getCamera() {
+    Camera *Game::getCamera()
+    {
         return mCamera;
     }
 
@@ -530,11 +537,11 @@ namespace Core
         }
         if (root.contains("startPoint"))
         {
-            // TODO
+            json startPoint = root.at("startPoint");
+            setCurrentPage(getData<int>(startPoint, "startPage"));
         }
         // TODO parse should set current
         // but the info of current in json is not implemented yet
-        setCurrentPage(0);
 
         return this;
     }
@@ -657,8 +664,9 @@ namespace Core
         j["logicManager"] = logicManagerjs;
         // TODO start point
         json startPoint;
+        startPoint["startPage"] = currPageIdx;
         // TODO
-        // j["startPoint"] = startPoint;
+        j["startPoint"] = startPoint;
         return j;
     }
 
