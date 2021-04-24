@@ -27,79 +27,41 @@ class Base
 public:
     int t = 1;
 };
-class A : public virtual Base
+class A
 {
+   int a = 0;
 };
-class B : public virtual Base
+class B
 {
-private:
-    int x[100];
+    int b = 0;
 };
-class C : public virtual Base
+class derived : public Base
 {
-};
-class myTop : public A, public B, C
-{
-};
-union tu
-{
-    int x;
-    char y;
-};
-
-class cu
-{
-public:
     union
     {
-        int a;
-        char b;
+        A a;
+        B b;
     };
-    int &geta() { return a; }
 };
-union ttu
+class controlGroup
 {
-    int x;
-    double d;
-    int y;
-    ttu &operator=(const ttu &other)
-    {
-        x = other.x;
-        d = other.d;
-        y = other.y;
-        return *this;
-    }
+    int a = 0;
+    int b = 0;
 };
 int main(int argc, char **argv)
 {
-    bool t0 = true;
-    if (t0)
+    bool test = true;
+    if (test)
     {
-        ttu tu0;
-        tu0.y = 5;
-        ttu tu1;
-        tu1.y = 6;
-        tu0 = tu1;
-        printf("tu0.y = %d\n", tu0.y);
-        return 0;
-    }
-    bool t = false;
-    if (t)
-    {
-        myTop t;
-        Base base;
         A a;
         B b;
-        std::cout << "base size: " << sizeof(base) << "\nA size: " << sizeof(a) << "\nB size: " << sizeof(b) << "\nTop size: " << sizeof(t)
-                  << "\n t=" << t.t << std::endl;
-        tu mtu;
-        mtu.y = 1;
-        std::cout << "size is " << sizeof(mtu.y);
-        cu mcu;
-        int &x = mcu.geta();
-        x = 5;
-        std::cout << "should be 5: " << mcu.a << std::endl;
-
+        Base base;
+        std::cout << "size of Base: " << sizeof(Base)
+                  << "\nsizeof A : Base: " << sizeof(A)
+                  << "\nsizeof B : Base: " << sizeof(B)
+                  << "\nsizeof derived: " << sizeof(derived)
+                  << "\nsizeof controlGroup: " << sizeof(controlGroup)
+                  << std::endl;
         return 0;
     }
 
