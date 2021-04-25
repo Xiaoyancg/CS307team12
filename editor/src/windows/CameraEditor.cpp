@@ -7,6 +7,7 @@ void CameraEditor::draw() {
 
 	static int x_lock_bound = 0;
 	static int y_lock_bound = 0;
+	static float zoom = 1.0f;
 	bool none_selected = false;
 
 	if (visible && game) {
@@ -15,6 +16,15 @@ void CameraEditor::draw() {
 
 		// map editor
 		if (ImGui::Begin("Camera Editor", &visible)) {
+			ImGui::Text("Zoom: ");
+			ImGui::PushItemWidth(100);
+			ImGui::SameLine();
+			ImGui::SliderFloat("##zoom", &zoom, 0.0f, 5);
+			if (game->getCamera()) {
+				game->getCamera()->setZoom(zoom);
+			}
+
+
 			ImGui::Text("Locked Entity");
 			ImGui::SameLine();
 
