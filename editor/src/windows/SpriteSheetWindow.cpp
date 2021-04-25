@@ -1,7 +1,8 @@
 #include "windows/SpriteSheetWindow.h"
 #include "windows/SpriteEditor.h"
 
-void SpriteSheetWindow::draw() {
+void SpriteSheetWindow::draw()
+{
 	static char sprite_name[128] = "";
 	static char spriteIDInput[128] = "";
 	static int loc_x = 0;
@@ -12,14 +13,13 @@ void SpriteSheetWindow::draw() {
 	static int num_img = 1;
 	static float speed = 1.0f;
 
-    if (visible)
-    {
-        if (editor->getCurrentComponentList()[CUR_SPRITESHEET] != "")
-        {
-
+	if (visible)
+	{
+		if (editor->getCurrentComponentList()[CUR_SPRITESHEET] != "")
+		{
 
 			int ss = editor->getCurrentSpriteSheet();
-			Core::SpriteSheet* spritesheet = editor->getGamePtr()->getSpriteSheetFromID(ss);
+			Core::SpriteSheet *spritesheet = editor->getGamePtr()->getSpriteSheetFromID(ss);
 
 			// Open controls popup
 			ImGui::Begin("Sprite Finder", &visible);
@@ -37,7 +37,6 @@ void SpriteSheetWindow::draw() {
 			{
 				spriteID = atoi(spriteIDInput);
 			}
-
 
 			ImGui::Text("Location: ");
 			ImGui::PushItemWidth(100);
@@ -60,19 +59,23 @@ void SpriteSheetWindow::draw() {
 			ImGui::Text("Loop length (in seconds): ");
 			ImGui::SameLine();
 			ImGui::SliderFloat("##speed", &speed, 0.0f, 3.0f);
-			
-			if (ImGui::Button("Create")) {
-				if (num_img == 1) {
+
+			if (ImGui::Button("Create"))
+			{
+				if (num_img == 1)
+				{
 					editor->getGamePtr()->createPartialSprite(sprite_name, spriteID, ss, glm::ivec2(loc_x, loc_y), glm::ivec2(dim_x, dim_y));
-				} 				
-				else if (num_img > 1) {
+				}
+				else if (num_img > 1)
+				{
 					editor->getGamePtr()->createLoopingSprite(sprite_name, spriteID, ss, num_img, speed, glm::ivec2(loc_x, loc_y), glm::ivec2(dim_x, dim_y), x_pad);
 				}
 			}
-			
+
 			ImGui::SameLine();
 
-			if (ImGui::Button("Delete")) {
+			if (ImGui::Button("Delete"))
+			{
 				editor->getGamePtr()->deleteSpriteSheet(ss);
 				editor->getCurrentComponentList()[CUR_SPRITESHEET] = "";
 			}
@@ -85,37 +88,33 @@ void SpriteSheetWindow::draw() {
 
 			ImGui::End();
 
+			// set the windows default size (not needed for game window)
+			//ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 
+			// the game view window itself
+			ImGui::Begin("SpriteSheet View", &visible);
+			updateWindowFocus();
 
+			// Get size of drawable space on the window, instead of the entire size of the window
+			ImVec2 canvas_size = ImGui::GetContentRegionAvail();
 
-            // set the windows default size (not needed for game window)
-            //ImGui::SetNextWindowSize(size, ImGuiCond_FirstUseEver);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-
-
-            // the game view window itself
-            ImGui::Begin("SpriteSheet View", &visible, ImGuiWindowFlags_NoTitleBar);
-            updateWindowFocus();
-
-            // Get size of drawable space on the window, instead of the entire size of the window
-            ImVec2 canvas_size = ImGui::GetContentRegionAvail();
-
-            glBindTexture(GL_TEXTURE_2D, mSpriteSheetTexCBO);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, spritesheet->getDimensions().x, spritesheet->getDimensions().y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-            glBindTexture(GL_TEXTURE_2D, 0);
+			glBindTexture(GL_TEXTURE_2D, mSpriteSheetTexCBO);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, spritesheet->getDimensions().x, spritesheet->getDimensions().y, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+			glBindTexture(GL_TEXTURE_2D, 0);
 			glViewport(0, 0, spritesheet->getDimensions().x, spritesheet->getDimensions().y); // Set viewport to the Game dimensions
 			glBindFramebuffer(GL_FRAMEBUFFER, mSpriteSheetFBO);
 
-            editor->getGamePtr()->renderSpriteSheet(spritesheet);
-            mSpriteHighlighter.highlight();
-            
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			editor->getGamePtr()->renderSpriteSheet(spritesheet);
+			mSpriteHighlighter.highlight();
 
-            glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
-            ImGui::Image((ImTextureID)mSpriteSheetTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-            ImGui::End();
-            ImGui::PopStyleVar();	
+			glViewport(0, 0, (int)canvas_size.x, (int)canvas_size.y); // Reset viewport size // this line doesn't matter
+			ImGui::Image((ImTextureID)mSpriteSheetTexCBO, ImVec2(canvas_size.x, canvas_size.y), ImVec2(0, 1), ImVec2(1, 0));
+
+			ImGui::End();
+			ImGui::PopStyleVar();
 		}
-    }
+	}
 }
