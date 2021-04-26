@@ -239,7 +239,7 @@ namespace Core
 		setLocation(glm::vec2(locVec[0].get<float>(), locVec[1].get<float>()));
 		std::vector<json> scaleVec = root.at("scale").get<std::vector<json>>();
 		setScale(glm::vec2(scaleVec[0].get<float>(), scaleVec[1].get<float>()));
-
+		setInvisible(getData<bool>(root, "invisible"));
 		setRotation(root.at("rotation").get<double>());
 		setSpriteID(root.at("spriteID").get<int>());
 		setInScriptId(getData<int>(root, "inScriptId"));
@@ -256,6 +256,7 @@ namespace Core
 		root["spriteID"] = mSpriteID;
 		root["inScriptId"] = mInScriptId;
 		root["entityId"] = _entityId;
+		root["invisible"] = mIsInvisible;
 		return root;
 	}
 

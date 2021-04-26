@@ -13,6 +13,7 @@
 // normal libraries
 #include <any>
 #include <string>
+#include <vector>
 #include <streambuf>
 #include <fstream>
 #include <iostream>
@@ -26,83 +27,100 @@ class Base
 {
 public:
     int t = 1;
+    virtual void speak() = 0;
+    ~Base() { std::cout << "destructor in Base\n"
+                        << std::endl; }
 };
-class A : public virtual Base
+class A : Base
 {
+    int a = 0;
 };
-class B : public virtual Base
+class B
 {
-private:
-    int x[100];
+    int b = 0;
 };
-class C : public virtual Base
-{
-};
-class myTop : public A, public B, C
-{
-};
-union tu
-{
-    int x;
-    char y;
-};
-
-class cu
+class Derived : virtual public Base
 {
 public:
-    union
-    {
-        int a;
-        char b;
-    };
-    int &geta() { return a; }
+    int d = 2;
+    void speak() { std::cout << "addr of d is" << &d << "\nd is " << d << std::endl; }
+    ~Derived() { std::cout << "destructor in Derived\n"
+                           << std::endl; }
 };
-union ttu
+class controlGroup
 {
-    int x;
-    double d;
-    int y;
-    ttu &operator=(const ttu &other)
-    {
-        x = other.x;
-        d = other.d;
-        y = other.y;
-        return *this;
-    }
+    int a = 0;
+    int b = 0;
 };
+
+#define STRING(name) #name
+template <typename T>
+void memoryPrinter(T *d, const char *name, size_t length = sizeof(T), int offset = 0)
+{
+    unsigned char *p = (unsigned char *)(d) + (offset);
+    printf("\nMemory of [%s] of type [%s]\nat: [%p]", name, typeid(d).name(), p);
+    printf(", length: [%zu], offset: [%d]\n[BEGIN]\n", length, offset);
+    for (size_t i = 0; i < length; i++)
+    {
+        printf("%02x ", p[i]);
+        if (i % 4 == 3)
+            printf("| ");
+        if (i % 16 == 15)
+            printf("\n");
+    }
+    printf("[END]\n");
+}
+class testA
+{
+public:
+    int x = 0;
+    int getX();
+    void setX(int xx);
+};
+int testA::getX() { return x; }
+void testA::setX(int xx) { x = xx; }
+class testB
+{
+
+public:
+    int x = 0;
+};
+
 int main(int argc, char **argv)
 {
-    bool t0 = true;
-    if (t0)
+    bool test = false;
+    if (test)
     {
-        ttu tu0;
-        tu0.y = 5;
-        ttu tu1;
-        tu1.y = 6;
-        tu0 = tu1;
-        printf("tu0.y = %d\n", tu0.y);
+        Base *base;
+        Derived *d = new Derived();
+        base = d;
+        base->speak();
+        memoryPrinter<Derived>(d, "Derived *d");
+        memoryPrinter<Base>(base, STRING(base), sizeof(Derived), -16);
+
+        unsigned char *ptr = (unsigned char *)d;
+        memoryPrinter<unsigned char>(ptr, "ptr", sizeof(Derived));
+
+        //std::cout
+        //    << "size of Base: " << sizeof(Base)
+        //    << "\nsizeof A : Base: " << sizeof(A)
+        //    << "\nsizeof B : Base: " << sizeof(B)
+        //    << "\nsizeof derived: " << sizeof(derived)
+        //    << "\nsizeof controlGroup: " << sizeof(controlGroup)
+        //    << std::endl;
         return 0;
     }
-    bool t = false;
-    if (t)
+    bool test2 = true;
+    if (test2)
     {
-        myTop t;
-        Base base;
-        A a;
-        B b;
-        std::cout << "base size: " << sizeof(base) << "\nA size: " << sizeof(a) << "\nB size: " << sizeof(b) << "\nTop size: " << sizeof(t)
-                  << "\n t=" << t.t << std::endl;
-        tu mtu;
-        mtu.y = 1;
-        std::cout << "size is " << sizeof(mtu.y);
-        cu mcu;
-        int &x = mcu.geta();
-        x = 5;
-        std::cout << "should be 5: " << mcu.a << std::endl;
-
+        testA a;
+        a.setX(4);
+        int x = a.getX();
+        testB b;
+        std::cout << sizeof testA << "||" << sizeof testB << std::endl;
+        std::cout << sizeof a << "||" << sizeof b << std::endl;
         return 0;
     }
-
     // set up SDL2
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
     {

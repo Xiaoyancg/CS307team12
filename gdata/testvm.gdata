@@ -1,0 +1,93 @@
+{
+  "Author": "",
+  "FileType": "Parchment Game Data",
+  "GameName": "testvm",
+  "LastModifiedTime": "",
+  "Note": "",
+  "Version": "",
+  "logicManager": {
+    "logicList": [
+      {
+        "LogicName": "1",
+        "ScriptType": "MoveConstantly",
+        "SignalType": "Key",
+        "logic": {
+          "KeyType": "KEYDOWN",
+          "key": 100
+        },
+        "logicId": 1,
+        "targetScriptList": [
+          2
+        ]
+      }
+    ],
+    "scriptList": [
+      {
+        "ScriptName": "1",
+        "ScriptType": "Custom",
+        "script": {
+          "addTargetLogicList": [
+            1
+          ],
+          "addTargetScriptList": [],
+          "addTargetSignalList": [],
+          "removeTargetLogicList": [],
+          "removeTargetScriptList": [],
+          "removeTargetSignalList": []
+        },
+        "scriptId": 1
+      },
+      {
+        "ScriptName": "2",
+        "ScriptType": "MoveConstantly",
+        "script": {
+          "movement": [
+            12.0,
+            0.0
+          ],
+          "targetEntityList": [
+            1
+          ],
+          "targetPageId": 1
+        },
+        "scriptId": 2
+      }
+    ],
+    "signalList": []
+  },
+  "maps": [],
+  "pageList": [
+    {
+      "PageName": "emptyPage",
+      "entityList": [
+        {
+          "EntityName": "1",
+          "entityId": 1,
+          "inScriptId": 1,
+          "invisible": false,
+          "location": [
+            0.0,
+            0.0
+          ],
+          "rotation": 0.0,
+          "scale": [
+            100.0,
+            100.0
+          ],
+          "spriteID": -100
+        }
+      ],
+      "pageId": 1
+    }
+  ],
+  "spriteList": [
+    {
+      "FileName": "./default.png",
+      "SpriteID": -100,
+      "SpriteName": "default"
+    }
+  ],
+  "startPoint": {
+    "startPage": 0
+  }
+}
